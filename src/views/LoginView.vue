@@ -24,16 +24,22 @@
     },
     methods:{
       submit(){
+          const clientId = import.meta.env.VITE_APP_CLIENT_ID;
+          const clientSecret = import.meta.env.VITE_APP_CLIENT_SECRET;
+          console.log("Client ID:", clientId);
+          console.log("Client Secret:", clientSecret);
         fetch('https://api.intra.42.fr/oauth/token', {
           method: 'POST',
           body: new URLSearchParams({
             'grant_type': 'client_credentials',
-            'client_id': '',
-            'client_secret': ''
+            'client_id': import.meta.env.VITE_APP_CLIENT_ID,
+            'client_secret': import.meta.env.VITE_APP_CLIENT_SECRET
           })
         }).then(response => response.json()).then(res => console.log(res.data)).catch(e => console.log(e.message))
       },
     }
   })
 </script>
+
+
 
