@@ -1,43 +1,27 @@
+
 <template>
-  <div class="h-screen w-screen grid place-items-center items-center">
-    <button :class="schoolBtn.style" @click="submit">
-      {{schoolBtn.label}}
-    </button>
+<!--  <div class="h-screen w-screen grid place-items-center items-center">-->
+<!--     test login-->
+  <div class="h-screen w-screen flex flex-col items-center justify-center">
+    <LoginForm/>
+<!--    Test login -->
+<!--    <button :class="schoolBtn.style" @click="submit">-->
+<!--      {{schoolBtn.label}}-->
+<!--    </button>-->
   </div>
+
 </template>
 
 <script lang="ts">
   import {defineComponent} from "vue";
+  import axios from "axios";
+  import LoginForm from '../components/LoginForm.vue'
+
   export default defineComponent({
     name: "LoginView",
-    data(){
-      return {
-        schoolBtn:{
-          label: "Login with 42",
-          style: "text-red-500 text-sm font-sans bg-cyan-400 text-white inline-block px-4 py-2 max-w-xs mx-auto rounded-md font-bold"
-        },
-        input:{
-          value: "",
-          error: false
-        }
-      }
+    components: {
+      LoginForm
     },
-    methods:{
-      submit(){
-          const clientId = import.meta.env.VITE_APP_CLIENT_ID;
-          const clientSecret = import.meta.env.VITE_APP_CLIENT_SECRET;
-          console.log("Client ID:", clientId);
-          console.log("Client Secret:", clientSecret);
-        fetch('https://api.intra.42.fr/oauth/token', {
-          method: 'POST',
-          body: new URLSearchParams({
-            'grant_type': 'client_credentials',
-            'client_id': import.meta.env.VITE_APP_CLIENT_ID,
-            'client_secret': import.meta.env.VITE_APP_CLIENT_SECRET
-          })
-        }).then(response => response.json()).then(res => console.log(res.data)).catch(e => console.log(e.message))
-      },
-    }
   })
 </script>
 
