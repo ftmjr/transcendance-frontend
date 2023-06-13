@@ -8,7 +8,7 @@ RUN yarn global add esbuild && yarn global add vite
 
 RUN yarn install
 
-COPY . .
+#COPY . .
 
 VOLUME /app
 
