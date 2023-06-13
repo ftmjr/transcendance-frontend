@@ -1,8 +1,17 @@
 {
   "extends": "@vue/tsconfig/tsconfig.node.json",
-  "include": ["vite.config.*", "vitest.config.*", "cypress.config.*", "playwright.config.*"],
+  "include": ["__tests__/*", "src/**/*.vue", "vite.config.ts", "vitest.config.ts", "env.d.ts"],
   "compilerOptions": {
     "composite": true,
-    "types": ["node"]
+    "types": ["node"],
+    "lib": ["ESNext", "DOM"],
+    "module": "es2020",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "allowUmdGlobalAccess": true,
+    "verbatimModuleSyntax": true,
+    "allowUnreachableCode": false,
+    "ignoreDeprecations": "5.0"
   }
 }
