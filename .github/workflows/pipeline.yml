@@ -20,7 +20,7 @@ jobs:
       - name: Lint
         run: yarn lint
       - name: Test
-        run: yarn test:uni
+        run: yarn test:unit
       - name: Build
         run: yarn build
 
