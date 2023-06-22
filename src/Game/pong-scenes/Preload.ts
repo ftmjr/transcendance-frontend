@@ -1,89 +1,98 @@
-import {GameNetwork, GameUserType} from "@/Game/network/GameNetwork";
-import type { GameUser } from "@/Game/network/GameNetwork";
-import type { GameMonitor, GameReceiver } from "@/Game/network/GameMonitor";
-import {PongBackGround} from "@/Game/pong-scenes/Assets";
-import PongGame from "@/Game/pong-scenes/PongGame";
+import { GameNetwork, GameUserType } from '@/Game/network/GameNetwork'
+import type { GameMonitor } from '@/Game/network/GameMonitor'
+import { PongArcadeSprite, PongBackGround } from '@/Game/pong-scenes/Assets'
 
 export interface PreloadSceneData {
-    room: string;
-    isOnline: boolean;
-    gameNetwork: GameNetwork;
-    gameMonitor: GameMonitor;
-    gameReceiver: GameReceiver;
-    user: GameUser;
-    userType: GameUserType;
-    theme?: string;
+  userType: GameUserType
+  gameMonitor: GameMonitor
+  gameNetwork: GameNetwork
 }
 
 export default class PreloadPong extends Phaser.Scene {
-    userType: GameUserType = GameUserType.Viewer;
-    private isConnected: boolean = false;
-    private isLocalGame: boolean = true;
-    private players: GameUser[] = [];
-    private gameNetwork: GameNetwork | undefined;
-    private gameMonitor: GameMonitor | undefined;
-    private readyToPlay: boolean = false;
+  private userType: GameUserType = GameUserType.Player
+  private gameNetwork: GameNetwork = null as unknown as GameNetwork
+  private gameMonitor: GameMonitor = null as unknown as GameMonitor
+  private networkIsOperational: boolean = false
+  private bottomText: Phaser.GameObjects.Text | undefined = undefined
+  private topText: Phaser.GameObjects.Text | undefined = undefined
 
-    constructor() {
-        super('preloader');
+  constructor() {
+    super('preloader')
+  }
+
+  init(data: PreloadSceneData) {
+    this.userType = data.userType
+    this.gameMonitor = data.gameMonitor
+  }
+
+  preload() {
+    // preload all the asset;
+    this.load.image(PongBackGround.Arcade, '/pong/backgrounds/arcade_bg_ia-min.png')
+    this.load.image(PongArcadeSprite.Ball, '/pong/ball.png')
+    this.load.image(PongArcadeSprite.Paddle, '/pong/paddle.png')
+    this.load.image(PongArcadeSprite.AwayPaddle, '/pong/paddle.png')
+  }
+
+  create() {
+    const width = this.scale.width
+    const height = this.scale.height
+
+    const bgImage = this.add.image(0, 0, PongBackGround.Arcade)
+    bgImage.setOrigin(0.5, 0.5)
+    bgImage.setPosition(width / 2, height / 2)
+    bgImage.setScale(Math.min(width / bgImage.width, height / bgImage.height))
+
+    this.bottomText = this.add.text(30, height - 50, 'Loading...', {
+      fontSize: '24px'
+    })
+
+    switch (this.userType) {
+      case GameUserType.LocalPlayer:
+        this.bottomText.setText('Waiting for the AI.')
+        break
+      case GameUserType.Player:
+        this.bottomText.setText('Waiting for an opponent...')
+        break
+      case GameUserType.Viewer:
+        this.bottomText.setText('Waiting for game to start...')
     }
+    this.topText = this.add.text(30, 30, '42 - Pong game', {
+      fontSize: '24px'
+    })
+  }
 
-    init(data: PreloadSceneData) {
-        this.userType = data.userType;
-        this.gameNetwork = data.gameNetwork;
-        this.gameMonitor = data.gameMonitor;
-
-        if (data.isOnline) {
-            this.isLocalGame = false;
+  update() {
+    this.networkIsOperational = this.gameMonitor.isOperational() ?? false
+    const sceneData: PreloadSceneData = {
+      userType: this.userType,
+      gameMonitor: this.gameMonitor,
+      gameNetwork: this.gameNetwork
+    }
+    if (this.networkIsOperational === false) {
+      // todo: change
+      const players = Array.from(this.gameMonitor.getPlayers().values()) || []
+      if (this.userType === GameUserType.LocalPlayer) {
+        if (players.length === 0) {
+          // todo: to change to 1
+          this.scene.start('PongGame', sceneData)
         } else {
-            this.players = [
-                { userId: 0, avatar: '/pong/bot.png', username: 'Bot1' },
-                {...data.user}
-            ]
+          this.bottomText?.setText('loading, preparing the AI...')
         }
-        //console.log(data);
-    }
-
-    ConnectionHandler(worked: boolean) {
-        this.isConnected = true;
-    }
-
-    updateUsers() {
-        if (this.gameNetwork) {
-            this.gameNetwork.updatePlayersList();
-            this.gameNetwork.updateViewerList();
+      } else if (this.userType === GameUserType.Player) {
+        if (players.length === 2) {
+          this.scene.start('PongGame', sceneData)
+        } else {
+          this.bottomText?.setText('Waiting for an opponent...')
         }
+      } else if (this.userType === GameUserType.Viewer) {
+        if (players.length === 2) {
+          this.scene.start('PongGame', sceneData)
+        } else if (players.length < 2) {
+          this.bottomText?.setText('Waiting for game to start...')
+        }
+      }
+    } else {
+      this.bottomText?.setText('Waiting for network...not operational')
     }
-
-    preload() {
-        // preload all the asset;
-        this.load.image(PongBackGround.Arcade, '/pong/backgrounds/arcade_bg_ia-min.png')
-    }
-
-    create() {
-        const width = this.scale.width;
-        const height = this.scale.height;
-
-        const bgImage = this.add.image(0,0, PongBackGround.Arcade);
-        bgImage.setOrigin(0.5, 0.5);
-        bgImage.setPosition(width / 2, height / 2);
-        bgImage.setScale(Math.min(width / bgImage.width, height / bgImage.height));
-
-        const gameNameText = this.add.text(30, (height - 50),'Loading...', {
-            fill: '#fff',
-            fontSize: '24px'
-        })
-
-        const playerGroup = this.add.group();
-        const paddle = playerGroup.create(0, 0, 'paddle');
-        paddle.setOrigin(0.5, 0.5);
-
-        const ball = this.add.
-    }
-
-    update() {
-        // check if local game
-        // if online check 2 users are in gameNetwork
-        // for each user detected make a sound
-    }
+  }
 }
