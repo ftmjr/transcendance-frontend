@@ -52,8 +52,8 @@ export class LocalPlayer implements GameSender, Player {
   }
 
   scorePoint() {
-    this.scene.score.player1 += 1
     this.sendGameState(GAME_STATE.scored)
+    this.scene.score.player1 += 1
     this.scene.updateScore();
   }
 
@@ -62,10 +62,10 @@ export class LocalPlayer implements GameSender, Player {
     if (!ball.getSprite().getData('inMiddle')) return
     let ballServeVelocity = { x: 0, y: 0 }
     if (Math.random() > 0.49) {
-      ballServeVelocity = { x: -200, y: Phaser.Math.Between(-1, -4) }
+      ballServeVelocity = { x: -200, y: Phaser.Math.Between(-40, 0) }
       ball.serveBall(ballServeVelocity)
     } else {
-      ballServeVelocity = { x: 200, y: Phaser.Math.Between(1, 4) }
+      ballServeVelocity = { x: 200, y: Phaser.Math.Between(0, 40) }
       ball.serveBall(ballServeVelocity)
     }
     this.sendBallServe({ x: 0, y: 0 }, ballServeVelocity)

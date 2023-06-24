@@ -41,6 +41,13 @@ export default class PongGame extends Phaser.Scene {
   public theme: PongTheme = 'Soccer'
   private spritesKeys: Record<PongSprite, string> = getPongSprites(this.theme)
   private scoreImages: { player1 :ScoreBoard; player2 :ScoreBoard }|undefined;
+  public wallSound: Phaser.Sound.BaseSound | undefined
+  public paddleSound: Phaser.Sound.BaseSound | undefined
+  public scoreSound: Phaser.Sound.BaseSound | undefined
+  public soundConfig: Phaser.Types.Sound.SoundConfig = {
+    mute: false,
+    volume: 0.5,
+  }
   constructor() {
     super('PongGame')
   }
@@ -56,6 +63,8 @@ export default class PongGame extends Phaser.Scene {
       this.viewOnly = true
     }
     this.networkIsOperational = this.gameMonitor.isOperational()
+    this.theme = data.theme
+    this.spritesKeys = getPongSprites(this.theme)
   }
 
   preload() {}
@@ -68,8 +77,14 @@ export default class PongGame extends Phaser.Scene {
     this.cam.flash()
     const width = this.scale.width
     const height = this.scale.height
-    this.add.tileSprite(0, 0, width, height, PongSprite.GameField,0).setOrigin(0, 0);
-    this.add.image(width/2, height/2, PongSprite.FieldCenter)
+    const fieldBackground = this.add.tileSprite(0, 0, width, height, PongSprite.GameField,0).setOrigin(0, 0);
+    if (this.theme === 'Arcade') {
+      fieldBackground.setAlpha(0.6)
+      fieldBackground.blendMode = Phaser.BlendModes.DARKEN
+    }
+    this.wallSound = this.sound.add(PongSprite.WallSong)
+    this.paddleSound =  this.sound.add(PongSprite.PaddleSong)
+    this.scoreSound = this.sound.add(PongSprite.ScoreSong)
     // Add score images
     this.scoreImages = {
         player1: {
@@ -107,32 +122,33 @@ export default class PongGame extends Phaser.Scene {
     const width = this.scale.width
     const height = this.scale.height
     this.middleLine = this.add.graphics({
-      lineStyle: { width: 2, color: 0xffffff }
+      lineStyle: { width: 4, color: 0xffffff }
     })
     this.middleLine.lineBetween(width / 2, 0, width / 2, height)
+    this.add.image(width/2, height/2, PongSprite.FieldCenter).setOrigin(0.5, 0.5)
     this.scoreLines = this.physics.add.group({
       immovable: true,
       allowGravity: false
     })
-    this.leftLine = this.scoreLines.create(0, height / 2, PongSprite.GoalLine)
+    this.leftLine = this.scoreLines.create(0, height / 2, PongSprite.GoalLine).setOrigin(0, 0.5)
     this.leftLine.displayHeight = height
-    //this.leftLine.setTint(0xffffff) // set to white color
+    this.leftLine.displayWidth = 15
     this.leftLine.setPushable(false)
-    this.rightLine = this.scoreLines.create(width, height / 2, PongSprite.GoalLine)
+    this.rightLine = this.scoreLines.create(width, height / 2, PongSprite.GoalLine).setOrigin(1, 0.5)
     this.rightLine.displayHeight = height
-    this.rightLine.setTint(0xffffff) // set to white color
+    this.rightLine.displayWidth = 15
     this.rightLine.setPushable(false)
   }
   buildLocalGamePlayers() {
     this.homePlayer = new LocalPlayer(
       this.gameMonitor,
       this,
-      { x: 20, y: this.scale.height / 2 },
+      { x: 30, y: this.scale.height / 2 },
       PongSprite.Paddle
     )
     this.awayPlayer = new AIPlayer(
       this,
-      { x: this.scale.width - 20, y: this.scale.height / 2 },
+      { x: this.scale.width - 30, y: this.scale.height / 2 },
       PongSprite.AwayPaddle
     )
   }
@@ -202,6 +218,11 @@ export default class PongGame extends Phaser.Scene {
   }
 
   updateScore() {
+    this.cam?.shake(100, 0.01)
+    this.scoreSound?.play({
+      ...this.soundConfig,
+      volume: 0.5
+    })
     // update score images
     const digitsScore1 = this.score.player1.toString().split('')
     const digitsScore2 = this.score.player2.toString().split('')

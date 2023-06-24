@@ -53,7 +53,6 @@ export class AIPlayer implements Player {
     return this.aiPaddle
   }
 
-  // If scoring for AI is needed
   scorePoint() {
     this.scene.score.player2 += 1
     this.scene.updateScore();

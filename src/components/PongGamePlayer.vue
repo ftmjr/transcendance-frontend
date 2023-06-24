@@ -8,12 +8,13 @@ import PongGameScene from '@/Game/pong-scenes/PongGame'
 import PreloadScene, { PreloadSceneData } from '@/Game/pong-scenes/Preload'
 import { GameNetwork, GameUser, GameUserType } from '@/Game/network/GameNetwork'
 import { GAME_STATE, GameMonitor, NetworkUser, TRoomId } from '@/Game/network/GameMonitor'
+import type {PongTheme} from "@/Game/pong-scenes/Assets";
 
 const gameContainer = ref(null)
 const props = defineProps({
   gameData: {
     type: Object as PropType<{
-      theme?: string
+      theme?: PongTheme
       room?: string
       isPlaying: boolean
     }>,
@@ -52,7 +53,7 @@ onMounted(() => {
     userType: gameType,
     gameMonitor,
     gameNetwork,
-    theme: props.gameData?.theme ?? 'default'
+    theme: props.gameData?.theme ?? 'Arcade'
   } as PreloadSceneData
   const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,

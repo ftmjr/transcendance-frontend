@@ -6,24 +6,21 @@ import type {
   NetworkUser
 } from '@/Game/network/GameMonitor'
 import { PAD_DIRECTION } from '@/Game/network/GameMonitor'
-import type { GameUser } from '@/Game/network/GameNetwork'
-import type { Scene } from 'phaser'
 import type { Player } from '@/Game/pong-scenes/PongGame'
+import type PongGameScene from "@/Game/pong-scenes/PongGame";
 
 export class OnlinePlayer implements GameReceiver, Player {
   private onlineUserGroup: Phaser.Physics.Arcade.Group
   private onlinePaddle: Phaser.Physics.Arcade.Sprite
   private padDirection: PAD_DIRECTION = PAD_DIRECTION.none
-  public score: { player1: number; player2: number }
 
   constructor(
     private user: NetworkUser,
     private gameMonitor: GameMonitor,
-    private scene: Scene,
+    private scene: PongGameScene,
     private position: { x: number; y: number },
     private paddleSpriteKey: string
   ) {
-    this.score = { player1: 0, player2: 0 }
     this.gameMonitor.listen(this, user.username)
     this.onlineUserGroup = scene.physics.add.group({
       collideWorldBounds: true
@@ -38,16 +35,19 @@ export class OnlinePlayer implements GameReceiver, Player {
   }
 
   update() {
+    const deceleration = 0.9
+    const averageSpeed = this.scene.scale.height;
+    const currentVelocity = this.onlinePaddle.body?.velocity.y ?? 0
     switch (this.padDirection) {
       case PAD_DIRECTION.up:
-        this.onlinePaddle.setVelocityY(-15)
+        this.onlinePaddle.setVelocityY(-averageSpeed)
         break
       case PAD_DIRECTION.down:
-        this.onlinePaddle.setVelocityY(15)
+        this.onlinePaddle.setVelocityY(averageSpeed)
         break
       case PAD_DIRECTION.none:
       default:
-        this.onlinePaddle.setVelocityY(0)
+        this.onlinePaddle.setVelocityY(currentVelocity * deceleration)
         break
     }
   }
@@ -57,7 +57,7 @@ export class OnlinePlayer implements GameReceiver, Player {
   }
 
   scorePoint() {
-    this.score.player2 += 1
+    console.log('score point info from ball')
   }
 
   serveBall() {
@@ -72,8 +72,16 @@ export class OnlinePlayer implements GameReceiver, Player {
   onPadMoved(dir: PAD_DIRECTION): void {
     this.padDirection = dir
   }
-  onBallServed(position: { x: number; y: number }, velocity: { x: number; y: number }): void {}
+  onBallServed(position: { x: number; y: number }, velocity: { x: number; y: number }): void {
+    const ball = this.scene.getBall();
+    ball.getSprite().setData('inMiddle', true)
+    ball.serveBall(velocity)
+  }
   onGameStateChanged(state: GAME_STATE): void {}
-  onScoreChanged(score: { player1: number; player2: number }): void {}
+  onScoreChanged(score: { player1: number; player2: number }): void {
+    this.scene.score.player1 = score.player1
+    this.scene.score.player2 = score.player2
+    this.scene.updateScore();
+  }
   onGameEnded(result: GAME_RESULT): void {}
 }

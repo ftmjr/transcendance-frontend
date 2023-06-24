@@ -27,37 +27,42 @@ export class PongBall {
     this.ball.setData('inMiddle', true)
     if (scene.theme === 'Arcade') {
       const particles = scene.add.particles(0, 0, PongSprite.BallParticle, {
-        speed: { min: 20, max: 100 },
-        scale: { start: 0.8, end: 0.05 },
+        speed: { min: 10, max: 80 },
+        scale: { start: 0.4, end: 0.05 },
         lifespan: 400,
         blendMode: 'ADD',
       });
       particles.startFollow(this.ball);
     }
+    this.ball.type = 'ball'
 
     const player1Paddle = this.player1.getSprite()
     scene.physics.add.collider(player1Paddle, this.ball, () => {
+      scene.sound.play(PongSprite.PaddleSong, {
+        ...scene.soundConfig,
+        volume: 0.3
+      });
       this.onPaddleBallCollision(this.ball, this.player1)
     })
     const player2Paddle = this.player2.getSprite()
     scene.physics.add.collider(player2Paddle, this.ball, () => {
+      scene.sound.play(PongSprite.PaddleSong, scene.soundConfig);
       this.onPaddleBallCollision(this.ball, this.player2)
     })
-
     scene.physics.add.collider(this.ball, leftLine, () => {
       this.ball.setVelocity(0)
-      this.player2.scorePoint() // method to increment score for right player
+      this.player2.scorePoint()
       this.resetBall()
-      leftLine.setTint(0x0000ff)
+      leftLine.setTint(0xff0000)
       scene.time.delayedCall(500, () => {
         leftLine.setTint(0xffffff)
       })
     })
     scene.physics.add.collider(this.ball, rightLine, () => {
       this.ball.setVelocity(0)
-      this.player1.scorePoint() // method to increment score for right player
+      this.player1.scorePoint()
       this.resetBall()
-      rightLine.setTint(0x0000ff)
+      rightLine.setTint(0xff0000)
       scene.time.delayedCall(500, () => {
         rightLine.setTint(0xffffff)
       })
@@ -72,7 +77,6 @@ export class PongBall {
   }
 
   resetBall() {
-    this.scene.cam?.shake(100, 0.01)
     this.ball.setPosition(this.scene.scale.width / 2, this.scene.scale.height / 2)
     this.ball.setActive(false)
     this.ball.setData('inMiddle', true)

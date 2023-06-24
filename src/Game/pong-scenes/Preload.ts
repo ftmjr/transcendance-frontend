@@ -7,6 +7,7 @@ export interface PreloadSceneData {
   userType: GameUserType
   gameMonitor: GameMonitor
   gameNetwork: GameNetwork
+  theme: PongTheme
 }
 
 export default class PreloadPong extends Phaser.Scene {
@@ -25,6 +26,8 @@ export default class PreloadPong extends Phaser.Scene {
   init(data: PreloadSceneData) {
     this.userType = data.userType
     this.gameMonitor = data.gameMonitor
+    this.theme = data.theme
+    this.spritesKeys = getPongSprites(this.theme)
   }
 
   preload() {
@@ -39,6 +42,10 @@ export default class PreloadPong extends Phaser.Scene {
     this.load.image(PongSprite.GoalLine, this.spritesKeys.GoalLine)
     // load score images
     this.load.atlas(PongSprite.DigitAtlasSprites, this.spritesKeys.DigitAtlas, this.spritesKeys.DigitAtlasJson);
+    // load sounds
+    this.load.audio(PongSprite.WallSong, this.spritesKeys.WallSong)
+    this.load.audio(PongSprite.PaddleSong, this.spritesKeys.PaddleSong)
+    this.load.audio(PongSprite.ScoreSong, this.spritesKeys.ScoreSong)
   }
 
   create() {
@@ -74,7 +81,8 @@ export default class PreloadPong extends Phaser.Scene {
     const sceneData: PreloadSceneData = {
       userType: this.userType,
       gameMonitor: this.gameMonitor,
-      gameNetwork: this.gameNetwork
+      gameNetwork: this.gameNetwork,
+      theme: this.theme
     }
     if (this.networkIsOperational === false) {
       // todo: change
