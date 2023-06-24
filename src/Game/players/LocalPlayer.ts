@@ -1,10 +1,5 @@
-import type {
-  GameSender,
-  GAME_RESULT,
-  PAD_DIRECTION,
-  GameMonitor
-} from '@/Game/network/GameMonitor'
-import { GAME_STATE } from '@/Game/network/GameMonitor'
+import type { GameSender, GAME_RESULT, GameMonitor } from '@/Game/network/GameMonitor'
+import { GAME_STATE, PAD_DIRECTION } from '@/Game/network/GameMonitor'
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PonGameScene from '@/Game/pong-scenes/PongGame'
 export class LocalPlayer implements GameSender, Player {
@@ -34,13 +29,16 @@ export class LocalPlayer implements GameSender, Player {
     const averageSpeed = this.scene.scale.height
     if (this.scene.cursorkeys?.up.isDown) {
       this.localPaddle.setVelocityY(-averageSpeed)
+      this.sendPadMove(PAD_DIRECTION.up)
     } else if (this.scene.cursorkeys?.down.isDown) {
+      this.sendPadMove(PAD_DIRECTION.down)
       this.localPaddle.setVelocityY(averageSpeed)
     } else {
       // decent deceleration
       const deceleration = 0.9
       const currentVelocity = this.localPaddle.body?.velocity.y ?? 0
       this.localPaddle.setVelocityY(currentVelocity * deceleration)
+      this.sendPadMove(PAD_DIRECTION.none) // send none to server
     }
     if (this.scene.cursorkeys?.space.isDown) {
       this.serveBall()
@@ -72,7 +70,7 @@ export class LocalPlayer implements GameSender, Player {
   }
 
   onBallHit() {
-    console.log('ball hit')
+    // console.log('ball hit')
   }
 
   // methods from GameSender interface that will be decorated by GameMonitor

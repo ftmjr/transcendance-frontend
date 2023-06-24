@@ -59,7 +59,7 @@ export class AIPlayer implements Player {
   }
 
   onBallHit() {
-    console.log('ball hit')
+    // console.log('ball hit')
   }
 
   serveBall() {
