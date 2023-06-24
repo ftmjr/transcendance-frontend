@@ -7,7 +7,7 @@ import type {
 } from '@/Game/network/GameMonitor'
 import { PAD_DIRECTION } from '@/Game/network/GameMonitor'
 import type { Player } from '@/Game/pong-scenes/PongGame'
-import type PongGameScene from "@/Game/pong-scenes/PongGame";
+import type PongGameScene from '@/Game/pong-scenes/PongGame'
 
 export class OnlinePlayer implements GameReceiver, Player {
   private onlineUserGroup: Phaser.Physics.Arcade.Group
@@ -36,7 +36,7 @@ export class OnlinePlayer implements GameReceiver, Player {
 
   update() {
     const deceleration = 0.9
-    const averageSpeed = this.scene.scale.height;
+    const averageSpeed = this.scene.scale.height
     const currentVelocity = this.onlinePaddle.body?.velocity.y ?? 0
     switch (this.padDirection) {
       case PAD_DIRECTION.up:
@@ -73,7 +73,7 @@ export class OnlinePlayer implements GameReceiver, Player {
     this.padDirection = dir
   }
   onBallServed(position: { x: number; y: number }, velocity: { x: number; y: number }): void {
-    const ball = this.scene.getBall();
+    const ball = this.scene.getBall()
     ball.getSprite().setData('inMiddle', true)
     ball.serveBall(velocity)
   }
@@ -81,7 +81,7 @@ export class OnlinePlayer implements GameReceiver, Player {
   onScoreChanged(score: { player1: number; player2: number }): void {
     this.scene.score.player1 = score.player1
     this.scene.score.player2 = score.player2
-    this.scene.updateScore();
+    this.scene.updateScore()
   }
   onGameEnded(result: GAME_RESULT): void {}
 }

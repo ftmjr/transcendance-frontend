@@ -18,7 +18,7 @@ export interface Player {
   onBallHit(): void // when the ball hits the paddle
 }
 
-type ScoreBoard = {digit1: Phaser.GameObjects.Image, digit2: Phaser.GameObjects.Image}
+type ScoreBoard = { digit1: Phaser.GameObjects.Image; digit2: Phaser.GameObjects.Image }
 export default class PongGame extends Phaser.Scene {
   public cursorkeys: Phaser.Types.Input.Keyboard.CursorKeys | undefined
   public cam: Phaser.Cameras.Scene2D.Camera | undefined
@@ -40,13 +40,13 @@ export default class PongGame extends Phaser.Scene {
     undefined as unknown as Phaser.Physics.Arcade.Sprite
   public theme: PongTheme = 'Soccer'
   private spritesKeys: Record<PongSprite, string> = getPongSprites(this.theme)
-  private scoreImages: { player1 :ScoreBoard; player2 :ScoreBoard }|undefined;
+  private scoreImages: { player1: ScoreBoard; player2: ScoreBoard } | undefined
   public wallSound: Phaser.Sound.BaseSound | undefined
   public paddleSound: Phaser.Sound.BaseSound | undefined
   public scoreSound: Phaser.Sound.BaseSound | undefined
   public soundConfig: Phaser.Types.Sound.SoundConfig = {
     mute: false,
-    volume: 0.5,
+    volume: 0.5
   }
   constructor() {
     super('PongGame')
@@ -77,29 +77,31 @@ export default class PongGame extends Phaser.Scene {
     this.cam.flash()
     const width = this.scale.width
     const height = this.scale.height
-    const fieldBackground = this.add.tileSprite(0, 0, width, height, PongSprite.GameField,0).setOrigin(0, 0);
+    const fieldBackground = this.add
+      .tileSprite(0, 0, width, height, PongSprite.GameField, 0)
+      .setOrigin(0, 0)
     if (this.theme === 'Arcade') {
       fieldBackground.setAlpha(0.6)
       fieldBackground.blendMode = Phaser.BlendModes.DARKEN
     }
     this.wallSound = this.sound.add(PongSprite.WallSong)
-    this.paddleSound =  this.sound.add(PongSprite.PaddleSong)
+    this.paddleSound = this.sound.add(PongSprite.PaddleSong)
     this.scoreSound = this.sound.add(PongSprite.ScoreSong)
     // Add score images
     this.scoreImages = {
-        player1: {
-            digit1: this.add.image(width/2 - 25, 50, PongSprite.DigitAtlasSprites, '0'),
-            digit2: this.add.image(width/2 - 60, 50, PongSprite.DigitAtlasSprites, '0')
-        },
-        player2: {
-            digit1: this.add.image(width/2 + 25, 50, PongSprite.DigitAtlasSprites, '0'),
-            digit2: this.add.image(width/2 + 60, 50, PongSprite.DigitAtlasSprites, '0')
-        }
+      player1: {
+        digit1: this.add.image(width / 2 - 25, 50, PongSprite.DigitAtlasSprites, '0'),
+        digit2: this.add.image(width / 2 - 60, 50, PongSprite.DigitAtlasSprites, '0')
+      },
+      player2: {
+        digit1: this.add.image(width / 2 + 25, 50, PongSprite.DigitAtlasSprites, '0'),
+        digit2: this.add.image(width / 2 + 60, 50, PongSprite.DigitAtlasSprites, '0')
+      }
     }
     this.scoreImages.player1.digit1.setVisible(false)
     this.scoreImages.player2.digit1.setVisible(false)
 
-    this.buildLines();
+    this.buildLines()
     if (this.isAIAdversary) {
       this.buildLocalGamePlayers()
     } else if (this.userType === GameUserType.Player) {
@@ -125,7 +127,7 @@ export default class PongGame extends Phaser.Scene {
       lineStyle: { width: 4, color: 0xffffff }
     })
     this.middleLine.lineBetween(width / 2, 0, width / 2, height)
-    this.add.image(width/2, height/2, PongSprite.FieldCenter).setOrigin(0.5, 0.5)
+    this.add.image(width / 2, height / 2, PongSprite.FieldCenter).setOrigin(0.5, 0.5)
     this.scoreLines = this.physics.add.group({
       immovable: true,
       allowGravity: false
@@ -134,7 +136,9 @@ export default class PongGame extends Phaser.Scene {
     this.leftLine.displayHeight = height
     this.leftLine.displayWidth = 15
     this.leftLine.setPushable(false)
-    this.rightLine = this.scoreLines.create(width, height / 2, PongSprite.GoalLine).setOrigin(1, 0.5)
+    this.rightLine = this.scoreLines
+      .create(width, height / 2, PongSprite.GoalLine)
+      .setOrigin(1, 0.5)
     this.rightLine.displayHeight = height
     this.rightLine.displayWidth = 15
     this.rightLine.setPushable(false)
@@ -230,15 +234,15 @@ export default class PongGame extends Phaser.Scene {
       this.scoreImages?.player1.digit1.setVisible(true)
       this.scoreImages?.player1.digit1.setFrame(digitsScore1[1])
       this.scoreImages?.player1.digit2.setFrame(digitsScore1[0])
-    }else{
+    } else {
       this.scoreImages?.player1.digit2.setFrame(digitsScore1[0])
     }
     if (digitsScore2.length > 1) {
-        this.scoreImages?.player2.digit1.setVisible(true)
-        this.scoreImages?.player2.digit1.setFrame(digitsScore2[0])
-        this.scoreImages?.player2.digit2.setFrame(digitsScore2[1])
-    }else{
-        this.scoreImages?.player2.digit2.setFrame(digitsScore2[0])
+      this.scoreImages?.player2.digit1.setVisible(true)
+      this.scoreImages?.player2.digit1.setFrame(digitsScore2[0])
+      this.scoreImages?.player2.digit2.setFrame(digitsScore2[1])
+    } else {
+      this.scoreImages?.player2.digit2.setFrame(digitsScore2[0])
     }
   }
 

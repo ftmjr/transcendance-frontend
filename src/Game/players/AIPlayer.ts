@@ -55,7 +55,7 @@ export class AIPlayer implements Player {
 
   scorePoint() {
     this.scene.score.player2 += 1
-    this.scene.updateScore();
+    this.scene.updateScore()
   }
 
   onBallHit() {

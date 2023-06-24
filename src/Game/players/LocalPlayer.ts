@@ -54,7 +54,7 @@ export class LocalPlayer implements GameSender, Player {
   scorePoint() {
     this.sendGameState(GAME_STATE.scored)
     this.scene.score.player1 += 1
-    this.scene.updateScore();
+    this.scene.updateScore()
   }
 
   serveBall() {

@@ -8,7 +8,7 @@ import PongGameScene from '@/Game/pong-scenes/PongGame'
 import PreloadScene, { PreloadSceneData } from '@/Game/pong-scenes/Preload'
 import { GameNetwork, GameUser, GameUserType } from '@/Game/network/GameNetwork'
 import { GAME_STATE, GameMonitor, NetworkUser, TRoomId } from '@/Game/network/GameMonitor'
-import type {PongTheme} from "@/Game/pong-scenes/Assets";
+import type { PongTheme } from '@/Game/pong-scenes/Assets'
 
 const gameContainer = ref(null)
 const props = defineProps({

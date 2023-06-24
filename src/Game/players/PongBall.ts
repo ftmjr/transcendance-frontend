@@ -1,6 +1,6 @@
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PongGameScene from '@/Game/pong-scenes/PongGame'
-import {PongSprite} from "@/Game/pong-scenes/Assets";
+import { PongSprite } from '@/Game/pong-scenes/Assets'
 
 export class PongBall {
   private ballGroup: Phaser.Physics.Arcade.Group
@@ -30,9 +30,9 @@ export class PongBall {
         speed: { min: 10, max: 80 },
         scale: { start: 0.4, end: 0.05 },
         lifespan: 400,
-        blendMode: 'ADD',
-      });
-      particles.startFollow(this.ball);
+        blendMode: 'ADD'
+      })
+      particles.startFollow(this.ball)
     }
     this.ball.type = 'ball'
 
@@ -41,12 +41,12 @@ export class PongBall {
       scene.sound.play(PongSprite.PaddleSong, {
         ...scene.soundConfig,
         volume: 0.3
-      });
+      })
       this.onPaddleBallCollision(this.ball, this.player1)
     })
     const player2Paddle = this.player2.getSprite()
     scene.physics.add.collider(player2Paddle, this.ball, () => {
-      scene.sound.play(PongSprite.PaddleSong, scene.soundConfig);
+      scene.sound.play(PongSprite.PaddleSong, scene.soundConfig)
       this.onPaddleBallCollision(this.ball, this.player2)
     })
     scene.physics.add.collider(this.ball, leftLine, () => {

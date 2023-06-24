@@ -41,7 +41,11 @@ export default class PreloadPong extends Phaser.Scene {
     this.load.image(PongSprite.FieldCenter, this.spritesKeys.FieldCenter)
     this.load.image(PongSprite.GoalLine, this.spritesKeys.GoalLine)
     // load score images
-    this.load.atlas(PongSprite.DigitAtlasSprites, this.spritesKeys.DigitAtlas, this.spritesKeys.DigitAtlasJson);
+    this.load.atlas(
+      PongSprite.DigitAtlasSprites,
+      this.spritesKeys.DigitAtlas,
+      this.spritesKeys.DigitAtlasJson
+    )
     // load sounds
     this.load.audio(PongSprite.WallSong, this.spritesKeys.WallSong)
     this.load.audio(PongSprite.PaddleSong, this.spritesKeys.PaddleSong)

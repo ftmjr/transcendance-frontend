@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
-import type {PongTheme} from "@/Game/pong-scenes/Assets";
+import type { PongTheme } from '@/Game/pong-scenes/Assets'
 
 const PongGamePlayer = defineAsyncComponent(() => import('@/components/PongGamePlayer.vue'))
 const gameData = {

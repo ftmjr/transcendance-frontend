@@ -12,7 +12,7 @@ export enum PongSprite {
   PaddleSong = 'PaddleSong',
   ScoreSong = 'ScoreSong',
   DigitAtlasSprites = 'DigitAtlas',
-  DigitAtlasJson = 'DigitAtlasJson',
+  DigitAtlasJson = 'DigitAtlasJson'
 }
 // put all sprites according to the theme and return tuples of (key, path)
 
@@ -32,7 +32,7 @@ export function getPongSprites(theme: PongTheme): Record<PongSprite, string> {
         [PongSprite.PaddleSong]: '/audio/impactPunch_medium_001.ogg',
         [PongSprite.ScoreSong]: '/audio/confirmation_001.ogg',
         [PongSprite.DigitAtlasSprites]: '/pong/soccer/digits.png',
-        [PongSprite.DigitAtlasJson]: '/pong/soccer/digits.json',
+        [PongSprite.DigitAtlasJson]: '/pong/soccer/digits.json'
       }
     case 'Arcade':
     default:
@@ -49,7 +49,7 @@ export function getPongSprites(theme: PongTheme): Record<PongSprite, string> {
         [PongSprite.PaddleSong]: '/audio/click_005.ogg',
         [PongSprite.ScoreSong]: '/audio/confirmation_001.ogg',
         [PongSprite.DigitAtlasSprites]: '/pong/soccer/digits.png',
-        [PongSprite.DigitAtlasJson]: '/pong/soccer/digits.json',
+        [PongSprite.DigitAtlasJson]: '/pong/soccer/digits.json'
       }
   }
 }
