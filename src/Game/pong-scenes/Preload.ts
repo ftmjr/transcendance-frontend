@@ -1,6 +1,7 @@
 import { GameNetwork, GameUserType } from '@/Game/network/GameNetwork'
 import type { GameMonitor } from '@/Game/network/GameMonitor'
-import { PongArcadeSprite, PongBackGround } from '@/Game/pong-scenes/Assets'
+import { getPongSprites, PongSprite } from '@/Game/pong-scenes/Assets'
+import type { PongTheme } from '@/Game/pong-scenes/Assets'
 
 export interface PreloadSceneData {
   userType: GameUserType
@@ -15,7 +16,8 @@ export default class PreloadPong extends Phaser.Scene {
   private networkIsOperational: boolean = false
   private bottomText: Phaser.GameObjects.Text | undefined = undefined
   private topText: Phaser.GameObjects.Text | undefined = undefined
-
+  private theme: PongTheme = 'Soccer'
+  private spritesKeys: Record<PongSprite, string> = getPongSprites(this.theme)
   constructor() {
     super('preloader')
   }
@@ -27,17 +29,23 @@ export default class PreloadPong extends Phaser.Scene {
 
   preload() {
     // preload all the asset;
-    this.load.image(PongBackGround.Arcade, '/pong/backgrounds/arcade_bg_ia-min.png')
-    this.load.image(PongArcadeSprite.Ball, '/pong/ball.png')
-    this.load.image(PongArcadeSprite.Paddle, '/pong/paddle.png')
-    this.load.image(PongArcadeSprite.AwayPaddle, '/pong/paddle.png')
+    this.load.image(PongSprite.Background, this.spritesKeys.Background)
+    this.load.image(PongSprite.Ball, this.spritesKeys.Ball)
+    this.load.image(PongSprite.BallParticle, this.spritesKeys.BallParticle)
+    this.load.image(PongSprite.Paddle, this.spritesKeys.Paddle)
+    this.load.image(PongSprite.AwayPaddle, this.spritesKeys.AwayPaddle)
+    this.load.image(PongSprite.GameField, this.spritesKeys.GameField)
+    this.load.image(PongSprite.FieldCenter, this.spritesKeys.FieldCenter)
+    this.load.image(PongSprite.GoalLine, this.spritesKeys.GoalLine)
+    // load score images
+    this.load.atlas(PongSprite.DigitAtlasSprites, this.spritesKeys.DigitAtlas, this.spritesKeys.DigitAtlasJson);
   }
 
   create() {
     const width = this.scale.width
     const height = this.scale.height
 
-    const bgImage = this.add.image(0, 0, PongBackGround.Arcade)
+    const bgImage = this.add.image(0, 0, PongSprite.Background)
     bgImage.setOrigin(0.5, 0.5)
     bgImage.setPosition(width / 2, height / 2)
     bgImage.setScale(Math.min(width / bgImage.width, height / bgImage.height))

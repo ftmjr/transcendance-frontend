@@ -1,6 +1,6 @@
-import type { Scene } from 'phaser'
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PongGameScene from '@/Game/pong-scenes/PongGame'
+import {PongSprite} from "@/Game/pong-scenes/Assets";
 
 export class PongBall {
   private ballGroup: Phaser.Physics.Arcade.Group
@@ -25,35 +25,42 @@ export class PongBall {
     this.ball.setMass(1)
     this.ball.setMaxVelocity(400, 400)
     this.ball.setData('inMiddle', true)
+    if (scene.theme === 'Arcade') {
+      const particles = scene.add.particles(0, 0, PongSprite.BallParticle, {
+        speed: { min: 20, max: 100 },
+        scale: { start: 0.8, end: 0.05 },
+        lifespan: 400,
+        blendMode: 'ADD',
+      });
+      particles.startFollow(this.ball);
+    }
 
     const player1Paddle = this.player1.getSprite()
     scene.physics.add.collider(player1Paddle, this.ball, () => {
-      // player1Paddle.setAlpha(0.5)
-      this.player1.onBallHit()
+      this.onPaddleBallCollision(this.ball, this.player1)
     })
     const player2Paddle = this.player2.getSprite()
     scene.physics.add.collider(player2Paddle, this.ball, () => {
-      // player2Paddle.setAlpha(0.5)
-      this.player2.onBallHit()
+      this.onPaddleBallCollision(this.ball, this.player2)
     })
 
     scene.physics.add.collider(this.ball, leftLine, () => {
       this.ball.setVelocity(0)
       this.player2.scorePoint() // method to increment score for right player
       this.resetBall()
-      leftLine.setTint(0x0000ff) // change color to blue upon collision
+      leftLine.setTint(0x0000ff)
       scene.time.delayedCall(500, () => {
         leftLine.setTint(0xffffff)
-      }) // revert to white after 500ms
+      })
     })
     scene.physics.add.collider(this.ball, rightLine, () => {
       this.ball.setVelocity(0)
       this.player1.scorePoint() // method to increment score for right player
       this.resetBall()
-      rightLine.setTint(0x0000ff) // change color to blue upon collision
+      rightLine.setTint(0x0000ff)
       scene.time.delayedCall(500, () => {
         rightLine.setTint(0xffffff)
-      }) // revert to white after 500ms
+      })
     })
   }
 
@@ -70,6 +77,16 @@ export class PongBall {
     this.ball.setActive(false)
     this.ball.setData('inMiddle', true)
     this.ball.setVelocity(0, 0)
+  }
+
+  onPaddleBallCollision(ball: Phaser.Physics.Arcade.Sprite, player: Player) {
+    // add some velocity in Y direction added to the normal collision velocity depending on the position of the ball on the paddle
+    const ballY = ball.y
+    const paddleY = player.getSprite().y
+    const diff = ballY - paddleY
+    const currentVelocity = ball.body?.velocity?.y || 0
+    ball.setVelocityY(currentVelocity + diff * 5)
+    player.onBallHit()
   }
 
   update() {}

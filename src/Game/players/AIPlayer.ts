@@ -28,22 +28,25 @@ export class AIPlayer implements Player {
     if (min_x === undefined || max_x === undefined || velocity === undefined) return
     const speedArray = [velocity * 0.8, velocity, velocity * 1.5]
     const paddleLength = this.aiPaddle.height
-    if (!ball.getData('inMiddle')) {
-      if (ball.x < this.scene.scale.width / 2 + 10) return
-      const distance = ball.y - this.aiPaddle.y
-      if (distance > paddleLength / 2) {
-        this.aiPaddle.setVelocityY(speedArray[Phaser.Math.Between(0, 2)])
-      } else if (distance < -paddleLength / 2) {
-        this.aiPaddle.setVelocityY(-speedArray[Phaser.Math.Between(0, 2)])
-      } else {
-        const deceleration = 0.2
-        const currentVelocity = this.aiPaddle.body?.velocity.y ?? 0
-        this.aiPaddle.setVelocityY(currentVelocity * deceleration)
-      }
-    } else {
+
+    if (ball.getData('inMiddle')) {
       this.aiPaddle.y = this.scene.scale.height / 2
       this.aiPaddle.setVelocityY(0)
+      return
     }
+    if (ball.x >= min_x && ball.x <= max_x) {
+      const distance = ball.y - this.aiPaddle.y
+      if (distance > paddleLength / 4) {
+        this.aiPaddle.setVelocityY(speedArray[Phaser.Math.Between(0, 2)])
+        return
+      } else if (distance < -(paddleLength / 4)) {
+        this.aiPaddle.setVelocityY(-speedArray[Phaser.Math.Between(0, 2)])
+        return
+      }
+    }
+    const deceleration = 0.2
+    const currentVelocity = this.aiPaddle.body?.velocity.y ?? 0
+    this.aiPaddle.setVelocityY(currentVelocity * deceleration)
   }
 
   getSprite() {
@@ -53,8 +56,7 @@ export class AIPlayer implements Player {
   // If scoring for AI is needed
   scorePoint() {
     this.scene.score.player2 += 1
-    console.log('new score', this.scene.score)
-    console.log('score for AI')
+    this.scene.updateScore();
   }
 
   onBallHit() {
