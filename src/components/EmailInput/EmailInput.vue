@@ -1,15 +1,17 @@
 <template>
     <div>
         <label :for="name">{{ label }}</label>
-
-        <input @input="handleInput" :type="type" :required="required" :name="name" :value="value"
+        <input :value="value" @input="handleInput" :type="type" :required="required" :name="name"
             :placeholder="placeholder">
+        <!-- <input @input="handleInput" :type="type" :required="required" :name="name" :value="value"
+            :placeholder="placeholder"> -->
+        <p> {{ isDataValid }}</p>
     </div>
 </template>
 
 <script lang="ts">
-import { placeholder } from '@babel/types';
-import { defineComponent } from 'vue';
+// import { placeholder } from '@babel/types';
+import { defineComponent, type PropType } from 'vue';
 //____________________Email_Input_Component____________________//
 export default defineComponent({
     name: "EmailInput",
@@ -19,7 +21,7 @@ export default defineComponent({
             required: true
         },
         type: {
-            type: String,
+            type: String as PropType<'email' | 'text'>,
             required: true
         },
         required: {
@@ -40,12 +42,33 @@ export default defineComponent({
             default: "Please enter your email."
         }
     },
+    data() {
+        return {
+        }
+    },
+    computed: {
+        isDataValid(): boolean {
+            if (this.type === "email") {
+                return this.isValidEmail(this.value);
+            }
+            return true;
+        }
+    },
     methods: {
         handleInput(e: Event) {
+            console.log("send event", e.target?.value);
             this.$emit(
-                "handleNewInput", e.target?.value
+                "update:value", e.target?.value
             )
         },
+        isValidEmail(email: string) {
+            const reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+            if (reg.test(email)) return false
+            return true
+        }
+    },
+    watch: {
     }
 })
 </script>

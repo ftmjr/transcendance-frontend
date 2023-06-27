@@ -1,7 +1,11 @@
 <template>
   <div>
-    <EmailInput @handleInputchange="($data) => handleP($data)" label="Email Address " name="emailInput" type="email"
-      :required="true" :value="value" placeholder="">
+    <EmailInput v-model:value="firstName" label="Email Address " name="emailInput" type="email" :required="true">
+    </EmailInput>
+    <p> firstName: {{ firstName }}</p>
+
+    <EmailInput v-model:value="value" label="Email Address " name="emailInput" type="email" :required="true"
+      placeholder="">
     </EmailInput>
     <p> Value: {{ value }}</p>
   </div>
@@ -14,15 +18,13 @@ export default defineComponent({
   name: 'AuthView',
   data() {
     return {
-      value: "salut rony"
+      value: "salut rony",
+      firstName: ""
     }
   },
   components: { EmailInput },
   methods: {
-    handleP(data: string | null) {
-      this.value = data ?? "";
-      console.log(this.value)
-    },
+
   }
 })
 </script>
