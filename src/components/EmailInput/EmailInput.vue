@@ -1,13 +1,16 @@
 <template>
     <div>
         <label :for="name">{{ label }}</label>
-        <input @input="handleChange" :type="type" :required="required" :name="name" :value="value"
+
+        <input @input="handleInput" :type="type" :required="required" :name="name" :value="value"
             :placeholder="placeholder">
     </div>
 </template>
+
 <script lang="ts">
 import { placeholder } from '@babel/types';
 import { defineComponent } from 'vue';
+//____________________Email_Input_Component____________________//
 export default defineComponent({
     name: "EmailInput",
     props: {
@@ -38,9 +41,9 @@ export default defineComponent({
         }
     },
     methods: {
-        handleChange(e: Event) {
+        handleInput(e: Event) {
             this.$emit(
-                "handleInputchange", e.target?.value
+                "handleNewInput", e.target?.value
             )
         },
     }
