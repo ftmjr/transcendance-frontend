@@ -1,30 +1,29 @@
 <template>
   <div>
-    <EmailInput v-model:value="firstName" label="Email Address " name="emailInput" type="email" :required="true">
+    <!-- email Input component 1 -->
+    <EmailInput v-model:value="emailInput" label="Email Address " name="emailInput" type="email" :required="true">
     </EmailInput>
-    <p> firstName: {{ firstName }}</p>
-
-    <EmailInput v-model:value="value" label="Email Address " name="emailInput" type="email" :required="true"
-      placeholder="">
+    <p>{{ emailInput }}</p>
+    <br>
+    <!-- email Input component 2 -->
+    <EmailInput v-model:value="emailInput" label="Email Address " name="emailInput" type="email" :required="true">
     </EmailInput>
-    <p> Value: {{ value }}</p>
+    <p>{{ emailInput }}</p>
   </div>
 </template>
 
 <script lang="ts">
+
 import { defineComponent } from 'vue'
 import EmailInput from "../components/EmailInput/EmailInput.vue"
+
 export default defineComponent({
   name: 'AuthView',
   data() {
     return {
-      value: "salut rony",
-      firstName: ""
+      emailInput: ""
     }
   },
-  components: { EmailInput },
-  methods: {
-
-  }
+  components: { EmailInput }
 })
 </script>

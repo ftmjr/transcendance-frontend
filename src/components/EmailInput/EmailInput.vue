@@ -1,18 +1,14 @@
 <template>
     <div>
         <label :for="name">{{ label }}</label>
-        <input :value="value" @input="handleInput" :type="type" :required="required" :name="name"
+        <input @input="handleInput" :type="type" :required="required" :name="name" :value="value"
             :placeholder="placeholder">
-        <!-- <input @input="handleInput" :type="type" :required="required" :name="name" :value="value"
-            :placeholder="placeholder"> -->
-        <p> {{ isDataValid }}</p>
+        <p>Is valid email? : {{ isDataValid }}</p>
     </div>
 </template>
 
 <script lang="ts">
-// import { placeholder } from '@babel/types';
 import { defineComponent, type PropType } from 'vue';
-//____________________Email_Input_Component____________________//
 export default defineComponent({
     name: "EmailInput",
     props: {
@@ -42,10 +38,6 @@ export default defineComponent({
             default: "Please enter your email."
         }
     },
-    data() {
-        return {
-        }
-    },
     computed: {
         isDataValid(): boolean {
             if (this.type === "email") {
@@ -62,13 +54,11 @@ export default defineComponent({
             )
         },
         isValidEmail(email: string) {
-            const reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-            if (reg.test(email)) return false
-            return true
+            if (regex.test(email)) return true
+            return false
         }
-    },
-    watch: {
     }
 })
 </script>
