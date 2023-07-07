@@ -3,15 +3,47 @@
     <div class="login-page-wrapper">
       <div class="container h-screen">
         <div class="grid grid-cols-12 place-content-center place-items-center h-full">
-          <div class="col-span-12">
-            
-          </div>
+          <div class="col-span-12"></div>
           <div id="login" :class="['col-span-12 w-full']">
-            <form class="block p-4 rounded-md w-full md:w-1/2 lg:w-1/3 bg-white mx-auto">
+            <form class="block p-4 rounded-md w-full md:w-1/2 lg:w-1/4 bg-white mx-auto">
               <div class="">
-                <h1 class="font-bold">Connexion avec identifiants</h1>
+                <h1 v-show="isLogin" class="font-bold">Connexion avec identifiants</h1>
+                <h1 v-show="!isLogin" class="font-bold">Création de compte</h1>
               </div>
               <base-input
+                v-show="!isLogin"
+                name="firstname"
+                type="text"
+                id="credentialsfirstname"
+                placeholder="John"
+                :required="true"
+                label="Prenom:"
+                :value="credentials.firstname.value"
+                :error="credentials.firstname.error"
+              />
+              <base-input
+                v-show="!isLogin"
+                name="lastname"
+                type="text"
+                id="credentialslastname"
+                placeholder="Doe"
+                :required="true"
+                label="Nom:"
+                :value="credentials.lastname.value"
+                :error="credentials.lastname.error"
+              />
+              <base-input
+                name="username"
+                type="text"
+                id="credentialsusername"
+                placeholder="gamerpro"
+                :required="true"
+                label="Pseudo:"
+                :value="credentials.username.value"
+                :error="credentials.username.error"
+              />
+              <base-input
+                v-show="!isLogin"
                 :value="credentials.email.value"
                 name="email"
                 type="email"
@@ -21,6 +53,7 @@
                 :error="credentials.email.error"
                 errorMessage="Veuillez entrer un email valide"
                 @update:value="handleEmits"
+                :required="true"
               />
               <base-input
                 :value="credentials.password.value"
@@ -30,6 +63,7 @@
                 placeholder="*********"
                 label="Mot de passe:"
                 :error="credentials.password.error"
+                :required="true"
                 errorMessage="Ce champ est requis"
                 @update:value="handleEmits"
               />
@@ -44,7 +78,9 @@
                 :error="credentials.passwordConfirm.error"
                 errorMessage="Les deux mots de passe ne correspondent pas"
                 @update:value="handleEmits"
+                :required="true"
               />
+
               <div class="my-2">
                 <base-button
                   :text="isLogin ? 'Se connecter' : 'Créer un compte'"
@@ -90,8 +126,6 @@
                   classnames="hover:underline block ml-auto mr-0"
                 />
               </div>
-
-              <button @click="play">Play</button>
             </form>
           </div>
         </div>
@@ -102,10 +136,13 @@
 
 <script lang="ts">
 import { defineComponent, defineAsyncComponent } from 'vue'
+import useAuthStore from '@/stores/AuthStore'
 
 const BaseButton = defineAsyncComponent(() => import('@/components/Button.vue'))
 const BaseInput = defineAsyncComponent(() => import('@/components/Input.vue'))
 const SocialLoginButton = defineAsyncComponent(() => import('@/components/SocialLoginButton.vue'))
+
+const authStore = useAuthStore()
 export default defineComponent({
   name: 'auth-view',
   components: {
@@ -128,6 +165,18 @@ export default defineComponent({
         passwordConfirm: {
           value: '',
           error: false
+        },
+        firstname: {
+          value: '',
+          error: false
+        },
+        lastname: {
+          value: '',
+          error: false
+        },
+        username: {
+          value: '',
+          error: false
         }
       }
     }
@@ -135,10 +184,23 @@ export default defineComponent({
   methods: {
     async handleSubmit(e: Event) {
       e.preventDefault()
+      const { email, password, passwordConfirm, firstname, lastname, username } = this.credentials
+
+      const userDatas = {
+        email: email.value,
+        password: password.value,
+        passwordConfirm: passwordConfirm.value,
+        firstname: firstname.value,
+        lastname: lastname.value,
+        username: username.value
+      }
+
       switch (this.isLogin) {
         case true:
+          await authStore.login(username.value, password.value)
           break
         case false:
+          await authStore.register(userDatas)
           break
       }
     },
@@ -157,11 +219,6 @@ export default defineComponent({
 
       if (regex.test(email)) return true
       return false
-    },
-    play(e: Event) {
-      e.preventDefault()
-      const audio = new Audio('/audios/startMusic.mp3')
-      audio.play()
     }
   }
 })

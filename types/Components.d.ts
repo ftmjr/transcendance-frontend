@@ -29,5 +29,6 @@ declare module 'Components' {
     error?: boolean
     label: string
     errorMessage?: string
+    required?: boolean
   }
 }

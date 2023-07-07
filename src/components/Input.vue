@@ -10,6 +10,7 @@
           :placeholder="placeholder"
           :class="[styles[type], error && 'border-red-400']"
           @input="handleInput"
+          :required="required"
         />
         <button
           v-if="type === 'password'"
@@ -92,6 +93,10 @@ export default defineComponent({
       type: String as PropType<InputProps['placeholder']>,
       default: '',
       required: false
+    },
+    required: {
+      type: Boolean as PropType<InputProps['required']>,
+      default: false
     }
   },
   data() {

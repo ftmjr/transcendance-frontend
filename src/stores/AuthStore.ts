@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import router from '@/router'
-import type { SocialLoginProviders, AuthState, User } from '@/types'
+import type { AuthState, User, RegisterBody } from 'Auth'
 
 const useAuthStore = defineStore({
   id: 'auth',
@@ -21,16 +21,15 @@ const useAuthStore = defineStore({
     }
   },
   actions: {
-    async login(username: string, password: string): Promise<void> {
+    async login(credentials: { username: string; password: string }): Promise<void> {
       try {
-        const response = await fetch('https://reqres.in/api/login', {
+        const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            username,
-            password
+            ...credentials
           })
         })
         const { token, user } = await response.json()
@@ -56,14 +55,19 @@ const useAuthStore = defineStore({
 
       router.push('/login')
     },
+    async register(body: RegisterBody): Promise<void> {
+      if (!body) return
 
-    async socialLogin(provider: SocialLoginProviders): Promise<void> {
       try {
-        fetch(`/api/auth/${provider}`, {
-          method: 'GET'
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
         })
       } catch (error) {
-        // 
+        //
       }
     }
   }
