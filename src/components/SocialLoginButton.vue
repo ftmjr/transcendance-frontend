@@ -1,6 +1,6 @@
 <template>
   <a
-    :href="`/oauth/${provider}`"
+    :href="`/api/auth/${provider}`"
     :class="[sizeStyles[size], styles[provider], 'block py-3 my-1 text-center']"
   >
     <span class="text-xs"> {{ text }} {{ provider }} </span>
