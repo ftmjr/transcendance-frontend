@@ -9,7 +9,11 @@ const useAuthStore = defineStore({
     const user = localStorage.getItem('__user__')
     return {
       token,
-      user: user ? JSON.parse(user) : null
+      user: user ? JSON.parse(user) : null,
+      error: {
+        state: false,
+        message: ''
+      }
     }
   },
   getters: {

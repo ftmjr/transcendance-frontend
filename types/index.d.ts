@@ -8,6 +8,10 @@ declare module 'Auth' {
   export interface AuthState {
     token: string | null
     user: User | null
+    error: {
+      state: boolean
+      message: string
+    }
   }
   export interface RegisterBody {
     lastname: string

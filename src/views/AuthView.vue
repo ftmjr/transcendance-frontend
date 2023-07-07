@@ -137,6 +137,7 @@
 <script lang="ts">
 import { defineComponent, defineAsyncComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
+import * as validators from '@/utils/valiadator'
 
 const BaseButton = defineAsyncComponent(() => import('@/components/Button.vue'))
 const BaseInput = defineAsyncComponent(() => import('@/components/Input.vue'))
@@ -211,14 +212,33 @@ export default defineComponent({
     },
     handleEmits(changes: any) {
       const { name, value } = changes
-      this.credentials[name as 'email' | 'password' | 'passwordConfirm'].value = value
-    },
-    isValidEmail(email: string) {
-      const regex =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      type CredentialFields =
+        | 'email'
+        | 'password'
+        | 'passwordConfirm'
+        | 'firstname'
+        | 'lastname'
+        | 'username'
+      this.credentials[name as CredentialFields].value = value
 
-      if (regex.test(email)) return true
-      return false
+      switch (name) {
+        case 'email':
+          this.credentials['email'].error = !validators.isEmail(value)
+          break
+        case 'password':
+          this.credentials['password'].error = !validators.isPassword(value)
+          break
+        case 'passwordConfirm':
+          this.credentials['passwordConfirm'].error = this.credentials['password'].value !== value
+          break
+        case 'firstname':
+        case 'lastname':
+          this.credentials[name as CredentialFields].error = !validators.isName(value)
+          break
+        case 'username':
+          this.credentials['username'].error = !validators.isValidUsername(value)
+          break
+      }
     }
   }
 })
