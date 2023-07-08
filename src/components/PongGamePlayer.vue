@@ -15,7 +15,7 @@ const props = defineProps({
   gameData: {
     type: Object as PropType<{
       theme?: PongTheme
-      room?: string
+      room?: number
       isPlaying: boolean
     }>,
     required: true
@@ -36,7 +36,7 @@ const onPlayersUpdated = (players: Map<string, NetworkUser>) => {
   console.log(players)
 }
 const onViewersUpdated = (viewers: Map<string, NetworkUser>) => {}
-const onRoomIdUpdated = (roomId: string) => {}
+const onRoomIdUpdated = (roomId: number) => {}
 const onScoreUpdated = (score: { player1: number; player2: number }) => {}
 const onGameStateChanged = (state: GAME_STATE) => {}
 

@@ -1,4 +1,5 @@
 import { io } from 'socket.io-client'
+import type { TRoomId } from '@/Game/network/GameMonitor'
 import { GAME_EVENTS } from '@/Game/network/GameMonitor'
 
 export enum GameUserType {
@@ -27,9 +28,9 @@ export class GameNetwork {
   }
 
   connectToAGame(
-    roomGame: string,
+    roomGame: number,
     userType: GameUserType,
-    onConnected: (worked: boolean, roomId: string) => void
+    onConnected: (worked: boolean, roomId: TRoomId) => void
   ) {
     if (this.socket) {
       this.disconnect()
@@ -67,7 +68,7 @@ export class GameNetwork {
     }
   }
 
-  emitFromGame(event: string, gameRoom: string, ...args: any[]) {
+  emitFromGame(event: string, gameRoom: TRoomId, ...args: any[]) {
     const data = {
       room: gameRoom,
       user: this.user,

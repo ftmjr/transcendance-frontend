@@ -74,17 +74,17 @@ export interface NetworkUser extends GameUser {
 export interface VueUpdateObserver {
   onPlayersUpdated: (players: Map<string, NetworkUser>) => void
   onViewersUpdated: (viewers: Map<string, NetworkUser>) => void
-  onRoomIdUpdated: (roomId: string) => void
+  onRoomIdUpdated: (roomId: number) => void
   onScoreUpdated: (score: { player1: number; player2: number }) => void
   onGameStateChanged: (state: GAME_STATE) => void
 }
 
-export type TRoomId = 'waiting-room' | string
+export type TRoomId = 0 | number
 
 export class GameMonitor {
   private score: Map<string, number> = new Map<string, number>()
   private working: boolean = false
-  public roomId: TRoomId = 'waiting-room'
+  public roomId: number = 0
   private gameReceiver: GameReceiver = null as unknown as GameReceiver
   private gameSender: GameSender = null as unknown as GameSender
   public players: Map<string, NetworkUser> = new Map<string, NetworkUser>()
@@ -95,12 +95,12 @@ export class GameMonitor {
     private gameUserType: GameUserType,
     private gameNetwork: GameNetwork,
     private vueUpdateObserver: VueUpdateObserver,
-    room?: string
+    room?: number
   ) {
-    const roomToJoin = room || 'waiting-room'
+    const roomToJoin = room || 0
     this.listenToPlayers()
     this.listenToViewers()
-    this.gameNetwork.connectToAGame(roomToJoin, this.gameUserType, (worked, roomId: string) => {
+    this.gameNetwork.connectToAGame(roomToJoin, this.gameUserType, (worked, roomId: number) => {
       this.working = worked
       this.roomId = roomId
       this.vueUpdateObserver.onRoomIdUpdated(roomId)
