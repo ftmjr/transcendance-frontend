@@ -78,11 +78,10 @@ export default class PongGame extends Phaser.Scene {
     const width = this.scale.width
     const height = this.scale.height
     const fieldBackground = this.add
-      .tileSprite(0, 0, width, height, PongSprite.GameField, 0)
+      .tileSprite(0, 0, width, height, PongSprite.GameField)
       .setOrigin(0, 0)
     if (this.theme === 'Arcade') {
-      fieldBackground.setAlpha(0.6)
-      fieldBackground.blendMode = Phaser.BlendModes.DARKEN
+      fieldBackground.setAlpha(0.1, 0.2, 0.2, 0.1)
     }
     this.wallSound = this.sound.add(PongSprite.WallSong)
     this.paddleSound = this.sound.add(PongSprite.PaddleSong)
@@ -151,6 +150,7 @@ export default class PongGame extends Phaser.Scene {
       PongSprite.Paddle
     )
     this.awayPlayer = new AIPlayer(
+      this.gameMonitor,
       this,
       { x: this.scale.width - 30, y: this.scale.height / 2 },
       PongSprite.AwayPaddle

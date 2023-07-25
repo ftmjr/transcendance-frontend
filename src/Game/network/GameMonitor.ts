@@ -23,9 +23,11 @@ export enum GAME_RESULT {
 
 export enum GAME_EVENTS {
   ViewGame = 'view-game',
+  showViewer = 'reloadViewersList',
   ViewersRetrieved = 'viewers-retrieved',
   ViewerAdded = 'viewer-added',
   JoinGame = 'joinGame',
+  showPlayers = 'reloadPlayersList',
   PlayersRetrieved = 'players-retrieved',
   PlayerAdded = 'player-added',
   PadMoved = 'padMoved',
@@ -87,6 +89,7 @@ export class GameMonitor {
   public roomId: number = 0
   private gameReceiver: GameReceiver = null as unknown as GameReceiver
   private gameSender: GameSender = null as unknown as GameSender
+  private iaGameSender: GameSender = null as unknown as GameSender
   public players: Map<string, NetworkUser> = new Map<string, NetworkUser>()
   public viewers: Map<string, NetworkUser> = new Map<string, NetworkUser>()
 
@@ -98,41 +101,58 @@ export class GameMonitor {
     room?: number
   ) {
     const roomToJoin = room || 0
-    this.listenToPlayers()
-    this.listenToViewers()
-    this.gameNetwork.connectToAGame(roomToJoin, this.gameUserType, (worked, roomId: number) => {
+    this.gameNetwork.connectToAGame(roomToJoin, this.gameUserType, (response) => {
+      const { worked, roomId } = response
       this.working = worked
       this.roomId = roomId
       this.vueUpdateObserver.onRoomIdUpdated(roomId)
     })
+    this.listenToPlayers()
+    this.listenToViewers()
   }
 
   listenToPlayers() {
-    this.gameNetwork.socket?.on(GAME_EVENTS.PlayersRetrieved, (players: NetworkUser[]) => {
-      players.forEach((player) => {
+    this.gameNetwork.socket?.on(
+      GAME_EVENTS.PlayersRetrieved,
+      (info: { id: number; data: NetworkUser[] }) => {
+        const players = info.data
+        players.forEach((player) => {
+          this.players.set(player.username.toString(), player)
+          this.score.set(player.username, 0)
+        })
+        this.vueUpdateObserver.onPlayersUpdated(this.players)
+      }
+    )
+    this.gameNetwork.socket?.on(
+      GAME_EVENTS.PlayerAdded,
+      (info: { id: number; data: NetworkUser }) => {
+        const player = info.data
         this.players.set(player.username.toString(), player)
         this.score.set(player.username, 0)
-      })
-      this.vueUpdateObserver.onPlayersUpdated(this.players)
-    })
-    this.gameNetwork.socket?.on(GAME_EVENTS.PlayerAdded, (player: NetworkUser) => {
-      this.players.set(player.username.toString(), player)
-      this.score.set(player.username, 0)
-      this.vueUpdateObserver.onPlayersUpdated(this.players)
-    })
+        this.vueUpdateObserver.onPlayersUpdated(this.players)
+      }
+    )
   }
 
   listenToViewers() {
-    this.gameNetwork.socket?.on(GAME_EVENTS.ViewersRetrieved, (viewers: NetworkUser[]) => {
-      viewers.forEach((viewer) => {
+    this.gameNetwork.socket?.on(
+      GAME_EVENTS.ViewersRetrieved,
+      (info: { id: number; data: NetworkUser[] }) => {
+        const viewers = info.data
+        viewers.forEach((viewer) => {
+          this.viewers.set(viewer.username.toString(), viewer)
+        })
+        this.vueUpdateObserver.onViewersUpdated(this.viewers)
+      }
+    )
+    this.gameNetwork.socket?.on(
+      GAME_EVENTS.ViewerAdded,
+      (info: { id: number; data: NetworkUser }) => {
+        const viewer = info.data
         this.viewers.set(viewer.username.toString(), viewer)
-      })
-      this.vueUpdateObserver.onViewersUpdated(this.viewers)
-    })
-    this.gameNetwork.socket?.on(GAME_EVENTS.ViewerAdded, (viewer: NetworkUser) => {
-      this.viewers.set(viewer.username.toString(), viewer)
-      this.vueUpdateObserver.onViewersUpdated(this.viewers)
-    })
+        this.vueUpdateObserver.onViewersUpdated(this.viewers)
+      }
+    )
   }
 
   getPlayers(): Map<string, NetworkUser> {
@@ -206,27 +226,51 @@ export class GameMonitor {
     })
   }
 
-  decorateSender(gameSender: GameSender) {
-    this.gameSender = gameSender
-    this.gameSender.sendPadMove = (dir: PAD_DIRECTION) => {
-      this.gameNetwork.emitFromGame(GAME_EVENTS.PadMoved, this.roomId, dir)
+  decorateSender(gameSender: GameSender, type: 'player' | 'ia') {
+    const isIA = type === 'ia'
+    if (isIA) {
+      this.iaGameSender = gameSender
+    } else {
+      this.gameSender = gameSender
     }
-    this.gameSender.sendBallServe = (
+    gameSender.sendPadMove = (dir: PAD_DIRECTION) => {
+      this.gameNetwork.emitFromGame(GAME_EVENTS.PadMoved, this.roomId, isIA, dir)
+    }
+    gameSender.sendBallServe = (
       position: { x: number; y: number },
       velocity: { x: number; y: number }
     ) => {
-      this.gameNetwork.emitFromGame(GAME_EVENTS.BallServed, this.roomId, position, velocity)
+      this.gameNetwork.emitFromGame(GAME_EVENTS.BallServed, this.roomId, isIA, position, velocity)
     }
-    this.gameSender.sendGameState = (state: GAME_STATE) => {
-      this.gameNetwork.emitFromGame(GAME_EVENTS.GameStateChanged, this.roomId, state)
+    gameSender.sendGameState = (state: GAME_STATE) => {
+      this.gameNetwork.emitFromGame(GAME_EVENTS.GameStateChanged, this.roomId, isIA, state)
     }
-    this.gameSender.sendGameEnded = (result: GAME_RESULT) => {
-      this.gameNetwork.emitFromGame(GAME_EVENTS.GameResult, this.roomId, result)
+    gameSender.sendGameEnded = (result: GAME_RESULT) => {
+      this.gameNetwork.emitFromGame(GAME_EVENTS.GameResult, this.roomId, isIA, result)
     }
   }
 
   isOperational(): boolean {
     if (this.gameNetwork.socket === null) return false
     return this.gameNetwork.operational && this.working
+  }
+
+  reloadListOfPlayers() {
+    // ask server to send GAME_EVENTS.PlayersRetrieved
+    this.gameNetwork.emitFromGame(GAME_EVENTS.showPlayers, this.roomId, false)
+  }
+
+  reloadViewersList() {
+    // ask server to send GAME_EVENTS.ViewersRetrieved
+    this.gameNetwork.emitFromGame(GAME_EVENTS.showViewer, this.roomId, false)
+  }
+
+  reconnect() {
+    this.gameNetwork.connectToAGame(this.roomId, this.gameUserType, (response) => {
+      const { worked, roomId } = response
+      this.working = worked
+      this.roomId = roomId
+      this.vueUpdateObserver.onRoomIdUpdated(roomId)
+    })
   }
 }

@@ -1,15 +1,23 @@
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PonGameScene from '@/Game/pong-scenes/PongGame'
-
-export class AIPlayer implements Player {
+import type {
+  GAME_RESULT,
+  GameMonitor,
+  GameSender,
+  PAD_DIRECTION
+} from '@/Game/network/GameMonitor'
+import { GAME_STATE } from '@/Game/network/GameMonitor'
+export class AIPlayer implements GameSender, Player {
   private aiPlayerGroup: Phaser.Physics.Arcade.Group
   private aiPaddle: Phaser.Physics.Arcade.Sprite
 
   constructor(
+    private gameMonitor: GameMonitor,
     private scene: PonGameScene,
     private position: { x: number; y: number },
     private paddleSpriteKey: string
   ) {
+    this.gameMonitor.decorateSender(this, 'ia')
     this.aiPlayerGroup = scene.physics.add.group({
       collideWorldBounds: true
     })
@@ -54,6 +62,7 @@ export class AIPlayer implements Player {
   }
 
   scorePoint() {
+    this.sendGameState(GAME_STATE.scored)
     this.scene.score.player2 += 1
     this.scene.updateScore()
   }
@@ -65,4 +74,10 @@ export class AIPlayer implements Player {
   serveBall() {
     console.log('AI does not serve')
   }
+
+  // methods from GameSender interface that will be decorated by GameMonitor
+  sendPadMove(dir: PAD_DIRECTION): void {}
+  sendBallServe(position: { x: number; y: number }, velocity: { x: number; y: number }): void {}
+  sendGameState(state: GAME_STATE): void {}
+  sendGameEnded(result: GAME_RESULT): void {}
 }

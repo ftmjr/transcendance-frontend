@@ -12,7 +12,8 @@ export class LocalPlayer implements GameSender, Player {
     private position: { x: number; y: number },
     private paddleSpriteKey: string
   ) {
-    this.gameMonitor.decorateSender(this)
+    this.gameMonitor.decorateSender(this, 'player')
+    this.sendGameState(GAME_STATE.playing)
     this.localPlayerGroup = scene.physics.add.group({
       collideWorldBounds: true
     })
@@ -38,7 +39,7 @@ export class LocalPlayer implements GameSender, Player {
       const deceleration = 0.9
       const currentVelocity = this.localPaddle.body?.velocity.y ?? 0
       this.localPaddle.setVelocityY(currentVelocity * deceleration)
-      this.sendPadMove(PAD_DIRECTION.none) // send none to server
+      //this.sendPadMove(PAD_DIRECTION.none) // send none to server
     }
     if (this.scene.cursorkeys?.space.isDown) {
       this.serveBall()

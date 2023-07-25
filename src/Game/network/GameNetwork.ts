@@ -14,6 +14,11 @@ export interface GameUser {
   avatar?: string
 }
 
+interface JoinGameResponse {
+  worked: boolean
+  roomId: TRoomId
+}
+
 export class GameNetwork {
   public socket
   public operational: boolean = false
@@ -28,9 +33,9 @@ export class GameNetwork {
   }
 
   connectToAGame(
-    roomGame: number,
+    roomId: number,
     userType: GameUserType,
-    onConnected: (worked: boolean, roomId: TRoomId) => void
+    onConnected: (res: JoinGameResponse) => void
   ) {
     if (this.socket) {
       this.disconnect()
@@ -45,7 +50,18 @@ export class GameNetwork {
           this.socket?.emit(
             GAME_EVENTS.ViewGame,
             {
-              roomGame,
+              roomId,
+              user: this.user,
+              userType
+            },
+            onConnected
+          )
+          break
+        case GameUserType.LocalPlayer:
+          this.socket?.emit(
+            GAME_EVENTS.JoinGame,
+            {
+              roomId,
               user: this.user,
               userType
             },
@@ -57,7 +73,7 @@ export class GameNetwork {
           this.socket?.emit(
             GAME_EVENTS.JoinGame,
             {
-              roomGame,
+              roomId,
               user: this.user,
               userType
             },
@@ -68,11 +84,12 @@ export class GameNetwork {
     }
   }
 
-  emitFromGame(event: string, gameRoom: TRoomId, ...args: any[]) {
+  emitFromGame(event: GAME_EVENTS, roomId: TRoomId, isIA: boolean, ...args: any[]) {
     const data = {
-      room: gameRoom,
+      roomId: roomId,
       user: this.user,
-      ...args
+      isIA: isIA,
+      actionData: args
     }
     this.socket?.emit(event, data)
   }
