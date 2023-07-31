@@ -1,14 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
-import useAuthStore from '@/stores/AuthStore'
+// import useAuthStore from '@/stores/AuthStore'
 
 const router = createRouter({
+  // @ts-ignore
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/auth/two-factors',
+      name: 'two-factors',
+      component: () => import('../views/TwoFactorsView.vue')
     },
     {
       path: '/auth',
@@ -19,8 +25,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const authState = useAuthStore()
-
+  
   return next()
 })
 

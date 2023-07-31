@@ -14,8 +14,8 @@ declare module 'Auth' {
     }
   }
   export interface RegisterBody {
-    lastname: string
-    firstname: string
+    lastName: string
+    firstName: string
     email: string
     password: string
     username: string

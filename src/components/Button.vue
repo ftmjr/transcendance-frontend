@@ -2,9 +2,9 @@
   <button
     :type="type"
     :class="[
-      styles[variant],
-      sizeStyles[size],
-      classnames ?? '',
+      classnames ?? styles[variant],
+      sizeStyles[size ?? 'medium'],
+
       'appearence-none disabled:opacity-50 disabled:cursor-not-allowed px-4 py-1'
     ]"
     :disabled="disabled"
@@ -41,11 +41,11 @@ export default defineComponent({
     },
     classnames: {
       type: String as PropType<ButtonProps['classnames']>,
-      default: ''
+      default: undefined
     },
     onclick: {
       type: Function as PropType<ButtonProps['onclick']>,
-      default: () => {}
+      default: undefined
     }
   },
   data() {
@@ -65,7 +65,7 @@ export default defineComponent({
     },
     sizeStyles() {
       const rtn: {
-        [key in ButtonProps['size']]: string
+        [key: string]: string
       } = {
         small: 'text-xs height-[32px] rounded-sm',
         medium: 'text-md height-[44px] rounded-md',

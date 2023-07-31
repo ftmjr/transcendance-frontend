@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import router from '@/router'
 import type { AuthState, User, RegisterBody } from 'Auth'
+import axios from 'axios'
 
 const useAuthStore = defineStore({
   id: 'auth',
@@ -27,16 +28,13 @@ const useAuthStore = defineStore({
   actions: {
     async login(credentials: { username: string; password: string }): Promise<void> {
       try {
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
+        const { data } = await axios.post('/api/auth/login', credentials, {
           headers: {
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            ...credentials
-          })
+          }
         })
-        const { token, user } = await response.json()
+
+        const { token, user } = data
         localStorage.setItem('__token__', token)
         this.token = token
         localStorage.setItem('__user__', JSON.stringify(user))
@@ -48,30 +46,44 @@ const useAuthStore = defineStore({
       }
     },
     async logout(): Promise<void> {
-      localStorage.removeItem('__token__')
-      localStorage.removeItem('__user__')
-      this.token = null
-      this.user = null
+      try {
+        localStorage.removeItem('__token__')
+        localStorage.removeItem('__user__')
+        this.token = null
+        this.user = null
 
-      const response = fetch('/api/logout', {
-        method: 'POST'
-      })
+        await axios.get('/api/logout')
 
-      router.push('/login')
+        router.push('/login')
+      } catch (error) {
+        this.error = {
+          state: true,
+          message: "Une erreur s'est produite lors de la déconnexion"
+        }
+      }
     },
-    async register(body: RegisterBody): Promise<void> {
-      if (!body) return
+    async register(userInfos: RegisterBody): Promise<void> {
+      if (!userInfos || userInfos.password !== userInfos.passwordConfirmation) return
+
+      const { passwordConfirmation, ...body } = userInfos
+
+      console.log(body)
 
       try {
-        const response = await fetch('/api/auth/signup', {
-          method: 'POST',
+        const { data } = await axios.post('/api/auth/signup', body, {
           headers: {
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body)
+          }
         })
-      } catch (error) {
-        //
+        const { ...user } = data
+        this.user = user
+        router.push('/auth/two-factors')
+      } catch (error: any) {
+        this.error = {
+          state: true,
+          message: error.response.data.message
+        }
+        console.log(error.response.data.message)
       }
     }
   }

@@ -1,29 +1,35 @@
 <template>
   <a
     :href="`/api/auth/${provider}`"
-    :class="[sizeStyles[size], styles[provider], 'block py-3 my-1 text-center']"
+    :class="
+      classnames ?? [sizeStyles[size], styles[provider], 'block px-4 py-3 my-1 text-center w-1/2']
+    "
   >
     <span class="text-xs"> {{ text }} {{ provider }} </span>
   </a>
 </template>
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import type { SocialLoginButtonProps, ButtonProps } from 'Components'
+import type { SocialLoginProps, ButtonProps } from 'Components'
 
 export default defineComponent({
   name: 'social-login-button',
   props: {
     provider: {
-      type: String as PropType<SocialLoginButtonProps['provider']>,
+      type: String as PropType<SocialLoginProps['provider']>,
       required: true
     },
     size: {
       type: String as PropType<ButtonProps['size']>,
-      default: 'medium'
+      default: 'medium',
+      required: true
     },
     text: {
       type: String as PropType<ButtonProps['text']>,
       default: 'Se connecter avec'
+    },
+    classnames: {
+      type: String as PropType<ButtonProps['classnames']>
     }
   },
   data() {
@@ -32,7 +38,7 @@ export default defineComponent({
   computed: {
     styles() {
       const rtn: {
-        [key in SocialLoginButtonProps['provider']]: string
+        [key in SocialLoginProps['provider']]: string
       } = {
         '42': 'bg-cyan-500 text-black',
         facebook: 'bg-blue-500 text-white',
@@ -42,7 +48,7 @@ export default defineComponent({
     },
     sizeStyles() {
       const rtn: {
-        [key in ButtonProps['size']]: string
+        [key in SocialLoginProps['size']]: string
       } = {
         small: 'text-xs height-[32px] rounded-sm',
         medium: 'text-md height-[44px] rounded-md',

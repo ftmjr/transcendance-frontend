@@ -1,10 +1,9 @@
-import type { Omit } from 'cypress/types/lodash'
-
 declare module 'Components' {
+  import type { Omit } from 'cypress/types/lodash'
   export interface ButtonProps {
     text?: string
     variant: 'primary' | 'secondary' | 'tertiary'
-    size?: 'small' | 'medium' | 'large'
+    size: 'small' | 'medium' | 'large'
     disabled?: boolean
     onclick?: (e: Event) => void
     type?: 'button' | 'submit' | 'reset'
@@ -30,5 +29,12 @@ declare module 'Components' {
     label: string
     errorMessage?: string
     required?: boolean
+    iconClasses?: string
+    maxLength?: number
+    min?: number
+    max?: number
+    formatinput?: (value: string) => string
+    handleKeyPress?: (e: KeyboardEvent) => boolean
+    validate?: (value: string) => boolean
   }
 }
