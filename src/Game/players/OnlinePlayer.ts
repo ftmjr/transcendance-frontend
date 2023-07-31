@@ -21,7 +21,7 @@ export class OnlinePlayer implements GameReceiver, Player {
     private position: { x: number; y: number },
     private paddleSpriteKey: string
   ) {
-    this.gameMonitor.listen(this, user.username)
+    this.gameMonitor.listenToAPlayer(this, user.userId)
     this.onlineUserGroup = scene.physics.add.group({
       collideWorldBounds: true
     })
@@ -57,7 +57,7 @@ export class OnlinePlayer implements GameReceiver, Player {
   }
 
   scorePoint() {
-    console.log('score point info from ball')
+    //console.log('score point info from ball')
   }
 
   serveBall() {
@@ -78,10 +78,6 @@ export class OnlinePlayer implements GameReceiver, Player {
     ball.serveBall(velocity)
   }
   onGameStateChanged(state: GAME_STATE): void {}
-  onScoreChanged(score: { player1: number; player2: number }): void {
-    this.scene.score.player1 = score.player1
-    this.scene.score.player2 = score.player2
-    this.scene.updateScore()
-  }
+
   onGameEnded(result: GAME_RESULT): void {}
 }

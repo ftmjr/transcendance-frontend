@@ -35,7 +35,6 @@ export class PongBall {
       particles.startFollow(this.ball)
     }
     this.ball.type = 'ball'
-
     const player1Paddle = this.player1.getSprite()
     scene.physics.add.collider(player1Paddle, this.ball, () => {
       scene.sound.play(PongSprite.PaddleSong, {
@@ -52,7 +51,6 @@ export class PongBall {
     scene.physics.add.collider(this.ball, leftLine, () => {
       this.ball.setVelocity(0)
       this.player2.scorePoint()
-      this.resetBall()
       leftLine.setTint(0xff0000)
       scene.time.delayedCall(500, () => {
         leftLine.setTint(0xffffff)
@@ -61,7 +59,6 @@ export class PongBall {
     scene.physics.add.collider(this.ball, rightLine, () => {
       this.ball.setVelocity(0)
       this.player1.scorePoint()
-      this.resetBall()
       rightLine.setTint(0xff0000)
       scene.time.delayedCall(500, () => {
         rightLine.setTint(0xffffff)

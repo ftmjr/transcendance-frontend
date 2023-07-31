@@ -3,6 +3,7 @@ import type { GameMonitor, NetworkUser } from '@/Game/network/GameMonitor'
 import type { PongTheme } from '@/Game/pong-scenes/Assets'
 import { getPongSprites, PongSprite } from '@/Game/pong-scenes/Assets'
 import type { GameObjects } from 'phaser'
+import { GameMonitorState } from '@/Game/network/GameMonitor'
 
 export interface PreloadSceneData {
   userType: GameUserType
@@ -16,7 +17,6 @@ export default class PreloadPong extends Phaser.Scene {
   private gameNetwork: GameNetwork = null as unknown as GameNetwork
   private iAGameNetwork: GameNetwork = null as unknown as GameNetwork
   private gameMonitor: GameMonitor = null as unknown as GameMonitor
-  private networkIsOperational: boolean = false
   private bottomText: Phaser.GameObjects.Text | undefined = undefined
   private topText: Phaser.GameObjects.Text | undefined = undefined
   private theme: PongTheme = 'Soccer'
@@ -27,7 +27,6 @@ export default class PreloadPong extends Phaser.Scene {
   private playerImages: Phaser.GameObjects.Image[] = []
   private startButton: Phaser.GameObjects.Image | null = null
   private startButtonText: Phaser.GameObjects.Text | null = null
-  private loadedUserAvatars: Map<string, boolean> = new Map()
 
   constructor() {
     super('preloader')
@@ -37,13 +36,15 @@ export default class PreloadPong extends Phaser.Scene {
     // Add loading progress text
     const width = this.scale.width
     const height = this.scale.height
+    // add a pink background
+    this.cameras.main.setBackgroundColor('#190933')
     const loadingText = this.make.text({
       x: width / 2,
       y: height / 2 - 50,
       text: 'Loading...',
       style: {
         fontSize: '20px',
-        color: '#d6d3f0'
+        color: '#5DD9C1'
       }
     })
     loadingText.setOrigin(0.5, 0.5)
@@ -51,7 +52,7 @@ export default class PreloadPong extends Phaser.Scene {
     // Create progress bar
     this.progressBox = this.add.graphics()
     this.progressBar = this.add.graphics()
-    this.progressBox.fillStyle(0x222222, 0.8)
+    this.progressBox.fillStyle(0x665687, 0.8)
     this.progressBox.fillRect(width / 2 - 160, height / 2 - 30, 320, 50)
 
     // Update progress bar
@@ -139,36 +140,57 @@ export default class PreloadPong extends Phaser.Scene {
       case GameUserType.Viewer:
         this.bottomText.setText('Waiting for game to start...')
     }
-    // this.topText = this.add.text(30, 30, '42 - Pong game', {
-    //   fontSize: '24px'
-    // })
+    this.topText = this.add.text(30, 30, '42 - Pong game', {
+      fontSize: '24px',
+      color: '#5DD9C1'
+    })
   }
 
   update() {
     // Update the player info display
-    this.updatePlayersInfo()
-
+    this.printPlayersInfo()
     // Check network status and if ready show start button
-    this.checkNetworkAndStartGame()
+    this.checkNetworkAndState()
   }
 
-  updatePlayersInfo() {
-    const players = Array.from(this.gameMonitor.getPlayers().values()) || []
+  checkNetworkAndState() {
+    if (!this.gameMonitor.isOperational()) {
+      this.bottomText?.setText('Network is down.')
+      return
+    }
+    switch (this.gameMonitor.state) {
+      case GameMonitorState.Waiting:
+        // Waiting for players. Can display a message indicating that we're waiting for players.
+        break
+      case GameMonitorState.Ready:
+        // Enough players have joined.
+        this.bottomText?.setText('Ready to start.')
+        this.createStartButton()
+        break
+      case GameMonitorState.InitGame:
+        // The user has clicked 'start' and the game is ready to begin.
+        this.startButton?.destroy()
+        this.startButtonText?.setText('Server - sync')
+        this.time.delayedCall(300, () => {
+          this.startGame()
+        })
+        break
+    }
+  }
+  printPlayersInfo() {
     const width = this.scale.width
     const height = this.scale.height
+    const players = Array.from(this.gameMonitor.getPlayers().values()) || []
     const playersPositions = [
       { x: width / 2 - 100, y: height / 2 },
       { x: width / 2 + 100, y: height / 2 }
     ]
     const frames = ['character_malePerson_jump.png', 'character_malePerson_switch1.png']
-
-    // Clean up old player info
+    // remove old player info
     this.playerTexts.forEach((text) => text.destroy())
     this.playerImages.forEach((image) => image.destroy())
     this.playerTexts = []
     this.playerImages = []
-
-    // Display new player info
     players.forEach((player, index) => {
       const atlasName = this.getOrLoadUserAvatar(player)
       const playerImage = this.add.image(0, 0, atlasName, frames[index]).setScale(0.5) // Adjust scale as necessary
@@ -182,66 +204,30 @@ export default class PreloadPong extends Phaser.Scene {
     })
     // Display IA player info
     if (this.userType === GameUserType.LocalPlayer) {
-      const playerImage = this.add
-        .image(0, 0, PongSprite.RobotAtlasSprites, 'character_robot_hold.png')
-        .setScale(0.5) // Adjust scale as necessary
-      const playerText = this.add.text(0, 40, 'IA', { color: '#d6d3f0' }).setOrigin(0.5, 0)
-      const container = this.add.container(playersPositions[1].x, playersPositions[1].y, [
-        playerImage,
-        playerText
-      ])
-      this.playerImages.push(playerImage)
-      this.playerTexts.push(playerText)
+      this.printIaPlayerInfo()
     }
   }
-
   getOrLoadUserAvatar(user: NetworkUser): string {
-    // if (user.avatar){
-    //     if (!this.loadedUserAvatars.has(user.username)) {
-    //         this.load.image(user.username, user.avatar)
-    //         this.loadedUserAvatars.set(user.username, true)
-    //     }
-    //     return user.avatar
-    // }
+    // future logic to load avatar depending on user
     return PongSprite.MaleAtlasSprites
   }
-  checkNetworkAndStartGame() {
-    this.networkIsOperational = this.gameMonitor.isOperational() ?? false
-
-    if (this.networkIsOperational) {
-      const players = Array.from(this.gameMonitor.getPlayers().values()) || []
-      const numPlayers = players.length
-
-      if (
-        (this.userType === GameUserType.LocalPlayer && numPlayers === 1) ||
-        (this.userType !== GameUserType.LocalPlayer && numPlayers === 2)
-      ) {
-        // All players are ready, display start button
-        if (!this.startButton) {
-          this.createStartButton()
-        }
-        this.bottomText?.setText('')
-      } else {
-        // Not all players are ready, remove start button if it exists
-        if (this.startButton) {
-          this.startButton.destroy()
-          this.startButton = null
-        }
-      }
-    } else {
-      this.bottomText?.setText('Waiting for network...not operational')
-    }
+  printIaPlayerInfo() {
+    const width = this.scale.width
+    const height = this.scale.height
+    const playerImage = this.add
+      .image(0, 0, PongSprite.RobotAtlasSprites, 'character_robot_hold.png')
+      .setScale(0.5) // Adjust scale as necessary
+    const playerText = this.add.text(0, 40, 'IA', { color: '#ffffff' }).setOrigin(0.5, 0)
+    const container = this.add.container(width / 2 + 100, height / 2, [playerImage, playerText])
+    this.playerImages.push(playerImage)
+    this.playerTexts.push(playerText)
   }
-
   createStartButton() {
-    const position = {
-      x: this.scale.width / 2,
-      y: this.scale.width / 2 + 80
-    }
+    if (this.startButton) return
     this.startButton = this.add.image(0, 0, PongSprite.GameButton)
     this.startButtonText = this.add
       .text(0, 0, 'START', {
-        color: '#ea8411'
+        color: '#190933'
       })
       .setOrigin(0.5, 0.5)
     const container = this.add.container(this.scale.width / 2, this.scale.width / 2 + 80, [
@@ -250,16 +236,19 @@ export default class PreloadPong extends Phaser.Scene {
     ])
     this.startButton.setInteractive()
     this.startButton.on('pointerover', () => {
-      this.startButton?.setTint(0x6d396d)
+      this.startButton?.setTint(0x5dd9c1)
+      this.startButtonText?.setColor('#ffffff')
     })
     this.startButton.on('pointerout', () => {
       this.startButton?.clearTint()
+      this.startButtonText?.setColor('#190933')
     })
     this.startButton.on('pointerup', () => {
-      this.startGame()
+      this.gameMonitor.startGame()
+      this.startButton?.setTint(0x808080)
+      this.startButton?.disableInteractive()
     })
   }
-
   startGame() {
     this.scene.start('PongGame', {
       theme: this.theme,

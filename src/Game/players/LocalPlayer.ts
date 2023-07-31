@@ -5,7 +5,7 @@ import type PonGameScene from '@/Game/pong-scenes/PongGame'
 export class LocalPlayer implements GameSender, Player {
   private localPlayerGroup: Phaser.Physics.Arcade.Group
   private localPaddle: Phaser.Physics.Arcade.Sprite
-
+  private lastDirSent: PAD_DIRECTION = PAD_DIRECTION.none
   constructor(
     private gameMonitor: GameMonitor,
     private scene: PonGameScene,
@@ -13,7 +13,6 @@ export class LocalPlayer implements GameSender, Player {
     private paddleSpriteKey: string
   ) {
     this.gameMonitor.decorateSender(this, 'player')
-    this.sendGameState(GAME_STATE.playing)
     this.localPlayerGroup = scene.physics.add.group({
       collideWorldBounds: true
     })
@@ -31,15 +30,17 @@ export class LocalPlayer implements GameSender, Player {
     if (this.scene.cursorkeys?.up.isDown) {
       this.localPaddle.setVelocityY(-averageSpeed)
       this.sendPadMove(PAD_DIRECTION.up)
+      this.lastDirSent = PAD_DIRECTION.up
     } else if (this.scene.cursorkeys?.down.isDown) {
       this.sendPadMove(PAD_DIRECTION.down)
+      this.lastDirSent = PAD_DIRECTION.down
       this.localPaddle.setVelocityY(averageSpeed)
     } else {
       // decent deceleration
       const deceleration = 0.9
       const currentVelocity = this.localPaddle.body?.velocity.y ?? 0
       this.localPaddle.setVelocityY(currentVelocity * deceleration)
-      //this.sendPadMove(PAD_DIRECTION.none) // send none to server
+      if (this.lastDirSent !== PAD_DIRECTION.none)  this.sendPadMove(PAD_DIRECTION.none) // send none to server
     }
     if (this.scene.cursorkeys?.space.isDown) {
       this.serveBall()
@@ -52,22 +53,18 @@ export class LocalPlayer implements GameSender, Player {
 
   scorePoint() {
     this.sendGameState(GAME_STATE.scored)
-    this.scene.score.player1 += 1
-    this.scene.updateScore()
   }
 
   serveBall() {
     const ball = this.scene.getBall()
     if (!ball.getSprite().getData('inMiddle')) return
-    let ballServeVelocity = { x: 0, y: 0 }
+    let ballServeVelocity = { x: 200, y: Phaser.Math.Between(0, 40) }
     if (Math.random() > 0.49) {
       ballServeVelocity = { x: -200, y: Phaser.Math.Between(-40, 0) }
-      ball.serveBall(ballServeVelocity)
-    } else {
-      ballServeVelocity = { x: 200, y: Phaser.Math.Between(0, 40) }
-      ball.serveBall(ballServeVelocity)
     }
-    this.sendBallServe({ x: 0, y: 0 }, ballServeVelocity)
+    const ballPosition = { x: ball.getSprite().x, y: ball.getSprite().y }
+    this.sendBallServe(ballPosition, ballServeVelocity)
+    ball.serveBall(ballServeVelocity)
   }
 
   onBallHit() {
@@ -75,7 +72,9 @@ export class LocalPlayer implements GameSender, Player {
   }
 
   // methods from GameSender interface that will be decorated by GameMonitor
-  sendPadMove(dir: PAD_DIRECTION): void {}
+  sendPadMove(dir: PAD_DIRECTION): void {
+    console.log('trying to send pad move')
+  }
   sendBallServe(position: { x: number; y: number }, velocity: { x: number; y: number }): void {}
   sendGameState(state: GAME_STATE): void {}
   sendGameEnded(result: GAME_RESULT): void {}

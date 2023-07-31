@@ -63,8 +63,6 @@ export class AIPlayer implements GameSender, Player {
 
   scorePoint() {
     this.sendGameState(GAME_STATE.scored)
-    this.scene.score.player2 += 1
-    this.scene.updateScore()
   }
 
   onBallHit() {
