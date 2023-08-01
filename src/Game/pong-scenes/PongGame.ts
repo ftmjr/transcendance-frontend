@@ -4,7 +4,7 @@ import { AIPlayer } from '@/Game/players/AIPlayer'
 import { LocalPlayer } from '@/Game/players/LocalPlayer'
 import { GameUserType } from '@/Game/network/GameNetwork'
 import type { PreloadSceneData } from '@/Game/pong-scenes/Preload'
-import { getPongSprites, PongSprite } from '@/Game/pong-scenes/Assets'
+import { PongSprite } from '@/Game/pong-scenes/Assets'
 import type { PongTheme } from '@/Game/pong-scenes/Assets'
 import { OnlinePlayer } from '@/Game/players/OnlinePlayer'
 import { PongBall } from '@/Game/players/PongBall'
@@ -19,7 +19,7 @@ export interface Player {
   onBallHit(): void // when the ball hits the paddle
 }
 
-type ScoreBoard = { digit1: Phaser.GameObjects.Image; digit2: Phaser.GameObjects.Image }
+export type ScoreBoard = { digit1: Phaser.GameObjects.Image; digit2: Phaser.GameObjects.Image }
 export default class PongGame extends Phaser.Scene {
   public cursorkeys: Phaser.Types.Input.Keyboard.CursorKeys | undefined
   public cam: Phaser.Cameras.Scene2D.Camera | undefined
@@ -53,7 +53,6 @@ export default class PongGame extends Phaser.Scene {
   init(data: PreloadSceneData) {
     this.userType = data.userType
     this.gameMonitor = data.gameMonitor
-    this.userType = data.userType
     this.networkIsOperational = this.gameMonitor.isOperational()
     this.theme = data.theme
   }
@@ -126,6 +125,13 @@ export default class PongGame extends Phaser.Scene {
       this.createPlayersOnTheField()
       this.createBallOnTheField()
       this._gameReady = true
+    } else if (state === GameMonitorState.Ended) {
+      // game ended either by a player or by the server show the end scene
+      this.scene.start('EndGame', {
+        userType: this.userType,
+        gameMonitor: this.gameMonitor,
+        theme: this.theme
+      })
     }
   }
 

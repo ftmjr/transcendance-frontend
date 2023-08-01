@@ -36,7 +36,7 @@
         <label for="theme" class="font-light">Theme</label>
         <select id="theme" name="theme" v-model="gameData.theme" class="p-2 rounded border">
           <option value="Arcade">Arcade</option>
-          <option value="Space">Space</option>
+          <option value="Soccer">Soccer</option>
         </select>
       </div>
       <div class="flex flex-col">

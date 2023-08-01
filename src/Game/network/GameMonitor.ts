@@ -9,16 +9,18 @@ export enum PAD_DIRECTION {
 
 export enum GAME_STATE {
   waiting,
-  ballServing,
   playing,
   scored,
-  finished
 }
 
-export enum GAME_RESULT {
-  victory,
-  defeat,
-  draw
+export interface BallServedData {
+  userId: number
+  position: { x: number; y: number }
+  direction: { x: number; y: number }
+}
+export interface PadMovedData {
+  userId: number
+  direction: PAD_DIRECTION
 }
 
 export enum GAME_EVENTS {
@@ -36,47 +38,17 @@ export enum GAME_EVENTS {
   GameMonitorStateChanged = 'gameMonitorStateChanged',
   HostChanged = 'hostChanged',
   ScoreChanged = 'scoreChanged',
-  GameResult = 'gameResult'
-}
-
-export interface GameMove {
-  pad?: {
-    direction: PAD_DIRECTION
-    lastPosition: {
-      x: number
-      y: number
-    }
-  }
-  ball?: {
-    x: number
-    y: number
-    velocityX: number
-    velocityY: number
-  }
 }
 
 export interface GameReceiver {
   onPadMoved: (dir: PAD_DIRECTION) => void
   onBallServed: (position: { x: number; y: number }, velocity: { x: number; y: number }) => void
-  onGameStateChanged: (state: GAME_STATE) => void
-  onGameEnded: (result: GAME_RESULT) => void
-}
-
-export interface BallServedData {
-  userId: number,
-  position: { x: number; y: number }
-  direction: { x: number; y: number }
-}
-export interface PadMovedData {
-  userId: number;
-  direction: PAD_DIRECTION;
 }
 
 export interface GameSender {
   sendPadMove: (dir: PAD_DIRECTION) => void
   sendBallServe: (position: { x: number; y: number }, velocity: { x: number; y: number }) => void
   sendGameState: (state: GAME_STATE) => void
-  sendGameEnded: (result: GAME_RESULT) => void
 }
 
 export interface NetworkUser extends GameUser {
@@ -89,17 +61,17 @@ export interface VueUpdateObserver {
   onViewersUpdated: (viewers: Map<string, NetworkUser>) => void
   onRoomIdUpdated: (roomId: number) => void
   onScoreUpdated: (score: { player1: number; player2: number }) => void
-  onGameStateChanged: (state: GAME_STATE) => void
+  onGameMonitorStateChange: (state: GameMonitorState) => void
 }
 
 export type TRoomId = 0 | number
 
 export enum GameMonitorState {
-  Waiting,
+  Waiting, // waiting for players to join
   Ready, // all players are ready, waiting for users to click on start
   InitGame, // players have accepted to start, server allowing the game scene to start
   PlayingSceneLoaded, // playing scene loading finished on all clients
-  Ended
+  Ended // game ended by server or by a player (disconnection)
 }
 
 export class GameMonitor {
@@ -145,7 +117,6 @@ export class GameMonitor {
       GAME_EVENTS.PlayersRetrieved,
       (info: { id: number; data: NetworkUser[] }) => {
         const players = info.data
-        console.log('players', players)
         players.forEach((player) => {
           this.players.set(player.username.toString(), player)
           this.score.set(player.userId, 0)
@@ -165,8 +136,9 @@ export class GameMonitor {
       }
     )
     this.gameNetwork.socket?.on(GAME_EVENTS.HostChanged, (info: { id: number; data: number }) => {
-      this.hostId = info.data
-      this._onGameMonitorStateChanged(this.state)
+      this.hostId = info.data;
+      this._onGameMonitorStateChanged(this.state);
+      this.vueUpdateObserver.onGameMonitorStateChange(this.state);
     })
   }
 
@@ -177,6 +149,7 @@ export class GameMonitor {
       this.state = GameMonitorState.Ready
     }
     this._onGameMonitorStateChanged(this.state)
+    this.vueUpdateObserver.onGameMonitorStateChange(this.state);
   }
 
   listenToViewers() {
@@ -207,6 +180,7 @@ export class GameMonitor {
       (info: { id: number; data: GameMonitorState }) => {
         this.state = info.data
         this._onGameMonitorStateChanged(this.state)
+        this.vueUpdateObserver.onGameMonitorStateChange(this.state);
       }
     )
   }
@@ -234,10 +208,12 @@ export class GameMonitor {
   }
 
   listenToAPlayer(gameReceiver: GameReceiver, userId: number) {
-    this.gameNetwork.socket?.on(GAME_EVENTS.PadMoved, (info: {id:number, data: PadMovedData}) => {
-      if (userId === info.data.userId)
-        gameReceiver.onPadMoved(info.data.direction)
-    })
+    this.gameNetwork.socket?.on(
+      GAME_EVENTS.PadMoved,
+      (info: { id: number; data: PadMovedData }) => {
+        if (userId === info.data.userId) gameReceiver.onPadMoved(info.data.direction)
+      }
+    )
     this.gameNetwork.socket?.on(
       GAME_EVENTS.BallServed,
       (info: { id: number; data: BallServedData }) => {
@@ -245,11 +221,10 @@ export class GameMonitor {
           gameReceiver.onBallServed(info.data.position, info.data.direction)
       }
     )
-    console.log('listening to player with Id', userId);
+    console.log('listening to player with Id', userId)
   }
 
   //  -- send to server methods --
-
   startGame() {
     // server will send GAME_EVENTS.GameMonitorStateChanged after checking if all players are ready
     this.gameNetwork.emitFromGame(
@@ -289,9 +264,6 @@ export class GameMonitor {
     gameSender.sendGameState = (state: GAME_STATE) => {
       this.gameNetwork.emitFromGame(GAME_EVENTS.GameStateChanged, this.roomId, isIA, state)
     }
-    gameSender.sendGameEnded = (result: GAME_RESULT) => {
-      this.gameNetwork.emitFromGame(GAME_EVENTS.GameResult, this.roomId, isIA, result)
-    }
   }
 
   // -- operations methods --
@@ -316,11 +288,12 @@ export class GameMonitor {
 
   getScore(): { player1: number; player2: number } {
     const players = Array.from(this.players.values())
-    if (players.length !== 2)
+    if (players.length !== 2){
       return {
         player1: this.score.get(players[0].userId) ?? 0,
         player2: this.score.get(0) ?? 0
       }
+    }
     // player 1 is always the host and player 2 is always the opponent
     const ids = [players[0].userId ?? 0, players[1].userId ?? 0]
     const player1Id = this.hostId === ids[0] ? ids[0] : ids[1]
@@ -329,7 +302,6 @@ export class GameMonitor {
       player1: this.score.get(player1Id) ?? 0,
       player2: this.score.get(player2Id) ?? 0
     }
-    console.log('score', score)
     return score
   }
   reloadListOfPlayers() {

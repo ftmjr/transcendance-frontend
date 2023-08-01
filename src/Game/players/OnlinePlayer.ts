@@ -1,7 +1,6 @@
 import type {
   GameReceiver,
   GAME_STATE,
-  GAME_RESULT,
   GameMonitor,
   NetworkUser
 } from '@/Game/network/GameMonitor'
@@ -77,7 +76,4 @@ export class OnlinePlayer implements GameReceiver, Player {
     ball.getSprite().setData('inMiddle', true)
     ball.serveBall(velocity)
   }
-  onGameStateChanged(state: GAME_STATE): void {}
-
-  onGameEnded(result: GAME_RESULT): void {}
 }

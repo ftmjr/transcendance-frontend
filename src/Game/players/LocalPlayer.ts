@@ -1,4 +1,4 @@
-import type { GameSender, GAME_RESULT, GameMonitor } from '@/Game/network/GameMonitor'
+import type { GameSender, GameMonitor } from '@/Game/network/GameMonitor'
 import { GAME_STATE, PAD_DIRECTION } from '@/Game/network/GameMonitor'
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PonGameScene from '@/Game/pong-scenes/PongGame'
@@ -40,7 +40,7 @@ export class LocalPlayer implements GameSender, Player {
       const deceleration = 0.9
       const currentVelocity = this.localPaddle.body?.velocity.y ?? 0
       this.localPaddle.setVelocityY(currentVelocity * deceleration)
-      if (this.lastDirSent !== PAD_DIRECTION.none)  this.sendPadMove(PAD_DIRECTION.none) // send none to server
+      if (this.lastDirSent !== PAD_DIRECTION.none) this.sendPadMove(PAD_DIRECTION.none) // send none to server
     }
     if (this.scene.cursorkeys?.space.isDown) {
       this.serveBall()
@@ -58,9 +58,9 @@ export class LocalPlayer implements GameSender, Player {
   serveBall() {
     const ball = this.scene.getBall()
     if (!ball.getSprite().getData('inMiddle')) return
-    let ballServeVelocity = { x: 200, y: Phaser.Math.Between(0, 40) }
+    let ballServeVelocity = { x: 360, y: Phaser.Math.Between(-10, 80) }
     if (Math.random() > 0.49) {
-      ballServeVelocity = { x: -200, y: Phaser.Math.Between(-40, 0) }
+      ballServeVelocity = { x: -360, y: Phaser.Math.Between(-80, 10) }
     }
     const ballPosition = { x: ball.getSprite().x, y: ball.getSprite().y }
     this.sendBallServe(ballPosition, ballServeVelocity)
@@ -72,10 +72,7 @@ export class LocalPlayer implements GameSender, Player {
   }
 
   // methods from GameSender interface that will be decorated by GameMonitor
-  sendPadMove(dir: PAD_DIRECTION): void {
-    console.log('trying to send pad move')
-  }
+  sendPadMove(dir: PAD_DIRECTION): void {}
   sendBallServe(position: { x: number; y: number }, velocity: { x: number; y: number }): void {}
   sendGameState(state: GAME_STATE): void {}
-  sendGameEnded(result: GAME_RESULT): void {}
 }

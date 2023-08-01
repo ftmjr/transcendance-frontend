@@ -1,7 +1,6 @@
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PonGameScene from '@/Game/pong-scenes/PongGame'
 import type {
-  GAME_RESULT,
   GameMonitor,
   GameSender,
   PAD_DIRECTION
@@ -70,12 +69,11 @@ export class AIPlayer implements GameSender, Player {
   }
 
   serveBall() {
-    console.log('AI does not serve')
+    // console.log('AI does not serve')
   }
 
   // methods from GameSender interface that will be decorated by GameMonitor
   sendPadMove(dir: PAD_DIRECTION): void {}
   sendBallServe(position: { x: number; y: number }, velocity: { x: number; y: number }): void {}
   sendGameState(state: GAME_STATE): void {}
-  sendGameEnded(result: GAME_RESULT): void {}
 }

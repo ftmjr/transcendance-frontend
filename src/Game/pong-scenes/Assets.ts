@@ -10,6 +10,7 @@ export interface GameDataI {
 
 export enum PongSprite {
   Background = 'Background',
+  EndBackground = 'EndBackground',
   GameButton = 'GameButton',
   GameField = 'GameField',
   FieldCenter = 'FieldCenter',
@@ -35,6 +36,7 @@ export function getPongSprites(theme: PongTheme): Record<PongSprite, string> {
     case 'Soccer':
       return {
         [PongSprite.Background]: '/pong/backgrounds/arcade_bg_ia-min.png',
+        [PongSprite.EndBackground]: '/pong/backgrounds/pink_big_bg.png',
         [PongSprite.GameButton]: '/pong/backgrounds/grey_button.png',
         [PongSprite.GameField]: '/pong/soccer/ground_grass.png',
         [PongSprite.FieldCenter]: '/pong/soccer/center_round.png',
@@ -57,6 +59,7 @@ export function getPongSprites(theme: PongTheme): Record<PongSprite, string> {
     default:
       return {
         [PongSprite.Background]: '/pong/backgrounds/arcade_bg_ia-min.png',
+        [PongSprite.EndBackground]: '/pong/backgrounds/pink_big_bg.png',
         [PongSprite.GameButton]: '/pong/backgrounds/grey_button.png',
         [PongSprite.GameField]: '/pong/arcade/back_blue.png',
         [PongSprite.FieldCenter]: '/pong/soccer/center_round.png',

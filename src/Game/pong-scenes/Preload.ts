@@ -1,4 +1,4 @@
-import { GameNetwork, GameUserType } from '@/Game/network/GameNetwork'
+import { GameUserType } from '@/Game/network/GameNetwork'
 import type { GameMonitor, NetworkUser } from '@/Game/network/GameMonitor'
 import type { PongTheme } from '@/Game/pong-scenes/Assets'
 import { getPongSprites, PongSprite } from '@/Game/pong-scenes/Assets'
@@ -8,14 +8,11 @@ import { GameMonitorState } from '@/Game/network/GameMonitor'
 export interface PreloadSceneData {
   userType: GameUserType
   gameMonitor: GameMonitor
-  gameNetwork: GameNetwork
   theme: PongTheme
 }
 
 export default class PreloadPong extends Phaser.Scene {
   private userType: GameUserType = GameUserType.Player
-  private gameNetwork: GameNetwork = null as unknown as GameNetwork
-  private iAGameNetwork: GameNetwork = null as unknown as GameNetwork
   private gameMonitor: GameMonitor = null as unknown as GameMonitor
   private bottomText: Phaser.GameObjects.Text | undefined = undefined
   private topText: Phaser.GameObjects.Text | undefined = undefined
@@ -70,6 +67,7 @@ export default class PreloadPong extends Phaser.Scene {
 
     // preload all the asset;
     this.load.image(PongSprite.Background, this.spritesKeys.Background)
+    this.load.image(PongSprite.EndBackground, this.spritesKeys.EndBackground)
     this.load.image(PongSprite.GameButton, this.spritesKeys.GameButton)
     this.load.image(PongSprite.Ball, this.spritesKeys.Ball)
     this.load.image(PongSprite.BallParticle, this.spritesKeys.BallParticle)
@@ -107,14 +105,6 @@ export default class PreloadPong extends Phaser.Scene {
     this.gameMonitor = data.gameMonitor
     this.theme = data.theme
     this.spritesKeys = getPongSprites(this.theme)
-
-    if (this.userType === GameUserType.LocalPlayer) {
-      this.iAGameNetwork = new GameNetwork({
-        userId: 0,
-        username: 'iaPlayer',
-        avatar: 'https://i.imgur.com/8bXwXuU.png'
-      })
-    }
   }
 
   create() {
@@ -126,8 +116,8 @@ export default class PreloadPong extends Phaser.Scene {
     bgImage.setScale(Math.min(width / bgImage.width, height / bgImage.height))
     bgImage.setAlpha(0.3, 0.1, 0.1, 0.3)
     bgImage.setDepth(0)
-    this.bottomText = this.add.text(30, height - 50, 'Loading...', {
-      fontSize: '24px',
+    this.bottomText = this.add.text(30, height - 30, 'Loading...', {
+      fontSize: '18px',
       color: '#d6d3f0'
     })
     switch (this.userType) {
@@ -140,8 +130,8 @@ export default class PreloadPong extends Phaser.Scene {
       case GameUserType.Viewer:
         this.bottomText.setText('Waiting for game to start...')
     }
-    this.topText = this.add.text(30, 30, '42 - Pong game', {
-      fontSize: '24px',
+    this.topText = this.add.text(30, 10, '42 - Pong game', {
+      fontSize: '18px',
       color: '#5DD9C1'
     })
   }
@@ -182,8 +172,8 @@ export default class PreloadPong extends Phaser.Scene {
     const height = this.scale.height
     const players = Array.from(this.gameMonitor.getPlayers().values()) || []
     const playersPositions = [
-      { x: width / 2 - 100, y: height / 2 },
-      { x: width / 2 + 100, y: height / 2 }
+      { x: width / 2 - 150, y: height / 2 },
+      { x: width / 2 + 150, y: height / 2 }
     ]
     const frames = ['character_malePerson_jump.png', 'character_malePerson_switch1.png']
     // remove old player info
@@ -193,8 +183,8 @@ export default class PreloadPong extends Phaser.Scene {
     this.playerImages = []
     players.forEach((player, index) => {
       const atlasName = this.getOrLoadUserAvatar(player)
-      const playerImage = this.add.image(0, 0, atlasName, frames[index]).setScale(0.5) // Adjust scale as necessary
-      const playerText = this.add.text(0, 40, player.username).setOrigin(0.5, 0)
+      const playerImage = this.add.image(0, 0, atlasName, frames[index]).setScale(0.8) // Adjust scale as necessary
+      const playerText = this.add.text(0, 80, player.username).setOrigin(0.5, 0.5)
       const container = this.add.container(playersPositions[index].x, playersPositions[index].y, [
         playerImage,
         playerText
@@ -216,9 +206,9 @@ export default class PreloadPong extends Phaser.Scene {
     const height = this.scale.height
     const playerImage = this.add
       .image(0, 0, PongSprite.RobotAtlasSprites, 'character_robot_hold.png')
-      .setScale(0.5) // Adjust scale as necessary
-    const playerText = this.add.text(0, 40, 'IA', { color: '#ffffff' }).setOrigin(0.5, 0)
-    const container = this.add.container(width / 2 + 100, height / 2, [playerImage, playerText])
+      .setScale(0.8) // Adjust scale as necessary
+    const playerText = this.add.text(0, 80, 'IA', { color: '#ffffff' }).setOrigin(0.5, 0.5)
+    const container = this.add.container(width / 2 + 150, height / 2, [playerImage, playerText])
     this.playerImages.push(playerImage)
     this.playerTexts.push(playerText)
   }
@@ -226,11 +216,11 @@ export default class PreloadPong extends Phaser.Scene {
     if (this.startButton) return
     this.startButton = this.add.image(0, 0, PongSprite.GameButton)
     this.startButtonText = this.add
-      .text(0, 0, 'START', {
-        color: '#190933'
-      })
-      .setOrigin(0.5, 0.5)
-    const container = this.add.container(this.scale.width / 2, this.scale.width / 2 + 80, [
+        .text(0, 0, 'START', {
+          color: '#190933'
+        })
+        .setOrigin(0.5, 0.5)
+    const container = this.add.container(this.scale.width / 2, this.scale.height / 2 + 160, [
       this.startButton,
       this.startButtonText
     ])
@@ -253,9 +243,7 @@ export default class PreloadPong extends Phaser.Scene {
     this.scene.start('PongGame', {
       theme: this.theme,
       userType: this.userType,
-      gameMonitor: this.gameMonitor,
-      gameNetwork: this.gameNetwork,
-      iAGameNetwork: this.iAGameNetwork
+      gameMonitor: this.gameMonitor
     })
   }
 }
