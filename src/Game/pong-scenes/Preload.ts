@@ -216,10 +216,10 @@ export default class PreloadPong extends Phaser.Scene {
     if (this.startButton) return
     this.startButton = this.add.image(0, 0, PongSprite.GameButton)
     this.startButtonText = this.add
-        .text(0, 0, 'START', {
-          color: '#190933'
-        })
-        .setOrigin(0.5, 0.5)
+      .text(0, 0, 'START', {
+        color: '#190933'
+      })
+      .setOrigin(0.5, 0.5)
     const container = this.add.container(this.scale.width / 2, this.scale.height / 2 + 160, [
       this.startButton,
       this.startButtonText

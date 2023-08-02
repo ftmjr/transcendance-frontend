@@ -1,10 +1,6 @@
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PonGameScene from '@/Game/pong-scenes/PongGame'
-import type {
-  GameMonitor,
-  GameSender,
-  PAD_DIRECTION
-} from '@/Game/network/GameMonitor'
+import type { GameMonitor, GameSender, PAD_DIRECTION } from '@/Game/network/GameMonitor'
 import { GAME_STATE } from '@/Game/network/GameMonitor'
 export class AIPlayer implements GameSender, Player {
   private aiPlayerGroup: Phaser.Physics.Arcade.Group

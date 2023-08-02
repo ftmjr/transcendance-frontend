@@ -50,7 +50,10 @@ export class PongBall {
     })
     scene.physics.add.collider(this.ball, leftLine, () => {
       this.ball.setVelocity(0)
-      this.player2.scorePoint()
+      const throttledScore = throttle(() => {
+        this.player2.scorePoint()
+      }, 500)
+      throttledScore()
       leftLine.setTint(0xff0000)
       scene.time.delayedCall(500, () => {
         leftLine.setTint(0xffffff)
@@ -58,7 +61,10 @@ export class PongBall {
     })
     scene.physics.add.collider(this.ball, rightLine, () => {
       this.ball.setVelocity(0)
-      this.player1.scorePoint()
+      const throttledScore = throttle(() => {
+        this.player1.scorePoint()
+      }, 500)
+      throttledScore()
       rightLine.setTint(0xff0000)
       scene.time.delayedCall(500, () => {
         rightLine.setTint(0xffffff)
@@ -94,5 +100,18 @@ export class PongBall {
 
   getSprite() {
     return this.ball
+  }
+}
+
+function throttle(func: Function, limit: number) {
+  let inThrottle: boolean
+  return function (this: any) {
+    const args = arguments
+    const context = this
+    if (!inThrottle) {
+      func.apply(context, args)
+      inThrottle = true
+      setTimeout(() => (inThrottle = false), limit)
+    }
   }
 }

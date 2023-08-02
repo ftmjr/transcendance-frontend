@@ -1,9 +1,4 @@
-import type {
-  GameReceiver,
-  GAME_STATE,
-  GameMonitor,
-  NetworkUser
-} from '@/Game/network/GameMonitor'
+import type { GameReceiver, GAME_STATE, GameMonitor, NetworkUser } from '@/Game/network/GameMonitor'
 import { PAD_DIRECTION } from '@/Game/network/GameMonitor'
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PongGameScene from '@/Game/pong-scenes/PongGame'
@@ -64,7 +59,7 @@ export class OnlinePlayer implements GameReceiver, Player {
   }
 
   onBallHit() {
-    console.log('ball hit on online paddle')
+    // console.log('ball hit on online paddle')
   }
 
   // methods from GameReceiver interface that will be provided by GameMonitor

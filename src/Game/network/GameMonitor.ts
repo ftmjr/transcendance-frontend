@@ -10,7 +10,7 @@ export enum PAD_DIRECTION {
 export enum GAME_STATE {
   waiting,
   playing,
-  scored,
+  scored
 }
 
 export interface BallServedData {
@@ -37,7 +37,7 @@ export enum GAME_EVENTS {
   GameStateChanged = 'gameStateChanged',
   GameMonitorStateChanged = 'gameMonitorStateChanged',
   HostChanged = 'hostChanged',
-  ScoreChanged = 'scoreChanged',
+  ScoreChanged = 'scoreChanged'
 }
 
 export interface GameReceiver {
@@ -136,9 +136,9 @@ export class GameMonitor {
       }
     )
     this.gameNetwork.socket?.on(GAME_EVENTS.HostChanged, (info: { id: number; data: number }) => {
-      this.hostId = info.data;
-      this._onGameMonitorStateChanged(this.state);
-      this.vueUpdateObserver.onGameMonitorStateChange(this.state);
+      this.hostId = info.data
+      this._onGameMonitorStateChanged(this.state)
+      this.vueUpdateObserver.onGameMonitorStateChange(this.state)
     })
   }
 
@@ -149,7 +149,7 @@ export class GameMonitor {
       this.state = GameMonitorState.Ready
     }
     this._onGameMonitorStateChanged(this.state)
-    this.vueUpdateObserver.onGameMonitorStateChange(this.state);
+    this.vueUpdateObserver.onGameMonitorStateChange(this.state)
   }
 
   listenToViewers() {
@@ -180,7 +180,7 @@ export class GameMonitor {
       (info: { id: number; data: GameMonitorState }) => {
         this.state = info.data
         this._onGameMonitorStateChanged(this.state)
-        this.vueUpdateObserver.onGameMonitorStateChange(this.state);
+        this.vueUpdateObserver.onGameMonitorStateChange(this.state)
       }
     )
   }
@@ -221,7 +221,7 @@ export class GameMonitor {
           gameReceiver.onBallServed(info.data.position, info.data.direction)
       }
     )
-    console.log('listening to player with Id', userId)
+    // console.log('listening to player with Id', userId)
   }
 
   //  -- send to server methods --
@@ -288,7 +288,7 @@ export class GameMonitor {
 
   getScore(): { player1: number; player2: number } {
     const players = Array.from(this.players.values())
-    if (players.length !== 2){
+    if (players.length !== 2) {
       return {
         player1: this.score.get(players[0].userId) ?? 0,
         player2: this.score.get(0) ?? 0
@@ -298,11 +298,10 @@ export class GameMonitor {
     const ids = [players[0].userId ?? 0, players[1].userId ?? 0]
     const player1Id = this.hostId === ids[0] ? ids[0] : ids[1]
     const player2Id = this.hostId === ids[0] ? ids[1] : ids[0]
-    const score = {
+    return {
       player1: this.score.get(player1Id) ?? 0,
       player2: this.score.get(player2Id) ?? 0
     }
-    return score
   }
   reloadListOfPlayers() {
     // ask server to send GAME_EVENTS.PlayersRetrieved
