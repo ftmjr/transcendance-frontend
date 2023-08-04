@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '@/views/HomeView.vue'
+// import useAuthStore from '@/stores/AuthStore'
 
 const router = createRouter({
+  // @ts-ignore
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
@@ -10,16 +12,31 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/login',
-      name: 'login',
+      path: '/auth/two-factors',
+      name: 'two-factors',
+      component: () => import('../views/TwoFactorsView.vue')
+    },
+    {
+      path: '/auth',
+      name: 'auth',
       component: () => import('../views/AuthView.vue')
     },
     {
-      path: '/Game',
-      name: 'game',
-      component: () => import('@/views/GamePage.vue')
+      path: '/reset-password',
+      name: 'rest-password',
+      component: ()=> import("@/views/ResetPasswordView.vue")
+    },
+    {
+      path: '/auth-state-2',
+      name: 'auth-query-extractor',
+      component: ()=> import("@/views/AuthStateTwoView.vue")
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  
+  return next()
 })
 
 export default router
