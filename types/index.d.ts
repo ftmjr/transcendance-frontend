@@ -1,8 +1,24 @@
 declare module 'Auth' {
-  export type User = {
-    name: string
-    email: string
-    avatar: string
+
+export interface Profile {
+    id: number;
+    userId: number;
+    name:    string;
+    lastname: string;
+    avatar?: string;
+    bio?:string;
+    oauth?: unknown;
+  }
+  export interface User {
+    id: number;
+    username : string;
+    email: string;
+    role : {};
+    profile?: Profile;
+    sessions: []; //Session[]
+    games: []; //Game[]
+    groups : []; //             Group[]
+    twoFactorEnabled: boolean;
   }
 
   export interface AuthState {
@@ -20,5 +36,10 @@ declare module 'Auth' {
     password: string
     username: string
     passwordConfirmation: string
+  }
+
+  export interface ILoginData {
+    accessToken: string;
+    user: User;
   }
 }

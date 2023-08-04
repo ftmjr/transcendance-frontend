@@ -1,16 +1,15 @@
 import { defineStore } from 'pinia'
-import router from '@/router'
-import type { AuthState, User, RegisterBody } from 'Auth'
-import axios from 'axios'
+import type { AuthState, User, RegisterBody, ILoginData  } from 'Auth'
+import axios, {AxiosError} from 'axios'
 
 const useAuthStore = defineStore({
   id: 'auth',
   state: (): AuthState => {
     const token = localStorage.getItem('__token__')
-    const user = localStorage.getItem('__user__')
+    const user = JSON.parse(localStorage.getItem('__user__') ?? 'null') as User | null;
     return {
       token,
-      user: user ? JSON.parse(user) : null,
+      user,
       error: {
         state: false,
         message: ''
@@ -23,10 +22,27 @@ const useAuthStore = defineStore({
     },
     getUser(): User | null {
       return this.user
+    },
+    isAuthenticated(): boolean{
+      return this.token ?  true : false;
     }
   },
   actions: {
-    async login(credentials: { username: string; password: string }): Promise<void> {
+    setToken(token: string){
+      this.token = token;
+      localStorage.setItem("__token__", token);
+    },
+    setUser(user: User) {
+      this.user = user;
+      localStorage.setItem("__user__", JSON.stringify(user));
+    },
+    async fetchUser(){
+      const {data} = await axios.get("/api/auth/me", {
+        headers: {}
+      });
+      this.setUser(data.User);
+    },
+    async login(credentials: { username: string; password: string }): Promise<boolean> {
       try {
         const { data } = await axios.post('/api/auth/login', credentials, {
           headers: {
@@ -34,15 +50,14 @@ const useAuthStore = defineStore({
           }
         })
 
-        const { token, user } = data
-        localStorage.setItem('__token__', token)
-        this.token = token
-        localStorage.setItem('__user__', JSON.stringify(user))
-        this.user = user
-
-        router.push('/')
-      } catch (error) {
-        //
+        const { accessToken, user } = data as ILoginData;
+        this.setUser(user);
+        this.setToken(accessToken);
+        return true;
+      } catch (error: AxiosError) {
+        if (error.response && error.response.status === 401) {
+          return false;
+        }
       }
     },
     async logout(): Promise<void> {
@@ -54,36 +69,31 @@ const useAuthStore = defineStore({
 
         await axios.get('/api/logout')
 
-        router.push('/login')
-      } catch (error) {
-        this.error = {
-          state: true,
-          message: "Une erreur s'est produite lors de la déconnexion"
+      } catch (error: AxiosError) {
+        if (error.response){
+        //
         }
       }
     },
-    async register(userInfos: RegisterBody): Promise<void> {
-      if (!userInfos || userInfos.password !== userInfos.passwordConfirmation) return
+    async register(userInfos: RegisterBody): Promise<boolean> {
+      if (!userInfos || userInfos.password !== userInfos.passwordConfirmation) return false;
 
       const { passwordConfirmation, ...body } = userInfos
 
-      console.log(body)
-
       try {
+        console.log(body);
         const { data } = await axios.post('/api/auth/signup', body, {
           headers: {
             'Content-Type': 'application/json'
           }
         })
-        const { ...user } = data
-        this.user = user
-        router.push('/auth/two-factors')
-      } catch (error: any) {
-        this.error = {
-          state: true,
-          message: error.response.data.message
+       console.log(data);
+        return true;
+      } catch (error: AxiosError) {
+        if (error.response && error.response.status === 403) {
+          // get the backend error msg
         }
-        console.log(error.response.data.message)
+        return false;
       }
     }
   }
