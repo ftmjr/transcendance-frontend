@@ -43,13 +43,13 @@
               :required="true"
             />
           </div>
-          <div class="">
+          <div class="block text-center">
             <base-button
               text="Valider"
               size="medium"
               variant="primary"
               type="submit"
-              classnames="w-full text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-orange shadow-lg hover:bg-darkBlue hover:border-2 hover:border-light/10 transition-all duration-300 ease-in-out border-2 border-orange"
+              classnames="w-1/3 inline-block text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-orange shadow-lg hover:bg-darkBlue hover:border-2 hover:border-light/10 transition-all duration-300 ease-in-out border-2 border-orange"
             />
           </div>
         </form>
