@@ -13,7 +13,10 @@
         <div class="absolute top-0 left-0 flex justify-between w-full my-2">
           <div></div>
           <div class="flex items-center px-4">
-            <a href="/auth" class="block ml-auto mr-0 text-xs text-white cursor-pointer hover:underline text-white/40">
+            <a
+              href="/auth"
+              class="block ml-auto mr-0 text-xs text-white cursor-pointer hover:underline text-white/40"
+            >
               retour
             </a>
           </div>

@@ -30,7 +30,6 @@
           class="block w-full px-10 py-4 mt-10 space-y-2 duration-200 ease-in rounded-md mx:-auto md:p-4 md:space-y-4 md:w-1/2 lg:w-5/6 transition-height 2xl:w-1/2"
           autocomplete="off"
         >
-
           <div class="">
             <h1 v-show="isLogin" class="text-xl font-bold text-left text-white uppercase">
               Connexion
@@ -185,7 +184,7 @@ import { defineComponent, defineAsyncComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import { formValidator } from '@/utils/valiadator'
 import type { RegisterBody } from 'Auth'
-import router from "@/router"
+import router from '@/router'
 
 const BaseButton = defineAsyncComponent(() => import('@/components/Button.vue'))
 const BaseInput = defineAsyncComponent(() => import('@/components/Input.vue'))
@@ -267,7 +266,7 @@ export default defineComponent({
         ? await authStore.login({ username: username.value, password: password.value })
         : await authStore.register(userDatas)
 
-      success && await this.$router.push("/auth/two-factors");
+      success && (await this.$router.push('/auth/two-factors'))
     },
     handleForms(e: Event) {
       e.preventDefault()

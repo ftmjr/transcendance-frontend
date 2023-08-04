@@ -13,7 +13,10 @@
         :min="min"
         :max="max"
         :placeholder="placeholder"
-        :class="[(error || typeError) && 'border-red-600 focus:border-red-600', classnames ? classnames : styles[type]]"
+        :class="[
+          (error || typeError) && 'border-red-600 focus:border-red-600',
+          classnames ? classnames : styles[type]
+        ]"
         @input="handleInput"
         @keydown="handleKeyPress"
         :required="required"

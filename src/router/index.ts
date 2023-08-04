@@ -14,28 +14,27 @@ const router = createRouter({
     {
       path: '/auth/two-factors',
       name: 'two-factors',
-      component: () => import('../views/TwoFactorsView.vue')
+      component: () => import('@/views/TwoFactorsView.vue')
     },
     {
       path: '/auth',
       name: 'auth',
-      component: () => import('../views/AuthView.vue')
+      component: () => import('@/views/AuthView.vue')
     },
     {
       path: '/reset-password',
       name: 'rest-password',
-      component: ()=> import("@/views/ResetPasswordView.vue")
+      component: () => import('@/views/ResetPasswordView.vue')
     },
     {
       path: '/auth-state-2',
       name: 'auth-query-extractor',
-      component: ()=> import("@/views/AuthStateTwoView.vue")
+      component: () => import('@/views/AuthStateTwoView.vue')
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  
   return next()
 })
 
