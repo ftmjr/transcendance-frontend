@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { AuthState, User, RegisterBody, ILoginData  } from 'Auth'
-import axiosInstance from "@/utils/axios.ts";
+import axiosInstance from "@/utils/axios";
 import type {AxiosError} from "axios";
 
 const useAuthStore = defineStore({
