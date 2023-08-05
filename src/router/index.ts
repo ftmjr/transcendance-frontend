@@ -9,27 +9,47 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
+      meta: {
+        title: 'Transcendance - Home',
+        requiresAuth: false,
+      }
     },
     {
       path: '/auth/two-factors',
       name: 'two-factors',
-      component: () => import('@/views/TwoFactorsView.vue')
+      component: () => import('@/views/TwoFactorsView.vue'),
+      meta: {
+        title: 'Verify your identity',
+        requiresAuth: true,
+      }
     },
     {
       path: '/auth',
       name: 'auth',
-      component: () => import('@/views/AuthView.vue')
+      component: () => import('@/views/AuthView.vue'),
+      meta: {
+        title: 'Authentication',
+        requiresAuth: false,
+      }
     },
     {
       path: '/reset-password',
       name: 'rest-password',
-      component: () => import('@/views/ResetPasswordView.vue')
+      component: () => import('@/views/ResetPasswordView.vue'),
+      meta: {
+        title: 'Reset your password',
+        requiresAuth: false,
+      }
     },
     {
       path: '/auth-state-2',
       name: 'auth-query-extractor',
-      component: () => import('@/views/AuthStateTwoView.vue')
+      component: () => import('@/views/AuthStateTwoView.vue'),
+      meta: {
+        title: 'Authentication',
+        requiresAuth: false,
+      }
     }
   ]
 })
