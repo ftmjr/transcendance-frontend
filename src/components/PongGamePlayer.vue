@@ -96,10 +96,13 @@ import { ref, onBeforeUnmount, onMounted, reactive } from 'vue'
 import type { PropType } from 'vue'
 import Phaser from 'phaser'
 import PongGameScene from '@/Game/pong-scenes/PongGame'
-import PreloadScene, { PreloadSceneData } from '@/Game/pong-scenes/Preload'
-import { GameNetwork, GameUser, GameUserType } from '@/Game/network/GameNetwork'
-import { GameMonitor, GameMonitorState, NetworkUser } from '@/Game/network/GameMonitor'
-import type { GameDataI } from '@/Game/pong-scenes/Assets'
+import PreloadScene from '@/Game/pong-scenes/Preload'
+import type { PreloadSceneData } from '@/Game/pong-scenes/Preload'
+import { GameNetwork, GameUserType } from '@/Game/network/GameNetwork'
+import type { GameUser } from '@/Game/network/GameNetwork'
+import { GameMonitor, GameMonitorState } from '@/Game/network/GameMonitor'
+import type { NetworkUser } from '@/Game/network/GameMonitor'
+import type {GameDataI, PongTheme} from '@/Game/pong-scenes/Assets'
 import { EndGame } from '@/Game/pong-scenes/EndGame'
 
 const gameContainer = ref(null)
@@ -170,9 +173,9 @@ const gameMonitor = new GameMonitor('pong', props.gameData.playerType, gameNetwo
 
 onMounted(() => {
   const gameData: PreloadSceneData = {
-    userType: props.gameData.playerType,
+    userType: props.gameData.playerType as GameUserType,
     gameMonitor,
-    theme: props.gameData.theme
+    theme: props.gameData.theme as PongTheme,
   }
   const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
