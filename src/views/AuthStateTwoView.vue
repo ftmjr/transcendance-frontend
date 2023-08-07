@@ -32,12 +32,12 @@ export default defineComponent({
   name: "auth-state-2",
   async created() {
     const {token} = this.$route.query;
-    if (token){
+    if (token) {
       authStore.setToken(token);
-      await authStore.fetchUser();
-      this.$router.push("/");
+      if (await authStore.fetchUser())
+        return this.$router.push("/");
     }
-    this.$router.push("/auth");
+    return this.$router.push("/auth");
   }
 })
 </script>

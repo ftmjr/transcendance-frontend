@@ -60,9 +60,11 @@
 
 <script lang="ts">
 import { defineComponent, defineAsyncComponent } from 'vue'
+import useAuthStore from "@/stores/AuthStore";
 
 const BaseInput = defineAsyncComponent(() => import('@/components/Input.vue'))
 const BaseButton = defineAsyncComponent(() => import('@/components/Button.vue'))
+
 
 export default defineComponent({
   name: 'two-factors',
@@ -74,6 +76,14 @@ export default defineComponent({
     const values: string[] = new Array(6).fill('')
     return {
       values
+    }
+  },
+  created() {
+    const {user, token} = useAuthStore();
+    if (!token || !user) this.$router.push("/auth")
+    else{
+     if (!user.twoFactorEnabled)
+       this.$router.push("/");
     }
   },
   computed: {

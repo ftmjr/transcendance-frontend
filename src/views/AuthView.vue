@@ -1,6 +1,6 @@
 <template>
   <div class="w-screen h-screen overflow-hidden">
-    <main class="grid w-full h-full grid-cols-12">
+    <main class="grid w-full h-full grid-cols-12 bg-darkBlue">
       <div class="relative hidden h-full lg:block lg:col-span-8">
         <img src="../assets/images/authBg.png" alt="landing" class="object-cover w-full h-full" />
         <div
@@ -8,7 +8,7 @@
         ></div>
       </div>
       <div
-        class="relative grid h-full col-span-12 overflow-scroll lg:col-span-4 bg-darkBlue place-items-center"
+        class="relative grid h-full col-span-12 overflow-scroll lg:col-span-4 bg-darkBlue place-items-center box-border"
       >
         <div class="absolute top-0 left-0 flex justify-between w-full my-2">
           <div></div>
@@ -245,6 +245,10 @@ export default defineComponent({
         inputStyle
       }
     }
+  },
+  created() {
+    if (authStore.isAuthenticated)
+      this.$router.push("/");
   },
   methods: {
     async handleSubmit(e: Event) {

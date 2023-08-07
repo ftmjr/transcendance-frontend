@@ -36,11 +36,31 @@ const useAuthStore = defineStore({
       this.user = user;
       localStorage.setItem("__user__", JSON.stringify(user));
     },
-    async fetchUser(){
-      const {data} = await axios.get("/api/auth/me", {
-        headers: {}
-      });
-      this.setUser(data.User);
+    removeToken()
+    {
+      localStorage.removeItem("__token__");
+      this.token = null;
+    },
+    removeUser(){
+      this.user = null;
+      localStorage.removeItem("__user__")
+    },
+    async fetchUser():Promise<boolean>{
+      try{
+        const {data} = await axios.get("/api/auth/me", {
+          headers: {
+            Authorization: `Bearer ${this.token}`
+          }
+        });
+        this.setUser(data);
+        return (true)
+      }
+      catch (e: unknown)
+      {
+        this.removeToken()
+        this.removeUser()
+        return false;
+      }
     },
     async login(credentials: { username: string; password: string }): Promise<boolean> {
       try {
@@ -60,19 +80,17 @@ const useAuthStore = defineStore({
         }
       }
     },
-    async logout(): Promise<void> {
+    async logout(): Promise<boolean> {
       try {
-        localStorage.removeItem('__token__')
-        localStorage.removeItem('__user__')
+        this.removeToken()
+        this.removeUser()
         this.token = null
         this.user = null
 
-        await axios.get('/api/logout')
-
+        await axios.get('/api/auth/logout')
+        return true;
       } catch (error: AxiosError) {
-        if (error.response){
-        //
-        }
+        return false;
       }
     },
     async register(userInfos: RegisterBody): Promise<boolean> {
@@ -81,13 +99,11 @@ const useAuthStore = defineStore({
       const { passwordConfirmation, ...body } = userInfos
 
       try {
-        console.log(body);
         const { data } = await axios.post('/api/auth/signup', body, {
           headers: {
             'Content-Type': 'application/json'
           }
         })
-       console.log(data);
         return true;
       } catch (error: AxiosError) {
         if (error.response && error.response.status === 403) {
