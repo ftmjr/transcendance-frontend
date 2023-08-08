@@ -13,10 +13,7 @@
         <div class="absolute top-0 left-0 flex justify-between w-full my-2">
           <div></div>
           <div class="flex items-center px-4">
-            <a
-              href="/auth"
-              class="block ml-auto mr-0 text-xs text-white cursor-pointer hover:underline text-white/40"
-            >
+            <a href="/auth" class="block ml-auto mr-0 text-xs text-white cursor-pointer hover:underline text-white/40">
               retour
             </a>
           </div>
@@ -63,9 +60,11 @@
 
 <script lang="ts">
 import { defineComponent, defineAsyncComponent } from 'vue'
+import useAuthStore from "@/stores/AuthStore";
 
 const BaseInput = defineAsyncComponent(() => import('@/components/Input.vue'))
 const BaseButton = defineAsyncComponent(() => import('@/components/Button.vue'))
+
 
 export default defineComponent({
   name: 'two-factors',
@@ -77,6 +76,14 @@ export default defineComponent({
     const values: string[] = new Array(6).fill('')
     return {
       values
+    }
+  },
+  created() {
+    const {user, token} = useAuthStore();
+    if (!token || !user) this.$router.push("/auth")
+    else{
+     if (!user.twoFactorEnabled)
+       this.$router.push("/");
     }
   },
   computed: {

@@ -1,12 +1,15 @@
-import { defineStore } from 'pinia'
+import {defineStore} from 'pinia'
 
-const useGlobalStore = defineStore({
-  id: 'global',
-  state: () => {
-    return {
-      isLoading: false
+const useGlobalStore = defineStore(
+    {
+        id: "global",
+        state:()=>{
+            return {
+                isLoading: false
+            }
+        }
     }
-  }
-})
+)
 
-export default useGlobalStore
+
+export default useGlobalStore;
