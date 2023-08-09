@@ -10,9 +10,14 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import NavBar from '@/components/Header.vue'
+import useAuthStore from '@/stores/AuthStore'
 export default defineComponent({
   components: {
     NavBar
+  },
+  setup() {
+    const authStore = useAuthStore()
+    return { authStore }
   }
 })
 </script>

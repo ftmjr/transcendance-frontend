@@ -8,7 +8,7 @@
         <div>
           <ul class="flex flex-row gap-8">
             <li v-for="route in routes" :key="route.name" class="text-white">
-              <router-link :to="{name: route.name}"> {{ route.text }}</router-link>
+              <router-link :to="{ name: route.name }"> {{ route.text }}</router-link>
             </li>
           </ul>
         </div>

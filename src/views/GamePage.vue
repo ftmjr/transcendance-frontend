@@ -12,14 +12,6 @@
         />
       </div>
       <div class="flex flex-col">
-        <label for="user" class="font-light">User</label>
-        <select id="user" name="user" v-model="player" class="p-2 rounded border">
-          <option v-for="user in AvailableUsers" :key="user.userId" :value="user">
-            {{ user.username }}
-          </option>
-        </select>
-      </div>
-      <div class="flex flex-col">
         <label for="playerType" class="font-light">Player Type</label>
         <select
           id="playerType"
@@ -27,9 +19,9 @@
           v-model="gameData.playerType"
           class="p-2 rounded border"
         >
-          <option :value="GameUserType.LocalPlayer">Local Player</option>
-          <option :value="GameUserType.Player">Online Player</option>
-          <option :value="GameUserType.Viewer">Viewer</option>
+          <option v-for="option in gameUserTypesOptions" :key="option.value" :value="option.value">
+            {{ option.text }}
+          </option>
         </select>
       </div>
       <div class="flex flex-col">
@@ -58,34 +50,55 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { defineAsyncComponent, reactive, ref, toRefs } from 'vue'
-import type { GameDataI } from '@/Game/pong-scenes/Assets'
-import type { GameUser } from '@/Game/network/GameNetwork'
+<script lang="ts">
+import { defineAsyncComponent, defineComponent } from 'vue'
+import { GameDataI } from '@/Game/pong-scenes/Assets'
+import { GameUser } from '@/Game/network/GameNetwork'
 import { GameUserType } from '@/Game/network/GameNetwork'
-
+import useAuthStore from '@/stores/AuthStore'
 const PongGamePlayer = defineAsyncComponent(() => import('@/components/PongGamePlayer.vue'))
-const gameData = reactive<GameDataI>({
-  room: 0,
-  playerType: GameUserType.LocalPlayer,
-  theme: 'Arcade'
-})
 
-const AvailableUsers: GameUser[] = [
-  {
-    userId: 1,
-    username: 'gamer1',
-    avatar: 'https://i.imgur.com/8bXwXuU.png'
+export default defineComponent({
+  components: {
+    PongGamePlayer
   },
-  {
-    userId: 2,
-    username: 'gamer2',
-    avatar: 'https://i.imgur.com/8bXwXuU.png'
+  setup() {
+    const authStore = useAuthStore()
+    return { authStore }
+  },
+  data() {
+    const gameData: GameDataI = {
+      room: 0,
+      playerType: GameUserType.LocalPlayer,
+      theme: 'Arcade'
+    }
+    const gameUserTypesOptions = Object.keys(GameUserType).map((key) => {
+      return {
+        text: key,
+        value: GameUserType[key]
+      }
+    })
+    return {
+      debugMode: false,
+      gamePlayerKey: 0,
+      player: null as unknown as GameUser,
+      gameData,
+      gameUserTypesOptions
+    }
+  },
+  beforeMount() {
+    const currentUser = this.authStore.getUser
+    if (currentUser) {
+      this.player = {
+        userId: currentUser.id,
+        username: currentUser.username,
+        avatar: currentUser.avatar
+      }
+    } else {
+      this.$router.push({ name: 'auth' })
+    }
   }
-]
-const player = reactive<GameUser>(AvailableUsers[0])
-const debugMode = ref(false)
-const gamePlayerKey = ref(0)
+})
 </script>
 
 <style scoped></style>

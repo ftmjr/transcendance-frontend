@@ -12,6 +12,11 @@ const authStore = useAuthStore()
 const user = authStore.user
 export default defineComponent({
   name: 'profile-view',
+  setup() {
+    return {
+      user
+    }
+  },
   data() {
     return {
       user
