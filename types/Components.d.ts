@@ -1,7 +1,6 @@
 declare module 'Components' {
   import type { Omit } from 'cypress/types/lodash'
   export interface ButtonProps {
-    text?: string
     variant: 'primary' | 'secondary' | 'tertiary'
     size: 'small' | 'medium' | 'large'
     disabled?: boolean
@@ -35,6 +34,7 @@ declare module 'Components' {
     max?: number
     formatinput?: (value: string) => string
     handleKeyPress?: (e: KeyboardEvent) => boolean
+    handleKeyUp?: (e: KeyboardEvent) => boolean|void
     validate?: (value: string) => boolean
   }
 }
