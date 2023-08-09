@@ -8,7 +8,7 @@
         <div>
           <ul class="flex flex-row gap-8">
             <li v-for="route in routes" :key="route.name" class="text-white">
-              <router-link :to="route.path">{{ route.name }}</router-link>
+              <router-link :to="{name: route.name}"> {{ route.text }}</router-link>
             </li>
           </ul>
         </div>
@@ -48,11 +48,11 @@ export default defineComponent({
       routes: [
         {
           name: 'dashboard',
-          path: '/'
+          text: 'Accueil'
         },
         {
           name: 'profile',
-          path: '/profile'
+          text: 'Profile'
         }
       ]
     }
