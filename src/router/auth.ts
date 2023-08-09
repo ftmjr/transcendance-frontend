@@ -28,7 +28,7 @@ const authRoutes: RouteRecordRaw = {
       name: 'two-factors',
       component: () => import('@/views/TwoFactorsView.vue'),
       meta: {
-        requiresAuth: false,
+        requiresAuth: true,
         title: 'Two Factors'
       }
     },

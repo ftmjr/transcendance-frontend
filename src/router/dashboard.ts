@@ -11,7 +11,7 @@ const dashboardRoutes: RouteRecordRaw = {
       name: 'dashboard',
       component: HomeView,
       meta: {
-        requiresAuth: false,
+        requiresAuth: true,
         title: 'Dashboard'
       }
     },
