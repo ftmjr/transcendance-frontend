@@ -7,7 +7,7 @@
         </div>
         <div>
           <ul class="flex flex-row gap-8">
-            <li v-for="route in routes" class="text-white">
+            <li v-for="route in routes" :key="route.name" class="text-white">
               <router-link :to="route.path">{{ route.name }}</router-link>
             </li>
           </ul>
@@ -16,12 +16,13 @@
           <a href="/profile">Profile</a>
           <base-button
             :onclick="($event) => logout($event)"
-            text="Logout"
             type="text"
             classnames="text-sm text-white border border-white"
             size="medium"
             variant="primary"
-          ></base-button>
+          >
+            Logout
+          </base-button>
         </div>
       </div>
     </div>
@@ -29,27 +30,28 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, defineAsyncComponent } from 'vue'
-import { RouterLink } from 'vue-router'
+import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore.ts'
-
-const BaseButton = defineAsyncComponent(() => import('@/components/Button.vue'))
+import BaseButton from '@/components/Button.vue'
 
 export default defineComponent({
   name: 'nav-bar',
   components: {
-    RouterLink,
     BaseButton
+  },
+  setup() {
+    const authStore = useAuthStore()
+    return { authStore }
   },
   data() {
     return {
       routes: [
         {
-          name: 'Home',
+          name: 'dashboard',
           path: '/'
         },
         {
-          name: 'Profile',
+          name: 'profile',
           path: '/profile'
         }
       ]
@@ -58,8 +60,8 @@ export default defineComponent({
   methods: {
     logout(e: Event) {
       e.preventDefault()
-      useAuthStore().logout()
-      this.$router.push('/auth')
+      this.authStore.logout()
+      this.$router.push({ name: 'auth' })
     }
   }
 })
