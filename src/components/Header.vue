@@ -1,4 +1,3 @@
-
 <template>
   <header>
     <div class="container text-white">
@@ -9,26 +8,30 @@
         <div>
           <ul class="flex flex-row gap-8">
             <li v-for="route in routes" class="text-white">
-              <router-link :to="route.path">{{ route.name}}</router-link>
+              <router-link :to="route.path">{{ route.name }}</router-link>
             </li>
           </ul>
         </div>
         <div class="flex flex-row gap-8 items-center">
           <a href="/profile">Profile</a>
-          <base-button :onclick="($event) => logout($event)" text="Logout" type="text" classnames="text-sm text-white border border-white" size="medium" variant="primary" ></base-button>
+          <base-button
+            :onclick="($event) => logout($event)"
+            text="Logout"
+            type="text"
+            classnames="text-sm text-white border border-white"
+            size="medium"
+            variant="primary"
+          ></base-button>
         </div>
       </div>
     </div>
-
-
-
   </header>
 </template>
 
 <script lang="ts">
 import { defineComponent, defineAsyncComponent } from 'vue'
 import { RouterLink } from 'vue-router'
-import useAuthStore from "@/stores/AuthStore.ts";
+import useAuthStore from '@/stores/AuthStore.ts'
 
 const BaseButton = defineAsyncComponent(() => import('@/components/Button.vue'))
 
@@ -36,27 +39,27 @@ export default defineComponent({
   name: 'nav-bar',
   components: {
     RouterLink,
-    BaseButton,
+    BaseButton
   },
   data() {
     return {
       routes: [
         {
-          name: "Home",
-          path: "/"
+          name: 'Home',
+          path: '/'
         },
         {
-          name: "Profile",
-          path: "/profile"
+          name: 'Profile',
+          path: '/profile'
         }
       ]
     }
   },
-  methods:{
-    logout(e: Event){
-      e.preventDefault();
-      useAuthStore().logout();
-      this.$router.push("/auth");
+  methods: {
+    logout(e: Event) {
+      e.preventDefault()
+      useAuthStore().logout()
+      this.$router.push('/auth')
     }
   }
 })

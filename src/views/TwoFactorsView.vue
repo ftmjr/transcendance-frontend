@@ -2,10 +2,14 @@
   <div class="w-screen h-screen">
     <main class="grid w-full h-full grid-cols-12">
       <div class="relative hidden h-full lg:block lg:col-span-8">
-        <img src="../assets/images/authBg.png" alt="landing" class="object-cover w-full h-full" />
-        <div
-          class="absolute top-0 left-0 z-10 grid w-full h-full bg-gradient place-items-center"
-        ></div>
+        <img
+          src="/pong/backgrounds/pink_pong_bg.png"
+          alt="landing"
+          class="object-cover w-full h-full"
+        />
+        <!--        <div-->
+        <!--          class="absolute top-0 left-0 z-10 grid w-full h-full bg-gradient place-items-center"-->
+        <!--        ></div>-->
       </div>
       <div
         class="relative grid h-full col-span-12 overflow-scroll lg:col-span-4 bg-darkBlue place-items-center"
@@ -13,7 +17,10 @@
         <div class="absolute top-0 left-0 flex justify-between w-full my-2">
           <div></div>
           <div class="flex items-center px-4">
-            <a href="/auth" class="block ml-auto mr-0 text-xs text-white cursor-pointer hover:underline text-white/40">
+            <a
+              href="/auth"
+              class="block ml-auto mr-0 text-xs text-white cursor-pointer hover:underline text-white/40"
+            >
               retour
             </a>
           </div>
@@ -60,11 +67,10 @@
 
 <script lang="ts">
 import { defineComponent, defineAsyncComponent } from 'vue'
-import useAuthStore from "@/stores/AuthStore";
+import useAuthStore from '@/stores/AuthStore'
 
 const BaseInput = defineAsyncComponent(() => import('@/components/Input.vue'))
 const BaseButton = defineAsyncComponent(() => import('@/components/Button.vue'))
-
 
 export default defineComponent({
   name: 'two-factors',
@@ -79,12 +85,12 @@ export default defineComponent({
     }
   },
   created() {
-    const {user, token} = useAuthStore();
-    if (!token || !user) this.$router.push("/auth")
-    else{
-     if (!user.twoFactorEnabled)
-       this.$router.push("/");
-    }
+    const { user, token } = useAuthStore()
+    // if (!token || !user) this.$router.push("/auth")
+    // else{
+    //  if (!user.twoFactorEnabled)
+    //    this.$router.push({ name: 'home' });
+    // }
   },
   computed: {
     styles() {

@@ -1,26 +1,27 @@
-import axios from "axios"
-import useAuthStore from "@/stores/AuthStore"
-
-const authStore = useAuthStore();
+import axios from 'axios'
+import useAuthStore from '@/stores/AuthStore'
 
 // Create an Axios instance if you wish or use the default axios object
-export const axiosInstance = axios.create({
-    baseURL: '/api',
-    // other config here
-});
+const axiosInstance = axios.create({
+  baseURL: '/api'
+  // other config here
+})
 
 // Request interceptor
-axiosInstance.interceptors.request.use((config:axios.InternalAxiosRequestConfig) => {
-    // Get token from Pinia store
-    const token = authStore.getToken();
-
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const authStore = useAuthStore()
+    const token = authStore.token
     // If the token exists, set it in the Authorization header
     if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers['Authorization'] = `Bearer ${token}`
     }
-
-    return config;
-}, (error) => {
+    return config
+  },
+  (error) => {
     // Handle request error
-    return Promise.reject(error);
-});
+    return Promise.reject(error)
+  }
+)
+
+export default axiosInstance

@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <label :for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+    <label :for="name" class="block mb-2 text-sm font-medium text-gray-500 dark:text-white">
       {{ label }}</label
     >
     <div class="relative">
@@ -13,7 +13,10 @@
         :min="min"
         :max="max"
         :placeholder="placeholder"
-        :class="[(error || typeError) && 'border-red-600 focus:border-red-600', classnames ? classnames : styles[type]]"
+        :class="[
+          (error || typeError) && 'border-red-600 focus:border-red-600',
+          classnames ? classnames : styles[type]
+        ]"
         @input="handleInput"
         @keydown="handleKeyPress"
         :required="required"

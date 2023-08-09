@@ -6,7 +6,7 @@
 </template>
 <script lang="ts">
 import { defineAsyncComponent, defineComponent } from 'vue'
-import useAuthStore from "@/stores/AuthStore";
+import useAuthStore from '@/stores/AuthStore'
 
 const NavBar = defineAsyncComponent(() => import('@/components/Header.vue'))
 
@@ -16,7 +16,7 @@ export default defineComponent({
     NavBar
   },
   created() {
-    if (!useAuthStore().isAuthenticated) this.$router.push("/auth")
+    if (!useAuthStore().isAuthenticated) this.$router.push('/auth')
   },
   data() {
     return {}

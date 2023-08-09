@@ -1,7 +1,7 @@
 <template>
   <div class="texto">
     <h1>Hello from Profile View</h1>
-  my username : {{user?.username}}
+    my username : {{ user?.username }}
   </div>
 </template>
 
@@ -12,7 +12,7 @@ const authStore = useAuthStore()
 const user = authStore.user
 export default defineComponent({
   name: 'profile-view',
-  data(){
+  data() {
     return {
       user
     }
@@ -24,5 +24,4 @@ export default defineComponent({
 .texto {
   color: white;
 }
-
 </style>

@@ -13,7 +13,7 @@
         <div class="absolute top-0 left-0 flex justify-between w-full my-2">
           <div></div>
           <div class="flex items-center">
-            <span class="text-xs text-white/10">
+            <span class="text-xs text-white/60">
               {{ isLogin ? "Vous n'avez pas de compte ?" : 'Vous avez déjà un compte ?' }}
             </span>
             <base-button
@@ -30,7 +30,6 @@
           class="block w-full px-10 py-4 mt-10 space-y-2 duration-200 ease-in rounded-md mx:-auto md:p-4 md:space-y-4 md:w-1/2 lg:w-5/6 transition-height 2xl:w-1/2"
           autocomplete="off"
         >
-
           <div class="">
             <h1 v-show="isLogin" class="text-xl font-bold text-left text-white uppercase">
               Connexion
@@ -148,17 +147,17 @@
             <a
               v-show="isLogin"
               href="/reset-password"
-              class="block text-xs text-right text-white/10 hover:underline hover:text-white"
+              class="block text-xs text-right text-white/80 hover:underline hover:text-white"
             >
               Mot de passe oublié ?
             </a>
           </div>
-          <div class="relative">
-            <p
-              class="text-black before:absolute before:left-0 before:right-0 before:h-[1px] before:bg-light/10 before:top-1/2 before:-translate-y-1/2 -z-10 text-center"
+          <div class="inline-flex items-center justify-center w-full">
+            <hr class="w-64 h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+            <span
+              class="absolute px-3 font-medium text-gray-600 -translate-x-1/2 bg-white left-1/2 dark:text-white dark:bg-gray-900 rounded"
+              >Ou continuer avec</span
             >
-              <span class="relative z-10 inline-block px-4 py-1 mx-auto text-xs"> </span>
-            </p>
           </div>
           <div class="flex items-center justify-center gap-2">
             <social-login-button
@@ -185,7 +184,6 @@ import { defineComponent, defineAsyncComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import { formValidator } from '@/utils/valiadator'
 import type { RegisterBody } from 'Auth'
-import router from "@/router"
 
 const BaseButton = defineAsyncComponent(() => import('@/components/Button.vue'))
 const BaseInput = defineAsyncComponent(() => import('@/components/Input.vue'))
@@ -240,15 +238,14 @@ export default defineComponent({
   computed: {
     styles() {
       const inputStyle =
-        'bg-darkBlue border-2 border-light/10 shadow-lg text-white/50 sm:text-sm rounded-md focus:ring-none block w-full p-2.5 placeholder-white/10 focus:outline-none focus:ring-0 relative focus:border-2 focus:border-light/30 animate-anime-in'
+        'bg-darkBlue border-2 border-light/60 shadow-lg text-white/80 sm:text-sm rounded-md focus:ring-none block w-full p-2.5 placeholder-white/20 focus:outline-none focus:ring-0 relative focus:border-2 focus:border-light/30 animate-anime-in'
       return {
         inputStyle
       }
     }
   },
   created() {
-    if (authStore.isAuthenticated)
-      this.$router.push("/");
+    if (authStore.isAuthenticated) this.$router.push('/')
   },
   methods: {
     async handleSubmit(e: Event) {
@@ -271,7 +268,7 @@ export default defineComponent({
         ? await authStore.login({ username: username.value, password: password.value })
         : await authStore.register(userDatas)
 
-      success && await this.$router.push("/auth/two-factors");
+      success && (await this.$router.push({ name: 'two-factors' }))
     },
     handleForms(e: Event) {
       e.preventDefault()
