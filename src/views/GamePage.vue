@@ -56,6 +56,7 @@ import { GameDataI } from '@/Game/pong-scenes/Assets'
 import { GameUser } from '@/Game/network/GameNetwork'
 import { GameUserType } from '@/Game/network/GameNetwork'
 import useAuthStore from '@/stores/AuthStore'
+import useGameStore from "@/stores/GameStore";
 const PongGamePlayer = defineAsyncComponent(() => import('@/components/PongGamePlayer.vue'))
 
 export default defineComponent({
@@ -63,8 +64,9 @@ export default defineComponent({
     PongGamePlayer
   },
   setup() {
-    const authStore = useAuthStore()
-    return { authStore }
+    const authStore = useAuthStore();
+    const gameStore = useGameStore();
+    return { authStore, gameStore }
   },
   data() {
     const gameData: GameDataI = {
