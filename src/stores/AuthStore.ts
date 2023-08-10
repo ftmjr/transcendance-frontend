@@ -37,6 +37,9 @@ const useAuthStore = defineStore({
       this.user = user
       localStorage.setItem('__user__', JSON.stringify(user))
     },
+    setError(error: { state: boolean; message: string }) {
+      this.error = error
+    },
     removeToken() {
       localStorage.removeItem('__token__')
       this.token = null
@@ -71,9 +74,11 @@ const useAuthStore = defineStore({
         const { accessToken, user } = data as ILoginData
         this.setUser(user)
         this.setToken(accessToken)
+        this.setError({ state: false, message: '' })
         return true
       } catch (error: AxiosError | any) {
         if (error.response && error.response.status === 401) {
+          this.setError({ state: true, message: error.response.data.message })
           return false
         }
       }
@@ -82,30 +87,32 @@ const useAuthStore = defineStore({
       try {
         this.removeToken()
         this.removeUser()
-        this.token = null
-        this.user = null
-
-        await axios.get('auth/logout')
+        await axios.get('auth/logout');
         return true
       } catch (error: AxiosError | any) {
+        this.setError({ state: true, message: error.response.data.message })
         return false
       }
     },
     async register(userInfos: RegisterBody): Promise<boolean> {
       if (!userInfos || userInfos.password !== userInfos.passwordConfirmation) return false
-
       const { passwordConfirmation, ...body } = userInfos
-
       try {
         const { data } = await axios.post('auth/signup', body, {
           headers: {
             'Content-Type': 'application/json'
           }
         })
+        const { accessToken, user } = data as ILoginData
+        this.setUser(user)
+        this.setToken(accessToken)
+        this.setError({ state: false, message: '' })
+        this.setError({ state: false, message: '' });
         return true
       } catch (error: AxiosError | any) {
         if (error.response && error.response.status === 403) {
           // get the backend error msg
+          this.setError({ state: true, message: error.response.data.message });
         }
         return false
       }
