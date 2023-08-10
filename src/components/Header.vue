@@ -53,6 +53,10 @@ export default defineComponent({
         {
           name: 'profile',
           text: 'Profile'
+        },
+        {
+          name: 'game',
+          text: 'Game Test'
         }
       ]
     }

@@ -87,7 +87,7 @@ const useAuthStore = defineStore({
       try {
         this.removeToken()
         this.removeUser()
-        await axios.get('auth/logout');
+        await axios.get('auth/logout')
         return true
       } catch (error: AxiosError | any) {
         this.setError({ state: true, message: error.response.data.message })
@@ -107,12 +107,12 @@ const useAuthStore = defineStore({
         this.setUser(user)
         this.setToken(accessToken)
         this.setError({ state: false, message: '' })
-        this.setError({ state: false, message: '' });
+        this.setError({ state: false, message: '' })
         return true
       } catch (error: AxiosError | any) {
         if (error.response && error.response.status === 403) {
           // get the backend error msg
-          this.setError({ state: true, message: error.response.data.message });
+          this.setError({ state: true, message: error.response.data.message })
         }
         return false
       }

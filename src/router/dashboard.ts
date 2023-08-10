@@ -23,6 +23,15 @@ const dashboardRoutes: RouteRecordRaw = {
         requiresAuth: true,
         title: 'My Profile'
       }
+    },
+    {
+      path: 'game',
+      name: 'game',
+      component: () => import('@/views/GameView.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Game Test'
+      }
     }
   ]
 }

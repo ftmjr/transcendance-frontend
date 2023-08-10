@@ -1,23 +1,24 @@
 <template>
   <div>
+    <h3 class="text-white text-xl text-center mb-2">Testing Game</h3>
     <div class="flex justify-center items-center gap-1">
       <div class="flex flex-col">
-        <label for="room" class="font-light">Room</label>
+        <label for="room" class="font-light text-white">Room</label>
         <input
           type="number"
           id="room"
           name="room"
           v-model="gameData.room"
-          class="p-2 rounded border"
+          class="p-2 rounded border text-red-400"
         />
       </div>
       <div class="flex flex-col">
-        <label for="playerType" class="font-light">Player Type</label>
+        <label for="playerType" class="font-light text-white">Player Type</label>
         <select
           id="playerType"
           name="playerType"
           v-model="gameData.playerType"
-          class="p-2 rounded border"
+          class="p-2 rounded border text-primary"
         >
           <option v-for="option in gameUserTypesOptions" :key="option.value" :value="option.value">
             {{ option.text }}
@@ -25,19 +26,22 @@
         </select>
       </div>
       <div class="flex flex-col">
-        <label for="theme" class="font-light">Theme</label>
+        <label for="theme" class="font-light text-white">Theme</label>
         <select id="theme" name="theme" v-model="gameData.theme" class="p-2 rounded border">
           <option value="Arcade">Arcade</option>
           <option value="Soccer">Soccer</option>
         </select>
       </div>
       <div class="flex flex-col">
-        <label>Debug Mode</label>
+        <label class="text-white text-sm">Debug Mode</label>
         <input type="checkbox" id="debugMode" name="debugMode" v-model="debugMode" />
       </div>
     </div>
-    <div class="flex items-center justify-center">
-      <button class="p-2 rounded border bg-amber-600 text-white" @click="gamePlayerKey++">
+    <div class="flex items-center justify-center my-0.5">
+      <button
+        class="font-medium rounded-lg text-white text-sm px-5 py-2.5 text-center bg-orange shadow-lg hover:bg-darkBlue hover:border-2 hover:border-light/10 transition-all duration-300 ease-in-out border-2 border-orange animate-anime-in"
+        @click="gamePlayerKey++"
+      >
         New Game Player
       </button>
     </div>
@@ -56,7 +60,7 @@ import { GameDataI } from '@/Game/pong-scenes/Assets'
 import { GameUser } from '@/Game/network/GameNetwork'
 import { GameUserType } from '@/Game/network/GameNetwork'
 import useAuthStore from '@/stores/AuthStore'
-import useGameStore from "@/stores/GameStore";
+import useGameStore from '@/stores/GameStore'
 const PongGamePlayer = defineAsyncComponent(() => import('@/components/PongGamePlayer.vue'))
 
 export default defineComponent({
@@ -64,8 +68,8 @@ export default defineComponent({
     PongGamePlayer
   },
   setup() {
-    const authStore = useAuthStore();
-    const gameStore = useGameStore();
+    const authStore = useAuthStore()
+    const gameStore = useGameStore()
     return { authStore, gameStore }
   },
   data() {
@@ -90,6 +94,7 @@ export default defineComponent({
   },
   beforeMount() {
     const currentUser = this.authStore.getUser
+    console.log(currentUser)
     if (currentUser) {
       this.player = {
         userId: currentUser.id,

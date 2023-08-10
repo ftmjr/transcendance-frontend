@@ -75,14 +75,14 @@ export default defineComponent({
     }
   },
   beforeMount() {
-    const token = this.authStore.getToken;
-    const user = this.authStore.getUser;
-    if (!token || !user) this.$router.push("/auth")
+    const token = this.authStore.getToken
+    const user = this.authStore.getUser
+    if (!token || !user) this.$router.push('/auth')
     else {
-     if (!user.twoFactorEnabled){
+      if (!user.twoFactorEnabled) {
         // 2FA is not enabled for this user
         this.$router.push({ name: 'dashboard' })
-     }
+      }
     }
   },
   computed: {
