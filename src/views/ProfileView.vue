@@ -8,18 +8,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-const authStore = useAuthStore()
-const user = authStore.user
+
 export default defineComponent({
   name: 'profile-view',
   setup() {
-    return {
-      user
-    }
+    const authStore = useAuthStore()
+    return { authStore }
   },
   data() {
-    return {
-      user
+  },
+  computed: {
+    user() {
+      return this.authStore.getUser
     }
   }
 })

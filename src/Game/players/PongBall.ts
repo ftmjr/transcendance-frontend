@@ -106,10 +106,9 @@ export class PongBall {
 function throttle(func: Function, limit: number) {
   let inThrottle: boolean
   return function (this: any) {
-    const args = arguments
     const context = this
     if (!inThrottle) {
-      func.apply(context, args)
+      func.apply(context)
       inThrottle = true
       setTimeout(() => (inThrottle = false), limit)
     }
