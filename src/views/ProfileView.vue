@@ -92,7 +92,9 @@ export default defineComponent({
     return { authStore }
   },
   data() {
-    return {}
+    return {
+      loading: false
+    }
   },
   computed: {
     user() {
@@ -104,10 +106,13 @@ export default defineComponent({
   },
   mounted() {
     initFlowbite()
+    this.refreshUserData()
   },
   methods: {
-    refreshUserData() {
-      this.authStore.fetchUser()
+    async refreshUserData() {
+      this.loading = true
+      await this.authStore.fetchUser()
+      this.loading = false
     }
   }
 })
