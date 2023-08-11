@@ -62,7 +62,7 @@
         <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">
           {{ profile?.name }} {{ profile?.lastname }}
         </h5>
-        <span class="text-sm text-gray-500 dark:text-gray-400">{{ user.username }}</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">{{ user?.username }}</span>
         <div class="flex mt-4 space-x-3 md:mt-6">
           <a
             href="#"
