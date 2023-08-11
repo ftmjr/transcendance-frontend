@@ -234,6 +234,10 @@ export default defineComponent({
       return {
         inputStyle
       }
+    },
+    authError() {
+      // Errors from the authStore are handled here
+      return this.authStore.error
     }
   },
   methods: {

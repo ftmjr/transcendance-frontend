@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 /* eslint-disable no-undef */
 module.exports = {
-  content: ['src/**/*.vue', 'src/App.vue'],
+  content: ['src/**/*.vue', 'src/App.vue', './node_modules/flowbite/**/*.js'],
   theme: {
     container: {
       center: true,
@@ -10,7 +10,7 @@ module.exports = {
     extend: {
       color: {
         darkBlue: '#010626',
-        white: 'F2F3F4',
+        white: '#F2F3F4',
         black: '#000002',
         secondary: '#797E9E'
       },
@@ -53,5 +53,7 @@ module.exports = {
       },
     }
   },
-  plugins: []
+  plugins: [
+    require('flowbite/plugin')
+  ]
 }

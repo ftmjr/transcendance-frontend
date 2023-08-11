@@ -1,19 +1,17 @@
 <template>
-  <main>
-    <!--Navbar and other component for the dashboard here -->
-    <nav-bar />
-    <!--Sidebar Menu and Navbar here -->
+  <HeaderLayout />
+  <main class="mt-20">
     <router-view></router-view>
   </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import NavBar from '@/components/Header.vue'
+import HeaderLayout from '@/components/Header.vue'
 import useAuthStore from '@/stores/AuthStore'
 export default defineComponent({
   components: {
-    NavBar
+    HeaderLayout
   },
   setup() {
     const authStore = useAuthStore()

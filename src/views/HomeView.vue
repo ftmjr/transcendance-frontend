@@ -1,5 +1,7 @@
 <template>
-  <div class="container"></div>
+  <div class="container">
+    <p class="text-white text-md">Dashboard home view</p>
+  </div>
 </template>
 
 <script lang="ts">

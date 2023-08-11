@@ -94,12 +94,11 @@ export default defineComponent({
   },
   beforeMount() {
     const currentUser = this.authStore.getUser
-    console.log(currentUser)
     if (currentUser) {
       this.player = {
         userId: currentUser.id,
         username: currentUser.username,
-        avatar: currentUser.avatar
+        avatar: currentUser.profile.avatar
       }
     } else {
       this.$router.push({ name: 'auth' })

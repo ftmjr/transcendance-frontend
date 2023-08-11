@@ -40,14 +40,17 @@ import useAuthStore from '@/stores/AuthStore.ts'
 const authStore = useAuthStore()
 
 export default defineComponent({
-  name: 'auth-state-2',
+  name: 'auth-state',
   async created() {
     const { token } = this.$route.query
     if (token) {
       authStore.setToken(token)
-      if (await authStore.fetchUser()) return this.$router.push('/')
+      const fetched = await authStore.fetchUser()
+      if (fetched) {
+        return this.$router.push({ name: 'dashboard' })
+      }
     }
-    return this.$router.push('/auth')
+    return this.$router.push({ name: 'auth' })
   }
 })
 </script>

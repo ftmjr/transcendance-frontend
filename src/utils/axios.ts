@@ -7,14 +7,20 @@ const axiosInstance = axios.create({
   // other config here
 })
 
+let isRefreshing = false
 // Request interceptor
 axiosInstance.interceptors.request.use(
-  (config) => {
+  async (config) => {
     const authStore = useAuthStore()
-    const token = authStore.token
-    // If the token exists, set it in the Authorization header
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`
+    if (authStore.token && !authStore.isExpired) {
+      config.headers['Authorization'] = `Bearer ${authStore.token}`
+      isRefreshing = false
+    } else if (authStore.isExpired) {
+      if (!isRefreshing) {
+        const token = await authStore.refreshToken()
+        config.headers['Authorization'] = `Bearer ${token}`
+        isRefreshing = true
+      }
     }
     return config
   },

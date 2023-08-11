@@ -1,72 +1,23 @@
 <template>
-  <header>
-    <div class="container text-white">
-      <div class="flex justify-between py-4">
-        <div>
-          <a href="/">Logo</a>
-        </div>
-        <div>
-          <ul class="flex flex-row gap-8">
-            <li v-for="route in routes" :key="route.name" class="text-white">
-              <router-link :to="{ name: route.name }"> {{ route.text }}</router-link>
-            </li>
-          </ul>
-        </div>
-        <div class="flex flex-row gap-8 items-center">
-          <a href="/profile">Profile</a>
-          <base-button
-            :onclick="($event) => logout($event)"
-            type="text"
-            classnames="text-sm text-white border border-white"
-            size="medium"
-            variant="primary"
-          >
-            Logout
-          </base-button>
-        </div>
-      </div>
-    </div>
+  <header class="fixed w-full z-20 top-0 left-0 flex justify-center">
+    <NavBar />
   </header>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore.ts'
-import BaseButton from '@/components/Button.vue'
+import NavBar from '@/components/NavBar.vue'
 
 export default defineComponent({
-  name: 'nav-bar',
+  name: 'HeaderLayout',
   components: {
-    BaseButton
+    NavBar
   },
   setup() {
     const authStore = useAuthStore()
     return { authStore }
   },
-  data() {
-    return {
-      routes: [
-        {
-          name: 'dashboard',
-          text: 'Accueil'
-        },
-        {
-          name: 'profile',
-          text: 'Profile'
-        },
-        {
-          name: 'game',
-          text: 'Game Test'
-        }
-      ]
-    }
-  },
-  methods: {
-    logout(e: Event) {
-      e.preventDefault()
-      this.authStore.logout()
-      this.$router.push({ name: 'auth' })
-    }
-  }
+  methods: {}
 })
 </script>

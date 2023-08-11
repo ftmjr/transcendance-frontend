@@ -1,14 +1,13 @@
-import { RouteRecordRaw } from 'vue-router'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 
-const authRoutes: RouteRecordRaw = {
+const authRoutes = {
   path: '/auth',
   component: AuthLayout,
   children: [
     {
       path: '',
       name: 'auth',
-      component: () => import('@/views/AuthView.vue'),
+      component: () => import('@/views/Auth/AuthView.vue'),
       meta: {
         requiresAuth: false,
         title: 'Authentification'
@@ -17,7 +16,7 @@ const authRoutes: RouteRecordRaw = {
     {
       path: 'reset-password',
       name: 'reset-password',
-      component: () => import('@/views/ResetPasswordView.vue'),
+      component: () => import('@/views/Auth/ResetPasswordView.vue'),
       meta: {
         requiresAuth: false,
         title: 'Reset Password'
@@ -26,19 +25,19 @@ const authRoutes: RouteRecordRaw = {
     {
       path: 'two-factors',
       name: 'two-factors',
-      component: () => import('@/views/TwoFactorsView.vue'),
+      component: () => import('@/views/Auth/TwoFactorsView.vue'),
       meta: {
         requiresAuth: true,
         title: 'Two Factors'
       }
     },
     {
-      path: 'auth-state-2',
-      name: 'auth-state-2',
-      component: () => import('@/views/AuthStateTwoView.vue'),
+      path: 'oauth-auth',
+      name: 'oauth-auth',
+      component: () => import('@/views/Auth/OAuthState.vue'),
       meta: {
-        requiresAuth: true,
-        title: 'Auth State 2'
+        requiresAuth: false,
+        title: 'OAuth Auth'
       }
     }
   ]

@@ -23,6 +23,7 @@ export interface Profile {
 
   export interface AuthState {
     token: string | null
+    tokenExpiry: number
     user: User | null
     error: {
       state: boolean
