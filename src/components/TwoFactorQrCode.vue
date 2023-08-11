@@ -1,5 +1,5 @@
 <template>
-  <div></div>
+  <div>Image will be here</div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
