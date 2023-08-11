@@ -10,7 +10,7 @@
     :disabled="disabled"
     @click="onclick"
   >
-    {{ text }}
+    <slot></slot>
   </button>
 </template>
 <script lang="ts">
@@ -19,10 +19,6 @@ import type { ButtonProps } from 'Components'
 export default defineComponent({
   name: 'base-button',
   props: {
-    text: {
-      type: String as PropType<ButtonProps['text']>,
-      default: 'Button'
-    },
     type: {
       type: String as PropType<ButtonProps['type']>,
       default: 'button'

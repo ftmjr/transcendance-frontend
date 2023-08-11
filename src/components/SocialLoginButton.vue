@@ -5,7 +5,7 @@
       classnames ?? [sizeStyles[size], styles[provider], 'block px-4 py-3 my-1 text-center w-1/2']
     "
   >
-    <span class="text-xs"> {{ text }} {{ provider }} </span>
+    <span class="text-xs capitalize"> {{ text }} {{ provider }} </span>
   </a>
 </template>
 <script lang="ts">

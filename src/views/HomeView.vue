@@ -1,22 +1,19 @@
 <template>
-  <nav-bar />
-  <main>
-    <div class="container"></div>
-  </main>
+  <div class="container">
+    <p class="text-white text-md">Dashboard home view</p>
+  </div>
 </template>
-<script lang="ts">
-import { defineAsyncComponent, defineComponent } from 'vue'
-import useAuthStore from "@/stores/AuthStore";
 
-const NavBar = defineAsyncComponent(() => import('@/components/Header.vue'))
+<script lang="ts">
+import { defineComponent } from 'vue'
+import useAuthStore from '@/stores/AuthStore'
 
 export default defineComponent({
-  name: 'home-view',
-  components: {
-    NavBar
-  },
-  created() {
-    if (!useAuthStore().isAuthenticated) this.$router.push("/auth")
+  name: 'DashBoard',
+  components: {},
+  setup() {
+    const authStore = useAuthStore()
+    return { authStore }
   },
   data() {
     return {}

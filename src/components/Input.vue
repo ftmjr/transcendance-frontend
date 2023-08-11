@@ -1,10 +1,11 @@
 <template>
   <div class="">
-    <label :for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-      {{ label }}</label
-    >
+    <label :for="name" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">
+      {{ label }}
+    </label>
     <div class="relative">
       <input
+        ref="inputElement"
         :value="value"
         :type="(showPassword && 'text') || type"
         :name="name"
@@ -13,9 +14,13 @@
         :min="min"
         :max="max"
         :placeholder="placeholder"
-        :class="[(error || typeError) && 'border-red-600 focus:border-red-600', classnames ? classnames : styles[type]]"
+        :class="[
+          (error || typeError) && 'border-red-600 focus:border-red-600',
+          classnames ? classnames : styles[type]
+        ]"
         @input="handleInput"
         @keydown="handleKeyPress"
+        @keyup="handleKeyUp"
         :required="required"
         autocomplete="off"
       />
@@ -142,6 +147,11 @@ export default defineComponent({
       default: undefined,
       required: false
     },
+    handleKeyUp: {
+      type: Function as PropType<InputProps['handleKeyUp']>,
+      default: undefined,
+      required: false
+    },
     validate: {
       type: Function as PropType<InputProps['validate']>,
       default: undefined,
@@ -168,8 +178,10 @@ export default defineComponent({
         password: emailPasswordTextStyle,
         text: emailPasswordTextStyle
       }
-
       return rtn
+    },
+    element() {
+      return this.$refs.inputElement as HTMLInputElement
     }
   },
   methods: {
