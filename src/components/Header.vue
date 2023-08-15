@@ -7,7 +7,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore.ts'
-import NavBar from '@/components/NavBar.vue'
+import NavBar from '@/components/MainMenu.vue'
 
 export default defineComponent({
   name: 'HeaderLayout',
