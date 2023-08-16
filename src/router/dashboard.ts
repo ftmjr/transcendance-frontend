@@ -41,6 +41,15 @@ const dashboardRoutes = {
         title: 'Chat'
       }
     },
+    {
+      path: 'chat-test',
+      name: 'chat-test',
+      component: () => import('@/views/ChatViewTest.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Chat-test'
+      }
+    },
   ]
 }
 
