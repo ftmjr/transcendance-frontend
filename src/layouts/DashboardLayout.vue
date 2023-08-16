@@ -27,7 +27,7 @@ export default defineComponent({
     return { authStore }
   },
   beforeCreate() {
-    alert("me");
+    // alert("me");
   //   check if the user is authenticated
   }
 })

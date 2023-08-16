@@ -22,6 +22,7 @@
     "socket.io-client": "^4.7.1",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6",
+    "vuetify": "^3.3.13",
     "xvfb": "^0.4.0"
   },
   "devDependencies": {

@@ -39,9 +39,9 @@ const useAuthStore = defineStore({
     setToken(token: string) {
       this.token = token
       localStorage.setItem('__token__', token)
-      this.tokenExpiry = JSON.parse(atob(token.split('.')[1])).exp * 1000
-      localStorage.setItem('__tokenExpiry__', this.tokenExpiry.toString())
-      this.scheduleTokenRefresh()
+      // this.tokenExpiry = JSON.parse(atob(token.split('.')[1])).exp * 1000
+      // localStorage.setItem('__tokenExpiry__', this.tokenExpiry.toString())
+      // this.scheduleTokenRefresh()
     },
     scheduleTokenRefresh() {
       const refreshAt = this.tokenExpiry - 30 * 1000
