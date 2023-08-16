@@ -30,7 +30,7 @@
               type="password"
           ></v-text-field>
           <v-switch v-model="createRoomInfo.protected" label="Protected" color="indigo"></v-switch>
-          <v-switch v-model="createRoomInfo.visibility" label="Private" color="indigo"></v-switch>
+          <v-switch v-model="createRoomInfo.private" label="Private" color="indigo"></v-switch>
         </v-card-text>
         <v-card-actions>
           <v-btn :color="isCreateButtonClickable ? 'primary' : 'disabled'" @click="createRoom" :disabled="!isCreateButtonClickable">
@@ -101,7 +101,7 @@
 <script lang="ts">
 
 import useAuthStore from "@/stores/AuthStore.ts";
-import axios from 'axios';
+import axios from '@/utils/axios';
 
 const authStore = useAuthStore()
 const socketOptions = {
@@ -124,9 +124,10 @@ export default {
       chatRoomMembers: [],
       chatRoomMessages: [],
       createRoomDialog: false,
-      createRoomInfo: {name: '', password: '', visibility: false, protected: false, error: ''},
+      createRoomInfo: {ownerId: authStore.user.id, name: '', password: '', private: false, protected: false},
       joinRoomDialog: false,
-      joinRoomInfo: {name: '', password: '', visibility: false, protected: false, error: ''}
+      joinRoomInfo: {name: '', password: '', private: false, protected: false},
+      error: ''
     }
   },
   beforeCreate() {
@@ -138,7 +139,7 @@ export default {
     // this.$chatSocket.socket.on('chat', (message: any) => {this.addMessage(message);})
   },
   mounted() {
-    this.chatRoomSetUp('General')
+    // this.chatRoomSetUp('General')
     this.setRooms()
   },
   beforeUnmount() {
@@ -170,7 +171,7 @@ export default {
     },
     async setRooms() {
       try {
-        const { data } = await axios.get("/api/chat/rooms")
+        const { data } = await axios.get("/chat/rooms")
         this.chatRooms.push(...data)
       } catch (e) {
         // to think about
@@ -187,25 +188,30 @@ export default {
     openCreateRoomDialog() {this.createRoomDialog = true},
     resetCreateForm() {
       this.createRoomDialog = false
-      this.createRoomInfo = {ownerId: authStore.user.id, name: '', password: '', visibility: false, protected: false, error: ''}
+      this.createRoomInfo = {ownerId: authStore.user.id, name: '', password: '', private: false, protected: false}
+      this.error = ''
     },
     resetJoinForm() {
       this.joinRoomDialog = false
-      this.joinRoomInfo = {name: '', password: '', visibility: false, protected: false, error: ''}
+      this.joinRoomInfo = {name: '', password: '', private: false, protected: false}
+      this.error = ''
     },
     async createRoom() {
       if (!this.isCreateButtonClickable) {
         return;
       }
       try {
-        await axios.post('/api/chat/new', this.createRoom);
-        this.currentRoom = this.createRoom.name;
-        this.resetCreateForm()
+        console.log(this.createRoomInfo)
+        // await axios.get('/chat/test')
+        // await axios.post('/chat/test', this.createRoomInfo);
+        await axios.post('/chat/new', this.createRoomInfo);
+      //   this.currentRoom = this.createRoom.name;
+      //   this.resetCreateForm()
       } catch (error) {
         if (error.response.status == 409) {
-          this.createRoomInfo.error = ['Room name is already taken. Please choose a different name.'];
+          this.error = ['Room name is already taken. Please choose a different name.'];
         } else {
-          this.createRoomInfo.error = ['An error occurred while creating the room. Please try again later.'];
+          this.error = ['An error occurred while creating the room. Please try again later.'];
         }
       }
     },
@@ -213,19 +219,19 @@ export default {
     async joinRoom() {
       if (!this.isJoinButtonClickable) {return;}
       try {
-        await axios.post('/api/chat/join', this.joinRoom);
+        await axios.post('/chat/join', this.joinRoom);
         // this.$chatSocket.emit('joinRoom', this.joinRoom.name)
         this.currentRoom = this.joinRoom.name;
         this.resetJoinForm();
       } catch (error) {
         const status = error.response.status;
         if (status === 404) {
-          this.joinRoomInfo.error = ["Room doesn't exist"];
+          this.error = ["Room doesn't exist"];
         } else if (status === 403) {
-          this.joinRoomInfo.error = ["Password doesn't match"];
+          this.error = ["Password doesn't match"];
         } else {
           // Handle if Ban
-          this.joinRoomInfo.error = ['An error occurred while joining the room. Please try again later.'];
+          this.error = ['An error occurred while joining the room. Please try again later.'];
         }
       }
     },
@@ -238,8 +244,8 @@ export default {
         console.log('do something special')
       }
       try {
-        const { data } = await axios.get("/api/chat/room/messages/" + room)
-        this.chatRoomMessages.push(...data)
+        // const { data } = await axios.get("/chat/room/messages/" + room)
+        // this.chatRoomMessages.push(...data)
       } catch (e) {
         // to think about
       }
@@ -280,6 +286,10 @@ export default {
   display: flex;
   align-items: center;
 }
+.black-text-field {
+  color: black;
+}
+
 
 .avatar-container, .select-container {
   margin: 10px; /* Add some margin for spacing */
