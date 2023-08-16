@@ -101,7 +101,7 @@
 <script lang="ts">
 
 import useAuthStore from "@/stores/AuthStore.ts";
-import axios from "@/services/axios.service.ts";
+import axios from 'axios';
 
 const authStore = useAuthStore()
 const socketOptions = {
@@ -130,12 +130,12 @@ export default {
     }
   },
   beforeCreate() {
-    this.$chatSocket.setupSocketConnection(socketOptions)
-    this.$chatSocket.socket.on('add-member', (member: any) => {this.addMember(member);});
+    // this.$chatSocket.setupSocketConnection(socketOptions)
+    // this.$chatSocket.socket.on('add-member', (member: any) => {this.addMember(member);});
     // this.$chatSocket.socket.on('chat', (message: any) => {this.addMessage(message);});
   },
   created() {
-    this.$chatSocket.socket.on('chat', (message: any) => {this.addMessage(message);})
+    // this.$chatSocket.socket.on('chat', (message: any) => {this.addMessage(message);})
   },
   mounted() {
     this.chatRoomSetUp('General')
@@ -143,7 +143,7 @@ export default {
   },
   beforeUnmount() {
     // send chatroomMember
-    this.$chatSocket.disconnect();
+    // this.$chatSocket.disconnect();
   },
   watch: {
     'currentRoom.name': function(newRoom, oldRoom) {
@@ -160,9 +160,9 @@ export default {
   },
   methods: {
     changeRoom(newRoom, oldRoom) {
-      this.$chatSocket.socket.emit('leaveRoom', oldRoom)
+      // this.$chatSocket.socket.emit('leaveRoom', oldRoom)
       if (newRoom === 'General') {
-        this.$chatSocket.socket.emit('joinRoom', oldRoom)
+        // this.$chatSocket.socket.emit('joinRoom', oldRoom)
       } else {
         this.joinRoomInfo.name = newRoom
         this.openJoinRoomDialog()
@@ -214,7 +214,7 @@ export default {
       if (!this.isJoinButtonClickable) {return;}
       try {
         await axios.post('/api/chat/join', this.joinRoom);
-        this.$chatSocket.emit('joinRoom', this.joinRoom.name)
+        // this.$chatSocket.emit('joinRoom', this.joinRoom.name)
         this.currentRoom = this.joinRoom.name;
         this.resetJoinForm();
       } catch (error) {
@@ -233,8 +233,8 @@ export default {
     },
     async chatRoomSetUp(room) {
       if(room == 'General') {
-        this.$chatSocket.socket.on('general', (clientId: number) => {this.sendInfo(this.$chatSocket.socket, clientId);});
-        this.$chatSocket.socket.emit('general')
+        // this.$chatSocket.socket.on('general', (clientId: number) => {this.sendInfo(this.$chatSocket.socket, clientId);});
+        // this.$chatSocket.socket.emit('general')
         console.log('do something special')
       }
       try {
@@ -246,7 +246,7 @@ export default {
     },
     sendMessage(){
       this.message.room = this.currentRoom.name;
-      this.$chatSocket.socket.emit('chat', this.message);
+      // this.$chatSocket.socket.emit('chat', this.message);
       this.message.content = '';
     },
     addMessage(message: any) {
