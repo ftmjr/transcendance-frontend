@@ -12,9 +12,10 @@
           :items="chatRooms.map(room => room.name)"
           label="Select a Chat Room"
           item-text="name"
+          bg-color="background"
       ></v-select>
     </aside>
-    <v-btn variant="tonal" @click="openCreateRoomDialog">
+    <v-btn color="background" variant="tonal" @click="openCreateRoomDialog">
       Create Chat Room
     </v-btn>
     <!--    pop up create Room-->
@@ -28,6 +29,7 @@
               label="Password"
               v-model="createRoomInfo.password"
               type="password"
+              bg-color="background"
           ></v-text-field>
           <v-switch v-model="createRoomInfo.protected" label="Protected" color="indigo"></v-switch>
           <v-switch v-model="createRoomInfo.private" label="Private" color="indigo"></v-switch>
@@ -36,12 +38,14 @@
           <v-btn :color="isCreateButtonClickable ? 'primary' : 'disabled'" @click="createRoom" :disabled="!isCreateButtonClickable">
             Create
           </v-btn>
-          <v-btn color="error" @click="resetCreateForm">Cancel</v-btn>
+          <v-btn color="error" @click="resetCreateForm" bg-color="background">
+            Cancel
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
     <!--    End of Pop up -->
-    <v-btn variant="tonal" @click="openJoinRoomDialog">
+    <v-btn color="background" variant="tonal" @click="openJoinRoomDialog">
       Join a Chat Room
     </v-btn>
     <!--    Pop up join chat room -->
@@ -49,7 +53,7 @@
       <v-card>
         <v-card-title>Join Chat Room</v-card-title>
         <v-card-text>
-          <v-text-field label="Chatroom Name" v-model="joinRoomInfo.name" :error-messages="joinRoomInfo.error"></v-text-field>
+          <v-text-field label="Chatroom Name" v-model="joinRoomInfo.roomName" :error-messages="error"></v-text-field>
           <v-text-field
               label="Password"
               v-model="joinRoomInfo.password"
@@ -65,7 +69,7 @@
       </v-card>
     </v-dialog>
   </header>
-  <v-text-field label="Message" v-model="message.content" @keyup.enter="sendMessage"></v-text-field>
+  <v-text-field bg-color='background' label="Message" v-model="message.content" @keyup.enter="sendMessage"></v-text-field>
   <v-card class="message-container" flat>
     <v-card-text class="flex-grow-1 overflow-y-auto">
       <template v-for="(msg, i) in chatRoomMessages" :key="i">
@@ -119,14 +123,14 @@ export default {
     return {
       user: authStore.user,
       message: {room: '', content: ''},
-      chatRooms: [{name: 'General'}],
-      currentRoom: {name: 'General'},
+      chatRooms: [{name: ''}],
+      currentRoom: {name: ''},
       chatRoomMembers: [],
       chatRoomMessages: [],
       createRoomDialog: false,
       createRoomInfo: {ownerId: authStore.user.id, name: '', password: '', private: false, protected: false},
       joinRoomDialog: false,
-      joinRoomInfo: {name: '', password: '', private: false, protected: false},
+      joinRoomInfo: {userId: authStore.user.id, roomName: '', password: ''},
       error: ''
     }
   },
@@ -165,7 +169,7 @@ export default {
       if (newRoom === 'General') {
         // this.$chatSocket.socket.emit('joinRoom', oldRoom)
       } else {
-        this.joinRoomInfo.name = newRoom
+        this.joinRoomInfo.roomName = newRoom
         this.openJoinRoomDialog()
       }
     },
@@ -193,7 +197,7 @@ export default {
     },
     resetJoinForm() {
       this.joinRoomDialog = false
-      this.joinRoomInfo = {name: '', password: '', private: false, protected: false}
+      this.joinRoomInfo = {userId: authStore.user.id, roomName: '', password: ''}
       this.error = ''
     },
     async createRoom() {
@@ -202,11 +206,9 @@ export default {
       }
       try {
         console.log(this.createRoomInfo)
-        // await axios.get('/chat/test')
-        // await axios.post('/chat/test', this.createRoomInfo);
         await axios.post('/chat/new', this.createRoomInfo);
-      //   this.currentRoom = this.createRoom.name;
-      //   this.resetCreateForm()
+          this.currentRoom = this.createRoom.name;
+          this.resetCreateForm()
       } catch (error) {
         if (error.response.status == 409) {
           this.error = ['Room name is already taken. Please choose a different name.'];
@@ -219,23 +221,13 @@ export default {
     async joinRoom() {
       if (!this.isJoinButtonClickable) {return;}
       try {
-        await axios.post('/chat/join', this.joinRoom);
+        await axios.post('/chat/join', this.joinRoomInfo);
         // this.$chatSocket.emit('joinRoom', this.joinRoom.name)
         this.currentRoom = this.joinRoom.name;
         this.resetJoinForm();
       } catch (error) {
-        const status = error.response.status;
-        if (status === 404) {
-          this.error = ["Room doesn't exist"];
-        } else if (status === 403) {
-          this.error = ["Password doesn't match"];
-        } else {
-          // Handle if Ban
-          this.error = ['An error occurred while joining the room. Please try again later.'];
-        }
+        this.error = [error.response.data.message];
       }
-    },
-    async chatRoomEnd(room) {
     },
     async chatRoomSetUp(room) {
       if(room == 'General') {
