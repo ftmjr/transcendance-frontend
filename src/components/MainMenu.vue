@@ -46,11 +46,6 @@ export default defineComponent({
           text: "Chat",
           icon: "ChatIcon"
         },
-        {
-          name: 'chat-test',
-          text: "Chat-test",
-          icon: "ChatIcon"
-        }
       ],
       userRoutes: [
         {
