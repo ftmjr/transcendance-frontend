@@ -61,6 +61,9 @@
   <v-btn color='background' variant="tonal" @click="openCreateRoomDialog">
     Create Chat Room
   </v-btn>
+  <v-btn v-if="currentRoom.name !== 'General'" color='background' variant="tonal" @click="leaveRoom">
+    Leave room
+  </v-btn>
   <v-dialog v-model="dialogs.create" max-width="500px">
     <v-card>
       <v-card-title>Create Chat Room</v-card-title>
@@ -136,6 +139,10 @@
             v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)"
             @click="banMember"
         >Ban</v-btn>
+        <v-btn
+            v-if="isOwner(member) && !isAdminOrOwner(selectedUser)"
+            @click="promoteMember"
+        >Promote</v-btn>
         <!-- ...other user information... -->
       </v-card-text>
       <v-card-actions>
@@ -246,6 +253,14 @@ export default defineComponent({
       socket.socket.emit('updateRoomMembers')
       this.closeUserDialog()
     },
+    promoteMember() {
+      socket.socket.emit('promote', this.selectedUser.id)
+      socket.socket.emit('updateRoomMembers')
+      this.closeUserDialog()
+    },
+    isOwner(member) {
+      return (member.role === 'OWNER')
+    },
     isAdminOrOwner(member) {
       return (member.role === 'OWNER' || member.role ==='ADMIN')
     },
@@ -270,9 +285,7 @@ export default defineComponent({
       }
     },
     async getRooms() {
-      if (this.chatRooms) {
-        this.chatRooms.splice(0)
-      }
+      this.chatRooms.splice(0)
       this.chatRooms.push({id:0, name: 'General', protected: false})
       try {
         const { data } = await axios.get("/chat/rooms")
@@ -296,6 +309,19 @@ export default defineComponent({
       } catch (e) {
         await this.getRooms()
         this.select = {id: 0, name: 'General'}
+      }
+    },
+    async leaveRoom() {
+      try {
+        await axios.post("/chat/leave/" + this.currentRoom.id)
+        socket.socket.emit('updateRoomMembers')
+        this.select = {id: 0, name: 'General'}
+        this.currentRoom = {id: 0, name: 'General'}
+        socket.socket.emit('updateRooms')
+      } catch (e) {
+        // await this.getRooms()
+        // this.select = {id: 0, name: 'General'}
+        // this.currentRoom = {id: 0, name: 'General'}
       }
     },
     openCreateRoomDialog() {this.dialogs.create = true},
@@ -332,8 +358,10 @@ export default defineComponent({
     async joinRoom() {
       try {
         const { data } = await axios.post('/chat/join', this.joinRoomInfo);
+        await this.getRooms()
         this.member = data
         this.currentRoom = this.chatRooms.find(room => room.name == this.joinRoomInfo.roomName);
+        this.select.name = this.currentRoom.name
         socket.socket.emit('joinRoom', this.joinRoomInfo.roomName)
         socket.socket.emit('updateRoomMembers')
         await this.getRoomMessages()
