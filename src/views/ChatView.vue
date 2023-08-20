@@ -68,7 +68,7 @@
     <v-card>
       <v-card-title>Create Chat Room</v-card-title>
       <v-card-text>
-        <v-text-field label="Chatroom Name" v-model="createRoomInfo.name" :error-messages="this.createRoomInfo.error"></v-text-field>
+        <v-text-field label="Chatroom Name" v-model="createRoomInfo.name" :error-messages="error"></v-text-field>
         <v-text-field
             v-if="createRoomInfo.protected"
             label="Password"
@@ -124,9 +124,12 @@
     <v-card>
       <v-card-title>User Information</v-card-title>
       <v-card-text>
+
         <!-- Display user information here -->
         <div>Name: {{ selectedUser.member.username }}</div>
         <div>Status: {{ selectedUser.member.profile.status }}</div>
+        <v-alert v-if="error" type="error" title="Action Failed" :text='error'></v-alert>
+        <v-alert v-if="success" type="success" title="Action Failed" :text="success"></v-alert>
         <v-btn
             v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)"
             @click="muteUnmuteMember"
@@ -143,6 +146,10 @@
             v-if="isOwner(member) && !isAdminOrOwner(selectedUser)"
             @click="promoteMember"
         >Promote</v-btn>
+        <v-btn v-if="isNotMe(selectedUser.member)" @click="blockUser">Block user</v-btn>
+        <v-btn v-if="isNotMe(selectedUser.member)" @click="addFriend">Add friend</v-btn>
+        <v-btn v-if="isNotMe(selectedUser.member)" @click="addFriend">Send message</v-btn>
+        <v-btn v-if="isNotMe(selectedUser.member)" @click="addFriend">Invite to play</v-btn>
         <!-- ...other user information... -->
       </v-card-text>
       <v-card-actions>
@@ -188,12 +195,17 @@ export default defineComponent({
       dialogs: {join: false, create: false, password: false, user: false},
       createRoomInfo: {ownerId: authStore.user.id, name: '', password: '', private: false, protected: false},
       joinRoomInfo: {userId: authStore.user.id, roomName: 'General', password: ''},
-      error: ''
+      error: '',
+      success: '',
+      blockedUsers: [],
     }
   },
   beforeCreate() {
     socket.connectChat(socketOptions)
     socket.socket.on('message', (message: any) => {
+      socket.socket.emit('filter', message);}
+    );
+    socket.socket.on('filter', (message: any) => {
       this.addMessage(message);}
     );
     socket.socket.on('updateRooms', () => {
@@ -234,6 +246,28 @@ export default defineComponent({
     },
   },
   methods: {
+    isNotMe(member) {
+      return member.id !== this.user.id
+    },
+    async blockUser() {
+      this.error = ''
+      this.success = ''
+      try {
+        await axios.post("/users/block/" + this.selectedUser.id)
+        await this.getRoomMembers()
+        this.closeUserDialog()
+      } catch (error) {
+        this.error = [error.response.data.message];
+      }
+    },
+    async addFriend() {
+      try {
+        await axios.get("/friends/add/" + this.currentRoom.id, { params: { take: 100 }})
+        this.closeUserDialog()
+      } catch (error) {
+        this.error = [error.response.data.message];
+      }
+    },
     muteUnmuteMember() {
       if (this.selectedUser.role == 'MUTED') {
         socket.socket.emit('unmute', this.selectedUser.id)
