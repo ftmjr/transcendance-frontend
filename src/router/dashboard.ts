@@ -41,6 +41,15 @@ const dashboardRoutes = {
         title: 'Chat'
       }
     },
+    {
+      path: 'settings',
+      name: 'settings',
+      component: () => import('@/views/SettingsView.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Settings'
+      }
+    },
   ]
 }
 
