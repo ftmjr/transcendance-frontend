@@ -111,7 +111,7 @@ export default defineComponent({
   methods: {
     async refreshUserData() {
       this.loading = true
-      await this.authStore.fetchUser()
+      // await this.authStore.fetchUser()
       this.loading = false
     }
   }

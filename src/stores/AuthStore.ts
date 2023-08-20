@@ -36,6 +36,14 @@ const useAuthStore = defineStore({
     }
   },
   actions: {
+    async refreshUser() {
+      try {
+        const { data } = await axios.get('auth/me')
+        this.setUser(data)
+      } catch(error) {
+        // to think about
+      }
+    },
     setToken(token: string) {
       this.token = token
       localStorage.setItem('__token__', token)

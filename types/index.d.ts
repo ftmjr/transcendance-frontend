@@ -1,6 +1,6 @@
 declare module 'Auth' {
 
-export interface Profile {
+  export interface Profile {
     id: number;
     userId: number;
     name:    string;
@@ -42,5 +42,57 @@ export interface Profile {
   export interface ILoginData {
     accessToken: string;
     user: User;
+  }
+}
+
+declare module 'Chat' {
+  export enum Role {
+    BAN,
+    MUTE,
+    USER,
+    ADMIN,
+    OWNER,
+    SUPERMODERATOR
+  }
+
+  export enum Status {
+    ONLINE,
+    OFFLINE,
+    BUSY,
+    AWAY
+  }
+
+  export interface ChatroomMember {
+    id: number;
+    memberId : number;
+    chatroomId: number;
+    role: Role;
+    status: Status;
+  }
+
+  export interface ChatroomMessage {
+    sender: string;
+    message: string;
+    timestamp: string;
+  }
+
+  export interface Chatroom {
+    id: number;
+    name: string;
+    members: ChatroomMember[];
+    messages: ChatroomMessage[];
+    protected: boolean;
+  }
+
+  export interface ChatState {
+    socket: SocketioService;
+    socketOptions: any
+    chatrooms: Chatroom[] | null
+    chatroomMessages: ChatroomMessage[]
+    chatroomMembers: ChatroomMember[]
+    error: {
+      state: boolean
+      message: string
+    }
   }
 }
