@@ -47,6 +47,11 @@ export default defineComponent({
           icon: "ChatIcon"
         },
         {
+          name: 'dm',
+          text: "Dm",
+          icon: "ChatIcon"
+        },
+        {
           name: 'settings',
           text: 'Settings',
           icon: "Setting"
