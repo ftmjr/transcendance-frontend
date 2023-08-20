@@ -249,6 +249,8 @@ export default defineComponent({
             'Content-Type': 'multipart/form-data',
           },
         });
+        this.authStore.refreshUser()
+        this.user = this.authStore.getUser
         console.log('File uploaded successfully:', response.data);
       } catch (error) {
         console.error('Error uploading file:', error.message);
