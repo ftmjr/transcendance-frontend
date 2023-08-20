@@ -41,6 +41,15 @@ const dashboardRoutes = {
         title: 'Chat'
       }
     },
+    {
+      path: 'dm',
+      name: 'dm',
+      component: () => import('@/views/DmView.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Dm'
+      }
+    },
   ]
 }
 
