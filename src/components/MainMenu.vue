@@ -51,6 +51,11 @@ export default defineComponent({
           text: "Dm",
           icon: "ChatIcon"
         },
+        {
+          name: 'settings',
+          text: 'Settings',
+          icon: "Setting"
+        },
       ],
       userRoutes: [
         {
