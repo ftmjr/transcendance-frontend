@@ -129,7 +129,7 @@
         <div>Name: {{ selectedUser.member.username }}</div>
         <div>Status: {{ selectedUser.member.profile.status }}</div>
         <v-alert v-if="error" type="error" title="Action Failed" :text='error'></v-alert>
-        <v-alert v-if="success" type="success" title="Action Failed" :text="success"></v-alert>
+        <v-alert v-if="success" type="success" title="Action succeed" :text="success"></v-alert>
         <v-btn
             v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)"
             @click="muteUnmuteMember"
@@ -253,19 +253,23 @@ export default defineComponent({
       this.error = ''
       this.success = ''
       try {
-        await axios.post("/users/block/" + this.selectedUser.id)
+        await axios.post("/users/block/" + this.selectedUser.memberId)
         await this.getRoomMembers()
         this.closeUserDialog()
       } catch (error) {
-        this.error = [error.response.data.message];
+        this.error = error.response.data.message;
       }
     },
     async addFriend() {
       try {
-        await axios.get("/friends/add/" + this.currentRoom.id, { params: { take: 100 }})
+        await axios.post("/friends/" + this.selectedUser.memberId)
         this.closeUserDialog()
       } catch (error) {
-        this.error = [error.response.data.message];
+        if (error.response.status === 409) {
+          this.error = 'Request already sent'
+        } else {
+          this.error = error.response.data.message;
+        }
       }
     },
     muteUnmuteMember() {
@@ -300,7 +304,6 @@ export default defineComponent({
     },
     openUserDialog(user) {
       this.selectedUser = user;
-      console.log(this.selectedUser)
       this.dialogs.user = true;
     },
     closeUserDialog() {

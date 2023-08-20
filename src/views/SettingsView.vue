@@ -60,13 +60,13 @@
         >
           <template v-slot:prepend>
             <v-avatar size="50">
-              <v-img :src="item.avatar"></v-img>
+              <v-img :src="item.profile.avatar"></v-img>
             </v-avatar>
           </template>
 
           <template v-slot:append>
             <v-btn size="small" variant="tonal" @click="() => unfriend(item)">
-              Unblock
+              Unfriend
             </v-btn>
           </template>
         </v-list-item>
@@ -90,18 +90,18 @@
     >
       <template v-slot:default="{ item }">
         <v-list-item
-            :title="item.username"
+            :title="item.receiver.username"
             :subtitle="`Since ${formatDate(item.createdAt)}`"
         >
           <template v-slot:prepend>
             <v-avatar size="50">
-              <v-img :src="item.profile.avatar"></v-img>
+              <v-img :src="item.receiver.profile.avatar"></v-img>
             </v-avatar>
           </template>
 
           <template v-slot:append>
             <v-btn size="small" variant="tonal" @click="() => cancelRequest(item)">
-              Unblock
+              cancel
             </v-btn>
           </template>
         </v-list-item>
@@ -119,18 +119,18 @@
     <v-divider></v-divider>
 
     <v-virtual-scroll
-        :items="sentRequests"
+        :items="receivedRequests"
         height="120"
         item-height="48"
     >
       <template v-slot:default="{ item }">
         <v-list-item
-            :title="item.username"
+            :title="item.sender.username"
             :subtitle="`Since ${formatDate(item.createdAt)}`"
         >
           <template v-slot:prepend>
             <v-avatar size="50">
-              <v-img :src="item.profile.avatar"></v-img>
+              <v-img :src="item.sender.profile.avatar"></v-img>
             </v-avatar>
           </template>
 
@@ -219,8 +219,8 @@ export default defineComponent({
     this.getBlockedUsers()
     this.getUsers()
     this.getFriends()
-    // this.getSentRequests()
-    // this.getReceivedRequests()
+    this.getSentRequests()
+    this.getReceivedRequests()
   },
   methods: {
     async getUsers() {
@@ -264,7 +264,7 @@ export default defineComponent({
     },
     async cancelRequest(request) {
       try {
-        await axios.delete("/users/block/" + request.id)
+        await axios.delete("/friends/sent/" + request.id)
         await this.getSentRequests()
       } catch (e) {
         // to think about
@@ -272,15 +272,16 @@ export default defineComponent({
     },
     async approveRequest(request) {
       try {
-        await axios.post("/users/friends/approve/" + request.id)
+        await axios.post("/friends/approve/" + request.id)
         await this.getReceivedRequests()
+        await this.getFriends()
       } catch (e) {
         // to think about
       }
     },
     async rejectRequest(request) {
       try {
-        await axios.post("/users/friends/add/" + request.id)
+        await axios.post("/friends/reject/" + request.id)
         await this.getReceivedRequests()
       } catch (e) {
         // to think about
@@ -288,7 +289,7 @@ export default defineComponent({
     },
     async unfriend(user) {
       try {
-        await axios.delete("/users/friend/remove/" + user.id)
+        await axios.delete("/friends/" + user.id)
         await this.getFriends()
       } catch (e) {
         // to think about
@@ -320,7 +321,7 @@ export default defineComponent({
     async getSentRequests() {
       this.sentRequests.splice(0)
       try {
-        const { data } = await axios.get("/users/friends/add")
+        const { data } = await axios.get("/friends/sent")
         this.sentRequests.push(...data)
       } catch (e) {
         // to think about
@@ -329,7 +330,7 @@ export default defineComponent({
     async getReceivedRequests() {
       this.receivedRequests.splice(0)
       try {
-        const { data } = await axios.get("/users/friends/requests")
+        const { data } = await axios.get("/friends/received")
         this.receivedRequests.push(...data)
       } catch (e) {
         // to think about
