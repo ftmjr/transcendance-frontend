@@ -227,9 +227,10 @@ export default defineComponent({
     socket.disconnect()
   },
   watch: {
-    receiver(newValue, oldValue) {
+    async receiver(newValue, oldValue) {
       this.messages.splice(0)
       socket.socket.emit('addReceiver', newValue.id)
+      await this.getMessages()
     },
 
     // old
@@ -266,16 +267,23 @@ export default defineComponent({
       if (!this.message.content) {
         return
       }
-      //console.log(this.receiver.id);
       socket.socket.emit('dm', this.message.content);
       this.message.content = '';
     },
     addMessage(message: any) {
-
       if (this.isConversationMessage(message)){
         this.messages.push(message);
       }
-
+    },
+    async getMessages() {
+      this.messages.splice(0)
+      try {
+        const { data } = await axios.get("/chat/dm/" + this.receiver.id, {params: {take: 100}})
+        this.messages.push(...data)
+      }
+      catch (e) {
+        // to think about
+      }
     },
 
     // old methods
