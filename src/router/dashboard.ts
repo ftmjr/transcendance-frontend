@@ -23,15 +23,15 @@ const dashboardRoutes = {
         title: 'My Profile'
       }
     },
-    {
-      path: 'game',
-      name: 'game',
-      component: () => import('@/views/GameView.vue'),
-      meta: {
-        requiresAuth: true,
-        title: 'Game Test'
-      }
-    },
+    // {
+    //   path: 'game',
+    //   name: 'game',
+    //   component: () => import('@/views/GameView.vue'),
+    //   meta: {
+    //     requiresAuth: true,
+    //     title: 'Game Test'
+    //   }
+    // },
     {
       path: 'chat',
       name: 'chat',
@@ -48,6 +48,24 @@ const dashboardRoutes = {
       meta: {
         requiresAuth: true,
         title: 'Dm'
+      }
+    },
+    {
+      path: 'message',
+      name: 'message',
+      component: () => import('@/views/MessageView.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Message'
+      }
+    },
+    {
+      path: 'leaderboard',
+      name: 'leaderboard',
+      component: () => import('@/views/LeaderboardView.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Message'
       }
     },
     {

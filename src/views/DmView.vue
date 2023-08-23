@@ -92,14 +92,17 @@
     </v-card>
   </v-dialog>
   <v-text-field bg-color='background' label="Message" v-model="message.content" @keyup.enter="sendMessage" :disabled="isMuted()"></v-text-field>
-  <v-card class="message-container" flat>
-    <v-card-text ref="messageContainer" class="flex-grow-1 overflow-y-auto">
-      <v-virtual-scroll :items="messages" height="400">
+  <v-card flat>
+    <v-card-text class="flex-grow-1 overflow-y-auto">
+      <v-virtual-scroll ref="messageContainer" :items="messages" height="400">
         <template v-slot:default="{ item: msg }">
           <div :class="{ 'd-flex flex-row-reverse': isMyMessage(msg) }">
             <v-hover v-slot:default="{ hover }">
+              <v-avatar size="30">
+                <v-img :src="msg.sender.profile.avatar"></v-img>
+              </v-avatar>
               <v-chip :color="isMyMessage(msg) ? 'primary' : ''" dark style="height:auto;white-space: normal;" class="pa-4 mb-2">
-                {{ msg.text }}
+                <span v-if="msg.sender" class="font-bold">{{ msg.sender.username }}:</span> {{ msg.text }}
                 <sub class="ml-2" style="font-size: 0.5rem;">{{ formatMessageDate(msg.timestamp, true) }}</sub>
                 <v-icon v-if="hover" small>expand_more</v-icon>
               </v-chip>
@@ -197,8 +200,8 @@ export default defineComponent({
       error: ''
     }
   },
-  beforeCreate() {
-    socket.connectChat(socketOptions)
+  async beforeCreate() {
+    await socket.connectChat(socketOptions)
     socket.socket.emit('joinUsers')
     socket.socket.on('dm', (message: any) => {
       this.addMessage(message);}
@@ -271,6 +274,7 @@ export default defineComponent({
       this.message.content = '';
     },
     addMessage(message: any) {
+      console.log(message.sender)
       if (this.isConversationMessage(message)){
         this.messages.push(message);
       }
@@ -285,7 +289,19 @@ export default defineComponent({
         // to think about
       }
     },
-
+    async getMessages() {
+      try {
+        const { data } = await axios.get("/chat/dm/" + this.receiver.id)
+        this.messages.push(...data)
+        await this.$nextTick(() => {
+          const messageContainer = this.$refs.messageContainer;
+          console.log(messageContainer)
+          messageContainer.scrollTop = 0;
+        });
+      } catch (e) {
+        // to think about
+      }
+    },
     // old methods
     muteUnmuteMember() {
       if (this.selectedUser.role == 'MUTED') {
@@ -418,9 +434,9 @@ export default defineComponent({
       const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const options = {
         timeZone: userTimezone,
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+        // year: 'numeric',
+        // month: 'long',
+        // day: 'numeric',
       };
       if (includeTime) {
         options.hour = 'numeric';

@@ -94,7 +94,10 @@
           <div :class="{ 'd-flex flex-row-reverse': isMyMessage(msg) }">
             <v-hover v-slot:default="{ hover }">
               <v-chip :color="isMyMessage(msg) ? 'primary' : ''" dark style="height:auto;white-space: normal;" class="pa-4 mb-2">
-                {{ msg.content }}
+                <v-avatar size="30">
+                  <v-img :src="msg.user.profile.avatar"></v-img>
+                </v-avatar>
+                {{"&nbsp" + msg.content }}
                 <sub class="ml-2" style="font-size: 0.5rem;">{{ formatMessageDate(msg.timestamp, true) }}</sub>
                 <v-icon v-if="hover" small>expand_more</v-icon>
               </v-chip>
@@ -177,6 +180,7 @@ const socketOptions = {
     }
   }
 };
+const chatMessageContainer = document.querySelector('.message-container')
 export default defineComponent({
   name: 'ChatRoom-View',
   data() {
@@ -415,15 +419,22 @@ export default defineComponent({
     },
     addMessage(message: any) {
       this.chatRoomMessages.push(message)
+      this.$nextTick(() => {
+        // Get the messageContainer element using the ref
+        const messageContainer = this.$refs.messageContainer;
+
+        // Scroll to the bottom of the message container
+        messageContainer.scrollTop = this.$refs.messageContainer.scrollHeight;
+      });
     },
     isMyMessage(msg: any) : boolean {return msg.userId === this.user.id;},
     formatMessageDate(date, includeTime = false) {
       const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const options = {
         timeZone: userTimezone,
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+        // year: 'numeric',
+        // month: 'long',
+        // day: 'numeric',
       };
       if (includeTime) {
         options.hour = 'numeric';
