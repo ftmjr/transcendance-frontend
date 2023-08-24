@@ -235,6 +235,8 @@ export default defineComponent({
       } else {
         this.joinRoom()
       }
+      this.currentRoom = newValue
+      this.getRoomMembers()
     }
   },
   computed: {
@@ -258,6 +260,7 @@ export default defineComponent({
       try {
         await axios.post("/users/block/" + this.selectedUser.memberId)
         await this.getRoomMembers()
+        await this.getRoomMessages()
         this.closeUserDialog()
       } catch (error) {
         this.error = error.response.data.message;
@@ -276,7 +279,7 @@ export default defineComponent({
       }
     },
     muteUnmuteMember() {
-      if (this.selectedUser.role == 'MUTED') {
+      if (this.selectedUser.role === 'MUTED') {
         socket.socket.emit('unmute', this.selectedUser.id)
       } else {
         socket.socket.emit('mute', this.selectedUser.id)
@@ -341,7 +344,7 @@ export default defineComponent({
       try {
         const { data } = await axios.get("/chat/members/" + this.currentRoom.id)
         this.chatRoomMembers.push(...data)
-        this.member = this.chatRoomMembers.find(member => member.memberId == this.user.id)
+        this.member = this.chatRoomMembers.find(member => member.memberId === this.user.id)
         if (!this.member || this.member.role === 'BAN') {
           await this.getRooms()
           this.select = {id: 0, name: 'General'}
@@ -400,8 +403,6 @@ export default defineComponent({
         const { data } = await axios.post('/chat/join', this.joinRoomInfo);
         await this.getRooms()
         this.member = data
-        this.currentRoom = this.chatRooms.find(room => room.name == this.joinRoomInfo.roomName);
-        this.select.name = this.currentRoom.name
         socket.socket.emit('joinRoom', this.joinRoomInfo.roomName)
         socket.socket.emit('updateRoomMembers')
         await this.getRoomMessages()
