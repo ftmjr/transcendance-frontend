@@ -179,6 +179,7 @@
   <div>
     <input type="file" @change="usersStore.handleFileChange" />
     <v-btn color="background" @click="usersStore.uploadFile">Upload</v-btn>
+    <v-btn color="background" @click="usersStore.randomizeAvatar">Randomize Avatar</v-btn>
   </div>
     <v-btn color="background" @click="openUpdateDialog">Update Username</v-btn>
     <v-dialog v-model="updateDialog" max-width="500px">

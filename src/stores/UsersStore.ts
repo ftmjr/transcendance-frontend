@@ -69,6 +69,15 @@ const useUsersStore = defineStore({
         console.error('Error uploading file:', error.message);
       }
     },
+    async randomizeAvatar() {
+      try {
+        await axios.delete('/files/avatar')
+        await this.authStore.refreshUser()
+        this.user = this.authStore.getUser
+      } catch (error) {
+        // to think about
+      }
+    },
     async unblock(user) {
       try {
         await axios.delete("/users/block/" + user.id)
