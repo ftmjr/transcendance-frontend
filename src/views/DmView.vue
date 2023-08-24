@@ -89,7 +89,7 @@ export default defineComponent({
   watch: {
     async receiver(newValue, oldValue) {
       this.messages.splice(0)
-      socket.socket.emit('addReceiver', newValue.id)
+      socket.socket.emit('addReceiver', newValue)
       await this.getMessages()
     },
   },

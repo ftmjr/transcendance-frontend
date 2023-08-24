@@ -8,6 +8,7 @@ const useUsersStore = defineStore({
     filteredUsers: [],
     allUsers: [],
     users: [],
+    leaderboard: [],
     blockedUsers: [],
     friends: [],
     sentRequests: [],
@@ -20,6 +21,7 @@ const useUsersStore = defineStore({
   getters:{
     getAllUsers() { return this.allUsers },
     getUsers() { return this.users },
+    getLeaderboard() { return this.leaderboard }
   },
   actions: {
     async getPaginatedUsers(page: number) {
@@ -32,6 +34,23 @@ const useUsersStore = defineStore({
         const { data } = await axios.get("/users/all")
         this.allUsers.push(...data)
         console.log(data)
+      } catch (e) {
+        // to think about
+      }
+    },
+    getCountByEvent(gameHistories, event) {
+      return gameHistories.filter(history => history.event === event).length;
+    },
+    async setLeaderboard() {
+      this.leaderboard.splice(0)
+      try {
+        const { data } = await axios.get("/users/leaderboard")
+        this.leaderboard.push(...data)
+        this.leaderboard.sort((a, b) => {
+          const aWinCount = this.getCountByEvent(a.gameHistories, 'MATCH_WON');
+          const bWinCount = this.getCountByEvent(b.gameHistories, 'MATCH_WON');
+          return bWinCount - aWinCount;
+        });
       } catch (e) {
         // to think about
       }
