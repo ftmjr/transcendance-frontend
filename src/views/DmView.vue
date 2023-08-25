@@ -132,6 +132,7 @@ export default defineComponent({
       }
     },
     async getConversations() {
+      this.conversations.splice(0)
       try {
         const { data } = await axios.get("/chat/dm")
         this.conversations.push(...data)
@@ -149,11 +150,18 @@ export default defineComponent({
       socket.socket.emit('dm', this.message.content);
       this.message.content = '';
     },
-    addMessage(message: any) {
+    async addMessage(message: any) {
       if (this.isConversationMessage(message)){
         this.messages.push(message);
       } else {
-        this.notifications[message.senderId] = message.text;
+        const senderInConversations = this.conversations.find(conversation => conversation.id === message.senderId);
+        if (!senderInConversations) {
+          this.getConversations().then(() => {
+            this.notifications[message.senderId] = message.text;
+          });
+        } else {
+          this.notifications[message.senderId] = message.text;
+        }
       }
     },
     async getMessages() {
