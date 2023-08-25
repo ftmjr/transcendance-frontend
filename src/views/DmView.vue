@@ -31,6 +31,28 @@
     </v-card-text>
   </v-card>
   <v-text-field bg-color='background' label="Message" v-model="message.content" @keyup.enter="sendMessage"></v-text-field>
+  <v-layout>
+    <v-navigation-drawer expand-on-hover rail location="right">
+      <template v-slot:prepend>
+        <v-list-item
+            v-for="member in conversations"
+            :key="member.id"
+            :class="{
+            'pale-green-background': member.profile.status === 'Online',
+            'received-message': true
+          }"
+            lines="two"
+            :prepend-avatar="member.profile.avatar"
+            :title="member.username"
+            :subtitle="getNotification(member)"
+            @click="selectReceiver(member)"
+        >
+          <div v-if="getNotification(member) != member.profile.status" class="status-circle"></div>
+        </v-list-item>
+      </template>
+    </v-navigation-drawer>
+    <v-main style="height: 250px"></v-main>
+  </v-layout>
 </template>
 
 <script lang="ts">
@@ -59,6 +81,8 @@ export default defineComponent({
       users: [],
       receiver: null,
       messages: [],
+      conversations: [],
+      notifications: [],
       user: authStore.user,
       selectedUser: null,
       message: {room: '', content: ''},
@@ -71,35 +95,49 @@ export default defineComponent({
     socket.socket.on('dm', (message: any) => {
       this.addMessage(message);}
     );
-
-    // old methods
-    socket.socket.on('updateRooms', () => {
-      this.getRooms()
-    })
-    socket.socket.on('updateRoomMembers', () => {
-      this.getRoomMembers()
-    })
   },
   async created() {
     await this.getAllUsers()
+    await this.getConversations()
   },
   beforeUnmount() {
     socket.disconnect()
   },
   watch: {
     async receiver(newValue, oldValue) {
-      this.messages.splice(0)
+      this.messages = []
       socket.socket.emit('addReceiver', newValue)
+      this.notifications[newValue.id] = newValue.profile.status;
       await this.getMessages()
     },
   },
   computed: {
   },
   methods: {
+    getNotification(member) {
+      if (this.notifications[member.id]) {
+        return this.notifications[member.id];
+      }
+      return member.profile.status; // Fallback to status if no notification
+    },
+    async selectReceiver(member) {
+      this.receiver = member;
+    },
     async getAllUsers() {
       try {
         const { data } = await axios.get("/users")
         this.users.push(...data)
+      } catch (e) {
+        // to think about
+      }
+    },
+    async getConversations() {
+      try {
+        const { data } = await axios.get("/chat/dm")
+        this.conversations.push(...data)
+        this.conversations.forEach((user) => {
+          this.notifications[user.id] = user.profile.status;
+        })
       } catch (e) {
         // to think about
       }
@@ -112,9 +150,10 @@ export default defineComponent({
       this.message.content = '';
     },
     addMessage(message: any) {
-      console.log(message.sender)
       if (this.isConversationMessage(message)){
         this.messages.push(message);
+      } else {
+        this.notifications[message.senderId] = message.text;
       }
     },
     async getMessages() {
@@ -127,28 +166,15 @@ export default defineComponent({
         // to think about
       }
     },
-    isAdminOrOwner(member) {
-      return (member.role === 'OWNER' || member.role ==='ADMIN')
-    },
-    openUserDialog(user) {
-      this.selectedUser = user;
-      console.log(this.selectedUser)
-      this.dialogs.user = true;
-    },
-    closeUserDialog() {
-      this.dialogs.user = false;
-    },
-    isMyMessage(msg: any) : boolean {return msg.senderId === this.user.id;},
+    isMyMessage(msg: any) : boolean {return msg && msg.senderId === this.user.id;},
     isConversationMessage(msg: any) : boolean
     {
-      if (this.isMyMessage(msg) === true)
-      {
+      if (this.receiver && this.isMyMessage(msg) === true) {
         return msg.receiverId === this.receiver.id;
-      }
-      else
-      {
+      } else if (this.receiver) {
         return msg.senderId === this.receiver.id;
       }
+      return false
     },
     formatMessageDate(date, includeTime = false) {
       const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -188,5 +214,17 @@ export default defineComponent({
 }
 .messages::-webkit-scrollbar-thumb {
   background: aqua;
+}
+.pale-green-background {
+  background-color: palegreen;
+}
+.status-circle {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
 }
 </style>
