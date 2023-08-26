@@ -95,7 +95,9 @@ export default defineComponent({
     await socket.connectChat(socketOptions)
   },
   async mounted() {
-    this.receiver = this.chat.dmReceiver
+    if (this.chat.dmReceiver) {
+      this.receiver = this.chat.dmReceiver
+    }
     socket.socket.emit('joinUsers')
     socket.socket.on('dm', (message: any) => {
       this.addMessage(message);}

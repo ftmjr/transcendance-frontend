@@ -9,7 +9,7 @@ const authStore = useAuthStore();
 const useChatStore = defineStore({
     id:'chat',
     state: () => ({
-        dmReceiver: {},
+        dmReceiver: null,
         chatrooms: [],
         chatroomMembers: [],
         chatroomMessages: [],
