@@ -63,6 +63,7 @@ import axios from '@/utils/axios';
 import useChatStore from "@/stores/ChatStore";
 import chatSocketService from "@/utils/socketio";
 
+const chatStore = useChatStore()
 const authStore = useAuthStore()
 const socket = chatSocketService
 const socketOptions = {
@@ -79,6 +80,7 @@ export default defineComponent({
   data() {
     return {
       users: [],
+      chat: chatStore,
       receiver: null,
       messages: [],
       conversations: [],
@@ -89,14 +91,15 @@ export default defineComponent({
       error: ''
     }
   },
-  async beforeCreate() {
+  async created() {
     await socket.connectChat(socketOptions)
+  },
+  async mounted() {
+    this.receiver = this.chat.dmReceiver
     socket.socket.emit('joinUsers')
     socket.socket.on('dm', (message: any) => {
       this.addMessage(message);}
     );
-  },
-  async created() {
     await this.getAllUsers()
     await this.getConversations()
   },
@@ -108,6 +111,7 @@ export default defineComponent({
       this.messages = []
       socket.socket.emit('addReceiver', newValue)
       this.notifications[newValue.id] = newValue.profile.status;
+      this.chat.setDmReceiver(newValue)
       await this.getMessages()
     },
   },
