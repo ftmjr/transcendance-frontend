@@ -9,6 +9,7 @@ const authStore = useAuthStore();
 const useChatStore = defineStore({
     id:'chat',
     state: () => ({
+        dmReceiver: {},
         chatrooms: [],
         chatroomMembers: [],
         chatroomMessages: [],
@@ -17,8 +18,12 @@ const useChatStore = defineStore({
         getChatrooms() : Chatroom[] | null { return this.chatrooms },
         getChatroomMessages() : ChatroomMessage[] | null { return this.chatroomMessages },
         getChatroomMembers() : ChatroomMember[] | null { return this.chatroomMembers },
+        getDmReceiver() { return this.dmReceiver }
     },
     actions:{
+        setDmReceiver(newReceiver) {
+            this.dmReceiver = newReceiver
+        },
         async setChatrooms() {
             this.chatrooms.clear()
             this.chatrooms.push({id: 0, name: 'General', protected: false})
