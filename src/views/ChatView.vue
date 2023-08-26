@@ -115,7 +115,7 @@
             :key="member.id"
             lines="two"
             :prepend-avatar="member.member.profile.avatar"
-            :title="member.member.profile.name"
+            :title="member.member.username"
             :subtitle="member.member.profile.status"
             @click="openUserDialog(member)"
         ></v-list-item>
@@ -123,39 +123,64 @@
     </v-navigation-drawer>
     <v-main style="height: 250px"></v-main>
   </v-layout>
+<!--  <ProfileDialog v-if="dialogs.user"></ProfileDialog>-->
   <v-dialog v-model="dialogs.user" max-width="400">
     <v-card>
-      <v-card-title>User Information</v-card-title>
+      <div class="profile-avatar-container">
+        <div class="status-background" :class="{ 'status-online': selectedUser.member.profile.status === 'Online', 'status-offline': selectedUser.member.profile.status !== 'Online' }">
+        </div>
+        <div class="avatar-container">
+          <img :src="selectedUser.member.profile.avatar" alt="User Avatar" class="avatar-img" />
+        </div>
+      </div>
+      <v-card-title class=text-center>{{ selectedUser.member.username }}</v-card-title>
       <v-card-text>
-        <!-- Display user information here -->
-        <div>Name: {{ selectedUser.member.username }}</div>
-        <div>Status: {{ selectedUser.member.profile.status }}</div>
-        <v-alert v-if="error" type="error" title="Action Failed" :text='error'></v-alert>
-        <v-alert v-if="success" type="success" title="Action succeed" :text="success"></v-alert>
-        <v-btn
-            v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)"
-            @click="muteUnmuteMember"
-        >Mute/Unmute</v-btn>
-        <v-btn
-            v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)"
-            @click="kickMember"
-        >Kick</v-btn>
-        <v-btn
-            v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)"
-            @click="banMember"
-        >Ban</v-btn>
-        <v-btn
-            v-if="isOwner(member) && !isAdminOrOwner(selectedUser)"
-            @click="promoteMember"
-        >Promote</v-btn>
-        <v-btn v-if="isNotMe(selectedUser.member)" @click="blockUser">Block user</v-btn>
-        <v-btn v-if="isNotMe(selectedUser.member)" @click="addFriend">Add friend</v-btn>
-        <v-btn v-if="isNotMe(selectedUser.member)" @click="addFriend">Send message</v-btn>
-        <v-btn v-if="isNotMe(selectedUser.member)" @click="addFriend">Invite to play</v-btn>
-        <!-- ...other user information... -->
+        <v-alert v-if="error" type="error" title="Action Failed" :text="error"></v-alert>
+        <v-alert v-if="success" type="success" title="Action Succeeded" :text="success"></v-alert>
+
+        <div class="profile-actions">
+          <v-btn v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)" @click="muteUnmuteMember">Mute/Unmute</v-btn>
+          <v-btn v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)" @click="kickMember">Kick</v-btn>
+          <v-btn v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)" @click="banMember">Ban</v-btn>
+        </div>
+
+        <div class="profile-actions">
+          <v-btn v-if="isOwner(member) && !isAdminOrOwner(selectedUser)" @click="promoteMember">Promote</v-btn>
+        </div>
+
+        <div class="profile-actions">
+          <v-btn v-if="isNotMe(selectedUser.member)" @click="blockUser">Block User</v-btn>
+          <v-btn v-if="isNotMe(selectedUser.member)" @click="addFriend">Add Friend</v-btn>
+          <v-btn v-if="isNotMe(selectedUser.member)" @click="sendPrivateMessage">Send Message</v-btn>
+          <v-btn v-if="isNotMe(selectedUser.member)" @click="inviteToPlay">Invite to Play</v-btn>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-btn color="primary" @click="closeUserDialog">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <v-dialog v-model="dialogs.waiting" max-width="400">
+    <v-card>
+      <v-card-title>Waiting for the response</v-card-title>
+    <v-progress-linear
+        color="deep-purple-accent-4"
+        indeterminate
+        rounded
+        height="6"
+    ></v-progress-linear>
+    <v-card-actions>
+      <v-btn color="primary" @click="closeWaitingDialog">Cancel</v-btn>
+    </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <v-dialog v-model="dialogs.invite" max-width="400">
+    <v-card>
+      <v-card-title>You received an invite to play Pong</v-card-title>
+      <v-card-title>From: {{ invite.username }}</v-card-title>
+      <v-card-actions>
+        <v-btn color="primary" @click="closeInviteDialog">Accept</v-btn>
+        <v-btn color="primary" @click="closeInviteDialog">Cancel</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -163,12 +188,15 @@
 
 <script lang="ts">
 
-import { defineComponent } from 'vue'
+import {defineAsyncComponent, defineComponent} from 'vue'
 import useAuthStore from "@/stores/AuthStore.ts";
 import axios from '@/utils/axios';
 import useChatStore from "@/stores/ChatStore";
 import chatSocketService from "@/utils/socketio";
+import useGameStore from "@/stores/GameStore";
 
+const chatStore = useChatStore()
+const gameStore = useGameStore()
 const authStore = useAuthStore()
 const socket = chatSocketService
 const socketOptions = {
@@ -186,7 +214,10 @@ export default defineComponent({
   data() {
     return {
       select: {id: 0, name: 'General'},
+      invite: null,
       user: authStore.user,
+      game: gameStore,
+      chat: chatStore,
       selectedUser: null,
       member: {},
       message: {room: '', content: ''},
@@ -195,7 +226,7 @@ export default defineComponent({
       oldRoom: {id: 0, name: 'General'},
       chatRoomMembers: [],
       chatRoomMessages: [],
-      dialogs: {join: false, create: false, password: false, user: false},
+      dialogs: {join: false, create: false, password: false, user: false, waiting: false, invite: false},
       createRoomInfo: {ownerId: authStore.user.id, name: '', password: '', private: false, protected: false},
       joinRoomInfo: {userId: authStore.user.id, roomName: 'General', password: ''},
       error: '',
@@ -218,7 +249,12 @@ export default defineComponent({
       this.getRoomMembers()
     })
   },
-  async created() {
+  async mounted() {
+    socket.socket.emit('game')
+    socket.socket.on('game-invite', (user) => {
+      this.invite = user
+      this.dialogs.invite = true;}
+    );
     await this.getRooms()
     await this.joinRoom()
     await this.getRoomMembers()
@@ -251,6 +287,15 @@ export default defineComponent({
     },
   },
   methods: {
+    openInviteDialog() {this.dialogs.invite = true},
+    closeInviteDialog() {this.dialogs.invite = false},
+    openWaitingDialog() {this.dialogs.waiting = true},
+    closeWaitingDialog() {this.dialogs.waiting = false},
+    inviteToPlay() {
+      socket.socket.emit('game-invite', this.selectedUser.member.username)
+      this.closeUserDialog()
+      this.openWaitingDialog()
+    },
     isNotMe(member) {
       return member.id !== this.user.id
     },
@@ -429,6 +474,10 @@ export default defineComponent({
       });
     },
     isMyMessage(msg: any) : boolean {return msg.userId === this.user.id;},
+    sendPrivateMessage() {
+      this.chat.setDmReceiver(this.selectedUser.member)
+      this.$router.push('/dm')
+    },
     formatMessageDate(date, includeTime = false) {
       const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const options = {
@@ -455,9 +504,67 @@ export default defineComponent({
 .message-container {
   height: 400px;
 }
+.profile-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
 
+.info-label {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.profile-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-actions v-btn {
+  margin-bottom: 8px;
+}
 
 .avatar-container, .select-container {
   margin: 10px; /* Add some margin for spacing */
+}
+.profile-avatar-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.avatar-container {
+  position: relative;
+  z-index: 1;
+}
+
+.avatar-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.status-background {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.status-online {
+  background-color: green;
+}
+
+.status-offline {
+  background-color: red;
+}
+
+.text-center {
+  text-align: center;
 }
 </style>

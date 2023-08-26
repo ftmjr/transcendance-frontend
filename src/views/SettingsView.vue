@@ -245,7 +245,7 @@ export default defineComponent({
     initFlowbite()
     this.usersStore.refreshUserData()
     this.usersStore.getBlockedUsers()
-    // this.usersStore.getUsers()
+    this.usersStore.setUsers()
     this.usersStore.getFriends()
     this.usersStore.getSentRequests()
     this.usersStore.getReceivedRequests()
