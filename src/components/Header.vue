@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import useAuthStore from '@/stores/AuthStore.ts'
+import useAuthStore from '@/stores/AuthStore'
 import NavBar from '@/components/MainMenu.vue'
 
 export default defineComponent({

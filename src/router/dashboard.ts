@@ -23,15 +23,15 @@ const dashboardRoutes = {
         title: 'My Profile'
       }
     },
-    // {
-    //   path: 'game',
-    //   name: 'game',
-    //   component: () => import('@/views/GameView.vue'),
-    //   meta: {
-    //     requiresAuth: true,
-    //     title: 'Game Test'
-    //   }
-    // },
+    {
+      path: 'game',
+      name: 'game',
+      component: () => import('@/views/GameView.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Game Test'
+      }
+    },
     {
       path: 'chat',
       name: 'chat',

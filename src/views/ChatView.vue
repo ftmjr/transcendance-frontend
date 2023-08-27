@@ -179,8 +179,8 @@
       <v-card-title>You received an invite to play Pong</v-card-title>
       <v-card-title>From: {{ invite.username }}</v-card-title>
       <v-card-actions>
-        <v-btn color="primary" @click="closeInviteDialog">Accept</v-btn>
-        <v-btn color="primary" @click="closeInviteDialog">Cancel</v-btn>
+        <v-btn color="primary" @click="acceptInvite">Accept</v-btn>
+        <v-btn color="primary" @click="rejectInvite">Cancel</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -208,7 +208,6 @@ const socketOptions = {
     }
   }
 };
-const chatMessageContainer = document.querySelector('.message-container')
 export default defineComponent({
   name: 'ChatRoom-View',
   data() {
@@ -234,8 +233,10 @@ export default defineComponent({
       blockedUsers: [],
     }
   },
-  beforeCreate() {
+  beforeMount() {
     socket.connectChat(socketOptions)
+  },
+  async mounted() {
     socket.socket.on('message', (message: any) => {
       socket.socket.emit('filter', message);}
     );
@@ -248,17 +249,17 @@ export default defineComponent({
     socket.socket.on('updateRoomMembers', () => {
       this.getRoomMembers()
     })
-  },
-  async mounted() {
-    socket.socket.emit('game')
     socket.socket.on('game-invite', (user) => {
       this.invite = user
-      this.dialogs.invite = true;}
+      this.openInviteDialog()}
     );
+    socket.socket.on('game-accept', () => {this.goPlay()})
+    socket.socket.on('game-reject', () => {this.closeWaitingDialog()})
     await this.getRooms()
     await this.joinRoom()
     await this.getRoomMembers()
     await this.getRoomMessages()
+    socket.socket.emit('game')
   },
   beforeUnmount() {
     socket.disconnect()
@@ -287,10 +288,23 @@ export default defineComponent({
     },
   },
   methods: {
+    goPlay() {
+      this.game.setInvited(true)
+      this.$router.push('/game')
+    },
     openInviteDialog() {this.dialogs.invite = true},
     closeInviteDialog() {this.dialogs.invite = false},
     openWaitingDialog() {this.dialogs.waiting = true},
     closeWaitingDialog() {this.dialogs.waiting = false},
+    acceptInvite() {
+      socket.socket.emit('game-accept', this.invite.username)
+      this.game.setInvited(true)
+      this.$router.push('/game')
+    },
+    rejectInvite() {
+      socket.socket.emit('game-reject', this.invite.username)
+      this.closeInviteDialog()
+    },
     inviteToPlay() {
       socket.socket.emit('game-invite', this.selectedUser.member.username)
       this.closeUserDialog()

@@ -2,29 +2,29 @@
   <div>
     <h3 class="text-white text-xl text-center mb-2">Testing Game</h3>
     <div class="flex justify-center items-center gap-1">
-      <div class="flex flex-col">
-        <label for="room" class="font-light text-white">Room</label>
-        <input
-          type="number"
-          id="room"
-          name="room"
-          v-model="gameData.room"
-          class="p-2 rounded border text-red-400"
-        />
-      </div>
-      <div class="flex flex-col">
-        <label for="playerType" class="font-light text-white">Player Type</label>
-        <select
-          id="playerType"
-          name="playerType"
-          v-model="gameData.playerType"
-          class="p-2 rounded border text-primary"
-        >
-          <option v-for="option in gameUserTypesOptions" :key="option.value" :value="option.value">
-            {{ option.text }}
-          </option>
-        </select>
-      </div>
+<!--      <div class="flex flex-col">-->
+<!--        <label for="room" class="font-light text-white">Room</label>-->
+<!--        <input-->
+<!--          type="number"-->
+<!--          id="room"-->
+<!--          name="room"-->
+<!--          v-model="gameData.room"-->
+<!--          class="p-2 rounded border text-red-400"-->
+<!--        />-->
+<!--      </div>-->
+<!--      <div class="flex flex-col">-->
+<!--        <label for="playerType" class="font-light text-white">Player Type</label>-->
+<!--        <select-->
+<!--          id="playerType"-->
+<!--          name="playerType"-->
+<!--          v-model="gameData.playerType"-->
+<!--          class="p-2 rounded border text-primary"-->
+<!--        >-->
+<!--          <option v-for="option in gameUserTypesOptions" :key="option.value" :value="option.value">-->
+<!--            {{ option.text }}-->
+<!--          </option>-->
+<!--        </select>-->
+<!--      </div>-->
       <div class="flex flex-col">
         <label for="theme" class="font-light text-white">Theme</label>
         <select id="theme" name="theme" v-model="gameData.theme" class="p-2 rounded border">
@@ -38,11 +38,23 @@
       </div>
     </div>
     <div class="flex items-center justify-center my-0.5">
+<!--      <button-->
+<!--        class="font-medium rounded-lg text-white text-sm px-5 py-2.5 text-center bg-orange shadow-lg hover:bg-darkBlue hover:border-2 hover:border-light/10 transition-all duration-300 ease-in-out border-2 border-orange animate-anime-in"-->
+<!--        @click="gamePlayerKey++"-->
+<!--      >-->
+<!--        New Game Player-->
+<!--      </button>-->
       <button
-        class="font-medium rounded-lg text-white text-sm px-5 py-2.5 text-center bg-orange shadow-lg hover:bg-darkBlue hover:border-2 hover:border-light/10 transition-all duration-300 ease-in-out border-2 border-orange animate-anime-in"
-        @click="gamePlayerKey++"
+          class="font-medium rounded-lg text-white text-sm px-5 py-2.5 text-center bg-orange shadow-lg hover:bg-darkBlue hover:border-2 hover:border-light/10 transition-all duration-300 ease-in-out border-2 border-orange animate-anime-in"
+          @click="playLocally"
       >
-        New Game Player
+        Play Locally
+      </button>
+      <button
+          class="font-medium rounded-lg text-white text-sm px-5 py-2.5 text-center bg-orange shadow-lg hover:bg-darkBlue hover:border-2 hover:border-light/10 transition-all duration-300 ease-in-out border-2 border-orange animate-anime-in"
+          @click="playOnline"
+      >
+        Play Online
       </button>
     </div>
     <PongGamePlayer
@@ -52,17 +64,28 @@
       :debugMode="debugMode"
     />
   </div>
+  <v-dialog v-model="inviteDialog" max-width="400">
+    <v-card>
+      <v-card-title>You received an invite to play Pong</v-card-title>
+      <v-card-title>From: {{ invite.username }}</v-card-title>
+      <v-card-actions>
+        <v-btn color="primary" @click="acceptInvite">Accept</v-btn>
+        <v-btn color="primary" @click="rejectInvite">Cancel</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent } from 'vue'
-import { GameDataI } from '@/Game/pong-scenes/Assets'
-import { GameUser } from '@/Game/network/GameNetwork'
-import { GameUserType } from '@/Game/network/GameNetwork'
+import {defineAsyncComponent, defineComponent} from 'vue'
+import {GameDataI} from '@/Game/pong-scenes/Assets'
+import {GameUser, GameUserType} from '@/Game/network/GameNetwork'
 import useAuthStore from '@/stores/AuthStore'
 import useGameStore from '@/stores/GameStore'
-const PongGamePlayer = defineAsyncComponent(() => import('@/components/PongGamePlayer.vue'))
+import chatSocketService from "@/utils/socketio";
 
+const PongGamePlayer = defineAsyncComponent(() => import('@/components/PongGamePlayer.vue'))
+const socket = chatSocketService
 export default defineComponent({
   components: {
     PongGamePlayer
@@ -70,7 +93,16 @@ export default defineComponent({
   setup() {
     const authStore = useAuthStore()
     const gameStore = useGameStore()
-    return { authStore, gameStore }
+    const socketOptions = {
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            authorization: 'Bearer ' + authStore.token
+          }
+        }
+      }
+    };
+    return { authStore, gameStore, socketOptions }
   },
   data() {
     const gameData: GameDataI = {
@@ -85,12 +117,17 @@ export default defineComponent({
       }
     })
     return {
+      inviteDialog: false,
+      invite: null,
       debugMode: false,
       gamePlayerKey: 0,
       player: null as unknown as GameUser,
       gameData,
       gameUserTypesOptions
     }
+  },
+  beforeCreate() {
+    socket.connectChat(this.socketOptions)
   },
   beforeMount() {
     const currentUser = this.authStore.getUser
@@ -102,6 +139,46 @@ export default defineComponent({
       }
     } else {
       this.$router.push({ name: 'auth' })
+    }
+  },
+  mounted() {
+    socket.socket.emit('game')
+    socket.socket.on('game-invite', (user) => {
+      if (this.inviteDialog == false) {
+        this.showInvite(user)
+      }
+    })
+    socket.socket.on('game-accept', () => {this.acceptInvite()})
+    socket.socket.on('game-reject', () => {this.rejectInvite()})
+    if (this.gameStore.getInvited == true) {
+      this.gameStore.setInvited(false)
+      this.playOnline()
+    }
+  },
+  beforeUnmount() {
+    socket.disconnect()
+  },
+  methods: {
+    showInvite(user) {
+      this.invite = user
+      this.inviteDialog = true },
+    acceptInvite() {
+      socket.socket.emit('game-accept', this.invite.username)
+      this.inviteDialog = false
+      this.playOnline()
+    },
+    rejectInvite() {
+      socket.socket.emit('game-reject', this.invite.username)
+      this.inviteDialog = false
+    },
+    playLocally() {
+      this.gameData.playerType = GameUserType.LocalPlayer
+      this.gamePlayerKey++
+    },
+    playOnline() {
+      this.gameData.room = 0
+      this.gameData.playerType = GameUserType.Player
+      this.gamePlayerKey++
     }
   }
 })

@@ -36,11 +36,11 @@ export default defineComponent({
           text: 'Profile',
           icon: 'UserCircle'
         },
-        // {
-        //   name: 'game',
-        //   text: 'Game Test',
-        //   icon: ''
-        // },
+        {
+          name: 'game',
+          text: 'Game Test',
+          icon: ''
+        },
         {
           name: 'chat',
           text: "Chat",
