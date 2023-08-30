@@ -51,15 +51,6 @@ const dashboardRoutes = {
       }
     },
     {
-      path: 'message',
-      name: 'message',
-      component: () => import('@/views/MessageView.vue'),
-      meta: {
-        requiresAuth: true,
-        title: 'Message'
-      }
-    },
-    {
       path: 'leaderboard',
       name: 'leaderboard',
       component: () => import('@/views/LeaderboardView.vue'),

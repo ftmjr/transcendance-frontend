@@ -13,7 +13,7 @@ const router = createRouter({
     {
       path: '/:catchALL(.*)', //regex to catch non existing routes
       name: 'NotFound',
-      component: () => import('@/views/NotFoundView'),
+      component: () => import('@/views/NotFoundView.vue'),
       meta: {
         requiresAuth: false,
         title: 'Not Found'

@@ -119,21 +119,28 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import useUsersStore from '@/stores/UsersStore'
+import useGlobalStore from "@/stores/GlobalStore"
 import { initFlowbite } from 'flowbite'
-import axios from '@/utils/axios';
 
 export default defineComponent({
   name: 'profile-view',
   setup() {
     const authStore = useAuthStore()
-    return { authStore }
+    const globalStore = useGlobalStore()
+    return { authStore, globalStore }
   },
   data() {
     return {
       loading: false,
       friends: []
     }
+  },
+  beforeCreate() {
+    this.globalStore.connectSocket()
+    this.globalStore.listenGameInvite()
+  },
+  beforeUnmount() {
+    this.globalStore.disconnectSocket()
   },
   computed: {
     user() {

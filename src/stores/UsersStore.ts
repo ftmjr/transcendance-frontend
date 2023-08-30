@@ -1,23 +1,31 @@
 import useAuthStore from "@/stores/AuthStore";
 import { defineStore } from 'pinia'
 import axios from "@/utils/axios";
-import userCircle from "@/components/icons/UserCircle.vue";
+import useGlobalStore from "@/stores/GlobalStore";
+import useChatStore from "@/stores/ChatStore";
 const useUsersStore = defineStore({
   id: 'users',
-  state: () => ({
-    filteredUsers: [],
-    allUsers: [],
-    users: [],
-    leaderboard: [],
-    blockedUsers: [],
-    friends: [],
-    sentRequests: [],
-    receivedRequests: [],
-    selectedFile: null,
-    loading: false,
-    username: '',
-    authStore: useAuthStore()
-  }),
+  state: () => {
+    const authStore = useAuthStore()
+    const chatStore = useChatStore()
+    const globalStore = useGlobalStore()
+    return {
+      authStore,
+      chatStore,
+      globalStore,
+      filteredUsers: [],
+      allUsers: [],
+      users: [],
+      leaderboard: [],
+      blockedUsers: [],
+      friends: [],
+      sentRequests: [],
+      receivedRequests: [],
+      selectedFile: null,
+      loading: false,
+      username: '',
+      }
+  },
   getters:{
     getAllUsers() { return this.allUsers },
     getUsers() { return this.users },
@@ -152,6 +160,20 @@ const useUsersStore = defineStore({
         // to think about
       }
     },
+    async blockUser() {
+      try {
+        await axios.post("/users/block/" + this.chatStore.selectedUser.memberId)
+        this.globalStore.socketMembersUpdate()
+        await this.chatStore.setRoomMessages()
+        this.globalStore.closeProfileDialog()
+      } catch (error) {
+        if (error.response) {
+          this.chatStore.error = error.response.data.message;
+        } else {
+          this.chatStore.error = 'Something bad happened. Try again later'
+        }
+      }
+    },
     async getFriends() {
       this.friends.splice(0)
       try {
@@ -159,6 +181,18 @@ const useUsersStore = defineStore({
         this.friends.push(...data)
       } catch (e) {
         // to think about
+      }
+    },
+    async addFriend() {
+      try {
+        await axios.post("/friends/" + this.selectedUser.memberId)
+        this.globalStore.closeProfileDialog()
+      } catch (error) {
+        if (error.response.status === 409) {
+          this.chatStore.error = 'Request already sent'
+        } else {
+          this.chatStore.error = error.response.data.message;
+        }
       }
     },
     async getSentRequests() {

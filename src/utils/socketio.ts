@@ -5,10 +5,13 @@ class SocketioService {
 
     constructor() {}
 
-    connectChat(socketOptions: any) {
+    connectChat(user: any) {
         const url = '/chat';
-        this.socket = io(url, socketOptions); // connects to websocket in the backend
-        //console.log('hello from socket service')
+        this.socket = io(url, {
+            auth: {
+                user: user
+            },
+        });
     }
     disconnect(){
         if (this.socket) {

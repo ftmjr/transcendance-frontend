@@ -1,511 +1,76 @@
 <template>
   <header class="header-container">
-    <aside class="avatar-container">
-      <v-avatar size="100">
-        <v-img :src="user.profile.avatar"></v-img>
-      </v-avatar>
-    </aside>
-    <aside class="chatRoom-select-container">
-    <v-select
-        bg-color='background'
-        v-model="select"
-        :items="chatRooms"
-        item-title="name"
-        label="Select"
-        persistent-hint
-        return-object
-        single-line
-    ></v-select>
-    </aside>
+    <chat-user-avatar :avatar-url="authStore.getAvatar" />
+    <room-selector :rooms="chatStore.getRooms" />
   </header>
-  <v-dialog v-model="dialogs.password" max-width="500px">
-    <v-card>
-      <v-card-title>Protected Room</v-card-title>
-      <v-card-text>
-        <v-text-field
-            label="Password"
-            v-model="joinRoomInfo.password"
-            type="password"
-            :error-messages="error"
-        ></v-text-field>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn :color="isJoinButtonClickable ? 'primary' : 'disabled'" @click="joinRoom" :disabled="!isJoinButtonClickable">
-          Join
-        </v-btn>
-        <v-btn color="error" @click="resetJoinForm">Cancel</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-  <v-btn color='background' variant="tonal" @click="openJoinRoomDialog">
-    Join a Chat Room
-  </v-btn>  <v-dialog v-model="dialogs.join" max-width="500px">
-    <v-card>
-      <v-card-title>Join Chat Room</v-card-title>
-      <v-card-text>
-        <v-text-field label="Chatroom Name" v-model="joinRoomInfo.roomName" :error-messages="error"></v-text-field>
-        <v-text-field
-            label="Password"
-            v-model="joinRoomInfo.password"
-            type="password"
-        ></v-text-field>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn :color="isJoinButtonClickable ? 'primary' : 'disabled'" @click="joinRoom" :disabled="!isJoinButtonClickable">
-          Join
-        </v-btn>
-        <v-btn color="error" @click="resetJoinForm">Cancel</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-  <v-btn color='background' variant="tonal" @click="openCreateRoomDialog">
-    Create Chat Room
-  </v-btn>
-  <v-btn v-if="currentRoom.name !== 'General'" color='background' variant="tonal" @click="leaveRoom">
-    Leave room
-  </v-btn>
-  <v-dialog v-model="dialogs.create" max-width="500px">
-    <v-card>
-      <v-card-title>Create Chat Room</v-card-title>
-      <v-card-text>
-        <v-text-field label="Chatroom Name" v-model="createRoomInfo.name" :error-messages="error"></v-text-field>
-        <v-text-field
-            v-if="createRoomInfo.protected"
-            label="Password"
-            v-model="createRoomInfo.password"
-            type="password"
-        ></v-text-field>
-        <v-switch v-model="createRoomInfo.protected" label="Protected" color="indigo"></v-switch>
-        <v-switch v-model="createRoomInfo.private" label="Private" color="indigo"></v-switch>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn :color="isCreateButtonClickable ? 'primary' : 'disabled'" @click="createRoom" :disabled="!isCreateButtonClickable">
-          Create
-        </v-btn>
-        <v-btn color="error" @click="resetCreateForm">Cancel</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-  <v-text-field bg-color='background' label="Message" v-model="message.content" @keyup.enter="sendMessage" :disabled="isMuted()"></v-text-field>
-  <v-card class="message-container" flat>
-    <v-card-text ref="messageContainer" class="flex-grow-1 overflow-y-auto">
-      <v-virtual-scroll :items="chatRoomMessages" height="400">
-        <template v-slot:default="{ item: msg }">
-          <div :class="{ 'd-flex flex-row-reverse': isMyMessage(msg) }">
-            <v-hover v-slot:default="{ hover }">
-              <v-chip :color="isMyMessage(msg) ? 'primary' : ''" dark style="height:auto;white-space: normal;" class="pa-4 mb-2">
-                <v-avatar size="30">
-                  <v-img :src="msg.user.profile.avatar"></v-img>
-                </v-avatar>
-                {{"&nbsp" + msg.content }}
-                <sub class="ml-2" style="font-size: 0.5rem;">{{ formatMessageDate(msg.timestamp, true) }}</sub>
-                <v-icon v-if="hover" small>expand_more</v-icon>
-              </v-chip>
-            </v-hover>
-          </div>
-        </template>
-      </v-virtual-scroll>
-    </v-card-text>
-  </v-card>
-  <v-layout>
-    <v-navigation-drawer expand-on-hover rail location="right">
-      <template v-slot:prepend>
-        <v-list-item
-            v-for="member in chatRoomMembers"
-            :key="member.id"
-            lines="two"
-            :prepend-avatar="member.member.profile.avatar"
-            :title="member.member.username"
-            :subtitle="member.member.profile.status"
-            @click="openUserDialog(member)"
-        ></v-list-item>
-      </template>
-    </v-navigation-drawer>
-    <v-main style="height: 250px"></v-main>
-  </v-layout>
-<!--  <ProfileDialog v-if="dialogs.user"></ProfileDialog>-->
-  <v-dialog v-model="dialogs.user" max-width="400">
-    <v-card>
-      <div class="profile-avatar-container">
-        <div class="status-background" :class="{ 'status-online': selectedUser.member.profile.status === 'Online', 'status-offline': selectedUser.member.profile.status !== 'Online' }">
-        </div>
-        <div class="avatar-container">
-          <img :src="selectedUser.member.profile.avatar" alt="User Avatar" class="avatar-img" />
-        </div>
-      </div>
-      <v-card-title class=text-center>{{ selectedUser.member.username }}</v-card-title>
-      <v-card-text>
-        <v-alert v-if="error" type="error" title="Action Failed" :text="error"></v-alert>
-        <v-alert v-if="success" type="success" title="Action Succeeded" :text="success"></v-alert>
+  <BaseButton @click="globalStore.openJoinDialog">Join a Chat Room</BaseButton>
+  <BaseButton @click="globalStore.openCreateDialog">Create Chat Room</BaseButton>
+  <BaseButton v-if="chatStore.getRoom.name !== 'General'" @click="chatStore.leaveRoom">Leave Chat Room</BaseButton>
 
-        <div class="profile-actions">
-          <v-btn v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)" @click="muteUnmuteMember">Mute/Unmute</v-btn>
-          <v-btn v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)" @click="kickMember">Kick</v-btn>
-          <v-btn v-if="isAdminOrOwner(member) && !isAdminOrOwner(selectedUser)" @click="banMember">Ban</v-btn>
-        </div>
+  <messages-container />
 
-        <div class="profile-actions">
-          <v-btn v-if="isOwner(member) && !isAdminOrOwner(selectedUser)" @click="promoteMember">Promote</v-btn>
-        </div>
+  <v-text-field
+      bg-color='background'
+      label="Message"
+      v-model="chatStore.message"
+      @keyup.enter="chatStore.sendMessage"
+      :disabled="chatStore.isMuted"
+  />
 
-        <div class="profile-actions">
-          <v-btn v-if="isNotMe(selectedUser.member)" @click="blockUser">Block User</v-btn>
-          <v-btn v-if="isNotMe(selectedUser.member)" @click="addFriend">Add Friend</v-btn>
-          <v-btn v-if="isNotMe(selectedUser.member)" @click="sendPrivateMessage">Send Message</v-btn>
-          <v-btn v-if="isNotMe(selectedUser.member)" @click="inviteToPlay">Invite to Play</v-btn>
-        </div>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn color="primary" @click="closeUserDialog">Close</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-  <v-dialog v-model="dialogs.waiting" max-width="400">
-    <v-card>
-      <v-card-title>Waiting for the response</v-card-title>
-    <v-progress-linear
-        color="deep-purple-accent-4"
-        indeterminate
-        rounded
-        height="6"
-    ></v-progress-linear>
-    <v-card-actions>
-      <v-btn color="primary" @click="closeWaitingDialog">Cancel</v-btn>
-    </v-card-actions>
-    </v-card>
-  </v-dialog>
-  <v-dialog v-model="dialogs.invite" max-width="400">
-    <v-card>
-      <v-card-title>You received an invite to play Pong</v-card-title>
-      <v-card-title>From: {{ invite.username }}</v-card-title>
-      <v-card-actions>
-        <v-btn color="primary" @click="acceptInvite">Accept</v-btn>
-        <v-btn color="primary" @click="rejectInvite">Cancel</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <members-drawer />
+
+  <join-dialog v-model="globalStore.dialogs.join" />
+  <password-dialog v-model="globalStore.dialogs.password" />
+  <create-dialog v-model="globalStore.dialogs.create" />
+  <profile-dialog v-if="globalStore.dialogs.profile" v-model="globalStore.dialogs.profile" />
+  <waiting-dialog v-model="globalStore.dialogs.waiting" />
+  <invite-dialog v-model="globalStore.dialogs.invite" />
 </template>
 
 <script lang="ts">
+import {defineComponent} from 'vue'
+import useAuthStore from "@/stores/AuthStore"
+import useChatStore from "@/stores/ChatStore"
+import useGlobalStore from "@/stores/GlobalStore"
+import InviteDialog from "@/components/chat/InviteDialog.vue"
+import PasswordDialog from "@/components/chat/PasswordDialog.vue"
+import ProfileDialog from "@/components/chat/ProfileDialog.vue"
+import ChatUserAvatar from "@/components/chat/Avatar.vue";
+import RoomSelector from "@/components/chat/RoomSelector.vue";
+import BaseButton from "@/components/Button.vue";
+import JoinDialog from "@/components/chat/JoinDialog.vue";
+import MessagesContainer from "@/components/chat/MessagesContainer.vue";
+import MembersDrawer from "@/components/chat/MembersDrawer.vue";
+import WaitingDialog from "@/components/chat/WaitingDialog.vue";
+import CreateDialog from "@/components/chat/CreateDialog.vue";
 
-import {defineAsyncComponent, defineComponent} from 'vue'
-import useAuthStore from "@/stores/AuthStore.ts";
-import axios from '@/utils/axios';
-import useChatStore from "@/stores/ChatStore";
-import chatSocketService from "@/utils/socketio";
-import useGameStore from "@/stores/GameStore";
-
-const chatStore = useChatStore()
-const gameStore = useGameStore()
-const authStore = useAuthStore()
-const socket = chatSocketService
-const socketOptions = {
-  transportOptions: {
-    polling: {
-      extraHeaders: {
-        authorization: 'Bearer ' + authStore.token
-      }
-    }
-  }
-};
 export default defineComponent({
   name: 'ChatRoom-View',
-  data() {
-    return {
-      select: {id: 0, name: 'General'},
-      invite: null,
-      user: authStore.user,
-      game: gameStore,
-      chat: chatStore,
-      selectedUser: null,
-      member: {},
-      message: {room: '', content: ''},
-      chatRooms: [],
-      currentRoom: {id: 0, name: 'General', protected: false},
-      oldRoom: {id: 0, name: 'General'},
-      chatRoomMembers: [],
-      chatRoomMessages: [],
-      dialogs: {join: false, create: false, password: false, user: false, waiting: false, invite: false},
-      createRoomInfo: {ownerId: authStore.user.id, name: '', password: '', private: false, protected: false},
-      joinRoomInfo: {userId: authStore.user.id, roomName: 'General', password: ''},
-      error: '',
-      success: '',
-      blockedUsers: [],
-    }
+  components: {
+    CreateDialog,
+    WaitingDialog,
+    MembersDrawer,
+    MessagesContainer,
+    JoinDialog,
+    BaseButton,
+    RoomSelector,
+    ChatUserAvatar,
+    InviteDialog,
+    PasswordDialog,
+    ProfileDialog,
   },
-  beforeMount() {
-    socket.connectChat(socketOptions)
+  setup() {
+    const authStore = useAuthStore()
+    const chatStore = useChatStore()
+    const globalStore = useGlobalStore()
+    return { authStore, chatStore, globalStore }
   },
-  async mounted() {
-    socket.socket.on('message', (message: any) => {
-      socket.socket.emit('filter', message);}
-    );
-    socket.socket.on('filter', (message: any) => {
-      this.addMessage(message);}
-    );
-    socket.socket.on('updateRooms', () => {
-      this.getRooms()
-    })
-    socket.socket.on('updateRoomMembers', () => {
-      this.getRoomMembers()
-    })
-    socket.socket.on('game-invite', (user) => {
-      this.invite = user
-      this.openInviteDialog()}
-    );
-    socket.socket.on('game-accept', () => {this.goPlay()})
-    socket.socket.on('game-reject', () => {this.closeWaitingDialog()})
-    await this.getRooms()
-    await this.joinRoom()
-    await this.getRoomMembers()
-    await this.getRoomMessages()
-    socket.socket.emit('game')
+  async beforeCreate() {
+    this.globalStore.connectSocket()
+    await this.globalStore.setUpChat()
   },
   beforeUnmount() {
-    socket.disconnect()
-  },
-  watch: {
-    select(newValue, oldValue) {
-      this.joinRoomInfo.roomName = newValue.name
-      if(newValue.protected) {
-        this.openPasswordDialog()
-      } else {
-        this.joinRoom()
-      }
-      this.currentRoom = newValue
-      this.getRoomMembers()
-    }
-  },
-  computed: {
-    isCreateButtonClickable() {
-      return !(!this.createRoom.name.trim() || (this.createRoom.protected && !this.createRoom.password.trim()))
-    },
-    isJoinButtonClickable() {
-      if (this.currentRoom.protected && !this.joinRoomInfo.password) {
-        return false;
-      }
-      return !(!this.joinRoom.name.trim())
-    },
-  },
-  methods: {
-    goPlay() {
-      this.game.setInvited(true)
-      this.$router.push('/game')
-    },
-    openInviteDialog() {this.dialogs.invite = true},
-    closeInviteDialog() {this.dialogs.invite = false},
-    openWaitingDialog() {this.dialogs.waiting = true},
-    closeWaitingDialog() {this.dialogs.waiting = false},
-    acceptInvite() {
-      socket.socket.emit('game-accept', this.invite.username)
-      this.game.setInvited(true)
-      this.$router.push('/game')
-    },
-    rejectInvite() {
-      socket.socket.emit('game-reject', this.invite.username)
-      this.closeInviteDialog()
-    },
-    inviteToPlay() {
-      socket.socket.emit('game-invite', this.selectedUser.member.username)
-      this.closeUserDialog()
-      this.openWaitingDialog()
-    },
-    isNotMe(member) {
-      return member.id !== this.user.id
-    },
-    async blockUser() {
-      this.error = ''
-      this.success = ''
-      try {
-        await axios.post("/users/block/" + this.selectedUser.memberId)
-        await this.getRoomMembers()
-        await this.getRoomMessages()
-        this.closeUserDialog()
-      } catch (error) {
-        this.error = error.response.data.message;
-      }
-    },
-    async addFriend() {
-      try {
-        await axios.post("/friends/" + this.selectedUser.memberId)
-        this.closeUserDialog()
-      } catch (error) {
-        if (error.response.status === 409) {
-          this.error = 'Request already sent'
-        } else {
-          this.error = error.response.data.message;
-        }
-      }
-    },
-    muteUnmuteMember() {
-      if (this.selectedUser.role === 'MUTED') {
-        socket.socket.emit('unmute', this.selectedUser.id)
-      } else {
-        socket.socket.emit('mute', this.selectedUser.id)
-      }
-      socket.socket.emit('updateRoomMembers')
-      this.closeUserDialog()
-    },
-    kickMember() {
-      socket.socket.emit('kick', this.selectedUser.id)
-      socket.socket.emit('updateRoomMembers')
-      this.closeUserDialog()
-    },
-    banMember() {
-      socket.socket.emit('ban', this.selectedUser.id)
-      socket.socket.emit('updateRoomMembers')
-      this.closeUserDialog()
-    },
-    promoteMember() {
-      socket.socket.emit('promote', this.selectedUser.id)
-      socket.socket.emit('updateRoomMembers')
-      this.closeUserDialog()
-    },
-    isOwner(member) {
-      return (member.role === 'OWNER')
-    },
-    isAdminOrOwner(member) {
-      return (member.role === 'OWNER' || member.role ==='ADMIN')
-    },
-    openUserDialog(user) {
-      this.selectedUser = user;
-      this.dialogs.user = true;
-    },
-    closeUserDialog() {
-      this.dialogs.user = false;
-    },
-    isMuted() {
-      return this.member.role === 'MUTED';
-    },
-    async getRoomMessages() {
-      this.chatRoomMessages.splice(0)
-      try {
-        const { data } = await axios.get("/chat/messages/" + this.currentRoom.id, { params: { take: 100 }})
-        this.chatRoomMessages.push(...data)
-      } catch (e) {
-        // to think about
-      }
-    },
-    async getRooms() {
-      this.chatRooms.splice(0)
-      this.chatRooms.push({id:0, name: 'General', protected: false})
-      try {
-        const { data } = await axios.get("/chat/rooms")
-        this.chatRooms.push(...data)
-      } catch (e) {
-        // to think about
-      }
-    },
-    async getRoomMembers() {
-      if (this.chatRoomMembers) {
-        this.chatRoomMembers.splice(0)
-      }
-      try {
-        const { data } = await axios.get("/chat/members/" + this.currentRoom.id)
-        this.chatRoomMembers.push(...data)
-        this.member = this.chatRoomMembers.find(member => member.memberId === this.user.id)
-        if (!this.member || this.member.role === 'BAN') {
-          await this.getRooms()
-          this.select = {id: 0, name: 'General'}
-        }
-      } catch (e) {
-        await this.getRooms()
-        this.select = {id: 0, name: 'General'}
-      }
-    },
-    async leaveRoom() {
-      try {
-        await axios.post("/chat/leave/" + this.currentRoom.id)
-        socket.socket.emit('updateRoomMembers')
-        this.select = {id: 0, name: 'General'}
-        this.currentRoom = {id: 0, name: 'General'}
-        socket.socket.emit('updateRooms')
-      } catch (e) {
-        // await this.getRooms()
-        // this.select = {id: 0, name: 'General'}
-        // this.currentRoom = {id: 0, name: 'General'}
-      }
-    },
-    openCreateRoomDialog() {this.dialogs.create = true},
-    resetCreateForm() {
-      this.dialogs.create = false
-      this.createRoomInfo = {ownerId: authStore.user.id, name: '', password: '', private: false, protected: false}
-      this.error = ''
-    },
-    async createRoom() {
-      if (!this.isCreateButtonClickable) {
-        return;
-      }
-      try {
-        const { data } = await axios.post('/chat/new', this.createRoomInfo);
-        this.currentRoom = data
-        this.resetCreateForm()
-        socket.socket.emit('updateRooms')
-      } catch (error) {
-        if (error.response.status == 409) {
-          this.error = ['Room name is already taken. Please choose a different name.'];
-        } else {
-          this.error = ['An error occurred while creating the room. Please try again later.'];
-        }
-      }
-    },
-    openPasswordDialog() {this.dialogs.password = true},
-    openJoinRoomDialog() {this.dialogs.join = true},
-    resetJoinForm() {
-      this.dialogs.password = false
-      this.dialogs.join = false
-      this.joinRoomInfo = {userId: authStore.user.id, roomName: '', password: ''}
-      this.error = ''
-    },
-    async joinRoom() {
-      try {
-        const { data } = await axios.post('/chat/join', this.joinRoomInfo);
-        await this.getRooms()
-        this.member = data
-        socket.socket.emit('joinRoom', this.joinRoomInfo.roomName)
-        socket.socket.emit('updateRoomMembers')
-        await this.getRoomMessages()
-        this.resetJoinForm();
-      } catch (error) {
-        this.error = [error.response.data.message];
-      }
-    },
-    sendMessage(){
-      if (!this.message.content) {
-        return
-      }
-      socket.socket.emit('message', this.message.content);
-      this.message.content = '';
-    },
-    addMessage(message: any) {
-      this.chatRoomMessages.push(message)
-      this.$nextTick(() => {
-        // Get the messageContainer element using the ref
-        const messageContainer = this.$refs.messageContainer;
-
-        // Scroll to the bottom of the message container
-        messageContainer.scrollTop = this.$refs.messageContainer.scrollHeight;
-      });
-    },
-    isMyMessage(msg: any) : boolean {return msg.userId === this.user.id;},
-    sendPrivateMessage() {
-      this.chat.setDmReceiver(this.selectedUser.member)
-      this.$router.push('/dm')
-    },
-    formatMessageDate(date, includeTime = false) {
-      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const options = {
-        timeZone: userTimezone,
-        // year: 'numeric',
-        // month: 'long',
-        // day: 'numeric',
-      };
-      if (includeTime) {
-        options.hour = 'numeric';
-        options.minute = 'numeric';
-      }
-      return new Date(date).toLocaleString('en-US', options);
-    },
+    this.globalStore.disconnectSocket()
   },
 })
 </script>
