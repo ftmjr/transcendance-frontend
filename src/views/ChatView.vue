@@ -6,6 +6,7 @@
   <BaseButton @click="globalStore.openJoinDialog">Join a Chat Room</BaseButton>
   <BaseButton @click="globalStore.openCreateDialog">Create Chat Room</BaseButton>
   <BaseButton v-if="chatStore.getRoom.name !== 'General'" @click="chatStore.leaveRoom">Leave Chat Room</BaseButton>
+  <BaseButton v-if="chatStore.isOwner" @click="globalStore.openRoomPasswordDialog">Set/Change Password</BaseButton>
 
   <messages-container />
 
@@ -21,6 +22,7 @@
 
   <join-dialog v-model="globalStore.dialogs.join" />
   <password-dialog v-model="globalStore.dialogs.password" />
+  <room-password-dialog v-model="globalStore.dialogs.roomPassword" />
   <create-dialog v-model="globalStore.dialogs.create" />
   <profile-dialog v-if="globalStore.dialogs.profile" v-model="globalStore.dialogs.profile" />
   <waiting-dialog v-model="globalStore.dialogs.waiting" />
@@ -43,10 +45,12 @@ import MessagesContainer from "@/components/chat/MessagesContainer.vue";
 import MembersDrawer from "@/components/chat/MembersDrawer.vue";
 import WaitingDialog from "@/components/chat/WaitingDialog.vue";
 import CreateDialog from "@/components/chat/CreateDialog.vue";
+import RoomPasswordDialog from "@/components/chat/roomPasswordDialog.vue";
 
 export default defineComponent({
   name: 'ChatRoom-View',
   components: {
+    RoomPasswordDialog,
     CreateDialog,
     WaitingDialog,
     MembersDrawer,
