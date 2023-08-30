@@ -39,27 +39,38 @@
       </template>
     </v-virtual-scroll>
   </v-card>
+  <invite-dialog v-model="globalStore.dialogs.invite" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import useUsersStore from "@/stores/UsersStore";
-import { initFlowbite } from 'flowbite'
-import usersStore from "@/stores/UsersStore";
+import useGlobalStore from "@/stores/GlobalStore"
+import InviteDialog from "@/components/chat/InviteDialog.vue";
 export default defineComponent({
   name: 'learderboard-view',
+  components: {InviteDialog},
   setup(){
     const authStore = useAuthStore()
     const usersStore = useUsersStore()
+    const globalStore = useGlobalStore()
     return {
       orderedWinners: [],
       authStore,
+      globalStore,
       usersStore
     }
   },
+  beforeCreate() {
+    this.globalStore.connectSocket()
+  },
   async mounted(){
     await this.usersStore.setLeaderboard()
+    this.globalStore.listenGameInvite()
+  },
+  beforeUnmount() {
+    this.globalStore.disconnectSocket()
   },
   methods: {
     getCountByEvent(gameHistories, event) {
