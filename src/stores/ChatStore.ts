@@ -3,18 +3,20 @@ import axios from "@/utils/axios";
 
 import useAuthStore from "@/stores/AuthStore";
 import useGlobalStore from "@/stores/GlobalStore";
+import { User } from "Auth";
 
 const useChatStore = defineStore({
     id:'chat',
     state: () => {
         const authStore = useAuthStore()
         const globalStore = useGlobalStore()
+        const dmReceiver = JSON.parse(localStorage.getItem('__dmReceiver__') ?? 'null') as User | null
         return {
             authStore,
             globalStore,
             user: authStore.getUser,
             users: [],
-            dmReceiver: null,
+            dmReceiver,
             conversations: [],
             selectedUser: {},
             selectedRoom: {id: 0, name: 'General'},
@@ -61,6 +63,7 @@ const useChatStore = defineStore({
         },
         setDmReceiver(newReceiver) {
             this.dmReceiver = newReceiver
+            localStorage.setItem('__dmReceiver__', JSON.stringify(newReceiver))
         },
         setSelectedUser(member) {
             this.selectedUser = member
@@ -172,13 +175,13 @@ const useChatStore = defineStore({
         },
         async leaveRoom() {
             try {
-              await axios.post("/chat/leave/" + this.currentRoom.id)
+              await axios.post("/chat/leave/" + this.room.id)
               this.globalStore.socketMembersUpdate()
               this.select = {id: 0, name: 'General'}
               this.room = {id: 0, name: 'General'}
               this.globalStore.socketRoomsUpdate()
             } catch (e) {
-              await this.getRooms()
+              await this.setRooms()
               this.select = {id: 0, name: 'General'}
               this.room = {id: 0, name: 'General'}
             }
@@ -265,7 +268,7 @@ const useChatStore = defineStore({
         },
         isConversationMessage(msg: any) : boolean
         {
-            if (this.dmReceiver && this.isMyMessage(msg) === true) {
+            if (this.dmReceiver && this.isMyDm(msg) === true) {
                 return msg.receiverId === this.dmReceiver.id;
             } else if (this.dmReceiver) {
                 return msg.senderId === this.dmReceiver.id;
