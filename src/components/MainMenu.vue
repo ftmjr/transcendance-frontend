@@ -52,11 +52,6 @@ export default defineComponent({
           icon: "ChatIcon"
         },
         {
-          name: 'message',
-          text: "Message",
-          icon: "ChatIcon"
-        },
-        {
           name: 'leaderboard',
           text: "Leaderboard",
           icon: "ChatIcon"
