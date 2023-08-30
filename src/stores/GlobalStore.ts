@@ -17,6 +17,7 @@ const useGlobalStore = defineStore({
         invite: false,
         waiting: false,
         password: false,
+        roomPassword: false,
         join: false,
         create: false,
       },
@@ -35,13 +36,12 @@ const useGlobalStore = defineStore({
       this.listenGameInvite()
     },
     async setUpDm() {
+      this.chatStore.messages = []
       this.socket.socket.on('dm', (message: any) => {
         this.chatStore.addDmMessage(message);}
       );
       if (this.chatStore.getDmReceiver) {
         await this.chatStore.setDmMessages()
-      } else {
-        this.chatStore.messages.splice(0)
       }
     },
     setUpChatEvents() {
@@ -58,6 +58,8 @@ const useGlobalStore = defineStore({
         this.chatStore.setRoomMembers()
       })
     },
+    openRoomPasswordDialog() { this.dialogs.roomPassword = true },
+    closeRoomPasswordDialog() { this.dialogs.roomPassword = false },
     openPasswordDialog() { this.dialogs.password = true },
     closePasswordDialog() { this.dialogs.password = false },
     openWaitingDialog() { this.dialogs.waiting = true },
