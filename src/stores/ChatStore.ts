@@ -54,6 +54,7 @@ const useChatStore = defineStore({
     },
     actions:{
         async initChat(){
+            this.messages = []
             await this.setRooms()
             this.joinInfo.roomName = this.selectedRoom.name
             await this.joinRoom()
@@ -145,6 +146,7 @@ const useChatStore = defineStore({
                 this.selectedRoom = this.room
                 this.member = data
                 this.globalStore.socketJoinRoom(this.joinInfo.roomName)
+                await this.setRoomMessages()
                 this.resetJoinForm();
             } catch (error) {
                 this.error = error.response ? error.response.data.message : '';
@@ -156,8 +158,9 @@ const useChatStore = defineStore({
                 const { data } = await axios.post('/chat/new', this.createInfo);
                 this.room = data
                 this.selectedRoom = data
+                this.globalStore.socketJoinRoom(this.room.name)
                 this.resetCreateForm()
-                this.globalStore.closeCreateDialog()
+                await this.setRoomMessages()
                 this.globalStore.socketRoomsUpdate()
             } catch (error) {
                 if (error.response.status == 409) {
@@ -269,6 +272,9 @@ const useChatStore = defineStore({
             }
             return false
         },
+        async updatePassword() {
+
+        }
     }
 })
 
