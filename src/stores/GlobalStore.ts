@@ -41,6 +41,7 @@ const useGlobalStore = defineStore({
         this.chatStore.addDmMessage(message);}
       );
       if (this.chatStore.getDmReceiver) {
+        this.socketAddReceiver(this.chatStore.getDmReceiver)
         await this.chatStore.setDmMessages()
       }
     },
