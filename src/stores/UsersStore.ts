@@ -165,13 +165,18 @@ const useUsersStore = defineStore({
         await axios.post("/users/block/" + this.chatStore.selectedUser.memberId)
         this.globalStore.socketMembersUpdate()
         await this.chatStore.setRoomMessages()
+        // await this.authStore.refreshUser()
+        this.globalStore.socketBlockUser(this.chatStore.selectedUser.member.username)
         this.globalStore.closeProfileDialog()
       } catch (error) {
         if (error.response) {
           this.chatStore.error = error.response.data.message;
         } else {
-          this.chatStore.error = 'Something bad happened. Try again later'
+          this.chatStore.error = 'Something bad happened. asdasdTry again later'
         }
+        await this.authStore.refreshUser()
+        this.globalStore.socketUpdateUser()
+
       }
     },
     async getFriends() {
@@ -185,13 +190,13 @@ const useUsersStore = defineStore({
     },
     async addFriend() {
       try {
-        await axios.post("/friends/" + this.selectedUser.memberId)
+        await axios.post("/friends/" + this.chatStore.selectedUser.memberId)
         this.globalStore.closeProfileDialog()
       } catch (error) {
-        if (error.response.status === 409) {
+        if (error.response && error.response === 409) {
           this.chatStore.error = 'Request already sent'
         } else {
-          this.chatStore.error = error.response.data.message;
+          this.chatStore.error = 'Something weird happened'
         }
       }
     },

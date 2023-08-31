@@ -82,7 +82,7 @@ const useChatStore = defineStore({
             return msg.senderId === this.user.id
         },
         sendPrivateMessage() {
-            this.setDmReceiver(this.selectedMember.member)
+            this.setDmReceiver(this.selectedUser.member)
             this.$router.push('/dm')
         },
         addMessage(message) {
@@ -157,7 +157,6 @@ const useChatStore = defineStore({
         },
         async createRoom() {
             try {
-                console.log(this.error)
                 const { data } = await axios.post('/chat/new', this.createInfo);
                 this.room = data
                 this.selectedRoom = data
@@ -171,6 +170,17 @@ const useChatStore = defineStore({
                 } else {
                     this.error = 'An error occurred while creating the room. Please try again later.';
                 }
+            }
+        },
+        async updateRoomPassword() {
+            try {
+                await axios.post('/chat/password/' + this.room.id, {
+                    password: this.joinInfo.password
+                });
+                this.globalStore.closeRoomPasswordDialog()
+                this.error = ''
+            } catch (error) {
+                this.error = error.response ? error.response.data.message : '';
             }
         },
         async leaveRoom() {
@@ -275,9 +285,6 @@ const useChatStore = defineStore({
             }
             return false
         },
-        async updatePassword() {
-
-        }
     }
 })
 

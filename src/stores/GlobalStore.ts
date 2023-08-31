@@ -58,6 +58,9 @@ const useGlobalStore = defineStore({
       this.socket.socket.on('updateRoomMembers', () => {
         this.chatStore.setRoomMembers()
       })
+      this.socket.socket.on('updateUser', () => {
+        this.socket.socket.data.user = this.authStore.getUser
+      })
     },
     openRoomPasswordDialog() { this.dialogs.roomPassword = true },
     closeRoomPasswordDialog() { this.dialogs.roomPassword = false },
@@ -70,6 +73,7 @@ const useGlobalStore = defineStore({
     openCreateDialog() { this.dialogs.create = true },
     closeCreateDialog() { this.dialogs.create = false },
     openProfileDialog(member) {
+      console.log(member)
       this.chatStore.setSelectedUser(member)
       this.dialogs.profile = true
     },
@@ -108,6 +112,12 @@ const useGlobalStore = defineStore({
     },
     socketUnmute(id: number) {
       this.socket.socket.emit('unmute', id)
+    },
+    socketUpdateUser() {
+      this.socket.socket.data.user = this.authStore.getUser
+    },
+    socketBlockUser(username) {
+      this.socket.socket.emit('update-user', username)
     },
     socketKick(id: number) {
       this.socket.socket.emit('kick', id)
