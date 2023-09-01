@@ -1,184 +1,126 @@
 <template>
   <v-container fluid>
-  <v-avatar size="100">
-    <v-img :src="profile.avatar"></v-img>
-  </v-avatar>
-  <v-card
-      class="mx-auto"
-      max-width="500"
-  >
-    <v-card-title>
-      Blocked Users List
-    </v-card-title>
+    <v-avatar size="100">
+      <v-img :src="profile.avatar"></v-img>
+    </v-avatar>
+    <v-card class="mx-auto" max-width="500">
+      <v-card-title> Blocked Users List </v-card-title>
 
-    <v-divider></v-divider>
+      <v-divider></v-divider>
 
-    <v-virtual-scroll
-        :items="blockedUsers"
-        height="120"
-        item-height="48"
-    >
-      <template v-slot:default="{ item }">
-        <v-list-item
-            :title="item.username"
-            :subtitle="`Since ${formatDate(item.createdAt)}`"
-        >
-          <template v-slot:prepend>
-            <v-avatar size="50">
+      <v-virtual-scroll :items="blockedUsers" height="120" item-height="48">
+        <template v-slot:default="{ item }">
+          <v-list-item :title="item.username" :subtitle="`Since ${formatDate(item.createdAt)}`">
+            <template v-slot:prepend>
+              <v-avatar size="50">
                 <v-img :src="item.profile.avatar"></v-img>
-            </v-avatar>
-          </template>
+              </v-avatar>
+            </template>
 
-          <template v-slot:append>
-            <v-btn size="small" variant="tonal" @click="() => unblock(item)">
-              Unblock
-            </v-btn>
-          </template>
-        </v-list-item>
-      </template>
-    </v-virtual-scroll>
-  </v-card>
-  <v-card
-      class="mx-auto"
-      max-width="500"
-  >
-    <v-card-title>
-      Friends List
-    </v-card-title>
+            <template v-slot:append>
+              <v-btn size="small" variant="tonal" @click="() => unblock(item)"> Unblock </v-btn>
+            </template>
+          </v-list-item>
+        </template>
+      </v-virtual-scroll>
+    </v-card>
+    <v-card class="mx-auto" max-width="500">
+      <v-card-title> Friends List </v-card-title>
 
-    <v-divider></v-divider>
+      <v-divider></v-divider>
 
-    <v-virtual-scroll
-        :items="friends"
-        height="120"
-        item-height="48"
-    >
-      <template v-slot:default="{ item }">
-        <v-list-item
-            :title="item.username"
-            :subtitle="`Since ${formatDate(item.createdAt)}`"
-        >
-          <template v-slot:prepend>
-            <v-avatar size="50">
-              <v-img :src="item.profile.avatar"></v-img>
-            </v-avatar>
-          </template>
+      <v-virtual-scroll :items="friends" height="120" item-height="48">
+        <template v-slot:default="{ item }">
+          <v-list-item :title="item.username" :subtitle="`Since ${formatDate(item.createdAt)}`">
+            <template v-slot:prepend>
+              <v-avatar size="50">
+                <v-img :src="item.profile.avatar"></v-img>
+              </v-avatar>
+            </template>
 
-          <template v-slot:append>
-            <v-btn size="small" variant="tonal" @click="() => unfriend(item)">
-              Unfriend
-            </v-btn>
-          </template>
-        </v-list-item>
-      </template>
-    </v-virtual-scroll>
-  </v-card>
-  <v-card
-      class="mx-auto"
-      max-width="500"
-  >
-    <v-card-title>
-      Sent Friends Requests
-    </v-card-title>
+            <template v-slot:append>
+              <v-btn size="small" variant="tonal" @click="() => unfriend(item)"> Unfriend </v-btn>
+            </template>
+          </v-list-item>
+        </template>
+      </v-virtual-scroll>
+    </v-card>
+    <v-card class="mx-auto" max-width="500">
+      <v-card-title> Sent Friends Requests </v-card-title>
 
-    <v-divider></v-divider>
+      <v-divider></v-divider>
 
-    <v-virtual-scroll
-        :items="sentRequests"
-        height="120"
-        item-height="48"
-    >
-      <template v-slot:default="{ item }">
-        <v-list-item
+      <v-virtual-scroll :items="sentRequests" height="120" item-height="48">
+        <template v-slot:default="{ item }">
+          <v-list-item
             :title="item.receiver.username"
             :subtitle="`Since ${formatDate(item.createdAt)}`"
-        >
-          <template v-slot:prepend>
-            <v-avatar size="50">
-              <v-img :src="item.receiver.profile.avatar"></v-img>
-            </v-avatar>
-          </template>
+          >
+            <template v-slot:prepend>
+              <v-avatar size="50">
+                <v-img :src="item.receiver.profile.avatar"></v-img>
+              </v-avatar>
+            </template>
 
-          <template v-slot:append>
-            <v-btn size="small" variant="tonal" @click="() => cancelRequest(item)">
-              cancel
-            </v-btn>
-          </template>
-        </v-list-item>
-      </template>
-    </v-virtual-scroll>
-  </v-card>
-  <v-card
-      class="mx-auto"
-      max-width="500"
-  >
-    <v-card-title>
-      Received Friends Requests
-    </v-card-title>
+            <template v-slot:append>
+              <v-btn size="small" variant="tonal" @click="() => cancelRequest(item)">
+                cancel
+              </v-btn>
+            </template>
+          </v-list-item>
+        </template>
+      </v-virtual-scroll>
+    </v-card>
+    <v-card class="mx-auto" max-width="500">
+      <v-card-title> Received Friends Requests </v-card-title>
 
-    <v-divider></v-divider>
+      <v-divider></v-divider>
 
-    <v-virtual-scroll
-        :items="receivedRequests"
-        height="120"
-        item-height="48"
-    >
-      <template v-slot:default="{ item }">
-        <v-list-item
+      <v-virtual-scroll :items="receivedRequests" height="120" item-height="48">
+        <template v-slot:default="{ item }">
+          <v-list-item
             :title="item.sender.username"
             :subtitle="`Since ${formatDate(item.createdAt)}`"
-        >
-          <template v-slot:prepend>
-            <v-avatar size="50">
-              <v-img :src="item.sender.profile.avatar"></v-img>
-            </v-avatar>
-          </template>
+          >
+            <template v-slot:prepend>
+              <v-avatar size="50">
+                <v-img :src="item.sender.profile.avatar"></v-img>
+              </v-avatar>
+            </template>
 
-          <template v-slot:append>
-            <v-btn size="small" variant="tonal" @click="() => approveRequest(item)">
-              Approve
-            </v-btn>
-            <v-btn size="small" variant="tonal" @click="() => rejectRequest(item)">
-              Reject
-            </v-btn>
-          </template>
-        </v-list-item>
-      </template>
-    </v-virtual-scroll>
-  </v-card>
-  <v-card
-      class="mx-auto"
-      max-width="500"
-  >
-    <v-card-title>
-      All Users
-    </v-card-title>
+            <template v-slot:append>
+              <v-btn size="small" variant="tonal" @click="() => approveRequest(item)">
+                Approve
+              </v-btn>
+              <v-btn size="small" variant="tonal" @click="() => rejectRequest(item)">
+                Reject
+              </v-btn>
+            </template>
+          </v-list-item>
+        </template>
+      </v-virtual-scroll>
+    </v-card>
+    <v-card class="mx-auto" max-width="500">
+      <v-card-title> All Users </v-card-title>
 
-    <v-divider></v-divider>
+      <v-divider></v-divider>
 
-    <v-virtual-scroll
-        :items="users"
-        height="120"
-        item-height="48"
-    >
-      <template v-slot:default="{ item }">
-        <v-list-item
-            :title="item.username"
-            :subtitle="`Since ${formatDate(item.createdAt)}`"
-        >
-          <template v-slot:prepend>
-            <v-avatar size="50">
-              <v-img :src="item.profile.avatar"></v-img>
-            </v-avatar>
-          </template>
-        </v-list-item>
-      </template>
-    </v-virtual-scroll>
-  </v-card>
-  <div>
-    <input type="file" @change="handleFileChange" />
-    <v-btn color="background" @click="uploadFile">Upload</v-btn>
-  </div>
+      <v-virtual-scroll :items="users" height="120" item-height="48">
+        <template v-slot:default="{ item }">
+          <v-list-item :title="item.username" :subtitle="`Since ${formatDate(item.createdAt)}`">
+            <template v-slot:prepend>
+              <v-avatar size="50">
+                <v-img :src="item.profile.avatar"></v-img>
+              </v-avatar>
+            </template>
+          </v-list-item>
+        </template>
+      </v-virtual-scroll>
+    </v-card>
+    <div>
+      <input type="file" @change="handleFileChange" />
+      <v-btn color="background" @click="uploadFile">Upload</v-btn>
+    </div>
   </v-container>
 </template>
 
@@ -186,7 +128,7 @@
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import { initFlowbite } from 'flowbite'
-import axios from "@/utils/axios";
+import axios from '@/utils/axios'
 
 export default defineComponent({
   name: 'settings-view',
@@ -226,39 +168,39 @@ export default defineComponent({
     async getUsers() {
       this.users.splice(0)
       try {
-        const { data } = await axios.get("/users")
+        const { data } = await axios.get('/users')
         this.users.push(...data)
       } catch (e) {
         // to think about
       }
     },
     handleFileChange(event) {
-      this.selectedFile = event.target.files[0];
+      this.selectedFile = event.target.files[0]
     },
     async uploadFile() {
       if (!this.selectedFile) {
-        console.log('No file selected.');
-        return;
+        console.log('No file selected.')
+        return
       }
       try {
-        const formData = new FormData();
-        formData.append('file', this.selectedFile, this.selectedFile.name);
+        const formData = new FormData()
+        formData.append('file', this.selectedFile, this.selectedFile.name)
 
         const response = await axios.post('/files/avatar', formData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+            'Content-Type': 'multipart/form-data'
+          }
+        })
         this.authStore.refreshUser()
         this.user = this.authStore.getUser
-        console.log('File uploaded successfully:', response.data);
+        console.log('File uploaded successfully:', response.data)
       } catch (error) {
-        console.error('Error uploading file:', error.message);
+        console.error('Error uploading file:', error.message)
       }
     },
     async unblock(user) {
       try {
-        await axios.delete("/users/block/" + user.id)
+        await axios.delete('/users/block/' + user.id)
         await this.getBlockedUsers()
       } catch (e) {
         // to think about
@@ -266,7 +208,7 @@ export default defineComponent({
     },
     async cancelRequest(request) {
       try {
-        await axios.delete("/friends/sent/" + request.id)
+        await axios.delete('/friends/sent/' + request.id)
         await this.getSentRequests()
       } catch (e) {
         // to think about
@@ -274,7 +216,7 @@ export default defineComponent({
     },
     async approveRequest(request) {
       try {
-        await axios.post("/friends/approve/" + request.id)
+        await axios.post('/friends/approve/' + request.id)
         await this.getReceivedRequests()
         await this.getFriends()
       } catch (e) {
@@ -283,7 +225,7 @@ export default defineComponent({
     },
     async rejectRequest(request) {
       try {
-        await axios.post("/friends/reject/" + request.id)
+        await axios.post('/friends/reject/' + request.id)
         await this.getReceivedRequests()
       } catch (e) {
         // to think about
@@ -291,7 +233,7 @@ export default defineComponent({
     },
     async unfriend(user) {
       try {
-        await axios.delete("/friends/" + user.id)
+        await axios.delete('/friends/' + user.id)
         await this.getFriends()
       } catch (e) {
         // to think about
@@ -305,7 +247,7 @@ export default defineComponent({
     async getBlockedUsers() {
       this.blockedUsers.splice(0)
       try {
-        const { data } = await axios.get("/users/block")
+        const { data } = await axios.get('/users/block')
         this.blockedUsers.push(...data)
       } catch (e) {
         // to think about
@@ -314,7 +256,7 @@ export default defineComponent({
     async getFriends() {
       this.friends.splice(0)
       try {
-        const { data } = await axios.get("/friends")
+        const { data } = await axios.get('/friends')
         this.friends.push(...data)
       } catch (e) {
         // to think about
@@ -323,7 +265,7 @@ export default defineComponent({
     async getSentRequests() {
       this.sentRequests.splice(0)
       try {
-        const { data } = await axios.get("/friends/sent")
+        const { data } = await axios.get('/friends/sent')
         this.sentRequests.push(...data)
       } catch (e) {
         // to think about
@@ -332,26 +274,26 @@ export default defineComponent({
     async getReceivedRequests() {
       this.receivedRequests.splice(0)
       try {
-        const { data } = await axios.get("/friends/received")
+        const { data } = await axios.get('/friends/received')
         this.receivedRequests.push(...data)
       } catch (e) {
         // to think about
       }
     },
     formatDate(date, includeTime = false) {
-      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
       const options = {
         timeZone: userTimezone,
         year: 'numeric',
         month: 'long',
-        day: 'numeric',
-      };
-      if (includeTime) {
-        options.hour = 'numeric';
-        options.minute = 'numeric';
+        day: 'numeric'
       }
-      return new Date(date).toLocaleString('en-US', options);
-    },
+      if (includeTime) {
+        options.hour = 'numeric'
+        options.minute = 'numeric'
+      }
+      return new Date(date).toLocaleString('en-US', options)
+    }
   }
 })
 </script>

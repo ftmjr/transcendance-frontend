@@ -10,7 +10,7 @@ const dashboardRoutes = {
       name: 'dashboard',
       component: HomeView,
       meta: {
-        requiresAuth: true,
+        requiresAuth: false,
         title: 'Dashboard'
       }
     },
@@ -21,7 +21,27 @@ const dashboardRoutes = {
       meta: {
         requiresAuth: true,
         title: 'My Profile'
-      }
+      },
+      children: [
+        {
+          path: 'settings',
+          name: 'settings',
+          component: () => import('@/views/SettingsView.vue'),
+          meta: {
+            requiresAuth: true,
+            title: 'Settings'
+          },
+        },
+        {
+            path: 'history',
+            name: 'history',
+            component: () => import('@/views/HistoryView.vue'),
+            meta: {
+              requiresAuth: true,
+              title: 'Player game History'
+            }
+        }
+      ],
     },
     {
       path: 'game',
@@ -48,15 +68,6 @@ const dashboardRoutes = {
       meta: {
         requiresAuth: true,
         title: 'Dm'
-      }
-    },
-    {
-      path: 'settings',
-      name: 'settings',
-      component: () => import('@/views/SettingsView.vue'),
-      meta: {
-        requiresAuth: true,
-        title: 'Settings'
       }
     },
   ]

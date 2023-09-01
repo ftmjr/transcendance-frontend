@@ -2,10 +2,13 @@
   <nav class="mt-1 w-11/12 rounded-md">
     <ul class="flex flex-col gap-8">
       <li v-for="(route, index) in menuRoutes" :key="index">
-      <RouterLink :to="route.name" class="text-white flex items-center gap-2 text-3xl py-2 hover:bg-darkBlue hover:rounded-sm px-2">
-        <component :is="route.icon" b-class="w-8 h-8 text-currentColor dark:text-white" />
-        <span>{{route.text}}</span>
-      </RouterLink>
+        <RouterLink
+          :to="route.name"
+          class="text-white flex items-center gap-2 text-3xl py-2 hover:bg-darkBlue hover:rounded-sm px-2"
+        >
+          <component :is="route.icon" b-class="w-8 h-8 text-currentColor dark:text-white" />
+          <span>{{ route.text }}</span>
+        </RouterLink>
       </li>
     </ul>
   </nav>
@@ -15,8 +18,8 @@
 import { defineComponent } from 'vue'
 import { initFlowbite } from 'flowbite'
 import useAuthStore from '@/stores/AuthStore'
-import ChatIcon from "@/components/icons/Chat.vue"
-import UserCircle from "@/components/icons/UserCircle.vue"
+import ChatIcon from '@/components/icons/Chat.vue'
+import UserCircle from '@/components/icons/UserCircle.vue'
 
 export default defineComponent({
   name: 'main-menu',
@@ -24,7 +27,7 @@ export default defineComponent({
     const authStore = useAuthStore()
     return { authStore }
   },
-  components:{
+  components: {
     ChatIcon,
     UserCircle
   },
@@ -43,19 +46,19 @@ export default defineComponent({
         },
         {
           name: 'chat',
-          text: "Chat",
-          icon: "ChatIcon"
+          text: 'Chat',
+          icon: 'ChatIcon'
         },
         {
           name: 'dm',
-          text: "Dm",
-          icon: "ChatIcon"
+          text: 'Dm',
+          icon: 'ChatIcon'
         },
         {
           name: 'settings',
           text: 'Settings',
-          icon: "Setting"
-        },
+          icon: 'Setting'
+        }
       ],
       userRoutes: [
         {

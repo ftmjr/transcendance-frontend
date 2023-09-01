@@ -40,7 +40,7 @@ const useAuthStore = defineStore({
       try {
         const { data } = await axios.get('auth/me')
         this.setUser(data)
-      } catch(error) {
+      } catch (error) {
         // to think about
       }
     },
