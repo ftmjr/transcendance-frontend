@@ -74,13 +74,14 @@ import {GameUser, GameUserType} from '@/Game/network/GameNetwork'
 import useAuthStore from '@/stores/AuthStore'
 import useGameStore from '@/stores/GameStore'
 import useGlobalStore from "@/stores/GlobalStore"
-import chatSocketService from "@/utils/socketio"
+
+import InviteDialog from "@/components/chat/InviteDialog.vue";
 
 const PongGamePlayer = defineAsyncComponent(() => import('@/components/PongGamePlayer.vue'))
-const socket = chatSocketService
 export default defineComponent({
   components: {
-    PongGamePlayer
+    PongGamePlayer,
+    InviteDialog,
   },
   setup() {
     const authStore = useAuthStore()
@@ -112,7 +113,6 @@ export default defineComponent({
   },
   beforeCreate() {
     this.globalStore.connectSocket()
-    this.globalStore.listenGameInvite()
   },
   beforeMount() {
     const currentUser = this.authStore.getUser
