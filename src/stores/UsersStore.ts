@@ -163,16 +163,16 @@ const useUsersStore = defineStore({
     async blockUser() {
       try {
         await axios.post("/users/block/" + this.chatStore.selectedUser.memberId)
+        await this.authStore.refreshUser()
         this.globalStore.socketMembersUpdate()
         await this.chatStore.setRoomMessages()
-        // await this.authStore.refreshUser()
         this.globalStore.socketBlockUser(this.chatStore.selectedUser.member.username)
         this.globalStore.closeProfileDialog()
       } catch (error) {
         if (error.response) {
           this.chatStore.error = error.response.data.message;
         } else {
-          this.chatStore.error = 'Something bad happened. asdasdTry again later'
+          this.chatStore.error = 'Something bad happened. Try again later'
         }
         await this.authStore.refreshUser()
         this.globalStore.socketUpdateUser()
