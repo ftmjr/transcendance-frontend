@@ -39,7 +39,7 @@ export default defineComponent({
         {
           name: 'game',
           text: 'Game Test',
-          icon: ''
+          icon: 'Game'
         },
         {
           name: 'chat',

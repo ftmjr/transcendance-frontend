@@ -137,7 +137,6 @@ export default defineComponent({
   },
   beforeCreate() {
     this.globalStore.connectSocket()
-    this.globalStore.listenGameInvite()
   },
   beforeUnmount() {
     this.globalStore.disconnectSocket()

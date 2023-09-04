@@ -3,18 +3,20 @@ import axios from "@/utils/axios";
 
 import useAuthStore from "@/stores/AuthStore";
 import useGlobalStore from "@/stores/GlobalStore";
+import { User } from "Auth";
 
 const useChatStore = defineStore({
     id:'chat',
     state: () => {
         const authStore = useAuthStore()
         const globalStore = useGlobalStore()
+        const dmReceiver = JSON.parse(localStorage.getItem('__dmReceiver__') ?? 'null') as User | null
         return {
             authStore,
             globalStore,
             user: authStore.getUser,
             users: [],
-            dmReceiver: null,
+            dmReceiver,
             conversations: [],
             selectedUser: {},
             selectedRoom: {id: 0, name: 'General'},
@@ -54,12 +56,14 @@ const useChatStore = defineStore({
     },
     actions:{
         async initChat(){
+            this.messages = []
             await this.setRooms()
             this.joinInfo.roomName = this.selectedRoom.name
             await this.joinRoom()
         },
         setDmReceiver(newReceiver) {
             this.dmReceiver = newReceiver
+            localStorage.setItem('__dmReceiver__', JSON.stringify(newReceiver))
         },
         setSelectedUser(member) {
             this.selectedUser = member
@@ -78,7 +82,7 @@ const useChatStore = defineStore({
             return msg.senderId === this.user.id
         },
         sendPrivateMessage() {
-            this.setDmReceiver(this.selectedMember.member)
+            this.setDmReceiver(this.selectedUser.member)
             this.$router.push('/dm')
         },
         addMessage(message) {
@@ -145,6 +149,7 @@ const useChatStore = defineStore({
                 this.selectedRoom = this.room
                 this.member = data
                 this.globalStore.socketJoinRoom(this.joinInfo.roomName)
+                await this.setRoomMessages()
                 this.resetJoinForm();
             } catch (error) {
                 this.error = error.response ? error.response.data.message : '';
@@ -152,12 +157,12 @@ const useChatStore = defineStore({
         },
         async createRoom() {
             try {
-                console.log(this.error)
                 const { data } = await axios.post('/chat/new', this.createInfo);
                 this.room = data
                 this.selectedRoom = data
+                this.globalStore.socketJoinRoom(this.room.name)
                 this.resetCreateForm()
-                this.globalStore.closeCreateDialog()
+                await this.setRoomMessages()
                 this.globalStore.socketRoomsUpdate()
             } catch (error) {
                 if (error.response.status == 409) {
@@ -167,15 +172,26 @@ const useChatStore = defineStore({
                 }
             }
         },
+        async updateRoomPassword() {
+            try {
+                await axios.post('/chat/password/' + this.room.id, {
+                    password: this.joinInfo.password
+                });
+                this.globalStore.closeRoomPasswordDialog()
+                this.error = ''
+            } catch (error) {
+                this.error = error.response ? error.response.data.message : '';
+            }
+        },
         async leaveRoom() {
             try {
-              await axios.post("/chat/leave/" + this.currentRoom.id)
+              await axios.post("/chat/leave/" + this.room.id)
               this.globalStore.socketMembersUpdate()
               this.select = {id: 0, name: 'General'}
               this.room = {id: 0, name: 'General'}
               this.globalStore.socketRoomsUpdate()
             } catch (e) {
-              await this.getRooms()
+              await this.setRooms()
               this.select = {id: 0, name: 'General'}
               this.room = {id: 0, name: 'General'}
             }
@@ -262,7 +278,7 @@ const useChatStore = defineStore({
         },
         isConversationMessage(msg: any) : boolean
         {
-            if (this.dmReceiver && this.isMyMessage(msg) === true) {
+            if (this.dmReceiver && this.isMyDm(msg) === true) {
                 return msg.receiverId === this.dmReceiver.id;
             } else if (this.dmReceiver) {
                 return msg.senderId === this.dmReceiver.id;

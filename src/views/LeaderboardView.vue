@@ -67,7 +67,6 @@ export default defineComponent({
   },
   async mounted(){
     await this.usersStore.setLeaderboard()
-    this.globalStore.listenGameInvite()
   },
   beforeUnmount() {
     this.globalStore.disconnectSocket()

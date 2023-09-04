@@ -60,10 +60,7 @@ export default defineComponent({
   },
   async beforeCreate() {
     this.globalStore.connectSocket()
-    await this.usersStore.setUsers()
     await this.globalStore.setUpDm()
-    this.globalStore.listenGameInvite()
-    await this.chatStore.setConversations()
   },
   beforeUnmount() {
     this.globalStore.disconnectSocket()
