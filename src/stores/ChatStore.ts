@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import useAuthStore from '@/stores/AuthStore'
 import type { ChatState, Role, Status, ChatroomMember, ChatroomMessage, Chatroom } from 'Chat'
-import axios, { AxiosError } from 'axios'
 import chatSocketService from '../utils/socketio'
 
 const authStore = useAuthStore()
@@ -15,9 +14,9 @@ const useChatStore = defineStore({
         Authorization: `Bearer ${authStore.getToken}`
       }
     }
-    let chatroomMessages = []
-    let chatrooms = []
-    let chatroomMembers = []
+    const chatroomMessages = []
+    const chatrooms = []
+    const chatroomMembers = []
     //const chatrooms = JSON.parse(localStorage.getItem('__chatrooms__') ?? 'null') as Chatrooms | null;
     return {
       socket,
