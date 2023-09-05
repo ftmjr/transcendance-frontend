@@ -48,7 +48,7 @@
           class="font-medium rounded-lg text-white text-sm px-5 py-2.5 text-center bg-orange shadow-lg hover:bg-darkBlue hover:border-2 hover:border-light/10 transition-all duration-300 ease-in-out border-2 border-orange animate-anime-in"
           @click="playLocally"
       >
-        Play Locally
+        Play with AI
       </button>
       <button
           class="font-medium rounded-lg text-white text-sm px-5 py-2.5 text-center bg-orange shadow-lg hover:bg-darkBlue hover:border-2 hover:border-light/10 transition-all duration-300 ease-in-out border-2 border-orange animate-anime-in"
@@ -125,6 +125,9 @@ export default defineComponent({
     } else {
       this.$router.push({ name: 'auth' })
     }
+    if (this.$route.query.fromInvite === 'true') {
+      this.playInvite();
+    }
   },
   beforeUnmount() {
     this.globalStore.disconnectSocket()
@@ -136,6 +139,11 @@ export default defineComponent({
     },
     playOnline() {
       this.gameData.room = 0
+      this.gameData.playerType = GameUserType.Player
+      this.gamePlayerKey++
+    },
+    playInvite() {
+      this.gameData.room = 9999
       this.gameData.playerType = GameUserType.Player
       this.gamePlayerKey++
     }

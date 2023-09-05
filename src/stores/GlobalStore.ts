@@ -92,7 +92,8 @@ const useGlobalStore = defineStore({
       this.socket.socket.emit('game-accept', this.invite.username)
       this.gameStore.setInvited(true)
       this.closeInviteDialog()
-      this.$router.push('/game')
+      //this.$router.push('/game')
+      this.$router.push({ path: '/game', query: { fromInvite: 'true' } });
     },
     cancelInvite() {
       this.socket.socket.emit('game-reject', this.chatStore.getOtherMember.username)
@@ -167,11 +168,12 @@ const useGlobalStore = defineStore({
       })
       this.socket.socket.on('game-accept', () => {
         this.gameStore.setInvited(true)
-        this.$router.push('/game')
+        this.closeWaitingDialog()
+        //this.$router.push('/game')
+        this.$router.push({ path: '/game', query: { fromInvite: 'true' } });
       })
       this.socket.socket.on('game-reject', () => {
         this.closeWaitingDialog()
-        this.closeInviteDialog()
       })
     },
    listenBlockAction() {
