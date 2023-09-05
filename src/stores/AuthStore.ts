@@ -31,6 +31,12 @@ const useAuthStore = defineStore({
     getUser(): User | null {
       return this.user
     },
+    getProfile() {
+      return this.user.profile
+    },
+    getAvatar() {
+      return this.user.profile.avatar
+    },
     isAuthenticated(): boolean {
       return !!this.token
     }

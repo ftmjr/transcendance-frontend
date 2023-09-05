@@ -1,22 +1,23 @@
 <template>
-  <section class="w-100 bg-red-400">
-    <p>DashBoard vue</p>
-  </section>
+  <invite-dialog v-model="globalStore.showInvite" />
+  <div class="container">
+    <p class="text-white text-md">Dashboard home view</p>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
+import useGlobalStore from "@/stores/GlobalStore";
+import InviteDialog from "@/components/chat/InviteDialog.vue";
 
 export default defineComponent({
   name: 'DashBoard',
-  components: {},
+  components: {InviteDialog},
   setup() {
+    const globalStore = useGlobalStore()
     const authStore = useAuthStore()
-    return { authStore }
+    return { authStore, globalStore }
   },
-  data() {
-    return {}
-  }
 })
 </script>

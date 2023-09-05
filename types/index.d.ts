@@ -94,11 +94,9 @@ declare module 'Chat' {
   }
 
   export interface ChatState {
-    socket: SocketioService;
-    socketOptions: any
     chatrooms: Chatroom[] | null
-    chatroomMessages: ChatroomMessage[]
-    chatroomMembers: ChatroomMember[]
+    // chatroomMessages: ChatroomMessage[]
+    // chatroomMembers: ChatroomMember[]
     error: {
       state: boolean
       message: string

@@ -5,7 +5,7 @@ class FormValidator {
     )
   }
   isValidUsername(username: string) {
-    return /^[A-Za-z]+\d*$/.test(username) || this.isEmail(username)
+    return /^[A-Za-z0-9]+\d*$/.test(username) || this.isEmail(username)
   }
   isValidenames(name: string) {
     return /^[A-Za-z]+$/.test(name)
