@@ -21,6 +21,15 @@ declare module 'Auth' {
     twoFactorEnabled: boolean;
   }
 
+  export interface UserSearchResult {
+    id: number;
+    username : string;
+    email: string;
+    name:    string;
+    lastname: string;
+    avatar?: string;
+  }
+
   export interface AuthState {
     token: string | null
     tokenExpiry: number
