@@ -1,7 +1,7 @@
 <template>
-  <div class="container">
-    <p class="text-white text-md">Dashboard home view</p>
-  </div>
+  <section class="w-100 bg-red-400">
+    <p>DashBoard vue</p>
+  </section>
 </template>
 
 <script lang="ts">

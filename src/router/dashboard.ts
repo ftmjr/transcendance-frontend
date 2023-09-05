@@ -30,18 +30,18 @@ const dashboardRoutes = {
           meta: {
             requiresAuth: true,
             title: 'Settings'
-          },
+          }
         },
         {
-            path: 'history',
-            name: 'history',
-            component: () => import('@/views/HistoryView.vue'),
-            meta: {
-              requiresAuth: true,
-              title: 'Player game History'
-            }
+          path: 'history',
+          name: 'history',
+          component: () => import('@/views/HistoryView.vue'),
+          meta: {
+            requiresAuth: true,
+            title: 'Player game History'
+          }
         }
-      ],
+      ]
     },
     {
       path: 'game',
@@ -69,7 +69,7 @@ const dashboardRoutes = {
         requiresAuth: true,
         title: 'Dm'
       }
-    },
+    }
   ]
 }
 
