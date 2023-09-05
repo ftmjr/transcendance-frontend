@@ -7,7 +7,13 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@themeConfig": [ "./src/vuetify/themeConfig"],
+      "@layouts/*": [ "./src/vuetify/@layouts/*"],
+      "@layouts": ["./src/vuetify/@layouts"],
+      "@core/*": [ "./src/vuetify/@core/*"],
+      "@core": [ "./src/vuetify/@core" ],
+      "@styles/*": ["./src/vuetify/styles/*" ]
     }
   },
 }

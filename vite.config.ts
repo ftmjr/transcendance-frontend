@@ -16,6 +16,11 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@views': fileURLToPath(new URL('./src/views', import.meta.url)),
+      '@themeConfig': fileURLToPath(new URL('./src/vuetify/themeConfig.ts', import.meta.url)),
+      '@core': fileURLToPath(new URL('./src/vuetify/@core', import.meta.url)),
+      '@layouts': fileURLToPath(new URL('./src/vuetify/@layouts', import.meta.url)),
+      '@styles': fileURLToPath(new URL('./src/vuetify/styles/', import.meta.url)),
+      '@configured-variables': fileURLToPath(new URL('./src/vuetify/styles/variables/_template.scss', import.meta.url)),
     }
   }
 })

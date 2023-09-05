@@ -24,7 +24,8 @@
     "socket.io-client": "^4.7.1",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6",
-    "vuetify": "^3.3.13",
+    "vue3-perfect-scrollbar": "^1.6.1",
+    "vuetify": "^3.1.16",
     "xvfb": "^0.4.0"
   },
   "devDependencies": {
