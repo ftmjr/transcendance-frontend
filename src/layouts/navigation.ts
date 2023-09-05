@@ -1,17 +1,17 @@
 export default [
   {
-    title: 'Dashboards',
+    title: 'Tableau de bord',
     icon: { icon: 'tabler-smart-home' },
     to: 'dashboard'
   },
   {
-    title: 'Jouer',
-    icon: { icon: 'tabler-game' },
+    title: 'Partie rapide',
+    icon: { icon: 'noto-v1:game-die' },
     to: 'game'
   },
   {
     title: 'Leader Board',
-    icon: { icon: 'board' },
+    icon: { icon: 'solar:ranking-linear' },
     to: 'game'
   },
   { heading: 'Messagerie' },
@@ -25,6 +25,7 @@ export default [
     icon: { icon: 'tabler-mail' },
     to: 'dm'
   },
+  { heading: 'Info' },
   {
     title: 'Profile',
     icon: { icon: 'tabler-user' },

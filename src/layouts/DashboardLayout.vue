@@ -1,85 +1,70 @@
 <template>
-  <div :class="['layout-wrapper', ...layoutClasses(windowWidth, windowScrollY)]">
-    <SideBarNav
-      :isOverlayNavActive="isOverlayNavActive"
-      :toggle-is-overlay-nav-active="toggleIsOverlayNavActive"
-      :nav-items="menuItems"
-    />
-    <div class="layout-content-wrapper">
-      <header :class="['layout-navbar', { 'navbar-blur': isNavbarBlurEnabled }]">
-        <NavBar :toggle-vertical-overlay-nav-active="toggleIsOverlayNavActive" />
-      </header>
-      <main class="layout-page-content">
-        <div class="page-content-container">
-          <router-view />
-        </div>
-      </main>
+  <VerticalNavLayout :nav-items="navItems" v-bind="layoutAttrs">
+    <template #navbar="{ toggleVerticalOverlayNavActive }">
+      <div class="flex h-100 justify-between items-center">
+        <VBtn
+          v-if="isLessThanOverlayNavBreakpoint(windowWidth)"
+          icon
+          variant="text"
+          color="default"
+          class="ms-n3"
+          size="small"
+          @click="toggleVerticalOverlayNavActive(true)"
+        >
+          <VIcon icon="tabler-menu-2" size="24" />
+        </VBtn>
+        <NavSearchBar class="ms-lg-n3" />
+        <VSpacer />
+        <UserProfileButton />
+      </div>
+    </template>
+
+    <RouterView v-slot="{ Component }">
+      <Transition :name="appRouteTransition" mode="out-in">
+        <Component :is="Component" />
+      </Transition>
+    </RouterView>
+
+    <template #footer>
       <FooterSection />
-    </div>
-    <div
-      :class="['layout-overlay', { visible: isLayoutOverlayVisible }]"
-      @click="toggleOverlayVisibility"
-    ></div>
-  </div>
+    </template>
+  </VerticalNavLayout>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
-import useAuthStore from '@/stores/AuthStore'
-import { useToggle, useWindowScroll, useWindowSize } from '@vueuse/core'
-import { useLayouts } from '@/layouts/config/useLayouts'
-import { useRouter } from 'vue-router'
-import SideBarNav from '@/layouts/SideBarNav.vue'
+import { defineComponent } from 'vue'
+import { useThemeConfig } from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
-import NavBar from '@/layouts/NavBar.vue'
+import { VerticalNavLayout } from '@layouts'
+import { useWindowSize } from '@vueuse/core'
+import { useSkins } from '@core/composable/useSkins'
 import FooterSection from '@/layouts/FooterSection.vue'
+import NavSearchBar from '@/components/navbar/NavSearchBar.vue'
+import UserProfileButton from "@/components/navbar/UserProfileButton.vue";
 
 export default defineComponent({
-  components: { FooterSection, NavBar, SideBarNav },
+  components: {
+    UserProfileButton,
+    FooterSection,
+    VerticalNavLayout,
+    NavSearchBar
+  },
   setup() {
-    const authStore = useAuthStore()
-    const { y: windowScrollY } = useWindowScroll()
+    const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
     const { width: windowWidth } = useWindowSize()
-    const {
-      _layoutClasses: layoutClasses,
-      isLessThanOverlayNavBreakpoint,
-      isNavbarBlurEnabled
-    } = useLayouts()
-    const isOverlayNavActive = ref(false)
-    const isLayoutOverlayVisible = ref(false)
-    const toggleIsOverlayNavActive = useToggle(isOverlayNavActive)
-    watch(windowWidth, (value) => {
-      if (!isLessThanOverlayNavBreakpoint.value(value) && isLayoutOverlayVisible.value)
-        isLayoutOverlayVisible.value = false
-    })
-    const router = useRouter()
-    const shallShowPageLoading = ref(false)
-    const menuItems = ref(navItems)
+    const { layoutAttrs, injectSkinClasses } = useSkins()
+    injectSkinClasses()
     return {
-      authStore,
-      windowWidth,
-      windowScrollY,
-      layoutClasses,
+      layoutAttrs,
+      navItems,
+      appRouteTransition,
       isLessThanOverlayNavBreakpoint,
-      isNavbarBlurEnabled,
-      isOverlayNavActive,
-      isLayoutOverlayVisible,
-      toggleIsOverlayNavActive,
-      router,
-      shallShowPageLoading,
-      menuItems
-    }
-  },
-  beforeCreate() {
-    // alert("me");
-    //   check if the user is authenticated
-  },
-  methods: {
-    toggleOverlayVisibility() {
-      this.isLayoutOverlayVisible = !this.isLayoutOverlayVisible
+      windowWidth
     }
   }
 })
 </script>
 
-<style scoped></style>
+<style lang="scss">
+@use '@layouts/styles/default-layout';
+</style>
