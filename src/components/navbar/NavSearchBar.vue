@@ -20,7 +20,7 @@ export default defineComponent({
     }
   },
   methods: {
-    redirectToSuggestedOrSearchedPage(selected:SearchItem) {
+    redirectToSuggestedOrSearchedPage(selected: SearchItem) {
       console.log(selected)
       // to do push to the new page
     },

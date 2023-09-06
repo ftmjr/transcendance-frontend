@@ -1,8 +1,8 @@
-import useAuthStore from "@/stores/AuthStore";
+import useAuthStore from '@/stores/AuthStore'
 import { defineStore } from 'pinia'
-import axios from "@/utils/axios";
-import useGlobalStore from "@/stores/GlobalStore";
-import useChatStore from "@/stores/ChatStore";
+import axios from '@/utils/axios'
+import useGlobalStore from '@/stores/GlobalStore'
+import useChatStore from '@/stores/ChatStore'
 const useUsersStore = defineStore({
   id: 'users',
   state: () => {
@@ -23,13 +23,19 @@ const useUsersStore = defineStore({
       receivedRequests: [],
       selectedFile: null,
       loading: false,
-      username: '',
-      }
+      username: ''
+    }
   },
-  getters:{
-    getAllUsers() { return this.allUsers },
-    getUsers() { return this.users },
-    getLeaderboard() { return this.leaderboard }
+  getters: {
+    getAllUsers() {
+      return this.allUsers
+    },
+    getUsers() {
+      return this.users
+    },
+    getLeaderboard() {
+      return this.leaderboard
+    }
   },
   actions: {
     async getPaginatedUsers(page: number) {
@@ -39,7 +45,7 @@ const useUsersStore = defineStore({
     async setAllUsers() {
       this.allUsers.splice(0)
       try {
-        const { data } = await axios.get("/users/all")
+        const { data } = await axios.get('/users/all')
         this.allUsers.push(...data)
         console.log(data)
       } catch (e) {
@@ -47,18 +53,18 @@ const useUsersStore = defineStore({
       }
     },
     getCountByEvent(gameHistories, event) {
-      return gameHistories.filter(history => history.event === event).length;
+      return gameHistories.filter((history) => history.event === event).length
     },
     async setLeaderboard() {
       this.leaderboard.splice(0)
       try {
-        const { data } = await axios.get("/users/leaderboard")
+        const { data } = await axios.get('/users/leaderboard')
         this.leaderboard.push(...data)
         this.leaderboard.sort((a, b) => {
-          const aWinCount = this.getCountByEvent(a.gameHistories, 'MATCH_WON');
-          const bWinCount = this.getCountByEvent(b.gameHistories, 'MATCH_WON');
-          return bWinCount - aWinCount;
-        });
+          const aWinCount = this.getCountByEvent(a.gameHistories, 'MATCH_WON')
+          const bWinCount = this.getCountByEvent(b.gameHistories, 'MATCH_WON')
+          return bWinCount - aWinCount
+        })
       } catch (e) {
         // to think about
       }
@@ -66,34 +72,34 @@ const useUsersStore = defineStore({
     async setUsers() {
       this.users.splice(0)
       try {
-        const { data } = await axios.get("/users")
+        const { data } = await axios.get('/users')
         this.users.push(...data)
       } catch (e) {
         // to think about
       }
     },
     handleFileChange(event) {
-      this.selectedFile = event.target.files[0];
+      this.selectedFile = event.target.files[0]
     },
     async uploadFile() {
       if (!this.selectedFile) {
-        console.log('No file selected.');
-        return;
+        console.log('No file selected.')
+        return
       }
       try {
-        const formData = new FormData();
-        formData.append('file', this.selectedFile, this.selectedFile.name);
+        const formData = new FormData()
+        formData.append('file', this.selectedFile, this.selectedFile.name)
 
         const response = await axios.post('/files/avatar', formData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+            'Content-Type': 'multipart/form-data'
+          }
+        })
         await this.authStore.refreshUser()
         this.user = this.authStore.getUser
-        console.log('File uploaded successfully:', response.data);
+        console.log('File uploaded successfully:', response.data)
       } catch (error) {
-        console.error('Error uploading file:', error.message);
+        console.error('Error uploading file:', error.message)
       }
     },
     async randomizeAvatar() {
@@ -107,7 +113,7 @@ const useUsersStore = defineStore({
     },
     async unblock(user) {
       try {
-        await axios.delete("/users/block/" + user.id)
+        await axios.delete('/users/block/' + user.id)
         await this.getBlockedUsers()
       } catch (e) {
         // to think about
@@ -115,7 +121,7 @@ const useUsersStore = defineStore({
     },
     async cancelRequest(request) {
       try {
-        await axios.delete("/friends/sent/" + request.id)
+        await axios.delete('/friends/sent/' + request.id)
         await this.getSentRequests()
       } catch (e) {
         // to think about
@@ -123,7 +129,7 @@ const useUsersStore = defineStore({
     },
     async approveRequest(request) {
       try {
-        await axios.post("/friends/approve/" + request.id)
+        await axios.post('/friends/approve/' + request.id)
         await this.getReceivedRequests()
         await this.getFriends()
       } catch (e) {
@@ -132,7 +138,7 @@ const useUsersStore = defineStore({
     },
     async rejectRequest(request) {
       try {
-        await axios.post("/friends/reject/" + request.id)
+        await axios.post('/friends/reject/' + request.id)
         await this.getReceivedRequests()
       } catch (e) {
         // to think about
@@ -140,7 +146,7 @@ const useUsersStore = defineStore({
     },
     async unfriend(user) {
       try {
-        await axios.delete("/friends/" + user.id)
+        await axios.delete('/friends/' + user.id)
         await this.getFriends()
       } catch (e) {
         // to think about
@@ -154,7 +160,7 @@ const useUsersStore = defineStore({
     async getBlockedUsers() {
       this.blockedUsers.splice(0)
       try {
-        const { data } = await axios.get("/users/block")
+        const { data } = await axios.get('/users/block')
         this.blockedUsers.push(...data)
       } catch (e) {
         // to think about
@@ -162,7 +168,7 @@ const useUsersStore = defineStore({
     },
     async blockUser() {
       try {
-        await axios.post("/users/block/" + this.chatStore.selectedUser.memberId)
+        await axios.post('/users/block/' + this.chatStore.selectedUser.memberId)
         await this.authStore.refreshUser()
         this.globalStore.socketMembersUpdate()
         await this.chatStore.setRoomMessages()
@@ -170,19 +176,18 @@ const useUsersStore = defineStore({
         this.globalStore.closeProfileDialog()
       } catch (error) {
         if (error.response) {
-          this.chatStore.error = error.response.data.message;
+          this.chatStore.error = error.response.data.message
         } else {
           this.chatStore.error = 'Something bad happened. Try again later'
         }
         await this.authStore.refreshUser()
         this.globalStore.socketUpdateUser()
-
       }
     },
     async getFriends() {
       this.friends.splice(0)
       try {
-        const { data } = await axios.get("/friends")
+        const { data } = await axios.get('/friends')
         this.friends.push(...data)
       } catch (e) {
         // to think about
@@ -190,7 +195,7 @@ const useUsersStore = defineStore({
     },
     async addFriend() {
       try {
-        await axios.post("/friends/" + this.chatStore.selectedUser.memberId)
+        await axios.post('/friends/' + this.chatStore.selectedUser.memberId)
         this.globalStore.closeProfileDialog()
       } catch (error) {
         if (error.response && error.response === 409) {
@@ -203,7 +208,7 @@ const useUsersStore = defineStore({
     async getSentRequests() {
       this.sentRequests.splice(0)
       try {
-        const { data } = await axios.get("/friends/sent")
+        const { data } = await axios.get('/friends/sent')
         this.sentRequests.push(...data)
       } catch (e) {
         // to think about
@@ -212,26 +217,26 @@ const useUsersStore = defineStore({
     async getReceivedRequests() {
       this.receivedRequests.splice(0)
       try {
-        const { data } = await axios.get("/friends/received")
+        const { data } = await axios.get('/friends/received')
         this.receivedRequests.push(...data)
       } catch (e) {
         // to think about
       }
     },
     formatDate(date, includeTime = false) {
-      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
       const options = {
         timeZone: userTimezone,
         year: 'numeric',
         month: 'long',
-        day: 'numeric',
-      };
-      if (includeTime) {
-        options.hour = 'numeric';
-        options.minute = 'numeric';
+        day: 'numeric'
       }
-      return new Date(date).toLocaleString('en-US', options);
-    },
+      if (includeTime) {
+        options.hour = 'numeric'
+        options.minute = 'numeric'
+      }
+      return new Date(date).toLocaleString('en-US', options)
+    }
   }
 })
 

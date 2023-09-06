@@ -1,26 +1,26 @@
-import {io} from 'socket.io-client'
+import { io } from 'socket.io-client'
 
 class SocketioService {
-    socket: any;
+  socket: any
 
-    constructor() {}
+  constructor() {}
 
-    connectChat(user: any) {
-        const url = '/chat';
-        this.socket = io(url, {
-            auth: {
-                user: user
-            },
-        });
+  connectChat(user: any) {
+    const url = '/chat'
+    this.socket = io(url, {
+      auth: {
+        user: user
+      }
+    })
+  }
+  disconnect() {
+    if (this.socket) {
+      //console.log('hello from socket service')
+      this.socket.disconnect()
     }
-    disconnect(){
-        if (this.socket) {
-            //console.log('hello from socket service')
-            this.socket.disconnect();
-        }
-    }
+  }
 }
 
-const chatSocketService = new SocketioService();
+const chatSocketService = new SocketioService()
 
-export default chatSocketService;
+export default chatSocketService

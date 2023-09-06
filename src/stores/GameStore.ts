@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
 import type { Game } from '@Game'
-import { GameDataI } from "@/Game/pong-scenes/Assets";
-import { GameUserType } from "@/Game/network/GameNetwork";
+import { GameDataI } from '@/Game/pong-scenes/Assets'
+import { GameUserType } from '@/Game/network/GameNetwork'
 
 const useGameStore = defineStore({
   id: 'games',
   state: (): {
-    CurrentPlayingGames: Game[],
+    CurrentPlayingGames: Game[]
     invited: boolean
   } => {
     return {
@@ -15,13 +15,17 @@ const useGameStore = defineStore({
     }
   },
   getters: {
-    getInvited() {return this.invited},
+    getInvited() {
+      return this.invited
+    },
     getCurrentPlayingGames(): Game[] {
       return this.CurrentPlayingGames
     }
   },
   actions: {
-    setInvited(invite: boolean) {this.invited = invite},
+    setInvited(invite: boolean) {
+      this.invited = invite
+    },
     async loadPlayingGames() {
       // code to load current playing games
     }

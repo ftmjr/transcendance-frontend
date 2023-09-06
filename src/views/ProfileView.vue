@@ -79,47 +79,47 @@
     </div>
   </div>
 
-<!--  <v-card-->
-<!--      class="mx-auto"-->
-<!--      max-width="500"-->
-<!--  >-->
-<!--    <v-card-title>-->
-<!--      Friends List-->
-<!--    </v-card-title>-->
+  <!--  <v-card-->
+  <!--      class="mx-auto"-->
+  <!--      max-width="500"-->
+  <!--  >-->
+  <!--    <v-card-title>-->
+  <!--      Friends List-->
+  <!--    </v-card-title>-->
 
-<!--    <v-divider></v-divider>-->
+  <!--    <v-divider></v-divider>-->
 
-<!--    <v-virtual-scroll-->
-<!--        :items="friends"-->
-<!--        height="120"-->
-<!--        item-height="48"-->
-<!--    >-->
-<!--      <template v-slot:default="{ item }">-->
-<!--        <v-list-item-->
-<!--            :title="item.username + ' ' + item.profile.status"-->
-<!--            :subtitle="`Since ${formatDate(item.createdAt)}`"-->
-<!--        >-->
-<!--          <template v-slot:prepend>-->
-<!--            <v-avatar size="50">-->
-<!--              <v-img :src="item.profile.avatar"></v-img>-->
-<!--            </v-avatar>-->
-<!--          </template>-->
+  <!--    <v-virtual-scroll-->
+  <!--        :items="friends"-->
+  <!--        height="120"-->
+  <!--        item-height="48"-->
+  <!--    >-->
+  <!--      <template v-slot:default="{ item }">-->
+  <!--        <v-list-item-->
+  <!--            :title="item.username + ' ' + item.profile.status"-->
+  <!--            :subtitle="`Since ${formatDate(item.createdAt)}`"-->
+  <!--        >-->
+  <!--          <template v-slot:prepend>-->
+  <!--            <v-avatar size="50">-->
+  <!--              <v-img :src="item.profile.avatar"></v-img>-->
+  <!--            </v-avatar>-->
+  <!--          </template>-->
 
-<!--          <template v-slot:append>-->
-<!--            <v-btn size="small" variant="tonal" @click="() => unfriend(item)">-->
-<!--              Unfriend-->
-<!--            </v-btn>-->
-<!--          </template>-->
-<!--        </v-list-item>-->
-<!--      </template>-->
-<!--    </v-virtual-scroll>-->
-<!--  </v-card>-->
+  <!--          <template v-slot:append>-->
+  <!--            <v-btn size="small" variant="tonal" @click="() => unfriend(item)">-->
+  <!--              Unfriend-->
+  <!--            </v-btn>-->
+  <!--          </template>-->
+  <!--        </v-list-item>-->
+  <!--      </template>-->
+  <!--    </v-virtual-scroll>-->
+  <!--  </v-card>-->
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import useGlobalStore from "@/stores/GlobalStore"
+import useGlobalStore from '@/stores/GlobalStore'
 import { initFlowbite } from 'flowbite'
 
 export default defineComponent({
@@ -160,12 +160,12 @@ export default defineComponent({
       // await this.authStore.fetchUser()
       this.loading = false
     }
-  },
+  }
 })
 </script>
 
 <style lang="css">
-.texte{
+.texte {
   color: white;
 }
 </style>

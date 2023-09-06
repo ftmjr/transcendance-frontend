@@ -1,7 +1,7 @@
 import { Icon } from '@iconify/vue'
 import type { IconAliases, IconProps, IconSet } from 'vuetify'
 import { h } from 'vue'
-const aliases: IconAliases = {
+const aliases: Partial<IconAliases> = {
   collapse: 'tabler-chevron-up',
   complete: 'tabler-check',
   cancel: 'tabler-x',
@@ -14,9 +14,9 @@ const aliases: IconAliases = {
   error: 'tabler-x',
   prev: 'tabler-chevron-left',
   next: 'tabler-chevron-right',
-  checkboxOn: 'custom-checked-checkbox',
-  checkboxOff: 'custom-unchecked-checkbox',
-  checkboxIndeterminate: 'custom-indeterminate-checkbox',
+  // checkboxOn: 'tabler-check',
+  // checkboxOff: 'custom-unchecked-checkbox',
+  // checkboxIndeterminate: 'custom-indeterminate-checkbox',
   delimiter: 'tabler-circle',
   sort: 'tabler-arrow-up',
   expand: 'tabler-chevron-down',

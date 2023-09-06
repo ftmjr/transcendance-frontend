@@ -1,5 +1,6 @@
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import HomeView from '@/views/HomeView.vue'
+import usersRoutes from '@/router/users'
 
 const dashboardRoutes = {
   path: '/',
@@ -10,7 +11,7 @@ const dashboardRoutes = {
       name: 'dashboard',
       component: HomeView,
       meta: {
-        requiresAuth: true,
+        requiresAuth: false,
         title: 'Dashboard'
       }
     },
@@ -20,7 +21,7 @@ const dashboardRoutes = {
       component: () => import('@/views/ProfileView.vue'),
       meta: {
         requiresAuth: true,
-        title: 'My Profile'
+        title: 'My User'
       }
     },
     {
@@ -60,14 +61,15 @@ const dashboardRoutes = {
       }
     },
     {
-      path: 'settings',
+      path: 'settings/:tab',
       name: 'settings',
-      component: () => import('@/views/SettingsView.vue'),
+      component: () => import('@/views/User/Settings.vue'),
       meta: {
-        requiresAuth: true,
+        requiresAuth: false,
         title: 'Settings'
       }
     },
+    usersRoutes
   ]
 }
 

@@ -30,6 +30,25 @@ declare module 'Auth' {
     avatar?: string;
   }
 
+  export type Coalition = 'Legion' | 'Torrent' | 'Armada'
+  export type FriendshipStatus = 'pending' | 'accepted' | 'rejected' | 'blocked' | 'none'
+
+  export interface ProfileHeaderData {
+    coalition?: Coalition;
+    avatar: string;
+    fullName: string;
+    username: string;
+    joiningDate: Date;
+  }
+
+  export interface ProfileData {
+    id: number;
+    header: ProfileHeaderData;
+    Profile: Profile;
+    email: string;
+    friendshipStatus: FriendshipStatus;
+  }
+
   export interface AuthState {
     token: string | null
     tokenExpiry: number

@@ -107,7 +107,7 @@ const resolveCategories = (val: string) => {
           v-model="searchQuery"
           variant="solo"
           density="comfortable"
-          class="app-bar-autocomplete-box focus:[&>*]:color-red-200"
+          class="app-bar-autocomplete-box"
           :autofocus="true"
           @keyup.esc="clearSearchAndCloseDialog"
           @keydown="getFocusOnSearchList"
@@ -136,46 +136,29 @@ const resolveCategories = (val: string) => {
       </VCardText>
       <VDivider />
       <PerfectScrollbar :options="{ wheelPropagation: false, suppressScrollX: true }" class="h-100">
-
         <VList
-            v-show="searchQuery.length && !!searchResults.length"
-            ref="refSearchList"
-            density="compact"
-            class="app-bar-search-list"
+          v-show="searchQuery.length && !!searchResults.length"
+          ref="refSearchList"
+          density="compact"
+          class="app-bar-search-list"
         >
-          <template
-              v-for="item in searchResults"
-              :key="item.title"
-          >
-            <VListSubheader
-                v-if="'header' in item"
-                class="text-disabled"
-            >
+          <template v-for="item in searchResults" :key="item.title">
+            <VListSubheader v-if="'header' in item" class="text-disabled">
               {{ resolveCategories(item.title) }}
             </VListSubheader>
 
             <template v-else>
-              <slot
-                  name="searchResult"
-                  :item="item"
-              >
-                <VListItem
-                    link
-                    @click="$emit('itemSelected', item)"
-                >
+              <slot name="searchResult" :item="item">
+                <VListItem link @click="$emit('itemSelected', item)">
                   <template #prepend>
-                    <VIcon
-                        size="20"
-                        :icon="item.icon"
-                        class="me-3"
-                    />
+                    <VIcon size="20" :icon="item.icon" class="me-3" />
                   </template>
 
                   <template #append>
                     <VIcon
-                        size="20"
-                        icon="tabler-corner-down-left"
-                        class="enter-icon text-disabled"
+                      size="20"
+                      icon="tabler-corner-down-left"
+                      class="enter-icon text-disabled"
                     />
                   </template>
 
@@ -267,8 +250,10 @@ const resolveCategories = (val: string) => {
     background-color: transparent;
 
     &:focus {
-      --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
-      --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+      --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width)
+        var(--tw-ring-offset-color);
+      --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width))
+        var(--tw-ring-color);
       box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
     }
   }
@@ -312,10 +297,4 @@ const resolveCategories = (val: string) => {
     }
   }
 }
-</style>
-
-<style lang="scss" scoped>
-//.card-list {
-//  --v-card-list-gap: 16px;
-//}
 </style>

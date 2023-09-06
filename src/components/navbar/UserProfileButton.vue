@@ -1,23 +1,23 @@
 <script lang="ts">
-import {defineComponent} from 'vue'
-import useAuthStore from "@/stores/AuthStore";
+import { defineComponent } from 'vue'
+import useAuthStore from '@/stores/AuthStore'
 
 export default defineComponent({
-  name: "UserProfileButton",
+  name: 'UserProfileButton',
   setup() {
-    const authStore = useAuthStore();
+    const authStore = useAuthStore()
     return {
       authStore
-    };
+    }
   },
   computed: {
     isOnline() {
-      return this.authStore.user && this.authStore.isAuthenticated;
+      return this.authStore.user && this.authStore.isAuthenticated
     }
   },
   methods: {
     async logout() {
-      await this.authStore.logout();
+      await this.authStore.logout()
     }
   }
 })
@@ -25,56 +25,32 @@ export default defineComponent({
 
 <template>
   <VBadge
-      dot
-      location="bottom right"
-      offset-x="3"
-      offset-y="3"
-      bordered
-      :color="isOnline ? 'success' : 'error'"
+    dot
+    location="bottom right"
+    offset-x="3"
+    offset-y="3"
+    bordered
+    :color="isOnline ? 'success' : 'error'"
   >
-    <VAvatar
-        class="cursor-pointer"
-        color="primary"
-        variant="tonal"
-    >
+    <VAvatar class="cursor-pointer" color="primary" variant="tonal">
       <VImg
-          v-if="authStore.user && authStore.user.profile.avatar"
-          :src="authStore.user.profile.avatar"
+        v-if="authStore.user && authStore.user.profile.avatar"
+        :src="authStore.user.profile.avatar"
       />
-      <VIcon
-          v-else
-          icon="tabler-user"
-      />
+      <VIcon v-else icon="tabler-user" />
     </VAvatar>
-    <VMenu
-        activator="parent"
-        width="230"
-        location="bottom end"
-        offset="14px"
-    >
+    <VMenu activator="parent" width="230" location="bottom end" offset="14px">
       <VList>
         <VListItem>
           <template #prepend>
             <VListItemAction start>
-              <VBadge
-                  dot
-                  location="bottom right"
-                  offset-x="3"
-                  offset-y="3"
-                  color="success"
-              >
-                <VAvatar
-                    color="primary"
-                    variant="tonal"
-                >
+              <VBadge dot location="bottom right" offset-x="3" offset-y="3" color="success">
+                <VAvatar color="primary" variant="tonal">
                   <VImg
-                      v-if="authStore.user && authStore.user.profile.avatar"
-                      :src="authStore.user.profile.avatar"
+                    v-if="authStore.user && authStore.user.profile.avatar"
+                    :src="authStore.user.profile.avatar"
                   />
-                  <VIcon
-                      v-else
-                      icon="tabler-user"
-                  />
+                  <VIcon v-else icon="tabler-user" />
                 </VAvatar>
               </VBadge>
             </VListItemAction>
@@ -91,14 +67,25 @@ export default defineComponent({
         </VListItem>
 
         <VDivider class="my-2" />
+        <VListItem :to="{ name: 'settings', params: { tab: 'account' } }">
+          <template #prepend>
+            <VIcon class="me-2" icon="tabler-settings" size="22" />
+          </template>
+
+          <VListItemTitle>Paramètre</VListItemTitle>
+        </VListItem>
+        <VListItem :to="{ name: 'settings', params: { tab: 'security' } }">
+          <template #prepend>
+            <VIcon class="me-2" icon="tabler-lock" size="22" />
+          </template>
+
+          <VListItemTitle>Sécurité</VListItemTitle>
+        </VListItem>
+        <VDivider class="my-2" />
 
         <VListItem link @click="logout">
           <template #prepend>
-            <VIcon
-                class="me-2"
-                icon="tabler-logout"
-                size="22"
-            />
+            <VIcon class="me-2" icon="tabler-logout" size="22" />
           </template>
           <VListItemTitle>Se déconnecter</VListItemTitle>
         </VListItem>
@@ -107,6 +94,4 @@ export default defineComponent({
   </VBadge>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

@@ -1,24 +1,18 @@
 <template>
-  <v-card
-      class="mx-auto"
-      max-width="500"
-  >
-    <v-card-title>
-      THE PONG LEADERBOARD
-    </v-card-title>
+  <v-card class="mx-auto" max-width="500">
+    <v-card-title> THE PONG LEADERBOARD </v-card-title>
 
     <v-divider></v-divider>
 
-    <v-virtual-scroll
-        :items="usersStore.getLeaderboard"
-        height="320"
-        item-height="48"
-    >
+    <v-virtual-scroll :items="usersStore.getLeaderboard" height="320" item-height="48">
       <template v-slot:default="{ item, index }">
         <v-list-item
-            :style="index === 0 ? 'font-weight: bold; color: #99842e;' : ''"
-            :title="index == 0 ? item.username + ' <PONG BOSS>' : item.username"
-            :subtitle="`Wins: ${getCountByEvent(item.gameHistories, 'MATCH_WON')}  Loss: ${getCountByEvent(item.gameHistories, 'MATCH_LOST')}`"
+          :style="index === 0 ? 'font-weight: bold; color: #99842e;' : ''"
+          :title="index == 0 ? item.username + ' <PONG BOSS>' : item.username"
+          :subtitle="`Wins: ${getCountByEvent(
+            item.gameHistories,
+            'MATCH_WON'
+          )}  Loss: ${getCountByEvent(item.gameHistories, 'MATCH_LOST')}`"
         >
           <template v-slot:prepend>
             <v-avatar :size="index < 3 ? 60 : 30">
@@ -27,12 +21,15 @@
           </template>
 
           <template v-slot:append>
-            <v-avatar :size="index < 3 ? 60 : 30" :class="{
-          'special-avatar-gold': index === 0,   // Apply gold style for 1st place
-          'special-avatar-silver': index === 1, // Apply silver style for 2nd place
-          'special-avatar-bronze': index === 2  // Apply bronze style for 3rd place
-        }">
-              {{ index + 1}}
+            <v-avatar
+              :size="index < 3 ? 60 : 30"
+              :class="{
+                'special-avatar-gold': index === 0, // Apply gold style for 1st place
+                'special-avatar-silver': index === 1, // Apply silver style for 2nd place
+                'special-avatar-bronze': index === 2 // Apply bronze style for 3rd place
+              }"
+            >
+              {{ index + 1 }}
             </v-avatar>
           </template>
         </v-list-item>
@@ -45,13 +42,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import useUsersStore from "@/stores/UsersStore";
-import useGlobalStore from "@/stores/GlobalStore"
-import InviteDialog from "@/components/chat/InviteDialog.vue";
+import useUsersStore from '@/stores/UsersStore'
+import useGlobalStore from '@/stores/GlobalStore'
+import InviteDialog from '@/components/chat/InviteDialog.vue'
 export default defineComponent({
   name: 'learderboard-view',
-  components: {InviteDialog},
-  setup(){
+  components: { InviteDialog },
+  setup() {
     const authStore = useAuthStore()
     const usersStore = useUsersStore()
     const globalStore = useGlobalStore()
@@ -65,7 +62,7 @@ export default defineComponent({
   beforeCreate() {
     this.globalStore.connectSocket()
   },
-  async mounted(){
+  async mounted() {
     await this.usersStore.setLeaderboard()
   },
   beforeUnmount() {
@@ -73,14 +70,14 @@ export default defineComponent({
   },
   methods: {
     getCountByEvent(gameHistories, event) {
-      return gameHistories.filter(history => history.event === event).length;
-    },
+      return gameHistories.filter((history) => history.event === event).length
+    }
   }
 })
 </script>
 
 <style lang="css">
-.texte{
+.texte {
   color: white;
 }
 .special-avatar-gold {

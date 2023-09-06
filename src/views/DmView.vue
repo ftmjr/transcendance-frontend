@@ -7,42 +7,41 @@
     </aside>
   </header>
   <v-autocomplete
-      bg-color="background"
-      v-model="chatStore.dmReceiver"
-      label="Select/Enter Username"
-      :items="usersStore.getUsers"
-      item-title="username"
-      return-object
+    bg-color="background"
+    v-model="chatStore.dmReceiver"
+    label="Select/Enter Username"
+    :items="usersStore.getUsers"
+    item-title="username"
+    return-object
   />
   <dm-container />
   <v-text-field
-      bg-color='background'
-      label="Message"
-      v-model="chatStore.message"
-      @keyup.enter="chatStore.sendDm"
+    bg-color="background"
+    label="Message"
+    v-model="chatStore.message"
+    @keyup.enter="chatStore.sendDm"
   />
   <conversations-drawer />
   <invite-dialog v-model="globalStore.dialogs.invite" />
 </template>
 
 <script lang="ts">
-
 import { defineComponent, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import useAuthStore from "@/stores/AuthStore"
-import useChatStore from "@/stores/ChatStore"
-import useGlobalStore from "@/stores/GlobalStore"
-import useUsersStore from "@/stores/UsersStore"
-import ConversationsDrawer from "@/components/chat/ConversationsDrawer.vue"
-import DmContainer from "@/components/chat/DmContainer.vue"
-import InviteDialog from "@/components/chat/InviteDialog.vue";
+import useAuthStore from '@/stores/AuthStore'
+import useChatStore from '@/stores/ChatStore'
+import useGlobalStore from '@/stores/GlobalStore'
+import useUsersStore from '@/stores/UsersStore'
+import ConversationsDrawer from '@/components/chat/ConversationsDrawer.vue'
+import DmContainer from '@/components/chat/DmContainer.vue'
+import InviteDialog from '@/components/chat/InviteDialog.vue'
 
 export default defineComponent({
   name: 'ChatRoom-View',
   components: {
     InviteDialog,
     ConversationsDrawer,
-    DmContainer,
+    DmContainer
   },
   setup() {
     const authStore = useAuthStore()
@@ -52,7 +51,7 @@ export default defineComponent({
     const { dmReceiver } = storeToRefs(chatStore)
     watch(dmReceiver, (newReceiver) => {
       globalStore.socketAddReceiver(newReceiver)
-      globalStore.notifications[newReceiver.id] = newReceiver.profile.status;
+      globalStore.notifications[newReceiver.id] = newReceiver.profile.status
       chatStore.setDmReceiver(newReceiver)
       chatStore.setDmMessages()
     })
@@ -64,7 +63,7 @@ export default defineComponent({
   },
   beforeUnmount() {
     this.globalStore.disconnectSocket()
-  },
+  }
 })
 </script>
 
@@ -76,7 +75,8 @@ export default defineComponent({
 .message-container {
   height: 400px;
 }
-.avatar-container, .select-container {
+.avatar-container,
+.select-container {
   margin: 10px; /* Add some margin for spacing */
 }
 .messages {
