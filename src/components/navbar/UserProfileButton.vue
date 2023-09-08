@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
+import router from "@/router";
 
 export default defineComponent({
   name: 'UserProfileButton',
@@ -16,8 +17,8 @@ export default defineComponent({
     }
   },
   methods: {
-    async logout() {
-      await this.authStore.logout()
+    logout() {
+      this.authStore.logout();
     }
   }
 })
@@ -83,7 +84,7 @@ export default defineComponent({
         </VListItem>
         <VDivider class="my-2" />
 
-        <VListItem link @click="logout">
+        <VListItem link @click="logout" color="red">
           <template #prepend>
             <VIcon class="me-2" icon="tabler-logout" size="22" />
           </template>

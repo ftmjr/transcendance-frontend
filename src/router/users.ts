@@ -1,3 +1,5 @@
+import Settings from "@/views/user/Settings.vue";
+
 const usersRoutes = {
   path: 'users',
   children: [
@@ -6,8 +8,17 @@ const usersRoutes = {
       name: 'user-list',
       component: () => import('@/views/User/UserList.vue'),
       meta: {
-        requiresAuth: false,
+        requiresAuth: true,
         title: 'Liste des utilisateurs'
+      }
+    },
+    {
+      path: 'me/:tab?',
+      name: 'me',
+      component: () => import('@/views/User/Show.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Mon Profil'
       }
     },
     {
@@ -16,19 +27,19 @@ const usersRoutes = {
       component: () => import('@/views/User/Show.vue'),
       props: true,
       meta: {
-        requiresAuth: false,
+        requiresAuth: true,
         title: 'Voir Le Profil'
       }
     },
     {
-      path: 'me/:tab?',
-      name: 'me',
-      component: () => import('@/views/User/Show.vue'),
+      path: 'settings/:tab',
+      name: 'settings',
+      component: Settings,
       meta: {
-        requiresAuth: false,
-        title: 'Mon Profil'
+        requiresAuth: true,
+        title: 'Settings'
       }
-    }
+    },
   ]
 }
 

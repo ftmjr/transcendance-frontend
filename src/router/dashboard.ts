@@ -11,17 +11,8 @@ const dashboardRoutes = {
       name: 'dashboard',
       component: HomeView,
       meta: {
-        requiresAuth: false,
-        title: 'Dashboard'
-      }
-    },
-    {
-      path: 'profile',
-      name: 'profile',
-      component: () => import('@/views/ProfileView.vue'),
-      meta: {
         requiresAuth: true,
-        title: 'My User'
+        title: 'Dashboard'
       }
     },
     {
@@ -58,15 +49,6 @@ const dashboardRoutes = {
       meta: {
         requiresAuth: true,
         title: 'Message'
-      }
-    },
-    {
-      path: 'settings/:tab',
-      name: 'settings',
-      component: () => import('@/views/User/Settings.vue'),
-      meta: {
-        requiresAuth: false,
-        title: 'Settings'
       }
     },
     usersRoutes

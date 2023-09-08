@@ -25,6 +25,9 @@ const useAuthStore = defineStore({
     getToken(): string | null {
       return this.token
     },
+    getAuthError(): { state: boolean; message: string } {
+        return this.error
+    },
     isExpired(): boolean {
       return Date.now() > this.tokenExpiry
     },
@@ -172,7 +175,7 @@ const useAuthStore = defineStore({
     async generate2FAQrCode(): Promise<string | null> {
       try {
         const { data } = await axios.post('auth/2fa/generate')
-        return data.qrCode
+        return data as string
       } catch (error) {
         this.setError({ state: true, message: `Can't generate 2FA code` })
         return null
@@ -191,23 +194,70 @@ const useAuthStore = defineStore({
       }
     },
     // subsequent usage when activating 2FA
-    async activate2FA(totpCode: string): Promise<boolean> {
+    async activate2FA(otpCode: string): Promise<boolean> {
       try {
-        // check if user has 2FA enabled
-        const user = this.getUser()
-        if (!user.twoFactorEnabled) {
-          const { data } = await axios.post('auth/2fa/turn-on', {
-            twoFactorAuthenticationCode: totpCode
+        if (!this.user.twoFactorEnabled) {
+          await axios.post('auth/2fa/turn-on', {
+            twoFactorAuthenticationCode: otpCode
           })
-          await this.fetchUser()
-          return data as boolean
+          await this.fetchUser();
         }
         return true
       } catch (error) {
         this.setError({ state: true, message: `Can't validate OTP code` })
         return false
       }
-    }
+    },
+    async deactivate2FA(): Promise<boolean> {
+      try {
+        this.setError({ state: false, message: '' })
+        await axios.get('auth/2fa/turn-off')
+        await this.fetchUser();
+        return true;
+      } catch (error) {
+        this.setError({ state: true, message: `Can't deactivate 2FA` })
+        return false
+      }
+    },
+    async updatePassword(info:{
+      currentPassword: string;
+      newPassword: string;
+      confirmPassword: string;
+    }): Promise<boolean> {
+      this.setError({ state: false, message: '' });
+      try {
+        const { data } = await axios.post('auth/updatePassword', info)
+        this.setUser(data);
+        return true;
+      } catch (error) {
+        if (error.response && (error.response.status === 403 || error.response.status === 401)) {
+          const message = JSON.stringify(error.response.data.message ?? 'error');
+          this.setError({ state: true, message })
+        } else {
+          this.setError({ state: true, message: `Can't update password` })
+        }
+        return false
+      }
+    },
+    async updateUserInfo(info:{
+      firstName: string;
+      lastName: string;
+      bio: string;
+    }){
+      this.setError({ state: false, message: '' });
+      try {
+        const { data } = await axios.post('auth/updateInfo', info)
+        this.setUser(data);
+        return true;
+      } catch (error) {
+        if (error.response && (error.response.status === 403 || error.response.status === 401)) {
+            this.setError({ state: true, message: error.response.data.message })
+        }else{
+            this.setError({ state: true, message: `Can't update user info` })
+        }
+        return false
+      }
+    },
   }
 })
 

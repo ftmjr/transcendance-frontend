@@ -51,7 +51,6 @@ watch([ctrl_k, meta_k], () => {
   emit('update:isDialogVisible', true)
 })
 
-// 👉 clear search result and close the dialog
 const clearSearchAndCloseDialog = () => {
   emit('update:isDialogVisible', false)
   emit('update:searchQuery', '')
@@ -76,7 +75,6 @@ const dialogModelValueUpdate = (val: boolean) => {
   emit('update:searchQuery', '')
 }
 
-// 👉 resolve categories name
 const resolveCategories = (val: string) => {
   if (val === 'dashboard') return 'Tableau de bord'
 

@@ -1,26 +1,41 @@
 <script lang="ts">
 import { defineAsyncComponent, defineComponent } from 'vue'
 import axiosInstance from '@/utils/axios'
+import useAuthStore from "@/stores/AuthStore";
+import DoubleFactorModal from "@/components/profile/DoubleFactorModal.vue";
 
 interface Session {
   id: number
   userAgent: string
   ipAddress: string
-  createdAt: Date
-  expiresAt: Date
+  createdAt: string
+  expiresAt: string
 }
 export default defineComponent({
   name: 'SecuritySettings',
   components: {
-    DoubleFactorModal: defineAsyncComponent(
-      () => import('@/components/profile/DoubleFactorModal.vue')
-    )
+    DoubleFactorModal,
+  },
+  setup() {
+    const authStore = useAuthStore();
+    return {
+      authStore
+    }
   },
   data() {
     return {
       lastSessions: [] as Session[],
       loading: false,
+      icons: [
+        {icon: 'tabler-brand-windows', color: 'blue', title: 'Windows'},
+        {icon: 'tabler-brand-apple', color: 'secondary', title: 'MacOS'},
+        {icon: 'tabler-brand-android', color: 'green', title: 'Android'},
+        {icon: 'tabler-brand-apple', color: 'secondary', title: 'IPhone'}
+      ],
       isDoubleFactorDialogVisible: false,
+      isInfoBarVisible: false,
+      infoMsg: '',
+      infoColor: 'success',
       passwordFieldsVisibility: {
         currentPassword: false,
         newPassword: false,
@@ -31,8 +46,19 @@ export default defineComponent({
         newPassword: '',
         confirmPassword: ''
       },
+      rules: {
+        required: value => !!value || 'Ce champ est requis',
+        min: v => v.length >= 6 || 'Minimum 6 caractères',
+        match: () => {
+          return this.passwordFields.newPassword === this.passwordFields.confirmPassword || 'Les mots de passe ne correspondent pas'
+        },
+        upperCase: v => /[A-Z]/.test(v) || 'Doit contenir au moins une lettre majuscule',
+      },
       allowTwoFactorDisable: false
     }
+  },
+  mounted() {
+    this.getSessions()
   },
   computed: {
     isDoubleFactorEnabled() {
@@ -51,17 +77,98 @@ export default defineComponent({
       this.loading = false
     },
     async disconnectSession(session: Session) {
-      try {
-        await axiosInstance.delete(`/auth/sessions/${session.id}`)
-      } catch (e) {
-        console.log(e)
-      }
+      // toDo : disconnect session implementation
+      // try {
+      //   await axiosInstance.delete(`/auth/sessions/${session.id}`)
+      // } catch (e) {
+      //   console.log(e)
+      // }
     },
     async changePassword() {
-      //
+      const worked = await this.authStore.updatePassword(this.passwordFields);
+      if (worked) {
+        this.infoMsg = 'Votre mot de passe a été mis à jour avec succès';
+        this.infoColor = 'success';
+        this.isInfoBarVisible = true;
+        this.passwordFields = {
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        }
+      } else {
+        this.infoMsg = this.authStore.getAuthError.message;
+        this.infoColor = 'error';
+        this.isInfoBarVisible = true;
+      }
     },
-    deactivateTwoFactor() {
-      //
+    async deactivateTwoFactor() {
+      const worked = await this.authStore.deactivate2FA();
+      if (worked) {
+        this.infoMsg = `L'authentification à deux facteurs a été désactivée avec succès`;
+        this.infoColor = 'success';
+        this.isInfoBarVisible = true;
+        this.allowTwoFactorDisable = false;
+      } else {
+        this.infoMsg = `Une erreur est survenue lors de la désactivation de l'authentification à deux facteurs`;
+        this.infoColor = 'error';
+        this.isInfoBarVisible = true;
+      }
+    },
+    getPlatform(userAgent: string) {
+      if (userAgent.includes("Windows")) {
+        return "Windows";
+      } else if (userAgent.includes("Mac OS X") || userAgent.includes("Macintosh")) {
+        return "MacOS";
+      } else if (userAgent.includes("Android")) {
+        return "Android";
+      } else if (userAgent.includes("iPhone")) {
+        return "IPhone";
+      } else {
+        return "Unknown";
+      }
+    },
+    getNavigatorName(userAgent: string) {
+      if (userAgent.includes("Edge")) {
+        return "Edge";
+      } else if (userAgent.includes("Opera") || userAgent.includes("OPR")) {
+        return "Opera";
+      } else if (userAgent.includes("Chrome")) {
+        return "Chrome";
+      } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+        return "Safari";
+      } else if (userAgent.includes("Firefox")) {
+        return "Firefox";
+      } else if (userAgent.includes("MSIE") || userAgent.includes("Trident/7.0")) {
+        return "Internet Explorer";
+      } else {
+        return "Unknown";
+      }
+    },
+    getDeviceName(userAgent: string) {
+      if (userAgent.includes("Android")) {
+        return "Android";
+      } else if (userAgent.includes("iPad")) {
+        return "iPad";
+      } else if (userAgent.includes("iPhone")) {
+        return "iPhone";
+      } else if (userAgent.includes("Mac OS X") || userAgent.includes("Macintosh")) {
+        return "Mac";
+      } else if (userAgent.includes("Windows")) {
+        return "Windows";
+      } else if (userAgent.includes("Linux")) {
+        return "Linux";
+      } else {
+        return "Unknown";
+      }
+    },
+    formatDate(dateStr: string): string {
+      const date = new Date(dateStr);
+      return new Intl.DateTimeFormat('fr-CA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'}).format(date);
+    },
+    checkSessionExpiryStatus(expiryDateStr: string) {
+      const expiryDate = new Date(expiryDateStr);
+      const currentDate = new Date();
+      return expiryDate >= currentDate.getTime() ? 'active' : 'expired';
     }
   }
 })
@@ -78,6 +185,7 @@ export default defineComponent({
                 <VTextField
                   class="transparent-input-box"
                   v-model="passwordFields.currentPassword"
+                  :rules="[rules.required, rules.min]"
                   :type="passwordFieldsVisibility.currentPassword ? 'text' : 'password'"
                   :append-inner-icon="
                     passwordFieldsVisibility.currentPassword ? 'tabler-eye-off' : 'tabler-eye'
@@ -95,6 +203,7 @@ export default defineComponent({
                 <VTextField
                   class="transparent-input-box"
                   v-model="passwordFields.newPassword"
+                  :rules="[rules.required, rules.min, rules.upperCase]"
                   :type="passwordFieldsVisibility.newPassword ? 'text' : 'password'"
                   :append-inner-icon="
                     passwordFieldsVisibility.newPassword ? 'tabler-eye-off' : 'tabler-eye'
@@ -109,6 +218,7 @@ export default defineComponent({
                 <VTextField
                   class="transparent-input-box"
                   v-model="passwordFields.confirmPassword"
+                  :rules="[rules.required, rules.min, rules.upperCase, rules.match]"
                   :type="passwordFieldsVisibility.confirmPassword ? 'text' : 'password'"
                   :append-inner-icon="
                     passwordFieldsVisibility.confirmPassword ? 'tabler-eye-off' : 'tabler-eye'
@@ -123,7 +233,7 @@ export default defineComponent({
             </VRow>
           </VCardText>
           <VCardText class="flex flex-wrap gap-4">
-            <VBtn @submit.prevent="changePassword">Modifier</VBtn>
+            <VBtn @click="changePassword">Modifier</VBtn>
           </VCardText>
         </VForm>
       </VCard>
@@ -174,21 +284,40 @@ export default defineComponent({
     <VCol cols="12">
       <VCard title="Sessions récentes">
         <VDivider />
-        <VTable class="text-no-wrap">
+        <VTable class="bg-transparent">
           <thead>
             <tr>
-              <th scope="col">NAVIGATEUR</th>
-              <th scope="col">IP</th>
+              <th scope="col">Navigateur</th>
+              <th scope="col">Terminal</th>
+              <th scope="col">Location/IP</th>
               <th scope="col">Créer le</th>
-              <th scope="col">Valide</th>
+              <th scope="col">Etat</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="session in lastSessions" :key="session.id">
-              <td>{{ session.userAgent }}</td>
+              <td class="flex align-center">
+                <template v-for="iconObj in icons" :key="iconObj.title">
+                  <VIcon
+                      v-if="getPlatform(session.userAgent) === iconObj.title"
+                      :icon="iconObj.icon"
+                      :color="iconObj.color"
+                  />
+                </template>
+                <span>{{ getNavigatorName(session.userAgent) }} - {{ getPlatform(session.userAgent) }}</span>
+              </td>
+              <td class="text-base font-weight-semibold">{{ getDeviceName(session.userAgent) }}</td>
               <td>{{ session.ipAddress }}</td>
-              <td>{{ session.createdAt }}</td>
-              <td>{{ session.expiresAt }}</td>
+              <td>{{ formatDate(session.createdAt) }}</td>
+              <td>
+                <v-chip
+                    class="ma-2"
+                    label
+                    :color="checkSessionExpiryStatus(session.expiresAt) === 'active' ? 'success' : 'error'"
+                >
+                  {{ checkSessionExpiryStatus(session.expiresAt) }}
+                </v-chip>
+              </td>
             </tr>
           </tbody>
         </VTable>
@@ -196,6 +325,14 @@ export default defineComponent({
     </VCol>
   </VRow>
   <DoubleFactorModal v-model:is-dialog-visible="isDoubleFactorDialogVisible" />
+  <VSnackbar
+      v-model="isInfoBarVisible"
+      multi-line
+      :timeout="2000"
+      :color="infoColor"
+  >
+    {{ infoMsg }}
+  </VSnackbar>
 </template>
 
 <style scoped></style>

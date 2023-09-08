@@ -1,10 +1,11 @@
 <script lang="ts">
-import { defineAsyncComponent, defineComponent, PropType } from 'vue'
+import { defineComponent, PropType } from 'vue'
+import SecuritySettings from "@/views/User/SecuritySettings.vue";
 import useAuthStore from '@/stores/AuthStore'
 
 export default defineComponent({
   components: {
-    SecuritySettings: defineAsyncComponent(() => import('@/views/User/SecuritySettings.vue'))
+    SecuritySettings,
   },
   props: {
     tab: {
@@ -22,6 +23,9 @@ export default defineComponent({
         { title: 'Compte', icon: 'tabler-users', tab: 'account' },
         { title: 'Paramètre de sécurité', icon: 'tabler-lock', tab: 'security' }
       ],
+      isInfoBarVisible: false,
+      infoMsg: '',
+      infoColor: 'success',
       activeTab: this.tab,
       fields: {
         firstName: '',
@@ -35,11 +39,35 @@ export default defineComponent({
       return this.$refs.refInputEl
     }
   },
+  mounted() {
+    this.hydrateFields();
+  },
   methods: {
+    hydrateFields() {
+      this.fields = {
+        firstName: this.authStore.user?.profile.name || '',
+        lastName: this.authStore.user?.profile?.lastname || '',
+        bio: this.authStore.user?.profile?.bio || ''
+      }
+    },
     startUploadNewAvatar(fileInputEv: Event) {
       console.log(fileInputEv)
     },
-    resetForm() {}
+    async updateUserInformation() {
+      const worked = await this.authStore.updateUserInfo(this.fields);
+      if (worked) {
+        this.infoMsg = 'Vos informations ont été mises à jour avec succès';
+        this.infoColor = 'success';
+        this.isInfoBarVisible = true;
+      } else {
+        this.infoMsg = 'Une erreur est survenue lors de la mise à jour de vos informations';
+        this.infoColor = 'error';
+        this.isInfoBarVisible = true;
+      }
+    },
+    resetForm() {
+      this.hydrateFields();
+    }
   }
 })
 </script>
@@ -120,7 +148,7 @@ export default defineComponent({
                     </VCol>
 
                     <VCol cols="12" class="d-flex flex-wrap gap-4">
-                      <VBtn>Enregistrer</VBtn>
+                      <VBtn @click.prevent="updateUserInformation">Enregistrer</VBtn>
                       <VBtn
                         color="secondary"
                         variant="tonal"
@@ -141,20 +169,16 @@ export default defineComponent({
         <SecuritySettings />
       </VWindowItem>
     </VWindow>
+    <VSnackbar
+        v-model="isInfoBarVisible"
+        multi-line
+        :timeout="1000"
+        :color="infoColor"
+    >
+      {{ infoMsg }}
+    </VSnackbar>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.transparent-bg-input {
-  .v-field__input {
-    background-color: transparent !important;
-    &:focus {
-      --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width)
-        var(--tw-ring-offset-color);
-      --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width))
-        var(--tw-ring-color);
-      box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
-    }
-  }
-}
 </style>
