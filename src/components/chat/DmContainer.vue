@@ -17,7 +17,7 @@
             class="pa-4 mb-2"
           >
             <span v-if="msg.sender" class="font-bold">{{ msg.sender.username }}:</span>
-            &nbsp {{ msg.text }}
+            &nbsp; {{ msg.text }}
             <sub class="ml-2" style="font-size: 0.5rem">{{
               chatStore.formatMessageDate(msg.timestamp, true)
             }}</sub>
