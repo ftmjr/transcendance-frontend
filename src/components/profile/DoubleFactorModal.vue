@@ -1,17 +1,19 @@
 <template>
   <VDialog
-      max-width="600"
-      :model-value="isDialogVisible"
-      @update:model-value="dialogModelValueUpdate"
+    max-width="600"
+    :model-value="isDialogVisible"
+    @update:model-value="dialogModelValueUpdate"
   >
     <VBtn icon class="v-dialog-close-btn" @click="dialogModelValueUpdate(false)">
       <VIcon icon="tabler-x" color="error" />
     </VBtn>
-    <VCard class="pa-5 pa-sm-15">
+    <VCard class="pa-5 pa-sm-15" :loading="isLoading">
       <VCardItem class="text-center">
         <VCardTitle class="text-h5 font-weight-medium">Activation du double facteur</VCardTitle>
         <VCardSubtitle v-if="!isVerified" class="mt-3">Scannez L'image</VCardSubtitle>
-        <VCardSubtitle v-if="isVerified" class="mt-3 text-success">Youpi le double facteur est actif!</VCardSubtitle>
+        <VCardSubtitle v-if="isVerified" class="mt-3 text-success"
+          >Youpi le double facteur est actif!</VCardSubtitle
+        >
       </VCardItem>
       <VCardText v-if="isLoading" class="text-center">
         <VIcon icon="tabler-loader"></VIcon>
@@ -28,8 +30,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import useAuthStore from "@/stores/AuthStore";
-import OtpInput from "@/components/profile/OtpInput.vue";
+import useAuthStore from '@/stores/AuthStore'
+import OtpInput from '@/components/profile/OtpInput.vue'
 
 export default defineComponent({
   name: 'DoubleFactorModal',
@@ -42,8 +44,8 @@ export default defineComponent({
       required: true
     }
   },
-  setup(){
-    const authStore = useAuthStore();
+  setup() {
+    const authStore = useAuthStore()
     return { authStore }
   },
   data() {
@@ -54,9 +56,9 @@ export default defineComponent({
       verificationCode: ''
     }
   },
-  computed:{
+  computed: {
     isVerified() {
-      return this.authStore.user.twoFactorEnabled;
+      return this.authStore.user.twoFactorEnabled
     }
   },
   methods: {
@@ -64,27 +66,25 @@ export default defineComponent({
       this.$emit('update:isDialogVisible', value)
     },
     async generateQrCode() {
-      this.isLoading = true;
-      this.qrCode = await this.authStore.generate2FAQrCode();
-      this.isLoading = false;
+      this.isLoading = true
+      this.qrCode = await this.authStore.generate2FAQrCode()
+      this.isLoading = false
     },
-    async activateCode(){
-      console.log('code 1', this.verificationCode);
-      this.isLoading = true;
-      console.log('code', this.verificationCode);
-      const worked = await this.authStore.activate2FA(this.verificationCode);
+    async activateCode() {
+      this.isLoading = true
+      const worked = await this.authStore.activate2FA(this.verificationCode)
       if (worked) {
-        this.dialogModelValueUpdate(false);
+        this.dialogModelValueUpdate(false)
       } else {
-        this.errorMessage = 'Le code est invalide';
+        this.errorMessage = 'Le code est invalide'
       }
-      this.isLoading = false;
+      this.isLoading = false
     }
   },
   watch: {
     isDialogVisible(value: boolean) {
       if (value) {
-       this.generateQrCode();
+        this.generateQrCode()
       }
     }
   }

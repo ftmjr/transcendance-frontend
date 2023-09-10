@@ -32,6 +32,15 @@ const authRoutes = {
       }
     },
     {
+      path: 'locked',
+      name: 'locked-screen',
+      component: () => import('@/views/Auth/LockedScreen.vue'),
+      meta: {
+        requiresAuth: true,
+        title: 'Locked Screen'
+      }
+    },
+    {
       path: 'oauth-auth',
       name: 'oauth-auth',
       component: () => import('@/views/Auth/OAuthState.vue'),

@@ -50,12 +50,11 @@ declare module 'Auth' {
   }
 
   export interface AuthState {
-    token: string | null
-    tokenExpiry: number
-    user: User | null
+    token: string | null;
+    user: User | null;
     error: {
-      state: boolean
-      message: string
+      state: boolean;
+      message: string;
     }
   }
   export interface RegisterBody {

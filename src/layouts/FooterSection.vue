@@ -1,6 +1,6 @@
 <template>
   <div class="h-100 flex align-center justify-between">
-    <span class="flex items-center"> Footer</span>
+    <span class="flex items-center"> FTMJR - Pong 🏓</span>
   </div>
 </template>
 <script lang="ts">

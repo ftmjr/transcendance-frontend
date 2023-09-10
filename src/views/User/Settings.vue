@@ -1,11 +1,11 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import SecuritySettings from "@/views/User/SecuritySettings.vue";
+import SecuritySettings from '@/views/User/SecuritySettings.vue'
 import useAuthStore from '@/stores/AuthStore'
 
 export default defineComponent({
   components: {
-    SecuritySettings,
+    SecuritySettings
   },
   props: {
     tab: {
@@ -37,36 +37,39 @@ export default defineComponent({
   computed: {
     inputElement(): HTMLInputElement {
       return this.$refs.refInputEl
+    },
+    avatar(): string | null {
+      return this.authStore.getProfile?.avatar ?? null
     }
   },
   mounted() {
-    this.hydrateFields();
+    this.hydrateFields()
   },
   methods: {
     hydrateFields() {
       this.fields = {
-        firstName: this.authStore.user?.profile.name || '',
-        lastName: this.authStore.user?.profile?.lastname || '',
-        bio: this.authStore.user?.profile?.bio || ''
+        firstName: this.authStore.getProfile?.name || '',
+        lastName: this.authStore.getProfile?.lastname || '',
+        bio: this.authStore.getProfile?.bio || ''
       }
     },
     startUploadNewAvatar(fileInputEv: Event) {
       console.log(fileInputEv)
     },
     async updateUserInformation() {
-      const worked = await this.authStore.updateUserInfo(this.fields);
+      const worked = await this.authStore.updateUserInfo(this.fields)
       if (worked) {
-        this.infoMsg = 'Vos informations ont été mises à jour avec succès';
-        this.infoColor = 'success';
-        this.isInfoBarVisible = true;
+        this.infoMsg = 'Vos informations ont été mises à jour avec succès'
+        this.infoColor = 'success'
+        this.isInfoBarVisible = true
       } else {
-        this.infoMsg = 'Une erreur est survenue lors de la mise à jour de vos informations';
-        this.infoColor = 'error';
-        this.isInfoBarVisible = true;
+        this.infoMsg = 'Une erreur est survenue lors de la mise à jour de vos informations'
+        this.infoColor = 'error'
+        this.isInfoBarVisible = true
       }
     },
     resetForm() {
-      this.hydrateFields();
+      this.hydrateFields()
     }
   }
 })
@@ -91,7 +94,7 @@ export default defineComponent({
           <VCol cols="12">
             <VCard title="Information du profil">
               <VCardText class="flex">
-                <VAvatar rounded size="100" class="me-6" :image="authStore.user?.profile?.avatar" />
+                <VAvatar rounded size="100" class="me-6" :image="avatar" />
                 <form
                   ref="refUpdateAvatarForm"
                   class="flex flex-column justify-center gap-4"
@@ -169,16 +172,10 @@ export default defineComponent({
         <SecuritySettings />
       </VWindowItem>
     </VWindow>
-    <VSnackbar
-        v-model="isInfoBarVisible"
-        multi-line
-        :timeout="1000"
-        :color="infoColor"
-    >
+    <VSnackbar v-model="isInfoBarVisible" multi-line :timeout="1000" :color="infoColor">
       {{ infoMsg }}
     </VSnackbar>
   </div>
 </template>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

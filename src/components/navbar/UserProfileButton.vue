@@ -1,7 +1,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import useAuthStore from '@/stores/AuthStore'
-import router from "@/router";
+import useAuthStore, { LoginStatus } from '@/stores/AuthStore'
 
 export default defineComponent({
   name: 'UserProfileButton',
@@ -12,13 +11,17 @@ export default defineComponent({
     }
   },
   computed: {
-    isOnline() {
-      return this.authStore.user && this.authStore.isAuthenticated
+    isOnline(): boolean {
+      return this.authStore.status === LoginStatus.LOGGED
+    },
+    avatar(): string | null {
+      return this.authStore.getProfile?.avatar ?? null
     }
   },
   methods: {
-    logout() {
-      this.authStore.logout();
+    async logout() {
+      await this.authStore.logout()
+      this.$router.push({ name: 'auth' })
     }
   }
 })
@@ -34,10 +37,7 @@ export default defineComponent({
     :color="isOnline ? 'success' : 'error'"
   >
     <VAvatar class="cursor-pointer" color="primary" variant="tonal">
-      <VImg
-        v-if="authStore.user && authStore.user.profile.avatar"
-        :src="authStore.user.profile.avatar"
-      />
+      <VImg v-if="avatar" :src="avatar" />
       <VIcon v-else icon="tabler-user" />
     </VAvatar>
     <VMenu activator="parent" width="230" location="bottom end" offset="14px">
@@ -47,10 +47,7 @@ export default defineComponent({
             <VListItemAction start>
               <VBadge dot location="bottom right" offset-x="3" offset-y="3" color="success">
                 <VAvatar color="primary" variant="tonal">
-                  <VImg
-                    v-if="authStore.user && authStore.user.profile.avatar"
-                    :src="authStore.user.profile.avatar"
-                  />
+                  <VImg v-if="avatar" :src="avatar" />
                   <VIcon v-else icon="tabler-user" />
                 </VAvatar>
               </VBadge>
@@ -58,11 +55,11 @@ export default defineComponent({
           </template>
 
           <VListItemTitle class="font-weight-semibold">
-            <template v-if="authStore.user"> {{ authStore.user.username }}</template>
+            <template v-if="authStore.user"> {{ authStore.getUser.username }}</template>
             <template v-else>Nom d'utilisateur</template>
           </VListItemTitle>
           <VListItemSubtitle>
-            <template v-if="authStore.user">{{ authStore.user.email }}</template>
+            <template v-if="authStore.user">{{ authStore.getUser.email }}</template>
             <template v-else>Email</template>
           </VListItemSubtitle>
         </VListItem>

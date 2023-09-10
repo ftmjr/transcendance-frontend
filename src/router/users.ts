@@ -1,4 +1,4 @@
-import Settings from "@/views/user/Settings.vue";
+import Settings from '@/views/user/Settings.vue'
 
 const usersRoutes = {
   path: 'users',
@@ -37,9 +37,9 @@ const usersRoutes = {
       component: Settings,
       meta: {
         requiresAuth: true,
-        title: 'Settings'
+        title: 'Réglages'
       }
-    },
+    }
   ]
 }
 
