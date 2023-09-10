@@ -2,7 +2,7 @@
 import { defineAsyncComponent, defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import type { ProfileData } from 'Auth'
-import axios from "@/utils/axios";
+import axios from '@/utils/axios'
 
 export default defineComponent({
   name: 'ShowProfile',
@@ -53,7 +53,7 @@ export default defineComponent({
       return this.userId ? parseInt(this.userId) : 0
     }
   },
-  async beforeMount(){
+  async beforeMount() {
     // await this.fetchProfileData();
   },
   methods: {
@@ -65,16 +65,16 @@ export default defineComponent({
       }
     },
     async fetchProfileData() {
-      this.loading = true;
-      this.errorMsg = '';
+      this.loading = true
+      this.errorMsg = ''
       try {
         // to-do a route for fetching unique profile
-        const { data } = await axios.post('users/profile',this.userIdValue);
-        this.profileData = data;
+        const { data } = await axios.post('users/profile', this.userIdValue)
+        this.profileData = data
       } catch (error) {
         this.errorMsg = 'Failed to load profile'
       }
-      this.loading = false;
+      this.loading = false
     }
   }
 })
@@ -89,7 +89,13 @@ export default defineComponent({
     />
     <VTabs v-model="activeTab" class="v-tabs-pill">
       <VTabs v-model="activeTab" class="v-tabs-pill">
-        <VTab v-for="item in tabs" :key="item.icon" :value="item.tab" :to="getRoute(item.tab)" :loading="loading">
+        <VTab
+          v-for="item in tabs"
+          :key="item.icon"
+          :value="item.tab"
+          :to="getRoute(item.tab)"
+          :loading="loading"
+        >
           <VIcon size="20" start :icon="item.icon" />
           {{ item.title }}
         </VTab>

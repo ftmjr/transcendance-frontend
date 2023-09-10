@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import useAuthStore from '@/stores/AuthStore';
+import useAuthStore from '@/stores/AuthStore'
 
 export default defineComponent({
   name: 'LockedScreen',
@@ -10,10 +10,10 @@ export default defineComponent({
       authStore
     }
   },
-  methods:{
-    async unlock(){
-      await this.authStore.logout();
-      this.$router.push({name: 'auth'});
+  methods: {
+    async unlock() {
+      await this.authStore.logout()
+      this.$router.push({ name: 'auth' })
     }
   }
 })
@@ -28,9 +28,7 @@ export default defineComponent({
   >
     <VCardText class="">
       <h5 class="text-h5 text-center font-semibold mb-1">Salut, {{ authStore.getProfile.name }}</h5>
-      <p class="text-center font-light">
-        Votre session est actuellement bloqué, reconnectez-vous
-      </p>
+      <p class="text-center font-light">Votre session est actuellement bloqué, reconnectez-vous</p>
       <VBtn @click="unlock" variant="text"> Debloquer</VBtn>
     </VCardText>
   </VCard>

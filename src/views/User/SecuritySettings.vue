@@ -175,8 +175,7 @@ export default defineComponent({
     },
     checkSessionExpiryStatus(expiryDateStr: string) {
       const expiryDate = new Date(expiryDateStr)
-      const currentDate = new Date()
-      return expiryDate >= currentDate.getTime() ? 'active' : 'expired'
+      return expiryDate.getTime() > Date.now() ? 'active' : 'expired'
     }
   }
 })
@@ -328,7 +327,8 @@ export default defineComponent({
                     checkSessionExpiryStatus(session.expiresAt) === 'active' ? 'success' : 'error'
                   "
                 >
-                  {{ checkSessionExpiryStatus(session.expiresAt) }}
+                  {{ checkSessionExpiryStatus(session.expiresAt) }} | exp:
+                  {{ formatDate(session.expiresAt) }}
                 </v-chip>
               </td>
             </tr>
