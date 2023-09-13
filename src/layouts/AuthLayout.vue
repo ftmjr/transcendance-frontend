@@ -1,17 +1,13 @@
 <template>
   <main class="w-screen h-screen overflow-hidden">
-    <div class="grid w-full h-full grid-cols-12 bg-darkBlue">
-      <aside class="relative hidden h-full lg:block lg:col-span-8">
+    <VRow no-gutters class="w-full h-full">
+      <VCol cols="12" sm="6" md="8" class="hidden sm:block h-full w-full">
         <img :src="bgImage" alt="landing" class="object-cover w-full h-full" />
-        <!--        <div v-show="routeName !=='reset-password'" class="absolute top-0 left-0 z-10 grid w-full h-full bg-gradient place-items-center">-->
-        <!--        </div>-->
-      </aside>
-      <section
-        class="relative grid h-full col-span-12 overflow-scroll lg:col-span-4 bg-darkBlue place-items-center box-border"
-      >
+      </VCol>
+      <VCol cols="12" sm="6" md="4" class="m-0 p-0 flex justify-center sm:block">
         <router-view></router-view>
-      </section>
-    </div>
+      </VCol>
+    </VRow>
   </main>
 </template>
 
