@@ -1,17 +1,12 @@
 <template>
-  <VCard
-    :max-width="500"
-    class="mx-auto flex flex-col items-center"
-    color="transparent"
-    :loading="isLoading"
-  >
-    <VCardText class="">
-      <h5 class="text-h5 text-center font-semibold mb-1">Verification à double facteur</h5>
+  <VCard color="transparent" :loading="isLoading">
+    <VCardText>
+      <h5 class="text-h5 text-center font-semibold mb-4">Verification à double facteur</h5>
       <p class="text-center font-light">
         Veuillez entrer le code de vérification inscrit dans votre application d'authentification.
       </p>
     </VCardText>
-    <VCardText class="">
+    <VCardText>
       <VForm @submit.prevent="validateCode">
         <VCol>
           <OtpInput v-model="verificationCode" />

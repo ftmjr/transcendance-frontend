@@ -159,6 +159,19 @@ const useAuthStore = defineStore({
       }
       return false
     },
+    async refreshCurrentUser() {
+      this.error = { state: false, message: '' }
+      try {
+        const { data } = await axios.get('auth/me', {
+          headers: {
+            Authorization: `Bearer ${this.token}`
+          }
+        })
+        this.setUser(data)
+      } catch (e) {
+        this.error = { state: false, message: 'Failed to refresh user data' }
+      }
+    },
     async refreshToken(): Promise<string | null> {
       this.error = { state: false, message: '' }
       try {
@@ -198,7 +211,7 @@ const useAuthStore = defineStore({
           await axios.post('auth/2fa/turn-on', {
             twoFactorAuthenticationCode: otpCode
           })
-          await this.fetchUser()
+          await this.refreshCurrentUser()
         }
         return true
       } catch (error) {
@@ -223,7 +236,7 @@ const useAuthStore = defineStore({
       this.error = { state: false, message: '' }
       try {
         await axios.get('auth/2fa/turn-off')
-        await this.fetchUser()
+        await this.refreshCurrentUser()
         return true
       } catch (error) {
         this.error = { state: true, message: `Can't deactivate 2FA` }

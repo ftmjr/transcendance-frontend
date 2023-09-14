@@ -52,7 +52,7 @@ export default defineComponent({
     <VImg :src="coverImg" :cover="true" max-height="12rem" />
 
     <VCardText class="d-flex align-bottom flex-sm-row flex-column justify-center gap-x-5">
-      <div class="d-flex h-0">
+      <div class="flex h-0">
         <VAvatar rounded size="120" class="user-profile-avatar mx-auto">
           <VImg v-if="info.avatar" :src="info.avatar" />
           <VIcon v-else color="primary" icon="tabler-user" />

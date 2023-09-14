@@ -4,7 +4,7 @@
       <VCol cols="12" sm="6" md="8" class="hidden sm:block h-full w-full">
         <img :src="bgImage" alt="landing" class="object-cover w-full h-full" />
       </VCol>
-      <VCol cols="12" sm="6" md="4" class="m-0 p-0 flex justify-center sm:block">
+      <VCol cols="12" sm="6" md="4" class="mx-auto p-0 flex justify-center sm:block">
         <router-view></router-view>
       </VCol>
     </VRow>
