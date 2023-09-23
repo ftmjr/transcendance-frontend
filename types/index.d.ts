@@ -1,5 +1,12 @@
 declare module 'Auth' {
 
+  enum Status {
+    Online = 'Online',
+    Offline = 'Offline',
+    Away = 'Away',
+    Busy = 'Busy'
+  }
+
   export interface Profile {
     id: number;
     userId: number;
@@ -8,7 +15,27 @@ declare module 'Auth' {
     avatar?: string;
     bio?:string;
     oauth?: unknown;
+    status: Status;
   }
+
+  export enum GameEvent {
+    GAME_STARTED,
+    GAME_ENDED,
+    PLAYER_JOINED,
+    PLAYER_LEFT,
+    ACTION_PERFORMED,
+    MATCH_WON,
+    MATCH_LOST,
+  }
+
+  export interface GameHistory {
+    id: number;
+    gameId: number
+    event: GameEvent;
+    userId: number;
+    timestamp: string;
+  }
+
   export interface User {
     id: number;
     username : string;
@@ -19,6 +46,8 @@ declare module 'Auth' {
     games: []; //Game[]
     groups : []; //             Group[]
     twoFactorEnabled: boolean;
+    gameHistories?: GameHistory[];
+    createdAt: string;
   }
 
   export interface UserSearchResult {
@@ -31,7 +60,7 @@ declare module 'Auth' {
   }
 
   export type Coalition = 'Legion' | 'Torrent' | 'Armada'
-  export type FriendshipStatus = 'pending' | 'accepted' | 'rejected' | 'blocked' | 'none'
+  export type FriendshipStatus = 'friends' | 'pending' | 'needApproval' | 'none'
 
   export interface ProfileHeaderData {
     coalition?: Coalition;
