@@ -169,7 +169,7 @@ const gameMonitor = new GameMonitor('pong', props.gameData.playerType, gameNetwo
   onRoomIdUpdated,
   onScoreUpdated,
   onGameMonitorStateChange
-})
+}, props.gameData.room)
 
 onMounted(() => {
   const gameData: PreloadSceneData = {
