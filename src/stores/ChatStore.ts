@@ -331,13 +331,10 @@ const useChatStore = defineStore({
       }
       return false
     },
-    resolveAvatarBadgeVariant(status: string){
-      if (status === 'online')
-        return 'success'
-      if (status === 'busy')
-        return 'error'
-      if (status === 'away')
-        return 'warning'
+    resolveAvatarBadgeVariant(status: string) {
+      if (status === 'online') return 'success'
+      if (status === 'busy') return 'error'
+      if (status === 'away') return 'warning'
       return 'secondary'
     }
   }

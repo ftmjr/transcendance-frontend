@@ -1,30 +1,24 @@
 <template>
   <div class="pt-2 me-2 text-end">
-    <VBtn
-        variant="text"
-        color="default"
-        icon
-        size="small"
-        @click="$emit('close')"
-    >
-      <VIcon size="24" class="text-medium-emphasis" icon="tabler-x"/>
+    <VBtn variant="text" color="default" icon size="small" @click="$emit('close')">
+      <VIcon size="24" class="text-medium-emphasis" icon="tabler-x" />
     </VBtn>
   </div>
   <div class="text-center px-6">
     <VBadge
-        location="bottom right"
-        offset-x="7"
-        offset-y="4"
-        bordered
-        :color="authStore.resolveAvatarBadgeVariant(profile.status)"
-        class="chat-user-profile-badge mb-5"
+      location="bottom right"
+      offset-x="7"
+      offset-y="4"
+      bordered
+      :color="authStore.resolveAvatarBadgeVariant(profile.status)"
+      class="chat-user-profile-badge mb-5"
     >
       <VAvatar
-          size="84"
-          variant="tonal"
-          :class="`text-${authStore.resolveAvatarBadgeVariant(profile.status)}`"
+        size="84"
+        variant="tonal"
+        :class="`text-${authStore.resolveAvatarBadgeVariant(profile.status)}`"
       >
-        <VImg v-if="profile.avatar" :src="profile.avatar"/>
+        <VImg v-if="profile.avatar" :src="profile.avatar" />
         <span v-else class="text-3xl">{{ avatarText(authStore.getUser.username) }}</span>
       </VAvatar>
     </VBadge>
@@ -36,39 +30,39 @@
     <span class="text-sm text-disabled">STATUS</span>
     <VRadioGroup v-model="status" class="mt-1">
       <VRadio
-          v-for="radioOption in userStatusOptions"
-          :key="radioOption.title"
-          :label="radioOption.title"
-          :value="radioOption.value"
-          :color="radioOption.color"
+        v-for="radioOption in userStatusOptions"
+        :key="radioOption.title"
+        :label="radioOption.title"
+        :value="radioOption.value"
+        :color="radioOption.color"
       />
     </VRadioGroup>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import useAuthStore, { Status } from "@/stores/AuthStore";
-import type { Profile } from "Auth";
-import { avatarText } from "../../vuetify/@core/utils/formatters";
+import { defineComponent } from 'vue'
+import useAuthStore, { Status } from '@/stores/AuthStore'
+import type { Profile } from 'Auth'
+import { avatarText } from '../../vuetify/@core/utils/formatters'
 export default defineComponent({
-  setup(){
-    const authStore = useAuthStore();
+  setup() {
+    const authStore = useAuthStore()
     return {
       authStore
     }
   },
-  data(){
+  data() {
     return {
-      userStatusOptions:[
+      userStatusOptions: [
         { title: 'En ligne', value: Status.Online, color: 'success' },
         { title: 'Away', value: Status.Away, color: 'warning' },
         { title: 'Ne pas déranger', value: Status.Busy, color: 'error' },
-        { title: 'Hors ligne', value: Status.Offline, color: 'secondary' },
-      ],
+        { title: 'Hors ligne', value: Status.Offline, color: 'secondary' }
+      ]
     }
   },
-  computed:{
+  computed: {
     profile(): Profile {
       return this.authStore.getProfile
     },
@@ -78,15 +72,13 @@ export default defineComponent({
       },
       set(value: Status) {
         // this.authStore.updateProfileStatus({ status: value })
-      },
-    },
+      }
+    }
   },
-  methods:{
-    avatarText,
-  },
+  methods: {
+    avatarText
+  }
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

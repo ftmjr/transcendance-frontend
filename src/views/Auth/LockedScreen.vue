@@ -31,13 +31,13 @@ export default defineComponent({
   },
   methods: {
     async unlock() {
-      this.isLoading = true;
+      this.isLoading = true
       try {
         await this.authStore.logout()
       } catch (e) {
-        console.log('logOut call');
+        console.log('logOut call')
       }
-      this.isLoading = false;
+      this.isLoading = false
       this.$router.push({ name: 'auth' })
     }
   }

@@ -9,7 +9,10 @@
         <v-list-item
           :style="index === 0 ? 'font-weight: bold; color: #99842e;' : ''"
           :title="index == 0 ? item.username + ' <PONG BOSS>' : item.username"
-          :subtitle="`Wins: ${getCountByEvent(item.gameHistories,'MATCH_WON')}  Loss: ${getCountByEvent(item.gameHistories, 'MATCH_LOST')}`"
+          :subtitle="`Wins: ${getCountByEvent(
+            item.gameHistories,
+            'MATCH_WON'
+          )}  Loss: ${getCountByEvent(item.gameHistories, 'MATCH_LOST')}`"
         >
           <template v-slot:prepend>
             <AvatarBadge :profile="item.profile" :username="item.username" />
@@ -42,29 +45,29 @@ import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 // import useGlobalStore from '@/stores/GlobalStore'
 // import InviteDialog from '@/components/chat/InviteDialog.vue'
 export default defineComponent({
-    name: 'learderboard-view',
-    setup() {
-        const authStore = useAuthStore();
-        const userStore = useUserStore();
-        return {
-            authStore,
-            userStore
-        };
-    },
-    data() {
-        return {
-            users: [] as UserWithScore[],
-        };
-    },
-    async beforeMount() {
-        this.users = await this.userStore.getPaginatedUsersWithScore({});
-    },
-    methods: {
-        getCountByEvent(gameHistories, event) {
-            return gameHistories.filter((history) => history.event === event).length;
-        }
-    },
-    components: { AvatarBadge }
+  name: 'learderboard-view',
+  setup() {
+    const authStore = useAuthStore()
+    const userStore = useUserStore()
+    return {
+      authStore,
+      userStore
+    }
+  },
+  data() {
+    return {
+      users: [] as UserWithScore[]
+    }
+  },
+  async beforeMount() {
+    this.users = await this.userStore.getPaginatedUsersWithScore({})
+  },
+  methods: {
+    getCountByEvent(gameHistories, event) {
+      return gameHistories.filter((history) => history.event === event).length
+    }
+  },
+  components: { AvatarBadge }
 })
 </script>
 

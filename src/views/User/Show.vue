@@ -1,9 +1,19 @@
 <template>
   <div>
-    <UserProfileHeader class="mb-5" :info="profileData.header" :friend-ship-status="profileData.friendshipStatus" />
+    <UserProfileHeader
+      class="mb-5"
+      :info="profileData.header"
+      :friend-ship-status="profileData.friendshipStatus"
+    />
     <VTabs v-model="activeTab" class="v-tabs-pill">
       <VTabs v-model="activeTab" class="v-tabs-pill">
-        <VTab v-for="item in tabs" :key="item.icon" :value="item.tab" :to="getRoute(item.tab)" :loading="loading">
+        <VTab
+          v-for="item in tabs"
+          :key="item.icon"
+          :value="item.tab"
+          :to="getRoute(item.tab)"
+          :loading="loading"
+        >
           <VIcon size="20" start :icon="item.icon" />
           {{ item.title }}
         </VTab>
@@ -15,7 +25,7 @@
 <script lang="ts">
 import { defineAsyncComponent, defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import type {ProfileData, User, GameHistory } from 'Auth'
+import type { ProfileData, User, GameHistory } from 'Auth'
 import axios from '@/utils/axios'
 
 export default defineComponent({
@@ -50,16 +60,16 @@ export default defineComponent({
       profileData: {
         id: 0,
         header: {
-        coalition: 'Legion',
-        avatar: '',
-        fullName: 'no name',
-        username: 'maxi',
-        joiningDate: Date.now()
+          coalition: 'Legion',
+          avatar: '',
+          fullName: 'no name',
+          username: 'maxi',
+          joiningDate: Date.now()
         },
         bio: '',
         status: 'online',
         friendshipStatus: 'none',
-        friendStart: null,
+        friendStart: null
       } as unknown as ProfileData,
       gameHistories: [] as GameHistory[],
       errorMsg: ''
@@ -72,8 +82,8 @@ export default defineComponent({
     }
   },
   async beforeMount() {
-    await this.fetchProfileData();
-    await this.checkFriendShip();
+    await this.fetchProfileData()
+    await this.checkFriendShip()
   },
   methods: {
     getRoute(tab: string) {
@@ -101,7 +111,7 @@ export default defineComponent({
           bio: data.profile.bio,
           status: data.profile.status,
           friendshipStatus: 'none',
-          friendStart: null,
+          friendStart: null
         }
       } catch (error) {
         this.errorMsg = 'Failed to load profile'
@@ -109,22 +119,22 @@ export default defineComponent({
       this.loading = false
     },
     getCoalition(OauthInfo: unknown): 'Legion' | 'Torrent' | 'Armada' {
-      if (OauthInfo){
+      if (OauthInfo) {
         // do something to get 42 colation
       }
-      return 'Legion';
+      return 'Legion'
     },
-    async checkFriendShip(){
+    async checkFriendShip() {
       this.loading = true
       this.errorMsg = ''
       try {
         // to-do a route for fetching unique profile
         const { data } = await axios.get<{
-          status: 'none' | 'pending' | 'accepted' | 'blocked',
+          status: 'none' | 'pending' | 'accepted' | 'blocked'
           data: { createdAt?: string } | null
-        }>(`/friends/check/${this.userIdValue}`);
-        this.profileData.friendshipStatus = data.status;
-        this.profileData.friendStart = data.data?.createdAt;
+        }>(`/friends/check/${this.userIdValue}`)
+        this.profileData.friendshipStatus = data.status
+        this.profileData.friendStart = data.data?.createdAt
       } catch (error) {
         this.errorMsg = 'Not friends'
       }

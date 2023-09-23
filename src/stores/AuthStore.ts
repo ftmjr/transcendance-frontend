@@ -50,7 +50,7 @@ const useAuthStore = defineStore({
       error: {
         state: false,
         message: ''
-      },
+      }
     }
   },
   getters: {
@@ -99,8 +99,8 @@ const useAuthStore = defineStore({
       return this.getUser?.profile ?? null
     },
     visibleStatus(): Status {
-      return this.getProfile.status ?? Status.Offline;
-    },
+      return this.getProfile.status ?? Status.Offline
+    }
   },
   actions: {
     setUser(user: User) {
@@ -292,20 +292,17 @@ const useAuthStore = defineStore({
     async changeMyStatus(value: Status): Promise<'success' | 'error'> {
       try {
         // code to change status
-        return 'success';
-      } catch (e){
-        return 'error';
+        return 'success'
+      } catch (e) {
+        return 'error'
       }
     },
-    resolveAvatarBadgeVariant(status: Status): "success" | "error" | "warning" | "secondary" {
-      if (status === Status.Online)
-        return 'success';
-      else if (status === Status.Offline)
-        return 'error';
-      else if (status === Status.Busy)
-        return 'warning';
-      return 'secondary';
-    },
+    resolveAvatarBadgeVariant(status: Status): 'success' | 'error' | 'warning' | 'secondary' {
+      if (status === Status.Online) return 'success'
+      else if (status === Status.Offline) return 'error'
+      else if (status === Status.Busy) return 'warning'
+      return 'secondary'
+    }
   }
 })
 
