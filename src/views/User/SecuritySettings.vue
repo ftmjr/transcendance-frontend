@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineAsyncComponent, defineComponent } from 'vue'
+import { defineComponent } from 'vue'
 import axiosInstance from '@/utils/axios'
 import useAuthStore from '@/stores/AuthStore'
 import DoubleFactorModal from '@/components/profile/DoubleFactorModal.vue'

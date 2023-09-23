@@ -27,7 +27,7 @@ const dashboardRoutes = {
     {
       path: 'chat',
       name: 'chat',
-      component: () => import('@/views/ChatView.vue'),
+      component: () => import('@/views/Chat/ChatWindowView.vue'),
       meta: {
         requiresAuth: true,
         title: 'Chat'
@@ -36,10 +36,10 @@ const dashboardRoutes = {
     {
       path: 'dm',
       name: 'dm',
-      component: () => import('@/views/DmView.vue'),
+      component: () => import('@/views/Dm/DirectMessagesView.vue'),
       meta: {
         requiresAuth: true,
-        title: 'Dm'
+        title: 'Direct Messages'
       }
     },
     {

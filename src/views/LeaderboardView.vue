@@ -4,20 +4,15 @@
 
     <v-divider></v-divider>
 
-    <v-virtual-scroll :items="usersStore.getLeaderboard" height="320" item-height="48">
+    <v-virtual-scroll :items="users" height="320" item-height="48">
       <template v-slot:default="{ item, index }">
         <v-list-item
           :style="index === 0 ? 'font-weight: bold; color: #99842e;' : ''"
           :title="index == 0 ? item.username + ' <PONG BOSS>' : item.username"
-          :subtitle="`Wins: ${getCountByEvent(
-            item.gameHistories,
-            'MATCH_WON'
-          )}  Loss: ${getCountByEvent(item.gameHistories, 'MATCH_LOST')}`"
+          :subtitle="`Wins: ${getCountByEvent(item.gameHistories,'MATCH_WON')}  Loss: ${getCountByEvent(item.gameHistories, 'MATCH_LOST')}`"
         >
           <template v-slot:prepend>
-            <v-avatar :size="index < 3 ? 60 : 30">
-              <v-img :src="item.profile.avatar"></v-img>
-            </v-avatar>
+            <AvatarBadge :profile="item.profile" :username="item.username" />
           </template>
 
           <template v-slot:append>
@@ -36,43 +31,40 @@
       </template>
     </v-virtual-scroll>
   </v-card>
-  <invite-dialog v-model="globalStore.dialogs.invite" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import useUsersStore from '@/stores/UsersStore'
-import useGlobalStore from '@/stores/GlobalStore'
-import InviteDialog from '@/components/chat/InviteDialog.vue'
+import useUserStore, { UserWithScore } from '@/stores/UserStore'
+import AvatarBadge from '@/components/profile/AvatarBadge.vue'
+// import useUsersStore from '@/stores/UsersStore'
+// import useGlobalStore from '@/stores/GlobalStore'
+// import InviteDialog from '@/components/chat/InviteDialog.vue'
 export default defineComponent({
-  name: 'learderboard-view',
-  components: { InviteDialog },
-  setup() {
-    const authStore = useAuthStore()
-    const usersStore = useUsersStore()
-    const globalStore = useGlobalStore()
-    return {
-      orderedWinners: [],
-      authStore,
-      globalStore,
-      usersStore
-    }
-  },
-  beforeCreate() {
-    this.globalStore.connectSocket()
-  },
-  async mounted() {
-    await this.usersStore.setLeaderboard()
-  },
-  beforeUnmount() {
-    this.globalStore.disconnectSocket()
-  },
-  methods: {
-    getCountByEvent(gameHistories, event) {
-      return gameHistories.filter((history) => history.event === event).length
-    }
-  }
+    name: 'learderboard-view',
+    setup() {
+        const authStore = useAuthStore();
+        const userStore = useUserStore();
+        return {
+            authStore,
+            userStore
+        };
+    },
+    data() {
+        return {
+            users: [] as UserWithScore[],
+        };
+    },
+    async beforeMount() {
+        this.users = await this.userStore.getPaginatedUsersWithScore({});
+    },
+    methods: {
+        getCountByEvent(gameHistories, event) {
+            return gameHistories.filter((history) => history.event === event).length;
+        }
+    },
+    components: { AvatarBadge }
 })
 </script>
 

@@ -29,7 +29,7 @@ export const formatDate = (
 ) => {
   if (!value) return value
 
-  return new Intl.DateTimeFormat('en-US', formatting).format(new Date(value))
+  return new Intl.DateTimeFormat('fr-CA', formatting).format(new Date(value))
 }
 
 /**

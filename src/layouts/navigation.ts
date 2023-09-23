@@ -17,7 +17,7 @@ export default [
   {
     title: 'Leader Board',
     icon: { icon: 'solar:ranking-linear' },
-    to: 'game'
+    to: 'leaderboard'
   },
   { heading: 'Messagerie' },
   {

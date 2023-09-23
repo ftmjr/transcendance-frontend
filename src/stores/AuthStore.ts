@@ -3,7 +3,14 @@ import type { AuthState, ILoginData, RegisterBody, User, Profile } from 'Auth'
 import type { AxiosError } from 'axios'
 import axios from '@/utils/axios'
 
-interface JwtPayload {
+export enum Status {
+  Online = 'Online',
+  Offline = 'Offline',
+  Away = 'Away',
+  Busy = 'Busy'
+}
+
+export interface JwtPayload {
   email: string
   sub: {
     userId: number
@@ -13,6 +20,7 @@ interface JwtPayload {
   exp: number
   iat: number
 }
+
 export enum LoginStatus {
   NOT_LOGGED = 'notLogged',
   LOGGED = 'logged',
@@ -42,7 +50,7 @@ const useAuthStore = defineStore({
       error: {
         state: false,
         message: ''
-      }
+      },
     }
   },
   getters: {
@@ -89,7 +97,10 @@ const useAuthStore = defineStore({
     },
     getProfile(): Profile | null {
       return this.getUser?.profile ?? null
-    }
+    },
+    visibleStatus(): Status {
+      return this.getProfile.status ?? Status.Offline;
+    },
   },
   actions: {
     setUser(user: User) {
@@ -277,7 +288,24 @@ const useAuthStore = defineStore({
         }
         return false
       }
-    }
+    },
+    async changeMyStatus(value: Status): Promise<'success' | 'error'> {
+      try {
+        // code to change status
+        return 'success';
+      } catch (e){
+        return 'error';
+      }
+    },
+    resolveAvatarBadgeVariant(status: Status): "success" | "error" | "warning" | "secondary" {
+      if (status === Status.Online)
+        return 'success';
+      else if (status === Status.Offline)
+        return 'error';
+      else if (status === Status.Busy)
+        return 'warning';
+      return 'secondary';
+    },
   }
 })
 

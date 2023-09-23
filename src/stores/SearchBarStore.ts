@@ -31,7 +31,7 @@ export type SearchHeader = {
   title: string
 }
 
-interface SearchBarState {
+export interface SearchBarState {
   suggestions: SuggestionGroupContent[]
   noDataSuggestions: Suggestion[]
   searchResults: Array<SearchItem | SearchHeader>
@@ -51,7 +51,7 @@ const useSearchBarStore = defineStore({
       {
         icon: 'tabler-users',
         title: "Liste d'utilisateur",
-        url: { name: 'dashboard' },
+        url: { name: 'user-list' },
         category: 'Recherches populaires'
       },
       { icon: 'noto-v1:game-die', title: 'Jeu rapide', url: { name: 'game' }, category: 'Jeu' },
@@ -64,19 +64,19 @@ const useSearchBarStore = defineStore({
       {
         icon: 'solar:ranking-linear',
         title: 'Leader Board',
-        url: { name: 'dashboard' },
+        url: { name: 'leaderboard' },
         category: 'Jeu'
       },
       {
         icon: 'tabler-settings',
         title: 'Paramètres du compte',
-        url: { name: 'settings' },
+        url: { name: 'settings', params: { tab: 'account' } },
         category: 'Profile'
       },
       {
         icon: 'tabler-calendar',
         title: 'Historique',
-        url: { name: 'history' },
+        url: { name: 'me', params: { tab: 'history' } },
         category: 'Profile'
       },
       { icon: 'bxs:contact', title: 'Mes Contacts', url: { name: 'friends' }, category: 'Profile' },
@@ -96,7 +96,7 @@ const useSearchBarStore = defineStore({
       {
         title: 'Paramètres du compte',
         icon: 'tabler-user',
-        url: { name: 'settings' }
+        url: { name: 'settings', params: { tab: 'account' } }
       }
     ],
     searchResults: [],

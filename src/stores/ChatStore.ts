@@ -330,6 +330,15 @@ const useChatStore = defineStore({
         return msg.senderId === this.dmReceiver.id
       }
       return false
+    },
+    resolveAvatarBadgeVariant(status: string){
+      if (status === 'online')
+        return 'success'
+      if (status === 'busy')
+        return 'error'
+      if (status === 'away')
+        return 'warning'
+      return 'secondary'
     }
   }
 })
