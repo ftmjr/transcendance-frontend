@@ -19,6 +19,28 @@
         </VTab>
       </VTabs>
     </VTabs>
+    <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
+      <VWindowItem value="history">
+        <VCard title="Historiques des Actions">
+          <VTable class="bg-transparent">
+            <thead>
+              <tr>
+                <th>Jeu</th>
+                <th>Evenement</th>
+                <th>Temps</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="history in gameHistories" :key="history.id">
+                <td>{{ history.gameId }}</td>
+                <td>{{ history.event }}</td>
+                <td>{{ history.timestamp }}</td>
+              </tr>
+            </tbody>
+          </VTable>
+        </VCard>
+      </VWindowItem>
+    </VWindow>
   </div>
 </template>
 
@@ -27,6 +49,7 @@ import { defineAsyncComponent, defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import type { ProfileData, User, GameHistory } from 'Auth'
 import axios from '@/utils/axios'
+import formatDate from '@/vuetify/@core/utils/formatters';
 
 export default defineComponent({
   name: 'ShowProfile',
@@ -86,6 +109,7 @@ export default defineComponent({
     await this.checkFriendShip()
   },
   methods: {
+    formatDate,
     getRoute(tab: string) {
       if (this.userId === 'me') {
         return { name: 'me', params: { tab: tab } }
