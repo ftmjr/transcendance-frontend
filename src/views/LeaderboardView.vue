@@ -41,9 +41,7 @@ import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import useUserStore, { UserWithScore } from '@/stores/UserStore'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
-// import useUsersStore from '@/stores/UsersStore'
-// import useGlobalStore from '@/stores/GlobalStore'
-// import InviteDialog from '@/components/chat/InviteDialog.vue'
+
 export default defineComponent({
   name: 'learderboard-view',
   setup() {
