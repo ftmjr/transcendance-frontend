@@ -49,7 +49,6 @@ import { defineAsyncComponent, defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import type { ProfileData, User, GameHistory } from 'Auth'
 import axios from '@/utils/axios'
-import formatDate from '@/vuetify/@core/utils/formatters';
 
 export default defineComponent({
   name: 'ShowProfile',
@@ -109,7 +108,6 @@ export default defineComponent({
     await this.checkFriendShip()
   },
   methods: {
-    formatDate,
     getRoute(tab: string) {
       if (this.userId === 'me') {
         return { name: 'me', params: { tab: tab } }

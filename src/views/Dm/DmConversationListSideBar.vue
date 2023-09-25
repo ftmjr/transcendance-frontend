@@ -11,11 +11,12 @@
       <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
     </VBtn>
   </div>
-  <div class="flex mb-1 px-1" v-if="authStore.getProfile">
+  <div class="flex mb-2 px-1" v-if="authStore.getProfile">
     <AvatarBadge :profile="authStore.getProfile" @show-user-profile="$emit('showUserProfile')" />
     <VTextField
       v-model="search"
       density="compact"
+      rounded
       placeholder="Chercher une conversation..."
       class="ms-4 me-1 transparent-input-box"
     >

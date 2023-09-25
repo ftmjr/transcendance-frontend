@@ -1,6 +1,5 @@
 <template>
-  <section class="message-window">
-    <VLayout class="h-full">
+    <VLayout class="bg-surface rounded border p-2 border-solid border-slate-400 shadow-sm">
       <VNavigationDrawer
         v-model="isLeftSidebarOpen"
         absolute
@@ -8,7 +7,7 @@
         location="start"
         width="370"
         :temporary="$vuetify.display.smAndDown"
-        class="chat-list-sidebar"
+        class="pt-2"
         :permanent="$vuetify.display.mdAndUp"
       >
         <DmConversationListSideBar
@@ -23,15 +22,20 @@
           :conversationWith="messageStore.currentConversationWith"
           v-model:is-left-sidebar-open="isLeftSidebarOpen"
         />
-        <div v-else class="h-96">
+        <div v-else class="h-full">
           <MessageTopBar v-model:isLeftSidebarOpen="isLeftSidebarOpen" />
-          <div>
-            <p>Nothing</p>
+          <div class="flex h-full flex-col items-center justify-center mb-2">
+            <VAvatar size="109" class="shadow-md mb-6 bg-slate-700">
+              <VIcon size="50" class="rounded text-high-emphasis" icon="tabler-message"/>
+            </VAvatar>
+            <p class="text-lg font-medium text-center">
+              Selectionner une conversation
+              <span class="font-normal text-sm ">, ou faites vous des amis en leur faisant un dm</span>
+            </p>
           </div>
         </div>
       </VMain>
     </VLayout>
-  </section>
 </template>
 
 <script lang="ts">

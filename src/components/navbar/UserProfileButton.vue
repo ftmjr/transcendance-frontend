@@ -42,7 +42,7 @@ export default defineComponent({
     </VAvatar>
     <VMenu activator="parent" width="230" location="bottom end" offset="14px">
       <VList>
-        <VListItem>
+        <VListItem :to="{ name: 'me' }">
           <template #prepend>
             <VListItemAction start>
               <VBadge dot location="bottom right" offset-x="3" offset-y="3" color="success">
