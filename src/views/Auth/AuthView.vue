@@ -10,9 +10,9 @@
     </v-tabs>
     <VDivider />
     <VWindow v-model="activeTab">
-      <VWindowItem :value="tabs[0].tab" class="pt-12 px-4">
+      <VWindowItem :value="tabs[0].tab" class="px-4 pt-12">
         <VCardText>
-          <h4 class="text-2xl font-semibold text-center mb-4">Connexion</h4>
+          <h4 class="mb-4 text-2xl font-semibold text-center">Connexion</h4>
         </VCardText>
         <VForm @submit.prevent="login">
           <VRow>
@@ -46,11 +46,11 @@
             </VCol>
             <VCol cols="12" class="flex align-center">
               <VDivider />
-              <span class="rounded-md font-medium text-gray-400 mx-4">Avec</span>
+              <span class="mx-4 font-medium text-gray-400 rounded-md">Avec</span>
               <VDivider />
             </VCol>
             <VCol cols="12" class="text-center">
-              <div class="d-flex justify-center flex-wrap gap-3">
+              <div class="flex-wrap justify-center gap-3 d-flex">
                 <VBtn variant="tonal" color="cyan" rounded size="large" href="/api/auth/42">
                   <VIcon icon="simple-icons:42" class="mr-1" />
                   Best school
@@ -70,9 +70,9 @@
           </VRow>
         </VForm>
       </VWindowItem>
-      <VWindowItem :value="tabs[1].tab" class="pt-12 px-4">
+      <VWindowItem :value="tabs[1].tab" class="px-4 pt-12">
         <VCardText>
-          <h4 class="text-2xl font-semibold text-center mb-4">Création de compte</h4>
+          <h4 class="mb-4 text-2xl font-semibold text-center">Création de compte</h4>
         </VCardText>
         <VForm @submit.prevent="signUp" v-model="validSignUpForm">
           <VRow>
@@ -92,12 +92,21 @@
                 label="Nom de famille"
               />
             </VCol>
+
             <VCol cols="12">
               <VTextField
                 class="transparent-input-box"
                 v-model="signUpFields.username"
                 :rules="[rules.required, rules.min]"
                 label="Pseudo"
+              />
+            </VCol>
+            <VCol cols="12">
+              <v-text-field
+                class="transparent-input-box"
+                v-model="signUpFields.email"
+                :rules="[rules.required, rules.email]"
+                label="Email"
               />
             </VCol>
             <VCol cols="12">
@@ -192,6 +201,10 @@ export default defineComponent({
       },
       validSignUpForm: false,
       rules: {
+        email: (value) => {
+          const pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+          return pattern.test(value) || 'Adresse email invalide'
+        },
         required: (value) => !!value || 'Ce champ est requis',
         minPass: (v) => v.length >= 6 || 'Minimum 6 caractères',
         min: (v) => v.length >= 3 || 'Minimum 3 caractères',
@@ -243,9 +256,11 @@ export default defineComponent({
       this.isLoading = true
       const worked = await this.authStore.register(this.signUpFields)
       if (worked) {
+        alert('Votre compte a bien été créé !')
         this.$router.push({ name: 'dashboard' })
       }
       this.isLoading = false
+      return
     }
   }
 })
