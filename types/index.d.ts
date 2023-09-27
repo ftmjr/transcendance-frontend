@@ -68,6 +68,7 @@ declare module 'Auth' {
     fullName: string;
     username: string;
     joiningDate: Date;
+    isCurrentUser: boolean;
   }
 
   export interface ProfileData {

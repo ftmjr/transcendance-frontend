@@ -1,7 +1,8 @@
 <template>
   <div>
-    <UserProfileHeader
+    <user-profile-header
       class="mb-5"
+      :id="profileData.id"
       :info="profileData.header"
       :friend-ship-status="profileData.friendshipStatus"
     />
@@ -85,7 +86,7 @@ export default defineComponent({
           coalition: 'Legion',
           avatar: '',
           fullName: 'no name',
-          username: 'maxi',
+          username: 'maxiiiiiime',
           joiningDate: Date.now()
         },
         bio: '',
@@ -128,7 +129,8 @@ export default defineComponent({
             avatar: data?.profile.avatar,
             fullName: data.profile.name + ' ' + data.profile.lastname,
             username: data.username,
-            joiningDate: data.createdAt
+            joiningDate: data.createdAt,
+            isCurrentUser: this.userIdValue === this.authStore.getUser?.id
           },
           bio: data.profile.bio,
           status: data.profile.status,

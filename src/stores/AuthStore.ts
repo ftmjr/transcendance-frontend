@@ -150,6 +150,7 @@ const useAuthStore = defineStore({
       this.removeUser()
     },
     async register(userInfos: RegisterBody): Promise<boolean> {
+      alert('register')
       this.error = { state: false, message: '' }
       if (!userInfos || userInfos.password !== userInfos.passwordConfirmation) return false
       const { passwordConfirmation, ...body } = userInfos
