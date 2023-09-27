@@ -97,6 +97,12 @@ const useUserStore = defineStore({
     },
     getBlockedUsers(): BlockedUser[] {
       return this.blockedUsers
+    },
+    getReceivedRequests(): FriendRequestWithSender[] {
+      return this.receivedRequest
+    },
+    getSentRequests(): FriendRequestWithReceiver[] {
+      return this.sentRequest
     }
   },
   actions: {
@@ -104,7 +110,7 @@ const useUserStore = defineStore({
     async askFriendRequest(userId: number): Promise<'success' | 'already' | 'error'> {
       let message: 'success' | 'already' | 'error' = 'success'
       try {
-        await axios.post(`/friends/${userId}`)
+        await axios.post(`/friends/request-friendship-with/${userId}`)
       } catch (error: AxiosError | any) {
         if (error.response && error.response === 409) {
           this.error = 'already'
@@ -117,7 +123,7 @@ const useUserStore = defineStore({
     async cancelFriendRequest(requestId: number): Promise<'success' | 'error'> {
       try {
         await axios.delete(`/friends/sent/${requestId}`)
-        await this.getSentRequests()
+        await this.fetchSentRequests()
         return 'success'
       } catch (e) {
         return 'error'
@@ -125,8 +131,7 @@ const useUserStore = defineStore({
     },
     async approveFriendRequest(requestId: number): Promise<'success' | 'error'> {
       try {
-        await axios.delete(`/friends/approve/${requestId}`)
-        await this.getSentRequests()
+        await axios.post(`/friends/approve-friendship-request-for/${requestId}`)
         return 'success'
       } catch (e) {
         return 'error'
@@ -159,9 +164,10 @@ const useUserStore = defineStore({
         return 'error'
       }
     },
-    async getSentRequests(): Promise<'success' | 'error'> {
+    async fetchSentRequests(): Promise<'success' | 'error'> {
       try {
         const { data } = await axios.get('/friends/sent')
+
         this.sentRequest = data as FriendRequestWithReceiver[]
         return 'success'
       } catch (e) {
@@ -266,6 +272,11 @@ const useUserStore = defineStore({
         console.log(e)
         return 'error'
       }
+    },
+
+    async loadReceivedRequests(): Promise<'success' | 'error'> {
+      this.receivedRequest = []
+      return 'success'
     }
   }
 })
