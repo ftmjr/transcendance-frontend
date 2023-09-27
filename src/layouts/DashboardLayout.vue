@@ -15,6 +15,7 @@
         </VBtn>
         <NavSearchBar class="ms-lg-n3" />
         <VSpacer />
+        <NotificationButton />
         <UserProfileButton />
       </div>
     </template>
@@ -41,13 +42,15 @@ import { useSkins } from '@core/composable/useSkins'
 import FooterSection from '@/layouts/FooterSection.vue'
 import NavSearchBar from '@/components/navbar/NavSearchBar.vue'
 import UserProfileButton from '@/components/navbar/UserProfileButton.vue'
+import NotificationButton from "@/components/navbar/NotificationButton.vue";
 
 export default defineComponent({
   components: {
     UserProfileButton,
     FooterSection,
     VerticalNavLayout,
-    NavSearchBar
+    NavSearchBar,
+    NotificationButton
   },
   setup() {
     const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
