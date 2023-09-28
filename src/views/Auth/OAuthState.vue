@@ -2,7 +2,7 @@
   <div id="AppLoader" @click="toggleLoader" :class="isActive ? 'start' : ''">
     <div class="loader-box" :class="isActive ? 'active' : ''">
       <div class="pad01"></div>
-      <div class="loading-text hidden">
+      <div class="loading-text">
         <svg viewBox="0 0 480 150">
           <symbol id="loading-s-text">
             <text text-anchor="middle" x="50%" y="80%">Loading...</text>
@@ -25,18 +25,20 @@
 import { defineComponent } from 'vue'
 import useAuthStore, {LoginStatus} from '@/stores/AuthStore.ts'
 
-const authStore = useAuthStore()
-
 export default defineComponent({
   name: 'auth-state',
+  setup() {
+    const authStore = useAuthStore();
+    return { authStore }
+  },
   async mounted() {
     const { token } = this.$route.query
     if (token) {
-      authStore.setToken(token);
-      await authStore.refreshCurrentUser();
-      if (authStore.status === LoginStatus.LOGGED) {
+      this.authStore.setToken(token);
+      await this.authStore.refreshCurrentUser();
+      if (this.authStore.status === LoginStatus.LOGGED) {
         return this.$router.push({ name: 'dashboard' })
-      } else if (authStore.status === LoginStatus.TWOFA_CHECK){
+      } else if (this.authStore.status === LoginStatus.TWOFA_CHECK){
         return this.$router.push({ name: 'two-factors' })
       }
     }
