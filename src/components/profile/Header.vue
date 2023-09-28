@@ -70,14 +70,13 @@ export default defineComponent({
       const message = await this.userStore.unFriend(this.id)
     },
     async askFriendRequest() {
-      const message = await this.userStore.askFriendRequest(this.id)
-      alert(message)
+      await this.userStore.askFriendRequest(this.id)
     },
     async blockUser() {
-      const message = await this.userStore.blockUser(this.id)
+      await this.userStore.blockUser(this.id)
     },
     async unBlockUser() {
-      const message = await this.userStore.unBlockUser(this.id)
+      await this.userStore.unBlockUser(this.id)
     },
     showDateFormated(date): string {
       return new Date(date).toLocaleDateString()
@@ -95,10 +94,13 @@ export default defineComponent({
       if (message === 'success') {
         this.friendShipState = 'weAreFriends'
       }
+    },
+    async rejectFriendRequest() {
+      const message = await this.userStore.rejectFriendRequest(this.id)
     }
   },
   beforeMount() {
-    console.log(this.authStore.getUser)
+    console.log(this.authStore.getUser, 'friendShipState', this.friendShipState)
   }
 })
 </script>
@@ -139,17 +141,43 @@ export default defineComponent({
           <div v-if="friendShipState !== 'isCurrentUser'">
             <VBtn
               size="small"
-              v-if="friendShipState === 'iWantToBeFriend' || friendShipState === 'none'"
               class="hover:bg-[#F26A4B]/20"
-              color="primary"
+              v-if="friendShipState === 'iWantToBeFriend' || friendShipState === 'none'"
+              color="none"
               :disabled="friendShipState === 'iWantToBeFriend'"
               @click="askFriendRequest"
             >
-              {{ friendShipState === 'iWantToBeFriend' ? 'envoyée' : 'Ajouter' }}
+              <span class="flex flex-row items-center gap-2">
+                <span>
+                  <svg
+                    class="w-4 h-4"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10 5.757v8.486M5.757 10h8.486M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                    />
+                  </svg>
+                </span>
+                <span>
+                  {{ friendShipState === 'iWantToBeFriend' ? 'envoyée' : 'Ajouter' }}
+                </span>
+              </span>
             </VBtn>
             <div v-if="friendShipState === 'heWantsToBeFriend'" class="flex gap-2">
               <span> {{ info.fullName }} souhaite vous ajouter en ami </span>
-              <VBtn size="small" class="hover:bg-[#F26A4B]/20" color="" @click="approveFriendRequest">
+              <VBtn
+                size="small"
+                class="hover:bg-[#F26A4B]/20"
+                color=""
+                @click="approveFriendRequest"
+              >
                 <span class="flex flex-row items-center gap-2">
                   <svg
                     class="w-4 h-4 text-green-500"
@@ -166,12 +194,15 @@ export default defineComponent({
                       d="M1 5.917 5.724 10.5 15 1.5"
                     />
                   </svg>
-                  <span>
-                    Accepter
-                  </span>
+                  <span> Accepter </span>
                 </span>
               </VBtn>
-              <VBtn size="small" class="hover:bg-[#F26A4B]/20" color="" @click="() => {}">
+              <VBtn
+                size="small"
+                class="hover:bg-[#F26A4B]/20"
+                color=""
+                @click="rejectFriendRequest"
+              >
                 <span class="flex flex-row items-center gap-2">
                   <svg
                     class="w-4 h-4 text-red-500"
@@ -188,9 +219,7 @@ export default defineComponent({
                       d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
                     />
                   </svg>
-                  <span>
-                    Refuser
-                  </span>
+                  <span> Refuser </span>
                 </span>
               </VBtn>
             </div>

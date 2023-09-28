@@ -1,7 +1,10 @@
 import { defineStore } from 'pinia'
-import type { User, Profile } from 'Auth'
+import type { User, Profile, FriendRequest } from 'Auth'
 import type { AxiosError } from 'axios'
 import axios from '@/utils/axios'
+import useAuthStore from './AuthStore'
+
+const authStore = useAuthStore()
 
 export interface FriendRequest {
   id: number
@@ -110,7 +113,12 @@ const useUserStore = defineStore({
     async askFriendRequest(userId: number): Promise<'success' | 'already' | 'error'> {
       let message: 'success' | 'already' | 'error' = 'success'
       try {
-        await axios.post(`/friends/request-friendship-with/${userId}`)
+        const { data } = await axios.post(`/friends/request-friendship-with/${userId}`)
+        const { sentContactRequests, ...rest } = authStore.getUser
+        authStore.setUser({
+          ...rest,
+          sentContactRequests: [...sentContactRequests, data as FriendRequest]
+        })
       } catch (error: AxiosError | any) {
         if (error.response && error.response === 409) {
           this.error = 'already'
@@ -120,10 +128,17 @@ const useUserStore = defineStore({
       }
       return message
     },
-    async cancelFriendRequest(requestId: number): Promise<'success' | 'error'> {
+    async cancelSentFriendRequest(requestId: number): Promise<'success' | 'error'> {
       try {
-        await axios.delete(`/friends/sent/${requestId}`)
-        await this.fetchSentRequests()
+        const { data } = await axios.delete(`/friends/sent/${requestId}`)
+
+        const { sentContactRequests, ...rest } = authStore.getUser
+        authStore.setUser({
+          ...rest,
+          sentContactRequests: sentContactRequests.filter(
+            (request: FriendRequest) => request.id !== requestId
+          )
+        })
         return 'success'
       } catch (e) {
         return 'error'
@@ -131,7 +146,13 @@ const useUserStore = defineStore({
     },
     async approveFriendRequest(requestId: number): Promise<'success' | 'error'> {
       try {
-        await axios.post(`/friends/approve-friendship-request-for/${requestId}`)
+        const { data } = await axios.post(`/friends/approve-friendship-request-for/${requestId}`)
+        const { contacts, ...rest } = authStore.getUser
+
+        authStore.setUser({
+          ...rest,
+          contacts: [...contacts, data as FriendRequest]
+        })
         return 'success'
       } catch (e) {
         return 'error'
@@ -140,7 +161,13 @@ const useUserStore = defineStore({
     async rejectFriendRequest(requestId: number): Promise<'success' | 'error'> {
       try {
         await axios.delete(`/friends/reject/${requestId}`)
-        await this.getReceivedRequests()
+        const { receivedContactRequests, ...rest } = authStore.getUser
+        authStore.setUser({
+          ...rest,
+          receivedContactRequests: receivedContactRequests.filter(
+            (request: FriendRequest) => request.id !== requestId
+          )
+        })
         return 'success'
       } catch (e) {
         return 'error'
@@ -149,6 +176,11 @@ const useUserStore = defineStore({
     async unFriend(frienId: number): Promise<'success' | 'error'> {
       try {
         await axios.delete(`/friends/${frienId}`)
+        const { contacts, ...rest } = authStore.getUser
+        authStore.setUser({
+          ...rest,
+          contacts: contacts.filter((friend: FriendRequest) => friend.senderId !== frienId || friend.receiverId !== frienId)
+        })
         await this.loadAllMyFriends()
         return 'success'
       } catch (e) {
