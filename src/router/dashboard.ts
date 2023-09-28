@@ -3,6 +3,7 @@ import HomeView from '@/views/HomeView.vue'
 import usersRoutes from '@/router/users'
 import DirectMessagesView from '@/views/Dm/DirectMessagesView.vue'
 import ChatWindowView from '@/views/Chat/ChatWindowView.vue'
+import Notifications from '@/views/User/Notifications.vue'
 
 const dashboardRoutes = {
   path: '/',
@@ -42,6 +43,15 @@ const dashboardRoutes = {
       meta: {
         requiresAuth: true,
         title: 'Direct Messages'
+      }
+    },
+    {
+      path: 'notifications',
+      name: 'notifications',
+      component: Notifications,
+      meta: {
+        requiresAuth: true,
+        title: 'Vos notifications'
       }
     },
     {

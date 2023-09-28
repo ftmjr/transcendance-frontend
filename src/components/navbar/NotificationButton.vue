@@ -1,28 +1,38 @@
 <template>
   <VBtn icon variant="text" color="default" class="mx-1">
-    <VBadge color="info" content="4">
+    <VBadge
+      :color="notificationStore.unreadNotificationsCount > 0 ? 'red' : 'secondary'"
+      :content="notificationStore.unreadNotificationsCount"
+    >
       <VIcon icon="tabler-bell" size="24" />
     </VBadge>
     <VMenu activator="parent" width="380px" location="bottom end" offset="14px">
       <VList class="py-0">
         <VListItem title="Notifications" height="48px">
           <template #append>
-            <VChip
-              v-if="notificationStore.unreadNotificationsCount > 0"
-              color="primary"
-              size="small"
-            >
-              {{ notificationStore.unreadNotificationsCount }} nouvelles notifications
+            <VChip color="primary" size="small">
+              {{ notificationStore.unreadNotificationsCount }} notifications non lues
             </VChip>
           </template>
         </VListItem>
         <VDivider />
-        <template
-          v-for="notification in notificationStore.unreadNotifications"
-          :key="notification.id"
-        >
-          <Notification :notification="notification" @markAsRead="markAsRead" />
+        <template v-if="notificationStore.unreadNotificationsCount > 0">
+          <VListItem
+            v-for="notification in notificationStore.unreadNotifications"
+            :key="notification.id"
+          >
+            <Notification :notification="notification" @markAsRead="markAsRead" />
+          </VListItem>
         </template>
+        <VListItem v-else>
+          <div class="flex justify-center items-center">
+            <span class="text-gray-400">Aucune notification</span>
+          </div>
+        </VListItem>
+        <VDivider />
+        <VListItem class="p-2">
+          <VBtn block @click="readAllNotifications"> LIRE TOUTES LES NOTIFICATIONS </VBtn>
+        </VListItem>
       </VList>
     </VMenu>
   </VBtn>
@@ -50,6 +60,9 @@ export default defineComponent({
     },
     deleteNotification(notificationId: number) {
       this.notificationStore.deleteNotification(notificationId)
+    },
+    readAllNotifications() {
+      this.$router.push({ name: 'notifications' })
     }
   }
 })
