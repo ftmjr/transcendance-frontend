@@ -1,4 +1,9 @@
 import AuthLayout from '@/layouts/AuthLayout.vue'
+import AuthView from '@/views/Auth/AuthView.vue'
+import TwoFactorsView from '@/views/Auth/TwoFactorsView.vue'
+import ResetPasswordView from '@/views/Auth/ResetPasswordView.vue'
+import LockedScreen from '@/views/Auth/LockedScreen.vue'
+import OAuthStateView from '@/views/Auth/OAuthState.vue'
 
 const authRoutes = {
   path: '/auth',
@@ -7,7 +12,7 @@ const authRoutes = {
     {
       path: '',
       name: 'auth',
-      component: () => import('@/views/Auth/AuthView.vue'),
+      component: AuthView,
       meta: {
         requiresAuth: false,
         title: 'Authentification'
@@ -16,7 +21,7 @@ const authRoutes = {
     {
       path: 'reset-password',
       name: 'reset-password',
-      component: () => import('@/views/Auth/ResetPasswordView.vue'),
+      component: ResetPasswordView,
       meta: {
         requiresAuth: false,
         title: 'Reset Password'
@@ -25,7 +30,7 @@ const authRoutes = {
     {
       path: 'two-factors',
       name: 'two-factors',
-      component: () => import('@/views/Auth/TwoFactorsView.vue'),
+      component: TwoFactorsView,
       meta: {
         requiresAuth: true,
         title: 'Two Factors'
@@ -34,7 +39,7 @@ const authRoutes = {
     {
       path: 'locked',
       name: 'locked-screen',
-      component: () => import('@/views/Auth/LockedScreen.vue'),
+      component: LockedScreen,
       meta: {
         requiresAuth: true,
         title: 'Locked Screen'
@@ -43,7 +48,7 @@ const authRoutes = {
     {
       path: 'oauth-auth',
       name: 'oauth-auth',
-      component: () => import('@/views/Auth/OAuthState.vue'),
+      component: OAuthStateView,
       meta: {
         requiresAuth: false,
         title: 'OAuth Auth'

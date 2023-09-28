@@ -1,6 +1,8 @@
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import HomeView from '@/views/HomeView.vue'
 import usersRoutes from '@/router/users'
+import DirectMessagesView from '@/views/Dm/DirectMessagesView.vue'
+import ChatWindowView from '@/views/Chat/ChatWindowView.vue'
 
 const dashboardRoutes = {
   path: '/',
@@ -27,7 +29,7 @@ const dashboardRoutes = {
     {
       path: 'chat',
       name: 'chat',
-      component: () => import('@/views/Chat/ChatWindowView.vue'),
+      component: ChatWindowView,
       meta: {
         requiresAuth: true,
         title: 'Chat'
@@ -36,7 +38,7 @@ const dashboardRoutes = {
     {
       path: 'dm',
       name: 'dm',
-      component: () => import('@/views/Dm/DirectMessagesView.vue'),
+      component: DirectMessagesView,
       meta: {
         requiresAuth: true,
         title: 'Direct Messages'

@@ -1,4 +1,6 @@
 import Settings from '@/views/user/Settings.vue'
+import UserList from '@/views/User/UserList.vue'
+import UserShowView from '@/views/user/Show.vue'
 
 const usersRoutes = {
   path: 'users',
@@ -6,7 +8,7 @@ const usersRoutes = {
     {
       path: '',
       name: 'user-list',
-      component: () => import('@/views/User/UserList.vue'),
+      component: UserList,
       meta: {
         requiresAuth: true,
         title: 'Liste des utilisateurs'
@@ -15,7 +17,7 @@ const usersRoutes = {
     {
       path: 'me/:tab?',
       name: 'me',
-      component: () => import('@/views/User/Show.vue'),
+      component: UserShowView,
       meta: {
         requiresAuth: true,
         title: 'Mon Profil'
@@ -24,7 +26,7 @@ const usersRoutes = {
     {
       path: 'show/:userId/:tab?',
       name: 'user-profile',
-      component: () => import('@/views/User/Show.vue'),
+      component: UserShowView,
       props: true,
       meta: {
         requiresAuth: true,
