@@ -12,7 +12,7 @@
     left:0;
 }
 #AppLoader.start {
-    background: powderblue;
+    background: #010626;
     animation: blueFill 4.5s linear 1;
     animation-fill-mode:forwards;
 }
@@ -126,11 +126,11 @@
 @keyframes blueFill {
     /* color during the animation*/
     0%, 60% {
-        background:#797E9E;
+        background: rgba(101, 107, 218, 0.76);
     }
     /* ending animation bg color*/
     70%, 100% {
-        background: transparent;
+        background: #010626;
     }
 }
 
