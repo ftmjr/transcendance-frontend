@@ -42,7 +42,7 @@ import { useSkins } from '@core/composable/useSkins'
 import FooterSection from '@/layouts/FooterSection.vue'
 import NavSearchBar from '@/components/navbar/NavSearchBar.vue'
 import UserProfileButton from '@/components/navbar/UserProfileButton.vue'
-import NotificationButton from "@/components/navbar/NotificationButton.vue";
+import NotificationButton from '@/components/navbar/NotificationButton.vue'
 
 export default defineComponent({
   components: {

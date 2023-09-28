@@ -1,41 +1,41 @@
 <template>
-    <VLayout class="bg-surface rounded border p-2 border-solid border-slate-400 shadow-sm">
-      <VNavigationDrawer
-        v-model="isLeftSidebarOpen"
-        absolute
-        touchless
-        location="start"
-        width="370"
-        :temporary="$vuetify.display.smAndDown"
-        class="pt-2"
-        :permanent="$vuetify.display.mdAndUp"
-      >
-        <DmConversationListSideBar
-          @open-chat-of-contact="openChatOfContact"
-          @show-user-profile="showMyProfile"
-          @close="isLeftSidebarOpen = false"
-        />
-      </VNavigationDrawer>
-      <VMain>
-        <SingleDirectMessage
-          v-if="messageStore.currentConversationWith"
-          :conversationWith="messageStore.currentConversationWith"
-          v-model:is-left-sidebar-open="isLeftSidebarOpen"
-        />
-        <div v-else class="h-full">
-          <MessageTopBar v-model:isLeftSidebarOpen="isLeftSidebarOpen" />
-          <div class="flex h-full flex-col items-center justify-center mb-2">
-            <VAvatar size="109" class="shadow-md mb-6 bg-slate-700">
-              <VIcon size="50" class="rounded text-high-emphasis" icon="tabler-message"/>
-            </VAvatar>
-            <p class="text-lg font-medium text-center">
-              Selectionner une conversation
-              <span class="font-normal text-sm ">, ou faites vous des amis en leur faisant un dm</span>
-            </p>
-          </div>
+  <VLayout class="bg-surface rounded border p-2 border-solid border-slate-400 shadow-sm">
+    <VNavigationDrawer
+      v-model="isLeftSidebarOpen"
+      absolute
+      touchless
+      location="start"
+      width="370"
+      :temporary="$vuetify.display.smAndDown"
+      class="pt-2"
+      :permanent="$vuetify.display.mdAndUp"
+    >
+      <DmConversationListSideBar
+        @open-chat-of-contact="openChatOfContact"
+        @show-user-profile="showMyProfile"
+        @close="isLeftSidebarOpen = false"
+      />
+    </VNavigationDrawer>
+    <VMain>
+      <SingleDirectMessage
+        v-if="messageStore.currentConversationWith"
+        :conversationWith="messageStore.currentConversationWith"
+        v-model:is-left-sidebar-open="isLeftSidebarOpen"
+      />
+      <div v-else class="h-full">
+        <MessageTopBar v-model:isLeftSidebarOpen="isLeftSidebarOpen" />
+        <div class="flex h-full flex-col items-center justify-center mb-2">
+          <VAvatar size="109" class="shadow-md mb-6 bg-slate-700">
+            <VIcon size="50" class="rounded text-high-emphasis" icon="tabler-message" />
+          </VAvatar>
+          <p class="text-lg font-medium text-center">
+            Selectionner une conversation
+            <span class="font-normal text-sm">, ou faites vous des amis en leur faisant un dm</span>
+          </p>
         </div>
-      </VMain>
-    </VLayout>
+      </div>
+    </VMain>
+  </VLayout>
 </template>
 
 <script lang="ts">

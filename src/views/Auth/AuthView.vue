@@ -230,7 +230,7 @@ export default defineComponent({
     this.moveToCorrectRoute()
   },
   methods: {
-    moveToCorrectRoute() {
+    async moveToCorrectRoute() {
       this.isLoading = true
       switch (this.authStore.status) {
         case LoginStatus.LOCKED:
@@ -256,7 +256,6 @@ export default defineComponent({
       this.isLoading = true
       const worked = await this.authStore.register(this.signUpFields)
       if (worked) {
-        alert('Votre compte a bien été créé !')
         this.$router.push({ name: 'dashboard' })
       }
       this.isLoading = false
