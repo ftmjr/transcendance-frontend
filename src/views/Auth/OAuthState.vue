@@ -23,22 +23,22 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import useAuthStore, {LoginStatus} from '@/stores/AuthStore.ts'
+import useAuthStore, { LoginStatus } from '@/stores/AuthStore.ts'
 
 export default defineComponent({
   name: 'auth-state',
   setup() {
-    const authStore = useAuthStore();
+    const authStore = useAuthStore()
     return { authStore }
   },
   async mounted() {
     const { token } = this.$route.query
     if (token) {
-      this.authStore.setToken(token);
-      await this.authStore.refreshCurrentUser();
+      this.authStore.setToken(token)
+      await this.authStore.refreshCurrentUser()
       if (this.authStore.status === LoginStatus.LOGGED) {
         return this.$router.push({ name: 'dashboard' })
-      } else if (this.authStore.status === LoginStatus.TWOFA_CHECK){
+      } else if (this.authStore.status === LoginStatus.TWOFA_CHECK) {
         return this.$router.push({ name: 'two-factors' })
       }
     }
@@ -53,6 +53,6 @@ export default defineComponent({
     toggleLoader() {
       this.isActive = !this.isActive
     }
-  },
+  }
 })
 </script>
