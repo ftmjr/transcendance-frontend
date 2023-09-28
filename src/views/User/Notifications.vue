@@ -3,20 +3,18 @@
     <VCardItem>
       <VCardTitle>Notifications</VCardTitle>
       <p class="text-sm mt-2 mb-0">
-        Vous pouvez gérer les notifications de votre compte., y compris les notifications de jeu, les demandes d'amis, les événements de jeu et les messages privés.
-        <br /> Vous avez {{ notificationStore.unreadNotificationsCount }} nouvelles notifications.
+        Vous pouvez gérer les notifications de votre compte., y compris les notifications de jeu,
+        les demandes d'amis, les événements de jeu et les messages privés.
+        <br />
+        Vous avez {{ notificationStore.unreadNotificationsCount }} nouvelles notifications.
       </p>
     </VCardItem>
     <VCardText>
       <VTable class="text-no-wrap rounded border bg-surface">
         <thead>
           <tr>
-            <th scope="col">
-              Notification
-            </th>
-            <th scope="col">
-              Action
-            </th>
+            <th scope="col">Notification</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -39,14 +37,14 @@
   </VCard>
 </template>
 <script lang="ts">
-import {defineComponent} from 'vue'
-import useNotificationStore from "@/stores/NotificationStore";
-import Notification from "@/components/Notification.vue";
+import { defineComponent } from 'vue'
+import useNotificationStore from '@/stores/NotificationStore'
+import Notification from '@/components/Notification.vue'
 
 export default defineComponent({
-  components: {Notification},
+  components: { Notification },
   setup() {
-    const notificationStore = useNotificationStore();
+    const notificationStore = useNotificationStore()
     return {
       notificationStore
     }
@@ -56,21 +54,19 @@ export default defineComponent({
   },
   methods: {
     markAsRead(notificationId: number) {
-      this.notificationStore.markNotificationAsRead(notificationId);
+      this.notificationStore.markNotificationAsRead(notificationId)
     },
     deleteNotification(notificationId: number) {
-      this.notificationStore.deleteNotification(notificationId);
+      this.notificationStore.deleteNotification(notificationId)
     },
     openNotification() {
       // to do: implement, open the notification in a modal or the appropriate page
     },
     readAllNotifications() {
       // TODO: Implement
-    },
+    }
   }
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

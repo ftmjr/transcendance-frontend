@@ -149,7 +149,12 @@ export default defineComponent({
             </VBtn>
             <div v-if="friendShipState === 'heWantsToBeFriend'" class="flex gap-2">
               <span> {{ info.fullName }} souhaite vous ajouter en ami </span>
-              <VBtn size="small" class="hover:bg-[#F26A4B]/20" color="" @click="approveFriendRequest">
+              <VBtn
+                size="small"
+                class="hover:bg-[#F26A4B]/20"
+                color=""
+                @click="approveFriendRequest"
+              >
                 <span class="flex flex-row items-center gap-2">
                   <svg
                     class="w-4 h-4 text-green-500"
@@ -166,9 +171,7 @@ export default defineComponent({
                       d="M1 5.917 5.724 10.5 15 1.5"
                     />
                   </svg>
-                  <span>
-                    Accepter
-                  </span>
+                  <span> Accepter </span>
                 </span>
               </VBtn>
               <VBtn size="small" class="hover:bg-[#F26A4B]/20" color="" @click="() => {}">
@@ -188,9 +191,7 @@ export default defineComponent({
                       d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
                     />
                   </svg>
-                  <span>
-                    Refuser
-                  </span>
+                  <span> Refuser </span>
                 </span>
               </VBtn>
             </div>

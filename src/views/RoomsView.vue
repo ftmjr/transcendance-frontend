@@ -3,13 +3,24 @@
     <profile-card />
     <div class="py-8">
       <div class="grid grid-cols-2 gap-4 p-4">
-        <div class="grid grid-cols-12 gap-2 ">
+        <div class="grid grid-cols-12 gap-2">
           <div class="col-span-12">
             <room-selector :rooms="chatStore.getRooms" />
           </div>
-          <BaseButton classnames="col-span-4 h-16 bg-gray-50 text-uppercase font-bold font-darkBlue" @click="globalStore.openJoinDialog">Join a Chat Room</BaseButton>
-          <BaseButton classnames="col-span-4 h-16 bg-gray-50 text-uppercase font-bold font-darkBlue" @click="globalStore.openCreateDialog">Create Chat Room</BaseButton>
-          <BaseButton classnames="col-span-4 h-16 bg-gray-50 text-uppercase font-bold font-darkBlue" v-if="chatStore.getRoom.name !== 'General'" @click="chatStore.leaveRoom"
+          <BaseButton
+            classnames="col-span-4 h-16 bg-gray-50 text-uppercase font-bold font-darkBlue"
+            @click="globalStore.openJoinDialog"
+            >Join a Chat Room</BaseButton
+          >
+          <BaseButton
+            classnames="col-span-4 h-16 bg-gray-50 text-uppercase font-bold font-darkBlue"
+            @click="globalStore.openCreateDialog"
+            >Create Chat Room</BaseButton
+          >
+          <BaseButton
+            classnames="col-span-4 h-16 bg-gray-50 text-uppercase font-bold font-darkBlue"
+            v-if="chatStore.getRoom.name !== 'General'"
+            @click="chatStore.leaveRoom"
             >Leave Chat Room</BaseButton
           >
         </div>
