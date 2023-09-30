@@ -121,9 +121,6 @@ export default class PreloadPong extends Phaser.Scene {
       color: '#d6d3f0'
     })
     switch (this.userType) {
-      case GameUserType.LocalPlayer:
-        this.bottomText.setText('Waiting for the AI.')
-        break
       case GameUserType.Player:
         this.bottomText.setText('Waiting for an opponent...')
         break
@@ -192,10 +189,6 @@ export default class PreloadPong extends Phaser.Scene {
       this.playerImages.push(playerImage)
       this.playerTexts.push(playerText)
     })
-    // Display IA player info
-    if (this.userType === GameUserType.LocalPlayer) {
-      this.printIaPlayerInfo()
-    }
   }
   getOrLoadUserAvatar(user: NetworkUser): string {
     // future logic to load avatar depending on user
