@@ -223,9 +223,6 @@ export default defineComponent({
       return this.authStore.error
     }
   },
-  created() {
-    this.moveToCorrectRoute()
-  },
   mounted() {
     this.moveToCorrectRoute()
   },

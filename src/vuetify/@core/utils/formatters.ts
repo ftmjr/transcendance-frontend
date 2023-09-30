@@ -25,7 +25,12 @@ export const kFormatter = (num: number) => {
  */
 export const formatDate = (
   value: string,
-  formatting: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' }
+  formatting: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric'
+  }
 ) => {
   if (!value) return value
 
