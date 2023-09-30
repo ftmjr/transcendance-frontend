@@ -54,7 +54,10 @@ export default defineComponent({
       }
     },
     startUploadNewAvatar(fileInputEv: Event) {
-      console.log(fileInputEv)
+      const file = (fileInputEv.target as HTMLInputElement).files?.[0]
+      if (file) {
+        this.authStore.updateAvatar(file)
+      }
     },
     async updateUserInformation() {
       const worked = await this.authStore.updateUserInfo(this.fields)

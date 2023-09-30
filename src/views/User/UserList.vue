@@ -7,7 +7,7 @@
             <span>{{ meta.title }}</span>
             <div class="flex items-center gap-2 my-1">
               <h6 class="text-h6">
-                {{ meta.stats }}
+                {{ Math.round(meta.stats) }}
               </h6>
             </div>
             <span>{{ meta.subtitle }}</span>
@@ -28,12 +28,14 @@
             />
           </div>
           <VSpacer />
-          <VTextField
-            class="transparent-input-box"
-            v-model="searchQuery"
-            placeholder="Rechercher"
-            density="compact"
-          />
+          <div class="w-1/3">
+            <VTextField
+              class="transparent-input-box"
+              size="small"
+              v-model="searchQuery"
+              placeholder="Rechercher"
+            />
+          </div>
         </VCardText>
 
         <VDivider />
@@ -91,7 +93,7 @@ import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 
 const userListStatsMeta: Array<{
   icon: string
-  color: 'primary' | 'error' | 'succes' | 'warning'
+  color: 'primary' | 'error' | 'success' | 'warning'
   title: string
   stats: number
   subtitle: string
@@ -112,7 +114,7 @@ const userListStatsMeta: Array<{
   },
   {
     icon: 'game-icons:ping-pong-bat',
-    color: 'succes',
+    color: 'success',
     title: 'Parties par joeur',
     stats: 0,
     subtitle: 'Moyenne de parties, par utilisateur'
