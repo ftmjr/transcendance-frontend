@@ -66,7 +66,6 @@ const useAuthStore = defineStore({
           if (this.isExpired) {
             return LoginStatus.LOCKED
           }
-
           const decoded = this.getTokenData
           if (!decoded) {
             return LoginStatus.LOCKED
@@ -142,12 +141,12 @@ const useAuthStore = defineStore({
     async logout() {
       this.error = { state: false, message: '' }
       try {
+        this.removeUser()
+        this.removeToken()
         await axios.get('auth/logout')
       } catch (error: AxiosError | any) {
         this.error = { state: true, message: error.response.data.message }
       }
-      this.removeToken()
-      this.removeUser()
     },
     async register(userInfos: RegisterBody): Promise<boolean> {
       alert('register')
@@ -293,6 +292,21 @@ const useAuthStore = defineStore({
     async changeMyStatus(value: Status): Promise<'success' | 'error'> {
       try {
         // code to change status
+        return 'success'
+      } catch (e) {
+        return 'error'
+      }
+    },
+    async updateAvatar(avatar: File): Promise<'success' | 'error'> {
+      try {
+        const formData = new FormData()
+        formData.append('file', avatar)
+        const { data } = await axios.post<Profile>('/files/avatar', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        this.setUser({ ...this.user, profile: data })
         return 'success'
       } catch (e) {
         return 'error'
