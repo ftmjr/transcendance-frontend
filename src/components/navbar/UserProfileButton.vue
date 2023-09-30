@@ -1,32 +1,3 @@
-<script lang="ts">
-import { defineComponent } from 'vue'
-import useAuthStore, { LoginStatus } from '@/stores/AuthStore'
-
-export default defineComponent({
-  name: 'UserProfileButton',
-  setup() {
-    const authStore = useAuthStore()
-    return {
-      authStore
-    }
-  },
-  computed: {
-    isOnline(): boolean {
-      return this.authStore.status === LoginStatus.LOGGED
-    },
-    avatar(): string | null {
-      return this.authStore.getProfile?.avatar ?? null
-    }
-  },
-  methods: {
-    async logout() {
-      await this.authStore.logout()
-      this.$router.push({ name: 'auth' })
-    }
-  }
-})
-</script>
-
 <template>
   <VBadge
     dot
@@ -91,5 +62,34 @@ export default defineComponent({
     </VMenu>
   </VBadge>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+import useAuthStore, { LoginStatus } from '@/stores/AuthStore'
+
+export default defineComponent({
+  name: 'UserProfileButton',
+  setup() {
+    const authStore = useAuthStore()
+    return {
+      authStore
+    }
+  },
+  computed: {
+    isOnline(): boolean {
+      return this.authStore.status === LoginStatus.LOGGED
+    },
+    avatar(): string | null {
+      return this.authStore.getProfile?.avatar ?? null
+    }
+  },
+  methods: {
+    async logout() {
+      await this.authStore.logout()
+      this.$router.push({ name: 'auth' })
+    }
+  }
+})
+</script>
 
 <style scoped lang="scss"></style>

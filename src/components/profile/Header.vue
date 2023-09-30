@@ -1,108 +1,3 @@
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import type { Coalition, ProfileHeaderData, FriendshipStatus } from 'Auth'
-import useAuthStore from '@/stores/AuthStore'
-import armadaBanner from '@/assets/images/banners/Armada_banner.jpg'
-import legionBanner from '@/assets/images/banners/legion_banner.jpg'
-import torrentBanner from '@/assets/images/banners/Torrent_banner.jpg'
-import useUserStore from '@/stores/UserStore'
-
-const banners: { [key: string]: string } = {
-  Armada: armadaBanner,
-  Legion: legionBanner,
-  Torrent: torrentBanner
-}
-
-export default defineComponent({
-  name: 'ProfileHeader',
-  props: {
-    info: {
-      type: Object as PropType<ProfileHeaderData>,
-      required: true
-    },
-    id: {
-      type: Number,
-      required: true
-    },
-    FriendShipStatus: {
-      type: String as PropType<FriendshipStatus>,
-      required: true,
-      default: () => 'none'
-    }
-  },
-  setup() {
-    const authStore = useAuthStore()
-    const userStore = useUserStore()
-    return { authStore, userStore }
-  },
-  computed: {
-    coverImg(): string {
-      return banners[this.info?.coalition as Coalition] || ''
-    },
-    friendShipState(): string {
-      const {
-        blockedUsers,
-        receivedContactRequests,
-        sentContactRequests,
-        contacts,
-        contactedBy,
-        id
-      } = this.authStore.getUser
-
-      if (id === this.id) return 'isCurrentUser'
-      if (blockedUsers.some((user) => user.id === this.id)) return 'blocked'
-      if (receivedContactRequests.some((user) => user.senderId === this.id))
-        return 'heWantsToBeFriend'
-      if (sentContactRequests.some((user) => user.receiverId === this.id)) return 'iWantToBeFriend'
-      if (contactedBy.some((user) => user.userId === this.id)) return 'weAreFriends'
-      return 'none'
-    },
-    requestSent(): boolean {
-      return true
-    },
-    isBlocked(): boolean {
-      // return this.userSTore.getBlockedUsers.some((user) => user.id === this.id)
-      return true
-    }
-  },
-  methods: {
-    async unFriend() {
-      const message = await this.userStore.unFriend(this.id)
-    },
-    async askFriendRequest() {
-      const message = await this.userStore.askFriendRequest(this.id)
-      alert(message)
-    },
-    async blockUser() {
-      const message = await this.userStore.blockUser(this.id)
-    },
-    async unBlockUser() {
-      const message = await this.userStore.unBlockUser(this.id)
-    },
-    showDateFormated(date): string {
-      return new Date(date).toLocaleDateString()
-    },
-    async approveFriendRequest() {
-      const { receivedContactRequests } = this.authStore.getUser
-
-      // get the id of the frienfship request
-      const requestId = receivedContactRequests.find((user) => user.senderId === this.id)?.id
-
-      // approve the friendship request
-      const message = await this.userStore.approveFriendRequest(requestId)
-
-      // if the request is approved, change the friendship state
-      if (message === 'success') {
-        this.friendShipState = 'weAreFriends'
-      }
-    }
-  },
-  beforeMount() {
-    console.log(this.authStore.getUser)
-  }
-})
-</script>
-
 <template>
   <VCard v-if="info">
     <VImg :src="coverImg" :cover="true" max-height="12rem" />
@@ -282,6 +177,108 @@ export default defineComponent({
     </VCardText>
   </VCard>
 </template>
+<script lang="ts">
+import { defineComponent, PropType } from 'vue'
+import type { Coalition, ProfileHeaderData, FriendshipStatus } from 'Auth'
+import useAuthStore from '@/stores/AuthStore'
+import armadaBanner from '@/assets/images/banners/Armada_banner.jpg'
+import legionBanner from '@/assets/images/banners/legion_banner.jpg'
+import torrentBanner from '@/assets/images/banners/Torrent_banner.jpg'
+import useUserStore from '@/stores/UserStore'
+
+const banners: { [key: string]: string } = {
+  Armada: armadaBanner,
+  Legion: legionBanner,
+  Torrent: torrentBanner
+}
+
+export default defineComponent({
+  name: 'ProfileHeader',
+  props: {
+    info: {
+      type: Object as PropType<ProfileHeaderData>,
+      required: true
+    },
+    id: {
+      type: Number,
+      required: true
+    },
+    FriendShipStatus: {
+      type: String as PropType<FriendshipStatus>,
+      required: true,
+      default: () => 'none'
+    }
+  },
+  setup() {
+    const authStore = useAuthStore()
+    const userStore = useUserStore()
+    return { authStore, userStore }
+  },
+  computed: {
+    coverImg(): string {
+      return banners[this.info?.coalition as Coalition] || ''
+    },
+    friendShipState(): string {
+      const {
+        blockedUsers,
+        receivedContactRequests,
+        sentContactRequests,
+        contacts,
+        contactedBy,
+        id
+      } = this.authStore.getUser
+
+      if (id === this.id) return 'isCurrentUser'
+      if (blockedUsers.some((user) => user.id === this.id)) return 'blocked'
+      if (receivedContactRequests.some((user) => user.senderId === this.id))
+        return 'heWantsToBeFriend'
+      if (sentContactRequests.some((user) => user.receiverId === this.id)) return 'iWantToBeFriend'
+      if (contactedBy.some((user) => user.userId === this.id)) return 'weAreFriends'
+      return 'none'
+    },
+    requestSent(): boolean {
+      return true
+    },
+    isBlocked(): boolean {
+      // return this.userSTore.getBlockedUsers.some((user) => user.id === this.id)
+      return true
+    }
+  },
+  methods: {
+    async unFriend() {
+      const message = await this.userStore.unFriend(this.id)
+    },
+    async askFriendRequest() {
+      const message = await this.userStore.askFriendRequest(this.id)
+      alert(message)
+    },
+    async blockUser() {
+      const message = await this.userStore.blockUser(this.id)
+    },
+    async unBlockUser() {
+      const message = await this.userStore.unblockUser(this.id)
+    },
+    showDateFormated(date): string {
+      return new Date(date).toLocaleDateString()
+    },
+    async approveFriendRequest() {
+      const { receivedContactRequests } = this.authStore.getUser
+
+      // get the id of the frienfship request
+      const requestId = receivedContactRequests.find((user) => user.senderId === this.id)?.id
+
+      // approve the friendship request
+      const message = await this.userStore.approveFriendRequest(requestId)
+
+      // if the request is approved, change the friendship state
+      if (message === 'success') {
+        this.friendShipState = 'weAreFriends'
+      }
+    }
+  },
+  beforeMount() {}
+})
+</script>
 
 <style lang="scss">
 .user-profile-avatar {
