@@ -43,6 +43,8 @@ import FooterSection from '@/layouts/FooterSection.vue'
 import NavSearchBar from '@/components/navbar/NavSearchBar.vue'
 import UserProfileButton from '@/components/navbar/UserProfileButton.vue'
 import NotificationButton from '@/components/navbar/NotificationButton.vue'
+import useNotificationStore from '@/stores/NotificationStore'
+import useAuthStore from '@/stores/AuthStore'
 
 export default defineComponent({
   components: {
@@ -57,6 +59,11 @@ export default defineComponent({
     const { width: windowWidth } = useWindowSize()
     const { layoutAttrs, injectSkinClasses } = useSkins()
     injectSkinClasses()
+    const notificationStore = useNotificationStore()
+    const authStore = useAuthStore()
+    if (authStore.isLoggedIn && !notificationStore.socketOperational) {
+      notificationStore.init(authStore.getUser.id)
+    }
     return {
       layoutAttrs,
       navItems,
