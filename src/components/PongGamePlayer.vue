@@ -1,129 +1,102 @@
 <template>
   <div class="flex flex-col">
-    <div
-      v-if="props.debugMode === true"
-      class="grid grid-cols-2 gap-4 p-4 bg-gray-200 overflow-auto"
-    >
+    <v-row v-if="props.debugMode" class="pa-4">
       <!-- Received Data -->
-      <div class="bg-white rounded-lg shadow px-5 py-4">
-        <h3 class="text-xl font-bold mb-2">Props Data</h3>
-        <div class="flex items-center space-x-2 mb-4">
-          <img class="h-8 w-8 rounded-full" :src="props.user.avatar" alt="" />
-          <div class="text-sm font-medium text-gray-900">{{ props.user.username }}</div>
-        </div>
-        <div class="text-sm text-gray-500">
-          <p class="mb-2">Room ID: {{ props.gameData.room ?? 0 }}</p>
-          <p class="mb-2">Game Type: {{ props.gameData.playerType }}</p>
-          <p class="mb-2">Game Theme: {{ props.gameData.theme }}</p>
-        </div>
-      </div>
+      <v-col cols="12" md="6" class="pa-4">
+        <v-card class="pa-5">
+          <v-card-title>
+            <h3>Props Data</h3>
+          </v-card-title>
+          <v-card-subtitle class="d-flex align-center">
+            <v-avatar>
+              <img :src="props.user.avatar" alt="" />
+            </v-avatar>
+            {{ props.user.username }}
+          </v-card-subtitle>
+          <v-card-text>
+            <p>Room ID: {{ props.gameData.room ?? 0 }}</p>
+            <p>Game Type: {{ props.gameData.playerType ? 'Viewer' : 'Player' }}</p>
+            <p>Game Theme: {{ props.gameData.theme }}</p>
+          </v-card-text>
+        </v-card>
+      </v-col>
       <!-- Network Data -->
-      <div class="bg-white rounded-lg shadow px-5 py-4">
-        <h3 class="text-xl font-bold mb-2">Network Monitor</h3>
-        <p class="mb-2">Room ID: {{ roomIdDisplayed }}</p>
-        <p class="mb-2" :class="statesInfo[gameMonitorState].color">
-          Game Monitor State: {{ statesInfo[gameMonitorState].text }}
-        </p>
-        <p class="mb-2">Network score : {{ scoreDisplayed }}</p>
-        <div class="flex justify-evenly">
-          <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Players
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr
-                  v-for="[id, player] in gameMonitor.players"
-                  :key="id"
-                  :class="player.isHost ? 'bg-green-200' : ''"
-                >
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                      <img class="h-8 w-8 rounded-full" :src="player.avatar" alt="" />
-                      <div class="ml-4">
-                        <div class="text-sm font-medium text-gray-900">{{ player.username }}</div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+      <v-col cols="12" md="6" class="pa-4">
+        <v-card class="pa-5">
+          <v-card-title>
+            <h3>Network Monitor</h3>
+          </v-card-title>
+          <v-card-text>
+            <p>Room ID: {{ props.gameData.room }}</p>
+            <p class="text-primary" :class="statesInfo[gameMonitorState].color">
+              Game Monitor State: {{ statesInfo[gameMonitorState].text }}
+            </p>
+            <p>Network score : {{ scoreDisplayed }}</p>
+          </v-card-text>
+          <div class="flex justify-evenly">
+            <v-list>
+              <v-list-subheader class="font-weight-semibold text-primary">Players</v-list-subheader>
+              <v-list-item v-for="[id, player] in gameMonitor.players" :key="id">
+                <VAvatar size="38">
+                  <VImg
+                    v-if="player.avatar"
+                    :src="player.avatar"
+                    :alt="`avatar de ${player.username}`"
+                  />
+                  <span v-else-if="player.username">{{ avatarText(player.username) }}</span>
+                </VAvatar>
+                {{ player.username }}
+              </v-list-item>
+            </v-list>
+            <v-list>
+              <v-list-subheader class="font-weight-semibold text-primary"
+                >Viewers/Observers</v-list-subheader
+              >
+              <v-list-item v-for="[id, viewer] in gameMonitor.viewers" :key="id">
+                <VAvatar size="38">
+                  <VImg
+                    v-if="viewer.avatar"
+                    :src="viewer.avatar"
+                    :alt="`avatar de ${viewer.username}`"
+                  />
+                  <span v-else-if="viewer.username">{{ avatarText(viewer.username) }}</span>
+                </VAvatar>
+                {{ viewer.username }}
+              </v-list-item>
+            </v-list>
           </div>
-          <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Viewers / Observers
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="[id, viewer] in gameMonitor.viewers" :key="id">
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                      <img class="h-8 w-8 rounded-full" :src="viewer.avatar" alt="" />
-                      <div class="ml-4">
-                        <div class="text-sm font-medium text-gray-900">
-                          {{ viewer.username }}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+        </v-card>
+      </v-col>
+    </v-row>
     <div class="pongGame" id="Game-container" ref="gameContainer"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeUnmount, onMounted, reactive } from 'vue'
+import { ref, onBeforeUnmount, onMounted, reactive, nextTick } from 'vue'
 import type { PropType } from 'vue'
 import Phaser from 'phaser'
 import PongGameScene from '@/Game/pong-scenes/PongGame'
 import PreloadScene from '@/Game/pong-scenes/Preload'
 import type { PreloadSceneData } from '@/Game/pong-scenes/Preload'
-import { GameNetwork, GameUserType } from '@/Game/network/GameNetwork'
+import { GameNetwork } from '@/Game/network/GameNetwork'
 import type { GameUser } from '@/Game/network/GameNetwork'
 import { GameMonitor, GameMonitorState } from '@/Game/network/GameMonitor'
 import type { NetworkUser } from '@/Game/network/GameMonitor'
-import type { GameDataI, PongTheme } from '@/Game/pong-scenes/Assets'
+import type { GameDataI } from '@/Game/pong-scenes/Assets'
 import { EndGame } from '@/Game/pong-scenes/EndGame'
-
+import { avatarText } from '../vuetify/@core/utils/formatters'
+import useGameStore from '@/stores/GameStore'
+import { useRouter } from 'vue-router'
 const gameContainer = ref(null)
 const props = defineProps({
   gameData: {
     type: Object as PropType<GameDataI>,
-    required: true,
-    default: () => ({
-      room: 0,
-      playerType: GameUserType.LocalPlayer,
-      theme: 'Arcade'
-    })
+    required: true
   },
   user: {
     type: Object as PropType<GameUser>,
-    required: true,
-    default: () => ({
-      userId: 1,
-      username: 'gamer1',
-      avatar: 'https://i.imgur.com/8bXwXuU.png'
-    })
+    required: true
   },
   debugMode: {
     type: Boolean,
@@ -137,18 +110,15 @@ const gameNetwork = new GameNetwork({
   avatar: props.user.avatar
 })
 
-const roomIdDisplayed = ref(props.gameData?.room ?? 0)
 const scoreDisplayed = reactive({ player1: 0, player2: 0 })
 const gameMonitorState = ref(GameMonitorState.InitGame)
 const onPlayersUpdated = (players: Map<string, NetworkUser>) => {}
 const onViewersUpdated = (viewers: Map<string, NetworkUser>) => {}
-const onRoomIdUpdated = (roomId: number) => {
-  roomIdDisplayed.value = roomId
-}
 const onScoreUpdated = (score: { player1: number; player2: number }) => {
   scoreDisplayed.player1 = score.player1
   scoreDisplayed.player2 = score.player2
 }
+
 const statesInfo = {
   [GameMonitorState.Waiting]: { text: 'InitGame', color: 'bg-gray-200' },
   [GameMonitorState.Ready]: { text: 'Ready', color: 'bg-yellow-200' },
@@ -159,23 +129,40 @@ const statesInfo = {
   },
   [GameMonitorState.Ended]: { text: 'Game ended', color: 'bg-red-200' }
 }
+
+const gameStore = useGameStore()
+const router = useRouter()
+const handleGameEnd = async () => {
+  await nextTick()
+  setTimeout(async () => {
+    await gameStore.gameEnded(props.gameData.room, props.user.userId)
+    await router.push({ name: 'me', params: { tab: 'history' } })
+  }, 2000)
+}
 const onGameMonitorStateChange = (state: GameMonitorState) => {
   gameMonitorState.value = state
+  if (state === GameMonitorState.Ended) {
+    handleGameEnd()
+  }
 }
-
-const gameMonitor = new GameMonitor('pong', props.gameData.playerType, gameNetwork, {
-  onPlayersUpdated,
-  onViewersUpdated,
-  onRoomIdUpdated,
-  onScoreUpdated,
-  onGameMonitorStateChange
-})
+const gameMonitor = new GameMonitor(
+  'pong',
+  props.gameData.playerType,
+  gameNetwork,
+  {
+    onPlayersUpdated,
+    onViewersUpdated,
+    onScoreUpdated,
+    onGameMonitorStateChange
+  },
+  props.gameData.room
+)
 
 onMounted(() => {
   const gameData: PreloadSceneData = {
-    userType: props.gameData.playerType as GameUserType,
+    userType: props.gameData.playerType,
     gameMonitor,
-    theme: props.gameData.theme as PongTheme
+    theme: props.gameData.theme
   }
   const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
