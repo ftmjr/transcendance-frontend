@@ -22,24 +22,7 @@
     </VTabs>
     <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
       <VWindowItem value="history">
-        <VCard title="Historiques des Actions">
-          <VTable class="bg-transparent">
-            <thead>
-              <tr>
-                <th>Jeu</th>
-                <th>Evenement</th>
-                <th>Temps</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="history in gameHistories" :key="history.id">
-                <td>{{ history.gameId }}</td>
-                <td>{{ history.event }}</td>
-                <td>{{ history.timestamp }}</td>
-              </tr>
-            </tbody>
-          </VTable>
-        </VCard>
+        <Histories :histories="gameHistories" />
       </VWindowItem>
     </VWindow>
   </div>
@@ -50,10 +33,12 @@ import { defineAsyncComponent, defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import type { ProfileData, User, GameHistory } from 'Auth'
 import axios from '@/utils/axios'
+import Histories from '@/views/User/Histories.vue'
 
 export default defineComponent({
   name: 'ShowProfile',
   components: {
+    Histories,
     UserProfileHeader: defineAsyncComponent(() => import('@/components/profile/Header.vue'))
   },
   props: {
@@ -120,7 +105,6 @@ export default defineComponent({
       this.loading = true
       this.errorMsg = ''
       try {
-        // to-do a route for fetching unique profile
         const { data } = await axios.get<User>(`/users/profile/${this.userIdValue}`)
         this.profileData = {
           id: data.id,
@@ -137,6 +121,7 @@ export default defineComponent({
           friendshipStatus: 'none',
           friendStart: null
         }
+        this.gameHistories = data.gameHistories ?? []
       } catch (error) {
         this.errorMsg = 'Failed to load profile'
       }
