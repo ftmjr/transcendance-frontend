@@ -2,10 +2,10 @@
   <div>
     <VTabs v-model="activeTab" class="v-tabs-pill">
       <VTab
-          v-for="item in tabs"
-          :key="item.icon"
-          :value="item.tab"
-          :to="{ name: 'settings', params: { tab: item.tab } }"
+        v-for="item in tabs"
+        :key="item.icon"
+        :value="item.tab"
+        :to="{ name: 'settings', params: { tab: item.tab } }"
       >
         <VIcon size="20" start :icon="item.icon" />
         {{ item.title }}
@@ -19,9 +19,9 @@
               <VCardText class="flex">
                 <VAvatar rounded size="100" class="me-6" :image="avatar" />
                 <form
-                    ref="refUpdateAvatarForm"
-                    class="flex flex-column justify-center gap-4"
-                    @submit.prevent
+                  ref="refUpdateAvatarForm"
+                  class="flex flex-column justify-center gap-4"
+                  @submit.prevent
                 >
                   <div class="flex flex-wrap gap-2">
                     <VBtn color="primary" @click="inputElement?.click()">
@@ -30,12 +30,12 @@
                     </VBtn>
 
                     <input
-                        ref="refInputEl"
-                        type="file"
-                        name="file"
-                        accept=".jpeg,.png,.jpg,GIF"
-                        hidden
-                        @input="startUploadNewAvatar"
+                      ref="refInputEl"
+                      type="file"
+                      name="file"
+                      accept=".jpeg,.png,.jpg,GIF"
+                      hidden
+                      @input="startUploadNewAvatar"
                     />
                   </div>
                   <p class="text-sm font-weight-light mb-0">
@@ -51,35 +51,35 @@
                   <VRow>
                     <VCol md="6" cols="12">
                       <VTextField
-                          v-model="fields.firstName"
-                          label="Prénom"
-                          class="transparent-input-box"
+                        v-model="fields.firstName"
+                        label="Prénom"
+                        class="transparent-input-box"
                       />
                     </VCol>
 
                     <VCol md="6" cols="12">
                       <VTextField
-                          v-model="fields.lastName"
-                          label="Nom de famille"
-                          class="transparent-input-box"
+                        v-model="fields.lastName"
+                        label="Nom de famille"
+                        class="transparent-input-box"
                       />
                     </VCol>
 
                     <VCol cols="12" md="6">
                       <VTextarea
-                          v-model="fields.bio"
-                          label="Biographie"
-                          class="transparent-input-box"
+                        v-model="fields.bio"
+                        label="Biographie"
+                        class="transparent-input-box"
                       />
                     </VCol>
 
                     <VCol cols="12" class="d-flex flex-wrap gap-4">
                       <VBtn @click.prevent="updateUserInformation">Enregistrer</VBtn>
                       <VBtn
-                          color="secondary"
-                          variant="tonal"
-                          type="reset"
-                          @click.prevent="resetForm"
+                        color="secondary"
+                        variant="tonal"
+                        type="reset"
+                        @click.prevent="resetForm"
                       >
                         Renitialiser
                       </VBtn>

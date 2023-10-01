@@ -163,14 +163,16 @@ const useGameStore = defineStore({
     },
     // allow you to know witch user is currently playing or in a waiting queue
     async getUsersGameStatus(
-        userIds: number[]
-        ): Promise<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }[]> {
-      const {data} = await axios.post<{
-            status: 'playing' | 'inQueue' | 'free'
-            gameSession?: GameSession
-      }[]>(`/game/status`, {userIds})
+      userIds: number[]
+    ): Promise<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }[]> {
+      const { data } = await axios.post<
+        {
+          status: 'playing' | 'inQueue' | 'free'
+          gameSession?: GameSession
+        }[]
+      >(`/game/status`, { userIds })
       return data
-    },
+    }
   }
 })
 

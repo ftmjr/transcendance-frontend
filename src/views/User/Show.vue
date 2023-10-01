@@ -27,14 +27,10 @@
         </div>
       </VWindowItem>
       <VWindowItem value="awards">
-        <div>
-          Les recompenses
-        </div>
+        <div>Les recompenses</div>
       </VWindowItem>
       <VWindowItem value="friends">
-        <div>
-          Les amis
-        </div>
+        <div>Les amis</div>
       </VWindowItem>
       <VWindowItem value="history">
         <Histories :histories="gameHistories" />

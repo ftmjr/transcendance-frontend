@@ -40,7 +40,7 @@ export default defineComponent({
       try {
         await this.authStore.logout()
       } catch (e) {
-        console.log('logOut, error');
+        console.log('logOut, error')
       }
       this.isLoading = false
       this.$router.push({ path: '/auth' })
