@@ -11,18 +11,7 @@
       <VIcon size="24" icon="tabler-menu-2" />
     </VBtn>
     <template v-if="roomMembers">
-      <div class="flex align-center cursor-pointer">
-        <p>Print info about the group here or a button</p>
-        <div class="v-avatar-group">
-          <VAvatar
-            v-for="memberData in roomMembers"
-            :key="memberData.id"
-            :size="32"
-            :image="memberData.member.profile?.avatar"
-          />
-        </div>
-      </div>
-
+      <RoomContact v-if="room" :room="room" :profiles="roomMembers" />
       <VSpacer />
 
       <div class="sm:flex items-center hidden">
@@ -43,21 +32,25 @@
       </VBtn>
     </template>
   </div>
-  <VDivider class="d-md-none" />
+  <VDivider />
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import useRoomsStore, { MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
+import useRoomsStore, { ChatRoomWithMembers, MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
+import RoomContact from '@/components/rooms/RoomContact.vue'
 
 export default defineComponent({
   name: 'ChatTopBar',
-  components: {},
+  components: { RoomContact },
   props: {
     isLeftSidebarOpen: {
       type: Boolean,
       required: true
+    },
+    room: {
+      type: Object as PropType<ChatRoomWithMembers>
     },
     roomMembers: {
       type: Array as PropType<MemberRoomWithUserProfiles[]>
@@ -71,7 +64,7 @@ export default defineComponent({
       roomStore
     }
   },
-  emits: ['update:isLeftSidebarOpen'],
+  emits: ['update:isLeftSidebarOpen', 'showUserProfile'],
   computed: {
     isLeftSidebarOpenLocal: {
       get(): boolean {

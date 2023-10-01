@@ -1,5 +1,12 @@
 import { defineStore } from 'pinia'
-import { ChatMessage, ChatRoom, ChatRoomMember, ChatSocket, RoomType } from '@/utils/chatSocket'
+import {
+  ChatMemberRole,
+  ChatMessage,
+  ChatRoom,
+  ChatRoomMember,
+  ChatSocket,
+  RoomType
+} from '@/utils/chatSocket'
 import axios from '@/utils/axios'
 import { Profile, User } from 'Auth'
 export interface JoinRoom {
@@ -22,6 +29,18 @@ export type MemberRoomWithUserProfiles = ChatRoomMember & {
     profile: Profile
   }
 }
+
+export const rolePrint: Array<{
+  role: ChatMemberRole
+  printRole: string
+  color?: string
+  bgClass?: string
+}> = [
+  { role: ChatMemberRole.OWNER, printRole: 'Big Boss', color: 'success' },
+  { role: ChatMemberRole.ADMIN, printRole: 'Administrateur', bgClass: 'info' },
+  { role: ChatMemberRole.USER, printRole: 'Utilisateur', color: 'dark' },
+  { role: ChatMemberRole.BAN, printRole: 'Ban', color: 'danger' }
+]
 
 const useRoomsStore = defineStore({
   id: 'roomsStore',
@@ -166,6 +185,10 @@ const useRoomsStore = defineStore({
       try {
         const { data } = await axios.get<ChatRoomWithMembers[]>('/chat/rooms')
         this.rooms = data
+        if (data.length > 0) {
+          this.currentReadRoomId = data[0].id
+          await this.setCurrentRoom(data[0].id)
+        }
       } catch (error) {
         console.error(error)
       }
