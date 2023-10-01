@@ -44,12 +44,15 @@
 import { defineComponent } from 'vue'
 import useAuthStore, { Status } from '@/stores/AuthStore'
 import type { Profile } from 'Auth'
-import { avatarText } from '../../vuetify/@core/utils/formatters'
+import { avatarText } from '@core/utils/formatters'
+import useRoomsStore from '@/stores/RoomsStore'
 export default defineComponent({
   setup() {
     const authStore = useAuthStore()
+    const roomsStore = useRoomsStore()
     return {
-      authStore
+      authStore,
+      roomsStore
     }
   },
   data() {
@@ -71,7 +74,7 @@ export default defineComponent({
         return this.profile.status ?? Status.Offline
       },
       set(value: Status) {
-        // this.authStore.updateProfileStatus({ status: value })
+        this.authStore.changeMyStatus(value)
       }
     }
   },

@@ -63,28 +63,32 @@
 <script lang="ts">
 import { defineComponent, h } from 'vue'
 import { VIcon } from 'vuetify/components'
-import axiosInstance from '@/utils/axios'
 import { ChatRoom } from '@/utils/chatSocket'
 import useAuthStore from '@/stores/AuthStore'
+import useRoomsStore from '@/stores/RoomsStore'
 
 export default defineComponent({
   name: 'TopChatCard',
   setup() {
     const authStore = useAuthStore()
+    const roomsStore = useRoomsStore()
     return {
-      authStore
+      authStore,
+      roomsStore
     }
   },
   data() {
     return {
       loading: false,
-      topChatsRooms: [] as ChatRoom[],
-      chats: [] as ChatRoom[]
+      topChatsRooms: [] as ChatRoom[]
     }
   },
   computed: {
     VIcon() {
       return VIcon
+    },
+    chats() {
+      return this.roomsStore.AllPublic
     }
   },
   beforeMount() {
@@ -93,19 +97,7 @@ export default defineComponent({
   methods: {
     h,
     async getPublicTopChats() {
-      this.loading = true
-      try {
-        const { data } = await axiosInstance.get<ChatRoom[]>('/chat/public', {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        this.chats = data
-        this.topChatsRooms = this.chats.slice(0, 3)
-      } catch (e) {
-        console.log(e)
-      }
-      this.loading = false
+      this.topChatsRooms = this.chats.slice(0, 3)
     },
     isCurrentUserAMember(room: ChatRoom) {
       return room.members.some((member) => member.id === this.authStore.getUser.id)

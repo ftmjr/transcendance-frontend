@@ -45,6 +45,8 @@ import UserProfileButton from '@/components/navbar/UserProfileButton.vue'
 import NotificationButton from '@/components/navbar/NotificationButton.vue'
 import useNotificationStore from '@/stores/NotificationStore'
 import useAuthStore from '@/stores/AuthStore'
+import roomsStore from '@/stores/RoomsStore'
+import useRoomsStore from '@/stores/RoomsStore'
 
 export default defineComponent({
   components: {
@@ -61,15 +63,24 @@ export default defineComponent({
     injectSkinClasses()
     const notificationStore = useNotificationStore()
     const authStore = useAuthStore()
-    if (authStore.isLoggedIn && !notificationStore.socketOperational) {
-      notificationStore.init(authStore.getUser.id)
-    }
+    const roomsStore = useRoomsStore()
     return {
       layoutAttrs,
       navItems,
       appRouteTransition,
       isLessThanOverlayNavBreakpoint,
-      windowWidth
+      windowWidth,
+      authStore,
+      roomsStore,
+      notificationStore
+    }
+  },
+  beforeMount() {
+    if (this.authStore.isLoggedIn && !this.notificationStore.socketOperational) {
+      this.notificationStore.init(this.authStore.getUser.id)
+    }
+    if (this.authStore.isLoggedIn && !this.roomsStore.socketOperational) {
+      this.notificationStore.init(this.authStore.getUser.id)
     }
   }
 })
