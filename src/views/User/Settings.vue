@@ -51,6 +51,34 @@
                   <VRow>
                     <VCol md="6" cols="12">
                       <VTextField
+                        v-model="fields.username"
+                        label="Username"
+                        class="transparent-input-box"
+                      />
+                    </VCol>
+
+
+                    <VCol cols="12" class="d-flex flex-wrap gap-4">
+                      <VBtn @click.prevent="updateUsername">Update</VBtn>
+                      <VBtn
+                        color="secondary"
+                        variant="tonal"
+                        type="reset"
+                        @click.prevent="resetForm"
+                      >
+                        Renitialiser
+                      </VBtn>
+                    </VCol>
+                  </VRow>
+                </VForm>
+              </VCardText>
+
+
+              <VCardText class="pt-2">
+                <VForm class="mt-6" @submit.prevent>
+                  <VRow>
+                    <VCol md="6" cols="12">
+                      <VTextField
                         v-model="fields.firstName"
                         label="Prénom"
                         class="transparent-input-box"
@@ -130,7 +158,9 @@ export default defineComponent({
       infoMsg: '',
       infoColor: 'success',
       activeTab: this.tab,
+      
       fields: {
+        username: '',
         firstName: '',
         lastName: '',
         bio: ''
@@ -151,6 +181,7 @@ export default defineComponent({
   methods: {
     hydrateFields() {
       this.fields = {
+        username: this.authStore.getUser?.username || '',
         firstName: this.authStore.getProfile?.name || '',
         lastName: this.authStore.getProfile?.lastname || '',
         bio: this.authStore.getProfile?.bio || ''
@@ -162,6 +193,18 @@ export default defineComponent({
         this.authStore.updateAvatar(file)
       }
     },
+    async updateUsername() {
+      const worked = await this.authStore.updateUsername(this.fields.username)
+      if (worked) {
+        this.infoMsg = 'Vos informations ont été mises à jour avec succès'
+        this.infoColor = 'success'
+        this.isInfoBarVisible = true
+      } else {
+        this.infoMsg = 'Une erreur est survenue lors de la mise à jour de vos informations'
+        this.infoColor = 'error'
+        this.isInfoBarVisible = true
+      }
+    },
     async updateUserInformation() {
       const worked = await this.authStore.updateUserInfo(this.fields)
       if (worked) {
@@ -169,7 +212,7 @@ export default defineComponent({
         this.infoColor = 'success'
         this.isInfoBarVisible = true
       } else {
-        this.infoMsg = 'Une erreur est survenue lors de la mise à jour de vos informations'
+        this.infoMsg = this.authStore.error.message;
         this.infoColor = 'error'
         this.isInfoBarVisible = true
       }
