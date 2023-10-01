@@ -27,7 +27,7 @@
         @close="isLeftSidebarOpen = false"
       />
     </VNavigationDrawer>
-    <VMain>
+    <VMain class="h-96">
       <SingleChatView
         v-if="roomsStore.currentRoom"
         :room="roomsStore.currentRoom"
@@ -85,6 +85,10 @@ export default defineComponent({
     return {
       isUserProfileSidebarOpen: false
     }
+  },
+  beforeMount() {
+    this.roomsStore.getAllMyRooms()
+    this.roomsStore.fetchPublicRooms()
   },
   methods: {
     openChatOfRoom(roomId: number) {

@@ -11,7 +11,7 @@
       :delimiter-icon="() => h(VIcon, { icon: 'fa-circle', size: '10' })"
       height="320"
     >
-      <VCarouselItem v-for="(room, index) in topChatsRooms" :key="room.id">
+      <VCarouselItem v-for="(room, index) in topRooms" :key="room.id">
         <VCardText class="h-full">
           <VRow class="h-25">
             <VCol cols="12">
@@ -65,7 +65,7 @@ import { defineComponent, h } from 'vue'
 import { VIcon } from 'vuetify/components'
 import { ChatRoom } from '@/utils/chatSocket'
 import useAuthStore from '@/stores/AuthStore'
-import useRoomsStore from '@/stores/RoomsStore'
+import useRoomsStore, { ChatRoomWithMembers } from '@/stores/RoomsStore'
 
 export default defineComponent({
   name: 'TopChatCard',
@@ -79,26 +79,20 @@ export default defineComponent({
   },
   data() {
     return {
-      loading: false,
-      topChatsRooms: [] as ChatRoom[]
+      loading: false
     }
   },
   computed: {
     VIcon() {
       return VIcon
     },
-    chats() {
-      return this.roomsStore.AllPublic
+    topRooms(): ChatRoomWithMembers[] {
+      const publicRoom = this.roomsStore.AllPublic
+      return publicRoom.slice(0, 3)
     }
-  },
-  beforeMount() {
-    this.getPublicTopChats()
   },
   methods: {
     h,
-    async getPublicTopChats() {
-      this.topChatsRooms = this.chats.slice(0, 3)
-    },
     isCurrentUserAMember(room: ChatRoom) {
       return room.members.some((member) => member.id === this.authStore.getUser.id)
     },

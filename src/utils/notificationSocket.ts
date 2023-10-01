@@ -35,7 +35,7 @@ export class NotificationSocket {
   public operational: boolean = false
   constructor(userId: number, onNotification: (data: Notification) => void) {
     try {
-      this.socket = io('/notification', { path: '/socket.io/' })
+      this.socket = io('/notification', { path: '/socket.io' })
       this.socket.on('connect', () => {
         this.socket?.emit('join', userId.toString())
       })

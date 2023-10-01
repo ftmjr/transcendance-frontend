@@ -16,7 +16,7 @@
         @close="isLeftSidebarOpen = false"
       />
     </VNavigationDrawer>
-    <VMain>
+    <VMain class="h-96">
       <SingleDirectMessage
         v-if="messageStore.currentConversationWith"
         :conversationWith="messageStore.currentConversationWith"

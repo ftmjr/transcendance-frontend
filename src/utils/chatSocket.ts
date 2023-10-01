@@ -61,7 +61,6 @@ export class ChatSocket {
     onConnectionError: (error: string) => void
   ) {
     this.userId = userId
-    console.log('Connecting to chat server')
     try {
       this.socket = io('/chat', { path: '/socket.io/', query: { userId } })
       this.socket.on('connect', () => {

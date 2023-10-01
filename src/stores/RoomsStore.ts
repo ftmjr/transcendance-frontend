@@ -82,6 +82,7 @@ const useRoomsStore = defineStore({
   actions: {
     async init(userId: number) {
       await this.getAllMyRooms()
+      await this.fetchPublicRooms()
       this.socketManager = new ChatSocket(
         userId,
         (message: ChatMessage) => {

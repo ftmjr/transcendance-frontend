@@ -13,6 +13,14 @@
     <template v-if="roomMembers">
       <div class="flex align-center cursor-pointer">
         <p>Print info about the group here or a button</p>
+        <div class="v-avatar-group">
+          <VAvatar
+            v-for="memberData in roomMembers"
+            :key="memberData.id"
+            :size="32"
+            :image="memberData.member.profile?.avatar"
+          />
+        </div>
       </div>
 
       <VSpacer />
