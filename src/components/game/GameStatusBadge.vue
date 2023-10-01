@@ -18,7 +18,7 @@
     </v-btn>
     <v-btn v-else variant="outlined" size="small" @click="challengeUser(userGameStatus)">
       <v-icon left>mdi-sword-cross</v-icon>
-      Challenger
+      Challenge
     </v-btn>
   </div>
 </template>
