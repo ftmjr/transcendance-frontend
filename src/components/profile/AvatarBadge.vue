@@ -12,7 +12,7 @@
 import { defineComponent, PropType } from 'vue'
 import { Profile } from 'Auth'
 import { Status } from '@/stores/AuthStore'
-import { avatarText } from '@/vuetify/@core/utils/formatters'
+import { avatarText } from '@core/utils/formatters'
 
 export default defineComponent({
   props: {
