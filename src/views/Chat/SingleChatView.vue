@@ -1,6 +1,9 @@
 <template>
   <ChatConversationTopBar
+    :isLeftSidebarOpen="isLeftSidebarOpen"
     @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
+    :room="room"
+    :room-members="roomStore.getCurrentRoomMembers"
   />
   <PerfectScrollbar
     ref="MessagesLogScroller"
@@ -8,10 +11,11 @@
     :options="{ wheelPropagation: false }"
     class="flex-grow-1"
   >
-    <VCard class="chat-log" :loading="loading">
-      <li>Show messages here, to be implemented</li>
-    </VCard>
+    <li v-for="message in messages" :key="message">
+      {{ message }}
+    </li>
   </PerfectScrollbar>
+  <VDivider class="" />
   <VForm class="chat-log-message-form mb-5 mx-5" @submit.prevent="sendMessage">
     <VTextField
       v-model="chatMessageContent"
@@ -33,9 +37,10 @@
 import { defineComponent, PropType } from 'vue'
 import useRoomsStore, { ChatRoomWithMembers } from '@/stores/RoomsStore'
 import ChatConversationTopBar from '@/components/rooms/ChatConversationTopBar.vue'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 export default defineComponent({
-  components: { ChatConversationTopBar },
+  components: { ChatConversationTopBar, PerfectScrollbar },
   props: {
     room: {
       type: Object as PropType<ChatRoomWithMembers>,
@@ -46,6 +51,7 @@ export default defineComponent({
       default: false
     }
   },
+  emits: ['update:isLeftSidebarOpen'],
   setup() {
     const roomStore = useRoomsStore()
     return {
@@ -55,7 +61,8 @@ export default defineComponent({
   data() {
     return {
       chatMessageContent: '',
-      loading: false // loading messages
+      loading: false,
+      messages: []
     }
   },
   computed: {
@@ -66,6 +73,24 @@ export default defineComponent({
   },
   methods: {
     // fetch messages
+    async fetchMessages() {
+      // @TODO fetch messages
+      // fake messages to test
+      this.messages = [
+        'Hello',
+        'How are you ?',
+        "I'm fine and you ?",
+        "I'm fine too",
+        'What are you doing ?',
+        "I'm working on a new project",
+        'Oh nice, what is it about ?',
+        "It's a new social network",
+        'Oh nice, what is it called ?',
+        "It's called Socialize",
+        "Oh nice, I'll check it out",
+        'Ok, see you later'
+      ]
+    },
     // send message
     async sendMessage() {
       // @TODO send chat

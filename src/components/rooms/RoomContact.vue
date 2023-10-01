@@ -1,15 +1,18 @@
 <template>
-  <VCard class="flex gap-2 items-center justify-center py-2" color="transparent">
-    <p class="font-weight-semibold">{{ room.name }}</p>
-    <div class="v-avatar-group">
-      <VAvatar
-        v-for="memberData in profiles"
-        :key="memberData.id"
-        :size="32"
-        variant="outlined"
-        color="secondary"
-        :image="memberData.member.profile?.avatar"
-      />
+  <VCard class="p-2" color="surface">
+    <div class="w-full flex items-center justify-between gap-2">
+      <p class="font-weight-semibold">{{ room.name }}</p>
+      <VAvatar :size="42" :image="room.avatar"> </VAvatar>
+      <div v-if="profiles" class="v-avatar-group">
+        <VAvatar
+          v-for="memberData in profiles"
+          :key="memberData.id"
+          :size="32"
+          variant="outlined"
+          color="secondary"
+          :image="memberData.member.profile?.avatar"
+        />
+      </div>
     </div>
   </VCard>
 </template>
@@ -23,6 +26,9 @@ export default defineComponent({
     room: {
       type: Object as PropType<ChatRoomWithMembers>,
       required: true
+    },
+    profiles: {
+      type: Array as PropType<MemberRoomWithUserProfiles[]>
     }
   },
   setup() {
@@ -33,22 +39,10 @@ export default defineComponent({
   },
   data() {
     return {
-      loading: false,
-      profiles: [] as MemberRoomWithUserProfiles[]
+      loading: false
     }
   },
-  mounted() {
-    this.fetchDatas()
-  },
-  methods: {
-    async fetchDatas() {
-      this.loading = true
-      const data = await this.roomStore.getRoomMembersData(this.room.id)
-      this.loading = false
-      if (!data) return
-      this.profiles = data
-    }
-  }
+  methods: {}
 })
 </script>
 
