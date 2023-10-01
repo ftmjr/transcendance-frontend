@@ -29,7 +29,11 @@
           </div>
           <VSpacer />
           <div class="w-1/3">
-            <VTextField class="transparent-input-box" v-model="searchQuery" placeholder="Rechercher"/>
+            <VTextField
+              class="transparent-input-box"
+              v-model="searchQuery"
+              placeholder="Rechercher"
+            />
           </div>
         </VCardText>
 
@@ -90,9 +94,9 @@ import useUserStore from '@/stores/UserStore'
 import type { User } from 'Auth'
 import { avatarText } from '@/vuetify/@core/utils/formatters'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
-import useAuthStore from "@/stores/AuthStore";
-import useGameStore from "@/stores/GameStore";
-import GameStatusBadge from "@/components/GameStatusBadge.vue";
+import useAuthStore from '@/stores/AuthStore'
+import useGameStore from '@/stores/GameStore'
+import GameStatusBadge from '@/components/GameStatusBadge.vue'
 
 const userListStatsMeta: Array<{
   icon: string
@@ -135,9 +139,9 @@ export default defineComponent({
   name: 'UserList',
   components: { AvatarBadge, GameStatusBadge },
   setup() {
-    const userStore = useUserStore();
-    const authStore = useAuthStore();
-    const gameStore = useGameStore();
+    const userStore = useUserStore()
+    const authStore = useAuthStore()
+    const gameStore = useGameStore()
     return {
       userStore,
       authStore,
@@ -186,8 +190,8 @@ export default defineComponent({
         currentPage: this.currentPage,
         perPage: this.rowPerPage
       })
-      this.users = users;
-      this.fetchUsersGameStatus();
+      this.users = users
+      this.fetchUsersGameStatus()
       this.loading = false
     },
     fetchUsersGameStatus() {
@@ -207,7 +211,7 @@ export default defineComponent({
     rowPerPage() {
       this.currentPage = 1
       this.fetchUsers()
-    },
+    }
   }
 })
 </script>

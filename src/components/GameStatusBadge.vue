@@ -24,27 +24,25 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType } from "vue";
-import {GameSession} from "@/stores/GameStore";
+import { PropType } from 'vue'
+import { GameSession } from '@/stores/GameStore'
 defineProps({
   userGameStatus: {
     type: Object as PropType<{
-      status: 'playing' | 'inQueue' | 'free';
-      gameSession?: GameSession;
+      status: 'playing' | 'inQueue' | 'free'
+      gameSession?: GameSession
     }>,
-    required: true,
-  },
-});
+    required: true
+  }
+})
 const watchGame = (gameSession: GameSession) => {
   // logic to watch game
-};
+}
 
 const challengeUser = (user: {
-  status: 'playing' | 'inQueue' | 'free';
-  gameSession?: GameSession;
+  status: 'playing' | 'inQueue' | 'free'
+  gameSession?: GameSession
 }) => {
   // logic to challenge user
-};
-
+}
 </script>
-
