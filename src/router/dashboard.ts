@@ -19,7 +19,7 @@ const dashboardRoutes = {
       }
     },
     {
-      path: 'game',
+      path: 'game/:gameId?',
       name: 'game',
       component: () => import('@/views/GameView.vue'),
       meta: {

@@ -31,7 +31,7 @@ export default defineComponent({
   },
   mounted() {
     if (!this.authStore.isLocked) {
-      this.$router.push({ path: '/auth' })
+      this.$router.push({ name: 'dashboard' })
     }
   },
   methods: {
@@ -43,7 +43,7 @@ export default defineComponent({
         console.log('logOut, error')
       }
       this.isLoading = false
-      this.$router.push({ path: '/auth' })
+      this.$router.push({ name: 'dashboard' })
     }
   }
 })
