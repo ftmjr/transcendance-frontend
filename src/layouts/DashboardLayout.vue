@@ -76,11 +76,13 @@ export default defineComponent({
     }
   },
   beforeMount() {
-    if (this.authStore.isLoggedIn && !this.notificationStore.socketOperational) {
-      this.notificationStore.init(this.authStore.getUser.id)
-    }
-    if (this.authStore.isLoggedIn && !this.roomsStore.socketOperational) {
-      this.notificationStore.init(this.authStore.getUser.id)
+    if (this.authStore.isLoggedIn) {
+      if (!this.notificationStore.socketOperational) {
+        this.notificationStore.init(this.authStore.getUser.id)
+      }
+      if (!this.roomsStore.socketOperational) {
+        this.roomsStore.init(this.authStore.getUser.id)
+      }
     }
   }
 })

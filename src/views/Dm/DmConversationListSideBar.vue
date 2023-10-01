@@ -34,7 +34,7 @@
       v-for="contact in messageStore.getConversingWith"
       :key="contact.id"
       :contact="contact"
-      @clik="showMessages(contact.id)"
+      @click="showMessages(contact.id)"
     />
     <span v-show="!messageStore.getConversingWith.length" class="text-disabled">
       Aucune Conversation

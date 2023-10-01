@@ -34,7 +34,7 @@
       v-for="room in roomsStore.filteredRooms"
       :key="room.id"
       :room="room"
-      @clik="showMessages(room.id)"
+      @click="showMessages(room.id)"
     />
     <span v-show="!roomsStore.filteredRooms.length" class="text-disabled mb-2">
       Aucuns groupes de chat
