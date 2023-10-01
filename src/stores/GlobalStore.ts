@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
-import chatSocketService from "@/utils/socketio"
-import useChatStore from "@/stores/ChatStore"
-import useGameStore from "@/stores/GameStore"
-import useAuthStore from "@/stores/AuthStore"
-import useUsersStore from "@/stores/UsersStore";
+import chatSocketService from '@/utils/socketio'
+import useChatStore from '@/stores/ChatStore'
+import useGameStore from '@/stores/GameStore'
+import useAuthStore from '@/stores/AuthStore'
+import useUsersStore from '@/stores/UsersStore'
 
 const useGlobalStore = defineStore({
   id: 'global',
@@ -25,16 +25,15 @@ const useGlobalStore = defineStore({
         password: false,
         roomPassword: false,
         join: false,
-        create: false,
+        create: false
       },
       invite: null,
       socket: socket,
       notifications: [],
-      isLoading: false,
+      isLoading: false
     }
   },
-  getters: {
-  },
+  getters: {},
   actions: {
     async setUpChat() {
       await this.chatStore.initChat()
@@ -45,8 +44,8 @@ const useGlobalStore = defineStore({
       await this.usersStore.setUsers()
       await this.chatStore.setConversations()
       this.socket.socket.on('dm', (message: any) => {
-        this.chatStore.addDmMessage(message);}
-      );
+        this.chatStore.addDmMessage(message)
+      })
       if (this.chatStore.getDmReceiver) {
         this.socketAddReceiver(this.chatStore.getDmReceiver)
         await this.chatStore.setDmMessages()
@@ -66,24 +65,50 @@ const useGlobalStore = defineStore({
         this.chatStore.setRoomMembers()
       })
     },
-    openRoomPasswordDialog() { this.dialogs.roomPassword = true },
-    closeRoomPasswordDialog() { this.dialogs.roomPassword = false },
-    openPasswordDialog() { this.dialogs.password = true },
-    closePasswordDialog() { this.dialogs.password = false },
-    openWaitingDialog() { this.dialogs.waiting = true },
-    closeWaitingDialog() { this.dialogs.waiting = false },
-    openJoinDialog() { this.dialogs.join = true },
-    closeJoinDialog() { this.dialogs.join = false },
-    openCreateDialog() { this.dialogs.create = true },
-    closeCreateDialog() { this.dialogs.create = false },
+    openRoomPasswordDialog() {
+      this.dialogs.roomPassword = true
+    },
+    closeRoomPasswordDialog() {
+      this.dialogs.roomPassword = false
+    },
+    openPasswordDialog() {
+      this.dialogs.password = true
+    },
+    closePasswordDialog() {
+      this.dialogs.password = false
+    },
+    openWaitingDialog() {
+      this.dialogs.waiting = true
+    },
+    closeWaitingDialog() {
+      this.dialogs.waiting = false
+    },
+    openJoinDialog() {
+      this.dialogs.join = true
+    },
+    closeJoinDialog() {
+      this.dialogs.join = false
+    },
+    openCreateDialog() {
+      this.dialogs.create = true
+    },
+    closeCreateDialog() {
+      this.dialogs.create = false
+    },
     openProfileDialog(member) {
       console.log(member)
       this.chatStore.setSelectedUser(member)
       this.dialogs.profile = true
     },
-    closeProfileDialog() { this.dialogs.profile = false },
-    openInviteDialog() { this.dialogs.invite = true },
-    closeInviteDialog() { this.dialogs.invite = false },
+    closeProfileDialog() {
+      this.dialogs.profile = false
+    },
+    openInviteDialog() {
+      this.dialogs.invite = true
+    },
+    closeInviteDialog() {
+      this.dialogs.invite = false
+    },
     rejectInvite() {
       this.socket.socket.emit('game-reject', this.invite.username)
       this.closeInviteDialog()
@@ -108,7 +133,9 @@ const useGlobalStore = defineStore({
       this.socket.socket.emit('joinRoom', roomName)
       this.socketMembersUpdate()
     },
-    socketMute(id: number) { this.socket.socket.emit('mute', id)},
+    socketMute(id: number) {
+      this.socket.socket.emit('mute', id)
+    },
     socketBan(id: number) {
       this.socket.socket.emit('ban', id)
       this.socketMembersUpdate()
@@ -137,7 +164,7 @@ const useGlobalStore = defineStore({
       this.socket.socket.emit('addReceiver', receiver)
     },
     socketSendDm(message) {
-      this.socket.socket.emit('dm', message);
+      this.socket.socket.emit('dm', message)
     },
     inviteToPlay() {
       this.socket.socket.emit('game-invite', this.chatStore.getOtherMember.username)
@@ -174,9 +201,9 @@ const useGlobalStore = defineStore({
         this.closeInviteDialog()
       })
     },
-   listenBlockAction() {
-        this.socket.socket.on('block-user', () => {
-          console.log('here')
+    listenBlockAction() {
+      this.socket.socket.on('block-user', () => {
+        console.log('here')
         this.authStore.refreshUser()
         this.socket.socket.emit('update-self', this.authStore.getUser)
       })
@@ -186,7 +213,7 @@ const useGlobalStore = defineStore({
         return this.notifications[member.id]
       }
       return member.profile.status
-    },
+    }
   }
 })
 

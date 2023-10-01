@@ -3,8 +3,8 @@ import type { GameUserType } from '@/Game/network/GameNetwork'
 export type PongTheme = 'Arcade' | 'Soccer'
 
 export interface GameDataI {
-  theme?: PongTheme
-  room?: number
+  theme: PongTheme
+  room: number
   playerType: GameUserType
 }
 

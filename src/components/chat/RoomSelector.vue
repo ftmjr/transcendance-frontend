@@ -1,15 +1,15 @@
 <template>
   <aside class="chatRoom-select-container">
     <v-select
-        bg-color='background'
-        v-model="chatStore.selectedRoom"
-        :items="rooms"
-        item-title="name"
-        label="Select"
-        persistent-hint
-        return-object
-        single-line
-        width="100"
+      bg-color="background"
+      v-model="chatStore.selectedRoom"
+      :items="rooms"
+      item-title="name"
+      label="Select"
+      persistent-hint
+      return-object
+      single-line
+      width="100"
     ></v-select>
   </aside>
 </template>
@@ -17,8 +17,8 @@
 <script lang="ts">
 import { defineComponent, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import useChatStore from "@/stores/ChatStore"
-import useGlobalStore from "@/stores/GlobalStore"
+import useChatStore from '@/stores/ChatStore'
+import useGlobalStore from '@/stores/GlobalStore'
 
 export default defineComponent({
   name: 'room-selector',
@@ -32,7 +32,7 @@ export default defineComponent({
         return
       }
       chatStore.setJoinName(newRoom.name)
-      if(newRoom.protected) {
+      if (newRoom.protected) {
         globalStore.openPasswordDialog()
       } else {
         chatStore.joinRoom()
@@ -43,8 +43,8 @@ export default defineComponent({
   props: {
     rooms: {
       required: true
-    },
-  },
+    }
+  }
 })
 </script>
 

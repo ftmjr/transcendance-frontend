@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import useAuthStore from '@/stores/AuthStore'
+import useAuthStore, { LoginStatus } from '@/stores/AuthStore'
 import dashboardRoutes from '@/router/dashboard'
 import authRoutes from '@/router/auth'
 
@@ -25,9 +25,27 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
-  const isAuth = authStore.isAuthenticated
+  const isAuth = authStore.isLoggedIn
   if (requiresAuth && !isAuth) {
-    next({ name: 'auth' })
+    const status = authStore.status
+    switch (status) {
+      case LoginStatus.LOCKED:
+        if (to.name === 'locked-screen') {
+          next()
+        } else {
+          next({ name: 'locked-screen' })
+        }
+        break
+      case LoginStatus.TWOFA_CHECK:
+        if (to.name === 'two-factors') {
+          next()
+        } else {
+          next({ name: 'two-factors' })
+        }
+        break
+      default:
+        next({ name: 'auth' })
+    }
   } else {
     next()
   }

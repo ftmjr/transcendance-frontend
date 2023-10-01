@@ -13,14 +13,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import useGlobalStore from "@/stores/GlobalStore";
+import useGlobalStore from '@/stores/GlobalStore'
 
 export default defineComponent({
   name: 'invite-dialog',
   setup() {
     const globalStore = useGlobalStore()
     return { globalStore }
-  },
+  }
 })
 </script>
 

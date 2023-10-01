@@ -92,7 +92,7 @@ export default class PongGame extends Phaser.Scene {
 
     this.createLines()
 
-    if (this.userType === GameUserType.Player || this.userType === GameUserType.LocalPlayer) {
+    if (this.userType === GameUserType.Player) {
       this.gameMonitor.gameSceneReady()
     }
     this.gameMonitor.setOnScoreChanged((score) => {
@@ -106,7 +106,7 @@ export default class PongGame extends Phaser.Scene {
   update() {
     if (this._gameReady) {
       this.homePlayer.update()
-      if (this.userType === GameUserType.LocalPlayer) {
+      if (this.gameMonitor.isAgainstIA()) {
         ;(this.awayPlayer as AIPlayer).update(
           this.ball.getSprite(),
           this.scale.width / 2 + 10,
@@ -116,7 +116,6 @@ export default class PongGame extends Phaser.Scene {
       } else {
         this.awayPlayer.update()
       }
-      this.homePlayer.update()
     }
   }
 
@@ -160,14 +159,15 @@ export default class PongGame extends Phaser.Scene {
   }
   private createPlayersOnTheField() {
     switch (this.userType) {
-      case GameUserType.LocalPlayer:
-        this.createLocaleGamePlayers()
-        break
-      case GameUserType.Player:
-        this.createOnlineGamePlayers()
-        break
       case GameUserType.Viewer:
         this.createViewGamePlayers()
+        break
+      case GameUserType.Player:
+        if (this.gameMonitor.isAgainstIA()) {
+          this.createLocaleGamePlayers()
+        } else {
+          this.createOnlineGamePlayers()
+        }
         break
     }
   }

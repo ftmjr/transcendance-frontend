@@ -5,17 +5,21 @@
   </header>
   <BaseButton @click="globalStore.openJoinDialog">Join a Chat Room</BaseButton>
   <BaseButton @click="globalStore.openCreateDialog">Create Chat Room</BaseButton>
-  <BaseButton v-if="chatStore.getRoom.name !== 'General'" @click="chatStore.leaveRoom">Leave Chat Room</BaseButton>
-  <BaseButton v-if="chatStore.isOwner" @click="globalStore.openRoomPasswordDialog">Set/Change Password</BaseButton>
+  <BaseButton v-if="chatStore.getRoom.name !== 'General'" @click="chatStore.leaveRoom"
+    >Leave Chat Room</BaseButton
+  >
+  <BaseButton v-if="chatStore.isOwner" @click="globalStore.openRoomPasswordDialog"
+    >Set/Change Password</BaseButton
+  >
 
   <messages-container />
 
   <v-text-field
-      bg-color='background'
-      label="Message"
-      v-model="chatStore.message"
-      @keyup.enter="chatStore.sendMessage"
-      :disabled="chatStore.isMuted"
+    bg-color="background"
+    label="Message"
+    v-model="chatStore.message"
+    @keyup.enter="chatStore.sendMessage"
+    :disabled="chatStore.isMuted"
   />
 
   <members-drawer />
@@ -30,22 +34,22 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import useAuthStore from "@/stores/AuthStore"
-import useChatStore from "@/stores/ChatStore"
-import useGlobalStore from "@/stores/GlobalStore"
-import InviteDialog from "@/components/chat/InviteDialog.vue"
-import PasswordDialog from "@/components/chat/PasswordDialog.vue"
-import ProfileDialog from "@/components/chat/ProfileDialog.vue"
-import ChatUserAvatar from "@/components/chat/Avatar.vue";
-import RoomSelector from "@/components/chat/RoomSelector.vue";
-import BaseButton from "@/components/Button.vue";
-import JoinDialog from "@/components/chat/JoinDialog.vue";
-import MessagesContainer from "@/components/chat/MessagesContainer.vue";
-import MembersDrawer from "@/components/chat/MembersDrawer.vue";
-import WaitingDialog from "@/components/chat/WaitingDialog.vue";
-import CreateDialog from "@/components/chat/CreateDialog.vue";
-import RoomPasswordDialog from "@/components/chat/roomPasswordDialog.vue";
+import { defineComponent } from 'vue'
+import useAuthStore from '@/stores/AuthStore'
+import useChatStore from '@/stores/ChatStore'
+import useGlobalStore from '@/stores/GlobalStore'
+import InviteDialog from '@/components/chat/InviteDialog.vue'
+import PasswordDialog from '@/components/chat/PasswordDialog.vue'
+import ProfileDialog from '@/components/chat/ProfileDialog.vue'
+import ChatUserAvatar from '@/components/chat/Avatar.vue'
+import RoomSelector from '@/components/chat/RoomSelector.vue'
+import BaseButton from '@/components/Button.vue'
+import JoinDialog from '@/components/chat/JoinDialog.vue'
+import MessagesContainer from '@/components/chat/MessagesContainer.vue'
+import MembersDrawer from '@/components/chat/MembersDrawer.vue'
+import WaitingDialog from '@/components/chat/WaitingDialog.vue'
+import CreateDialog from '@/components/chat/CreateDialog.vue'
+import RoomPasswordDialog from '@/components/chat/roomPasswordDialog.vue'
 
 export default defineComponent({
   name: 'ChatRoom-View',
@@ -61,7 +65,7 @@ export default defineComponent({
     ChatUserAvatar,
     InviteDialog,
     PasswordDialog,
-    ProfileDialog,
+    ProfileDialog
   },
   setup() {
     const authStore = useAuthStore()
@@ -75,7 +79,7 @@ export default defineComponent({
   },
   beforeUnmount() {
     this.globalStore.disconnectSocket()
-  },
+  }
 })
 </script>
 
@@ -108,7 +112,8 @@ export default defineComponent({
   margin-bottom: 8px;
 }
 
-.avatar-container, .select-container {
+.avatar-container,
+.select-container {
   margin: 10px; /* Add some margin for spacing */
 }
 .profile-avatar-container {

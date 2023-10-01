@@ -4,8 +4,7 @@ import { GAME_EVENTS } from '@/Game/network/GameMonitor'
 
 export enum GameUserType {
   Player,
-  Viewer,
-  LocalPlayer
+  Viewer
 }
 
 export interface GameUser {
@@ -57,17 +56,6 @@ export class GameNetwork {
             onConnected
           )
           break
-        case GameUserType.LocalPlayer:
-          this.socket?.emit(
-            GAME_EVENTS.JoinGame,
-            {
-              roomId,
-              user: this.user,
-              userType
-            },
-            onConnected
-          )
-          break
         case GameUserType.Player:
         default:
           this.socket?.emit(
@@ -84,14 +72,13 @@ export class GameNetwork {
     }
   }
 
-  emitFromGame(event: GAME_EVENTS, roomId: TRoomId, isIA: boolean, ...args: any[]) {
-    const data = {
+  emitFromGame(event: GAME_EVENTS, roomId: number, isIA: boolean, ...args: any[]) {
+    this.socket?.emit(event, {
       roomId: roomId,
       user: this.user,
       isIA: isIA,
       actionData: args
-    }
-    this.socket?.emit(event, data)
+    })
   }
 
   disconnect() {

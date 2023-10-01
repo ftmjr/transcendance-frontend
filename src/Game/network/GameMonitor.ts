@@ -59,7 +59,6 @@ export interface NetworkUser extends GameUser {
 export interface VueUpdateObserver {
   onPlayersUpdated: (players: Map<string, NetworkUser>) => void
   onViewersUpdated: (viewers: Map<string, NetworkUser>) => void
-  onRoomIdUpdated: (roomId: number) => void
   onScoreUpdated: (score: { player1: number; player2: number }) => void
   onGameMonitorStateChange: (state: GameMonitorState) => void
 }
@@ -100,7 +99,6 @@ export class GameMonitor {
       const { worked, roomId } = response
       this.working = worked
       this.roomId = roomId
-      this.vueUpdateObserver.onRoomIdUpdated(roomId)
     })
     this.listen()
   }
@@ -144,8 +142,6 @@ export class GameMonitor {
 
   updateGameState() {
     if (this.players.size >= 2 && this.state === GameMonitorState.Waiting) {
-      this.state = GameMonitorState.Ready
-    } else if (this.players.size === 1 && this.gameUserType === GameUserType.LocalPlayer) {
       this.state = GameMonitorState.Ready
     }
     this._onGameMonitorStateChanged(this.state)
@@ -203,6 +199,10 @@ export class GameMonitor {
     return this.players
   }
 
+  isAgainstIA(): boolean {
+    return Array.from(this.players.values()).some((player) => player.userId === 0)
+  }
+
   getViewers(): Map<string, NetworkUser> {
     return this.viewers
   }
@@ -221,7 +221,6 @@ export class GameMonitor {
           gameReceiver.onBallServed(info.data.position, info.data.direction)
       }
     )
-    // console.log('listening to player with Id', userId)
   }
 
   //  -- send to server methods --
@@ -318,7 +317,6 @@ export class GameMonitor {
       const { worked, roomId } = response
       this.working = worked
       this.roomId = roomId
-      this.vueUpdateObserver.onRoomIdUpdated(roomId)
     })
   }
 

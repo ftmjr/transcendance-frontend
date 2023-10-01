@@ -1,5 +1,9 @@
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import HomeView from '@/views/HomeView.vue'
+import usersRoutes from '@/router/users'
+import DirectMessagesView from '@/views/Dm/DirectMessagesView.vue'
+import ChatWindowView from '@/views/Chat/ChatWindowView.vue'
+import Notifications from '@/views/Notifications.vue'
 
 const dashboardRoutes = {
   path: '/',
@@ -15,16 +19,7 @@ const dashboardRoutes = {
       }
     },
     {
-      path: 'profile',
-      name: 'profile',
-      component: () => import('@/views/ProfileView.vue'),
-      meta: {
-        requiresAuth: true,
-        title: 'My Profile'
-      }
-    },
-    {
-      path: 'game',
+      path: 'game/:gameId?',
       name: 'game',
       component: () => import('@/views/GameView.vue'),
       meta: {
@@ -35,7 +30,7 @@ const dashboardRoutes = {
     {
       path: 'chat',
       name: 'chat',
-      component: () => import('@/views/ChatView.vue'),
+      component: ChatWindowView,
       meta: {
         requiresAuth: true,
         title: 'Chat'
@@ -44,10 +39,19 @@ const dashboardRoutes = {
     {
       path: 'dm',
       name: 'dm',
-      component: () => import('@/views/DmView.vue'),
+      component: DirectMessagesView,
       meta: {
         requiresAuth: true,
-        title: 'Dm'
+        title: 'Direct Messages'
+      }
+    },
+    {
+      path: 'notifications',
+      name: 'notifications',
+      component: Notifications,
+      meta: {
+        requiresAuth: true,
+        title: 'Vos notifications'
       }
     },
     {
@@ -59,15 +63,7 @@ const dashboardRoutes = {
         title: 'Message'
       }
     },
-    {
-      path: 'settings',
-      name: 'settings',
-      component: () => import('@/views/SettingsView.vue'),
-      meta: {
-        requiresAuth: true,
-        title: 'Settings'
-      }
-    },
+    usersRoutes
   ]
 }
 

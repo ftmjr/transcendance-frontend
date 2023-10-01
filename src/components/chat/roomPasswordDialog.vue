@@ -3,18 +3,21 @@
     <v-card>
       <v-card-title>Enter New Password or Leave Empty to</v-card-title>
       <v-card-text>
-        <v-alert v-if="chatStore.isError" type="error" title="Action Failed" :text="chatStore.error"></v-alert>
+        <v-alert
+          v-if="chatStore.isError"
+          type="error"
+          title="Action Failed"
+          :text="chatStore.error"
+        ></v-alert>
         <v-text-field
-            label="Password"
-            v-model="chatStore.joinInfo.password"
-            type="password"
-            :error-messages="chatStore.error"
+          label="Password"
+          v-model="chatStore.joinInfo.password"
+          type="password"
+          :error-messages="chatStore.error"
         ></v-text-field>
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="chatStore.updateRoomPassword">
-          Update
-        </v-btn>
+        <v-btn @click="chatStore.updateRoomPassword"> Update </v-btn>
         <v-btn color="error" @click="globalStore.closeRoomPasswordDialog">Cancel</v-btn>
       </v-card-actions>
     </v-card>
@@ -23,16 +26,16 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import useChatStore from "@/stores/ChatStore"
-import globalStore from "@/stores/GlobalStore";
+import useChatStore from '@/stores/ChatStore'
+import globalStore from '@/stores/GlobalStore'
 
 export default defineComponent({
   name: 'room-password-dialog',
-  methods: {globalStore},
+  methods: { globalStore },
   setup() {
     const chatStore = useChatStore()
     return { chatStore }
-  },
+  }
 })
 </script>
 
