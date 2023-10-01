@@ -21,28 +21,60 @@
       Challenge
     </v-btn>
   </div>
+  <VSnackbar
+    v-model="errorSnackbar"
+    transition="scale-transition"
+    location="top"
+    color="dark"
+    :timeout="2000"
+  >
+    <template #actions>
+      <VBtn color="error" variant="outlined" @click="errorSnackbar = false"> Fermer </VBtn>
+    </template>
+    <span>{{ errorMsg }}</span>
+  </VSnackbar>
 </template>
 
 <script lang="ts" setup>
-import { PropType } from 'vue'
-import { GameSession } from '@/stores/GameStore'
-defineProps({
+import { PropType, ref } from 'vue'
+import useGameStore, { GameSession } from '@/stores/GameStore'
+const props = defineProps({
   userGameStatus: {
     type: Object as PropType<{
       status: 'playing' | 'inQueue' | 'free'
       gameSession?: GameSession
     }>,
     required: true
+  },
+  userId: {
+    type: Number,
+    required: true
+  },
+  status: {
+    type: String,
+    required: true
   }
 })
 const watchGame = (gameSession: GameSession) => {
   // logic to watch game
 }
-
+const errorSnackbar = ref(false)
+const errorMsg = ref('')
+const gameStore = useGameStore()
 const challengeUser = (user: {
   status: 'playing' | 'inQueue' | 'free'
   gameSession?: GameSession
 }) => {
-  // logic to challenge user
+  if (user.status === 'free') {
+    if (props.status !== 'Online') {
+      errorSnackbar.value = true
+      errorMsg.value = `Le joueur n'est pas en ligne`
+    } else {
+      gameStore.startGameAgainstPlayer(props.userId)
+    }
+  } else {
+    errorSnackbar.value = true
+    errorMsg.value = `Le joueur n'est pas libre`
+  }
 }
 </script>

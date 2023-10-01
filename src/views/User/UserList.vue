@@ -69,7 +69,12 @@
                   <VChip label :color="authStore.resolveAvatarBadgeVariant(user.profile.status)">
                     {{ user.profile.status }}
                   </VChip>
-                  <GameStatusBadge v-if="user.gameStatus" :userGameStatus="user.gameStatus" />
+                  <GameStatusBadge
+                    v-if="user.gameStatus && user.id !== authStore.user?.id"
+                    :userGameStatus="user.gameStatus"
+                    :user-id="user.id"
+                    :status="user.profile.status"
+                  />
                 </div>
               </td>
             </tr>
