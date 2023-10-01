@@ -291,7 +291,7 @@ const useAuthStore = defineStore({
     },
     async changeMyStatus(value: Status): Promise<'success' | 'error'> {
       try {
-        // code to change status
+        // @ TODO: update user status, to be done later
         return 'success'
       } catch (e) {
         return 'error'
