@@ -35,7 +35,8 @@
       />
       <div v-else class="h-full">
         <ChatConversationTopBar
-          :is-left-sidebar-open="isLeftSidebarOpen"
+          :isLeftSidebarOpen="isLeftSidebarOpen"
+          @update:is-left-sidebar-open="(val) => (isLeftSidebarOpen = val)"
           @show-user-profile="showMyProfile"
         />
         <div class="flex h-full flex-col items-center justify-center mb-2">
