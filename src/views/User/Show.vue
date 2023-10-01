@@ -21,6 +21,21 @@
       </VTabs>
     </VTabs>
     <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
+      <VWindowItem value="profile">
+        <div>
+          <p>Profil, bio, major stats etc...</p>
+        </div>
+      </VWindowItem>
+      <VWindowItem value="awards">
+        <div>
+          Les recompenses
+        </div>
+      </VWindowItem>
+      <VWindowItem value="friends">
+        <div>
+          Les amis
+        </div>
+      </VWindowItem>
       <VWindowItem value="history">
         <Histories :histories="gameHistories" />
       </VWindowItem>
