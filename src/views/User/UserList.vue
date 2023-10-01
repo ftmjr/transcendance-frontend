@@ -29,12 +29,7 @@
           </div>
           <VSpacer />
           <div class="w-1/3">
-            <VTextField
-              class="transparent-input-box"
-              size="small"
-              v-model="searchQuery"
-              placeholder="Rechercher"
-            />
+            <VTextField class="transparent-input-box" v-model="searchQuery" placeholder="Rechercher"/>
           </div>
         </VCardText>
 
@@ -66,7 +61,12 @@
                 </div>
               </td>
               <td>
-                {{ user.profile.status }}
+                <div class="flex gap-4">
+                  <VChip label :color="authStore.resolveAvatarBadgeVariant(user.profile.status)">
+                    {{ user.profile.status }}
+                  </VChip>
+                  <GameStatusBadge v-if="user.gameStatus" :userGameStatus="user.gameStatus" />
+                </div>
               </td>
             </tr>
           </tbody>
@@ -90,6 +90,9 @@ import useUserStore from '@/stores/UserStore'
 import type { User } from 'Auth'
 import { avatarText } from '@/vuetify/@core/utils/formatters'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
+import useAuthStore from "@/stores/AuthStore";
+import useGameStore from "@/stores/GameStore";
+import GameStatusBadge from "@/components/GameStatusBadge.vue";
 
 const userListStatsMeta: Array<{
   icon: string
@@ -130,11 +133,15 @@ const userListStatsMeta: Array<{
 
 export default defineComponent({
   name: 'UserList',
-  components: { AvatarBadge },
+  components: { AvatarBadge, GameStatusBadge },
   setup() {
-    const userStore = useUserStore()
+    const userStore = useUserStore();
+    const authStore = useAuthStore();
+    const gameStore = useGameStore();
     return {
-      userStore
+      userStore,
+      authStore,
+      gameStore
     }
   },
   data() {
@@ -179,8 +186,16 @@ export default defineComponent({
         currentPage: this.currentPage,
         perPage: this.rowPerPage
       })
-      this.users = users
+      this.users = users;
+      this.fetchUsersGameStatus();
       this.loading = false
+    },
+    fetchUsersGameStatus() {
+      this.users.forEach((user) => {
+        this.gameStore.getUserGameStatus(user.id).then((userGameStatus) => {
+          user.gameStatus = userGameStatus
+        })
+      })
     }
   },
   watch: {
@@ -192,7 +207,7 @@ export default defineComponent({
     rowPerPage() {
       this.currentPage = 1
       this.fetchUsers()
-    }
+    },
   }
 })
 </script>
