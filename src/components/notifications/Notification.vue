@@ -30,7 +30,7 @@ export default defineComponent({
     notificationClass(): object {
       return {
         'p-4 mb-4 border rounded cursor-pointer': true,
-        'bg-gray-100': this.notification.status === NotificationStatus.UNREAD,
+        'bg-gray-100/10': this.notification.status === NotificationStatus.UNREAD,
         'border-blue-400': this.notification.type === NotificationType.GAME_INVITE,
         'border-green-400': this.notification.type === NotificationType.FRIEND_REQUEST,
         'border-orange-400': this.notification.type === NotificationType.GAME_EVENT,
@@ -71,6 +71,7 @@ export default defineComponent({
         .replace(',', ' à')
     },
     isExpiringSoon(): boolean {
+      if (!this.notification.expiresAt) return false
       const now = new Date()
       const expiresAt = new Date(this.notification.expiresAt)
       const oneDay = 24 * 60 * 60 * 1000 // hours*minutes*seconds*milliseconds

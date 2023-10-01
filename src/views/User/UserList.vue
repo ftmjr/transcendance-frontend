@@ -96,7 +96,7 @@ import { avatarText } from '@/vuetify/@core/utils/formatters'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import useAuthStore from '@/stores/AuthStore'
 import useGameStore from '@/stores/GameStore'
-import GameStatusBadge from '@/components/GameStatusBadge.vue'
+import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 
 const userListStatsMeta: Array<{
   icon: string

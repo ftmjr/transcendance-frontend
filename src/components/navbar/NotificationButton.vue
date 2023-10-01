@@ -31,7 +31,7 @@
         </VListItem>
         <VDivider />
         <VListItem class="p-2">
-          <VBtn block @click="readAllNotifications"> LIRE TOUTES LES NOTIFICATIONS </VBtn>
+          <VBtn block @click="readAllNotifications"> VOIR TOUTES LES NOTIFICATIONS </VBtn>
         </VListItem>
       </VList>
     </VMenu>
@@ -41,7 +41,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useNotificationStore from '@/stores/NotificationStore'
-import Notification from '@/components/Notification.vue'
+import Notification from '@/components/notifications/Notification.vue'
 
 export default defineComponent({
   components: { Notification },
