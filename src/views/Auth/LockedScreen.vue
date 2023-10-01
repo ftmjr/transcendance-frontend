@@ -29,16 +29,21 @@ export default defineComponent({
       isLoading: false
     }
   },
+  mounted() {
+    if (!this.authStore.isLocked) {
+      this.$router.push({ path: '/auth' })
+    }
+  },
   methods: {
     async unlock() {
       this.isLoading = true
       try {
         await this.authStore.logout()
       } catch (e) {
-        console.log('logOut call')
+        console.log('logOut, error');
       }
       this.isLoading = false
-      this.$router.push({ name: 'auth' })
+      this.$router.push({ path: '/auth' })
     }
   }
 })
