@@ -3,12 +3,11 @@ import type { User, Profile } from 'Auth'
 import type { AxiosError } from 'axios'
 import axios from '@/utils/axios'
 
-
 export enum FriendshipStatus {
   Friends = 'friends',
   Pending = 'pending',
   NeedApproval = 'needApproval',
-  None = 'none',
+  None = 'none'
 }
 
 export interface FriendRequest {
@@ -30,19 +29,15 @@ export interface FriendRequestWithSender extends FriendRequest {
 }
 
 interface Contact {
-  id: number;
-  userId: number;
-  contactId: number;
+  id: number
+  userId: number
+  contactId: number
   createdAt: Date
 }
 
 interface CheckFriendshipResponse {
-  status: FriendshipStatus;
-  data:
-      | Contact
-      | FriendRequestWithSender
-      | FriendRequestWithReceiver
-      | null;
+  status: FriendshipStatus
+  data: Contact | FriendRequestWithSender | FriendRequestWithReceiver | null
 }
 
 export interface BlockedUser {
@@ -201,7 +196,7 @@ const useUserStore = defineStore({
     async checkFriendShip(userId: number) {
       try {
         const { data } = await axios.get<FriendshipStatus>(`/friends/check/${userId}`)
-        return data;
+        return data
       } catch (error) {
         this.errorMsg = 'Not friends'
       }

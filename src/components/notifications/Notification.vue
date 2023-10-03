@@ -16,12 +16,8 @@
         <VIcon>tabler-playstation-x</VIcon>
       </VBtn>
       <VBtnGroup v-if="showAcceptRejectButtons">
-        <VBtn @click.stop="handleAccept(notification.referenceId)" color="success">
-          Accepter
-        </VBtn>
-        <VBtn @click.stop="handleReject(notification.referenceId)" color="error">
-          Refuser
-        </VBtn>
+        <VBtn @click.stop="handleAccept(notification.referenceId)" color="success"> Accepter </VBtn>
+        <VBtn @click.stop="handleReject(notification.referenceId)" color="error"> Refuser </VBtn>
       </VBtnGroup>
     </div>
   </div>
