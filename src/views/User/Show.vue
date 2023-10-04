@@ -1,11 +1,6 @@
 <template>
   <div>
-    <user-profile-header
-      class="mb-5"
-      :id="profileData.id"
-      :info="profileData.header"
-      :friend-ship-status="profileData.friendshipStatus"
-    />
+    <user-profile-header class="mb-5" :id="profileData.id" :info="profileData.header" />
     <VTabs v-model="activeTab" class="v-tabs-pill">
       <VTabs v-model="activeTab" class="v-tabs-pill">
         <VTab
@@ -30,7 +25,7 @@
         <div>Les recompenses</div>
       </VWindowItem>
       <VWindowItem value="friends">
-        <div>Les amis</div>
+        <Friends />
       </VWindowItem>
       <VWindowItem value="history">
         <Histories :histories="gameHistories" />
@@ -40,17 +35,17 @@
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent } from 'vue'
+import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import type { ProfileData, User, GameHistory } from 'Auth'
 import axios from '@/utils/axios'
 import Histories from '@/views/User/Histories.vue'
+import UserProfileHeader from '@/components/profile/Header.vue'
 
 export default defineComponent({
-  name: 'ShowProfile',
   components: {
     Histories,
-    UserProfileHeader: defineAsyncComponent(() => import('@/components/profile/Header.vue'))
+    UserProfileHeader
   },
   props: {
     userId: {
@@ -70,7 +65,12 @@ export default defineComponent({
     return {
       loading: false,
       activeTab: this.tab,
-      tabs: [
+      otherTabs: [
+        { title: 'Profile', icon: 'tabler-user-check', tab: 'profile' },
+        { title: 'Awards', icon: 'dashicons:awards', tab: 'awards' },
+        { title: 'Historique', icon: 'tabler-history', tab: 'history' }
+      ],
+      meTabs: [
         { title: 'Profile', icon: 'tabler-user-check', tab: 'profile' },
         { title: 'Awards', icon: 'dashicons:awards', tab: 'awards' },
         { title: 'Amis', icon: 'tabler-link', tab: 'friends' },
@@ -81,15 +81,12 @@ export default defineComponent({
         header: {
           coalition: 'Legion',
           avatar: '',
-          fullName: 'no name',
-          username: 'maxiiiiiime',
+          fullName: '',
+          username: 'no username',
           joiningDate: Date.now()
         },
-        bio: '',
-        status: 'online',
-        friendshipStatus: 'none',
-        friendStart: null
-      } as unknown as ProfileData,
+        bio: ''
+      } as ProfileData,
       gameHistories: [] as GameHistory[],
       errorMsg: ''
     }
@@ -98,11 +95,14 @@ export default defineComponent({
     userIdValue(): number {
       if (this.userId === 'me') return this.authStore.getUser?.id || 0
       return this.userId ? parseInt(this.userId) : 0
+    },
+    tabs(): { title: string; icon: string; tab: string }[] {
+      if (this.userIdValue === this.authStore.getUser?.id) return this.meTabs
+      return this.otherTabs
     }
   },
   async beforeMount() {
     await this.fetchProfileData()
-    await this.checkFriendShip()
   },
   methods: {
     getRoute(tab: string) {
@@ -122,15 +122,13 @@ export default defineComponent({
           header: {
             coalition: this.getCoalition(data.profile.oauth),
             avatar: data?.profile.avatar,
-            fullName: data.profile.name + ' ' + data.profile.lastname,
+            fullName: `${data.profile.name} ${data.profile.lastname}`,
             username: data.username,
             joiningDate: data.createdAt,
             isCurrentUser: this.userIdValue === this.authStore.getUser?.id
           },
           bio: data.profile.bio,
-          status: data.profile.status,
-          friendshipStatus: 'none',
-          friendStart: null
+          status: data.profile.status
         }
         this.gameHistories = data.gameHistories ?? []
       } catch (error) {
@@ -143,22 +141,6 @@ export default defineComponent({
         // do something to get 42 colation
       }
       return 'Legion'
-    },
-    async checkFriendShip() {
-      this.loading = true
-      this.errorMsg = ''
-      try {
-        // to-do a route for fetching unique profile
-        const { data } = await axios.get<{
-          status: 'none' | 'pending' | 'accepted' | 'blocked'
-          data: { createdAt?: string } | null
-        }>(`/friends/check/${this.userIdValue}`)
-        this.profileData.friendshipStatus = data.status
-        this.profileData.friendStart = data.data?.createdAt
-      } catch (error) {
-        this.errorMsg = 'Not friends'
-      }
-      this.loading = false
     }
   }
 })

@@ -60,7 +60,6 @@ declare module 'Auth' {
   }
 
   export type Coalition = 'Legion' | 'Torrent' | 'Armada'
-  export type FriendshipStatus = 'friends' | 'pending' | 'needApproval' | 'none'
 
   export interface ProfileHeaderData {
     coalition?: Coalition;
@@ -76,7 +75,6 @@ declare module 'Auth' {
     header: ProfileHeaderData;
     Profile: Profile;
     email: string;
-    friendshipStatus: FriendshipStatus;
   }
 
   export interface AuthState {

@@ -1,7 +1,7 @@
 <template>
-  <VCard color="#952175" :loading="loading" src="./public/pong/backgrounds/pink_big_bg.png">
+  <VCard color="#952175" :loading="loading">
     <template v-slot:loader="{ isActive }">
-      <v-progress-linear :active="isActive" color="blue" height="64" :indeterminate="true" />
+      <v-progress-linear :active="isActive" color="blue" height="20" :indeterminate="true" />
     </template>
     <VCarousel
       cycle

@@ -10,6 +10,13 @@ export enum FriendshipStatus {
   None = 'none'
 }
 
+export enum BlockedStatus {
+  Blocked = 'blocked',
+  BlockedBy = 'blockedBy',
+  Mutual = 'mutual',
+  None = 'none'
+}
+
 export interface FriendRequest {
   id: number
   senderId: number
@@ -35,7 +42,7 @@ interface Contact {
   createdAt: Date
 }
 
-interface CheckFriendshipResponse {
+export interface CheckFriendshipResponse {
   status: FriendshipStatus
   data: Contact | FriendRequestWithSender | FriendRequestWithReceiver | null
 }
@@ -151,6 +158,7 @@ const useUserStore = defineStore({
     async approveFriendRequest(requestId: number): Promise<'success' | 'error'> {
       try {
         await axios.post(`/friends/approve-friendship-request-for/${requestId}`)
+        await this.loadAllMyFriends()
         return 'success'
       } catch (e) {
         return 'error'
@@ -183,6 +191,7 @@ const useUserStore = defineStore({
         return 'error'
       }
     },
+    async fetchUserFriends(userId) {},
     async fetchSentRequests(): Promise<'success' | 'error'> {
       try {
         const { data } = await axios.get('/friends/sent')
@@ -195,7 +204,7 @@ const useUserStore = defineStore({
     },
     async checkFriendShip(userId: number) {
       try {
-        const { data } = await axios.get<FriendshipStatus>(`/friends/check/${userId}`)
+        const { data } = await axios.get<CheckFriendshipResponse>(`/friends/check/${userId}`)
         return data
       } catch (error) {
         this.errorMsg = 'Not friends'
@@ -216,6 +225,15 @@ const useUserStore = defineStore({
       } catch (e) {
         return 'error'
       }
+    },
+    async checkBlocked(friendId: number): Promise<BlockedStatus> {
+      try {
+        const { data } = await axios.get<BlockedStatus>(`/users/check-blocked/${friendId}`)
+        return data
+      } catch (e) {
+        console.log('failed to check blocked status')
+      }
+      return BlockedStatus.None
     },
     async blockUser(userId: number): Promise<'success' | 'error'> {
       try {

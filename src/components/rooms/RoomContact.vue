@@ -11,7 +11,11 @@
           variant="outlined"
           color="secondary"
           :image="memberData.member.profile?.avatar"
-        />
+        >
+          <VTooltip activator="parent" location="top">
+            {{ memberData.member.username }}
+          </VTooltip>
+        </VAvatar>
       </div>
     </div>
   </VCard>
