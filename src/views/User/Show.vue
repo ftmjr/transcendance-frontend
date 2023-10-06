@@ -41,11 +41,13 @@ import type { ProfileData, User, GameHistory } from 'Auth'
 import axios from '@/utils/axios'
 import Histories from '@/views/User/Histories.vue'
 import UserProfileHeader from '@/components/profile/Header.vue'
+import Friends from '@/components/profile/Friends.vue'
 
 export default defineComponent({
   components: {
     Histories,
-    UserProfileHeader
+    UserProfileHeader,
+    Friends
   },
   props: {
     userId: {

@@ -1,6 +1,6 @@
 <template>
   <VCard :loading="loading" color="transparent" class="w-full">
-    <VCol class="w-full" @click="alert('wow')">
+    <VCol class="w-full">
       <VRow v-if="blockStatus !== BlockedStatus.BlockedBy && !isMe">
         <VBtn
           v-if="status === FriendshipStatus.Friends"
@@ -128,6 +128,9 @@ export default defineComponent({
       this.state = await this.userStore.checkFriendShip(this.friendId)
       this.blockStatus = await this.userStore.checkBlocked(this.friendId)
       this.loading = false
+    },
+    async blocked(friendId: number){
+      await this.userStore.unblockUser(friendId);
     }
   }
 })
