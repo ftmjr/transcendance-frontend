@@ -246,7 +246,7 @@ const useAuthStore = defineStore({
     async deactivate2FA(): Promise<boolean> {
       this.error = { state: false, message: '' }
       try {
-        await axios.get('auth/2fa/turn-off')
+        await axios.post('auth/2fa/turn-off')
         await this.refreshCurrentUser()
         return true
       } catch (error) {
