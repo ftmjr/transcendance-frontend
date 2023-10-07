@@ -7,8 +7,8 @@
       location="start"
       width="370"
       :temporary="$vuetify.display.smAndDown"
-      class="pt-2"
       :permanent="$vuetify.display.mdAndUp"
+      class="chat-list-sidebar"
     >
       <DmConversationListSideBar
         @open-chat-of-contact="openChatOfContact"
@@ -16,23 +16,23 @@
         @close="isLeftSidebarOpen = false"
       />
     </VNavigationDrawer>
-    <VMain class="h-96">
+    <VMain class="chat-content-container">
       <SingleDirectMessage
         v-if="messageStore.currentConversationWith"
         :conversationWith="messageStore.currentConversationWith"
         v-model:is-left-sidebar-open="isLeftSidebarOpen"
       />
-      <div v-else class="h-full">
-        <MessageTopBar v-model:isLeftSidebarOpen="isLeftSidebarOpen" />
-        <div class="flex h-full flex-col items-center justify-center mb-2">
-          <VAvatar size="109" class="shadow-md mb-6 bg-slate-700">
-            <VIcon size="50" class="rounded text-high-emphasis" icon="tabler-message" />
-          </VAvatar>
-          <p class="text-lg font-medium text-center">
-            Selectionner une conversation
-            <span class="font-normal text-sm">, ou faites vous des amis en leur faisant un dm</span>
-          </p>
-        </div>
+      <div v-else class="flex h-full items-center justify-center flex-column">
+        <VAvatar size="109" class="elevation-3 mb-6 bg-surface">
+          <VIcon size="50" class="rounded-0 text-high-emphasis" icon="tabler-message" />
+        </VAvatar>
+        <p
+          class="mb-0 px-6 py-1 font-weight-medium text-lg elevation-3 rounded-xl text-high-emphasis bg-surface"
+          :class="[{ 'cursor-pointer': $vuetify.display.smAndDown }]"
+          @click="startConversation"
+        >
+          Commencez une conversation
+        </p>
       </div>
     </VMain>
   </VLayout>
@@ -46,23 +46,25 @@ import useMessageStore from '@/stores/MessageStore'
 import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar'
 import DmConversationListSideBar from './DmConversationListSideBar.vue'
 import SingleDirectMessage from '@/views/Dm/SingleDirectMessage.vue'
-import MessageTopBar from '@/components/Message/MessageTopBar.vue'
+import useUserStore from '@/stores/UserStore'
 
 export default defineComponent({
   components: {
     DmConversationListSideBar,
-    SingleDirectMessage,
-    MessageTopBar
+    SingleDirectMessage
   },
   setup() {
     const authStore = useAuthStore()
     const messageStore = useMessageStore()
+    const userStore = useUserStore()
     const vuetifyDisplays = useDisplay()
     const { isLeftSidebarOpen } = useResponsiveLeftSidebar(vuetifyDisplays.smAndDown)
     return {
       authStore,
       messageStore,
-      isLeftSidebarOpen
+      userStore,
+      isLeftSidebarOpen,
+      vuetifyDisplays
     }
   },
   data() {
@@ -77,27 +79,23 @@ export default defineComponent({
     async loadConversations() {
       this.loading = true
       await this.messageStore.getUniqueConversations()
+      await this.userStore.loadAllMyFriends()
       this.loading = false
     },
     showMyProfile() {
-      this.$route.push({
+      this.$router.push({
         name: 'me'
       })
     },
     openChatOfContact(id: number) {
       this.messageStore.setCurrentConversationWith(id)
+    },
+    startConversation() {
+      if (this.vuetifyDisplays.mdAndUp) return
+      this.isLeftSidebarOpen = true
     }
   }
 })
 </script>
 
-<style lang="scss">
-.message-window {
-  // & .chat-list-sidebar {
-  // 	.v-navigation-drawer__content {
-  // 	display: flex;
-  // 	flex-direction: column;
-  // 	}
-  // }
-}
-</style>
+<style lang="scss"></style>
