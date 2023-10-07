@@ -1,11 +1,6 @@
-declare module 'Auth' {
 
-  enum Status {
-    Online = 'Online',
-    Offline = 'Offline',
-    Away = 'Away',
-    Busy = 'Busy'
-  }
+declare module 'Auth' {
+  import {Status} from 'src/stores/AuthStore';
 
   export interface Profile {
     id: number;
