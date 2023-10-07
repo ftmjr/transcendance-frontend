@@ -1,11 +1,6 @@
-declare module 'Auth' {
 
-  enum Status {
-    Online = 'Online',
-    Offline = 'Offline',
-    Away = 'Away',
-    Busy = 'Busy'
-  }
+declare module 'Auth' {
+  import {Status} from 'src/stores/AuthStore';
 
   export interface Profile {
     id: number;
@@ -60,7 +55,6 @@ declare module 'Auth' {
   }
 
   export type Coalition = 'Legion' | 'Torrent' | 'Armada'
-  export type FriendshipStatus = 'friends' | 'pending' | 'needApproval' | 'none'
 
   export interface ProfileHeaderData {
     coalition?: Coalition;
@@ -76,7 +70,6 @@ declare module 'Auth' {
     header: ProfileHeaderData;
     Profile: Profile;
     email: string;
-    friendshipStatus: FriendshipStatus;
   }
 
   export interface AuthState {

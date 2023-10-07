@@ -23,26 +23,25 @@
 
       <VSpacer />
 
-      <div class="sm:flex items-center hidden">
-        <VBtn variant="text" color="primary" icon size="small" @clik="playAgainst">
-          <VIcon size="22" icon="icon-park-solid:game-three" />
-        </VBtn>
+      <div class="flex items-center">
+        <GameStatusBadge
+          :status="contact.profile.status"
+          :user-id="contact.id"
+          :user-game-status="userGameStatus"
+        />
       </div>
 
       <VBtn variant="text" color="default" icon size="small">
         <VIcon size="22" icon="tabler-dots-vertical" />
-
         <VMenu activator="parent">
-          <div>
-            <VBtn variant="text" color="default" icon size="small" @click="showProfile">
-              Voir le profil
-              <VIcon size="22" icon="tabler-eye" />
-            </VBtn>
-            <VBtn variant="text" color="default" icon size="small" @click="blockContact">
-              Bloquer le contact
-              <VIcon size="22" icon="tabler-ban" />
-            </VBtn>
-          </div>
+          <VList>
+            <VListItem prepend-icon="tabler-eye">
+              <VListItemTitle> Voir le profil</VListItemTitle>
+            </VListItem>
+            <VListItem prepend-icon="tabler-ban">
+              <VListItemTitle>Bloquer le contact</VListItemTitle>
+            </VListItem>
+          </VList>
         </VMenu>
       </VBtn>
     </template>
@@ -55,10 +54,13 @@ import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import type { User } from 'Auth'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
+import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
+import { GameSession } from '@/stores/GameStore'
 
 export default defineComponent({
   name: 'MessageTopBar',
   components: {
+    GameStatusBadge,
     AvatarBadge
   },
   props: {
@@ -68,6 +70,13 @@ export default defineComponent({
     },
     contact: {
       type: Object as PropType<User>
+    },
+    userGameStatus: {
+      type: Object as PropType<{
+        status: 'playing' | 'inQueue' | 'free'
+        gameSession?: GameSession
+      }>,
+      required: true
     }
   },
   setup() {
@@ -89,8 +98,7 @@ export default defineComponent({
   },
   methods: {
     async blockContact() {},
-    async showProfile() {},
-    async playAgainst() {}
+    async showProfile() {}
   }
 })
 </script>

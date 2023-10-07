@@ -15,19 +15,17 @@
       <VSpacer />
 
       <div class="sm:flex items-center hidden">
-        <p>something here</p>
+        <p>Some Action button</p>
       </div>
 
       <VBtn variant="text" color="default" icon size="small">
         <VIcon size="22" icon="tabler-dots-vertical" />
-
         <VMenu activator="parent">
-          <div>
-            <VBtn variant="text" color="default" icon size="small">
-              Some button depending on the use role on this on the group
-              <VIcon size="22" icon="tabler-eye" />
-            </VBtn>
-          </div>
+          <VList>
+            <VListItem prepend-icon="tabler-pencil">
+              <VListItemTitle> Something </VListItemTitle>
+            </VListItem>
+          </VList>
         </VMenu>
       </VBtn>
     </template>

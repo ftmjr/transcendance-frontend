@@ -2,11 +2,15 @@ import { defineStore } from 'pinia'
 import type { User } from 'Auth'
 import type { AxiosError } from 'axios'
 import axios from '@/utils/axios'
+import useUserStore from '@/stores/UserStore'
+import { ChatSocket } from '@/utils/chatSocket'
 
 export interface MessageState {
   conversationsUsers: User[]
   searchTerm: string
   currentConversationUser: number | null
+  socketManager: ChatSocket | null
+  messages: Map<number, PrivateMessage[]>
 }
 
 export interface MPData {
@@ -27,7 +31,9 @@ const useMessageStore = defineStore({
   state: (): MessageState => ({
     conversationsUsers: [],
     currentConversationUser: null,
-    searchTerm: ''
+    searchTerm: '',
+    socketManager: null,
+    messages: new Map<number, PrivateMessage[]>()
   }),
   getters: {
     getConversingWith(): User[] {
@@ -82,21 +88,47 @@ const useMessageStore = defineStore({
         return current
       }
       return null
+    },
+    getContactsWithoutConversation(): User[] {
+      // get contact from UserStore getter getContacts and filter
+      // out the ones that are already in conversationsUsers
+      const userStore = useUserStore()
+      const contacts = userStore.getContact
+      return contacts.filter((contact: User) => {
+        return !this.conversationsUsers.some((user: User) => user.id === contact.id)
+      })
+    },
+    currentConversationMessages(): PrivateMessage[] {
+      return this.messages.get(this.currentConversationUser) || []
     }
   },
   actions: {
     setSearchTerm(term: string) {
       this.searchTerm = term
     },
-    setCurrentConversationWith(id: number) {
-      const idFound = this.conversationsUsers.findIndex((user) => (user.id = id))
+    setSocketManager(socketManager: ChatSocket) {
+      this.socketManager = socketManager
+    },
+    setCurrentConversationWith(userId: number) {
+      const idFound = this.conversationsUsers.findIndex((user: User) => user.id === userId)
       if (idFound >= 0) {
         this.currentConversationUser = this.conversationsUsers[idFound].id
+      } else {
+        // check if user is in contacts
+        const userStore = useUserStore()
+        const contacts = userStore.getContact
+        const contactFound = contacts.findIndex((user: User) => user.id === userId)
+        if (contactFound >= 0) {
+          this.conversationsUsers.push(contacts[contactFound])
+          this.listenToPrivateMessages(contacts[contactFound].id)
+          this.currentConversationUser = contacts[contactFound].id
+        }
       }
     },
+    // on mounted
     async getUniqueConversations() {
       try {
-        const { data } = await axios.get<User[]>('/messages/conversations', {
+        const { data } = await axios.get<User[]>('/messages', {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -105,35 +137,40 @@ const useMessageStore = defineStore({
         if (this.conversationsUsers.length) {
           this.currentConversationUser = this.conversationsUsers[0].id
         }
+        // get the 200 first messages
+        this.conversationsUsers.forEach((user: User) => {
+          this.getPrivateMessageBetween({
+            userTwoId: user.id,
+            skip: 0,
+            take: 200
+          })
+        })
       } catch (error: AxiosError | any) {
         console.error('Failed to load conversations:', error.message)
       }
     },
-
     async getPrivateMessageBetween(info: {
       userTwoId: number
       skip: number
       take: number
-    }): Promise<PrivateMessage[]> {
+    }): Promise<void> {
       const { userTwoId, skip, take } = info
       try {
         this.currentConversationUser = userTwoId
-        const { data } = await axios.get(`/messages/private/${userTwoId}`, {
+        const { data } = await axios.get(`/messages/${userTwoId}`, {
           params: {
             skip,
             take
           }
         })
-        return data as Array<PrivateMessage>
+        this.messages.set(userTwoId, data)
       } catch (error: AxiosError | any) {
         console.error('Failed to load all private messages:', error.message)
       }
-      return []
     },
-
-    async sendPrivateMessage(message: MPData): Promise<PrivateMessage | null> {
+    async sendPrivateMessageViaHttp(message: MPData): Promise<PrivateMessage | null> {
       try {
-        const { data } = await axios.post('messages/', message, {
+        const { data } = await axios.post('/messages', message, {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -143,6 +180,29 @@ const useMessageStore = defineStore({
         console.error('Failed to send private message:', error.message)
       }
       return null
+    },
+    // listen to private messages from friendId
+    listenToPrivateMessages(friendId: number) {
+      if (!this.socketManager || !this.socketManager.socketOperational) return
+      this.socketManager.listenPrivateMessageFrom(friendId)
+    },
+    sendPrivateMessage(friendId: number, content: string) {
+      if (!this.socketManager || !this.socketManager.operational) return
+      this.socketManager.sendPrivateMessage(friendId, content)
+    },
+    async handleReceivedMessage(message: PrivateMessage) {
+      const userId =
+        message.senderId === this.socketManager?.userId ? message.receiverId : message.senderId
+      const userMessages = this.messages.get(userId) || []
+      userMessages.push(message)
+      this.messages.set(userId, userMessages)
+    },
+    getLastMessageBetween(userId: number): PrivateMessage | null {
+      const userMessages = this.messages.get(userId) || []
+      if (userMessages.length === 0) {
+        return null
+      }
+      return userMessages[userMessages.length - 1]
     }
   }
 })

@@ -44,7 +44,7 @@ const useNotificationStore = defineStore({
     },
     async getNotifications() {
       try {
-        const { data } = await axios.get<Notification[]>('messages/notifications')
+        const { data } = await axios.get<Notification[]>('notifications/')
         this.notifications = data
       } catch (e) {
         console.error(e)
@@ -52,7 +52,7 @@ const useNotificationStore = defineStore({
     },
     async deleteNotification(notificationId: number) {
       try {
-        await axios.delete<Notification>(`messages/notifications/${notificationId}`)
+        await axios.delete<Notification>(`notifications/${notificationId}`)
         const index = this.notifications.findIndex(
           (notification) => notification.id === notificationId
         )
@@ -64,7 +64,7 @@ const useNotificationStore = defineStore({
     },
     async markNotificationAsRead(notificationId: number) {
       try {
-        const { data } = await axios.post<Notification>(`messages/notifications/${notificationId}`)
+        const { data } = await axios.post<Notification>(`notifications/${notificationId}`)
         const index = this.notifications.findIndex(
           (notification) => notification.id === notificationId
         )

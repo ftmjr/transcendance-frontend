@@ -26,7 +26,7 @@
         </template>
         <VListItem v-else>
           <div class="flex justify-center items-center">
-            <span class="text-gray-400">Aucune notification</span>
+            <span class="text-gray-400">Aucune notification, non lues</span>
           </div>
         </VListItem>
         <VDivider />

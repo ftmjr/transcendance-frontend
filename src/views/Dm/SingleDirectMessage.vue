@@ -1,20 +1,25 @@
 <template>
-  <MessageTopBar
-    :isLeftSidebarOpen="isLeftSidebarOpen"
-    :contact="conversationWith"
-    @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
-  />
-  <PerfectScrollbar
-    ref="MessagesLogScroller"
-    tag="ul"
-    :options="{ wheelPropagation: false }"
-    class="flex-grow-1"
-  >
-    <VCard class="chat-log" :loading="loading">
+  <div class="h-full">
+    <MessageTopBar
+      :isLeftSidebarOpen="isLeftSidebarOpen"
+      :contact="conversationWith"
+      @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
+      :user-game-status="gameStatus"
+    />
+    <VDivider class="mb-1" />
+    <PerfectScrollbar
+      ref="MessagesLogScroller"
+      tag="ul"
+      :options="{
+        wheelPropagation: false,
+        suppressScrollX: true
+      }"
+      class="h-4/6"
+    >
       <div
         v-for="(msgGrp, index) in msgGroups"
         :key="msgGrp.senderId + String(index)"
-        class="chat-group d-flex align-start"
+        class="chat-group flex items-center"
         :class="[
           {
             'flex-row-reverse': msgGrp.senderId !== conversationWith.id,
@@ -43,8 +48,8 @@
             class="chat-content text-sm py-3 px-4 elevation-1"
             :class="[
               msgGrp.senderId === conversationWith.id
-                ? 'bg-surface chat-left'
-                : 'bg-primary text-white chat-right',
+                ? 'bg-slate-700/30 rounded-lg chat-left'
+                : 'bg-slate-400/30 rounded-lg text-white chat-right',
               msgGrp.messages.length - 1 !== msgIndex ? 'mb-2' : 'mb-1'
             ]"
           >
@@ -60,23 +65,23 @@
           </div>
         </div>
       </div>
-    </VCard>
-  </PerfectScrollbar>
-
-  <VForm class="chat-log-message-form mb-5 mx-5" @submit.prevent="sendMessage">
-    <VTextField
-      v-model="mpContent"
-      variant="solo"
-      class="transparent-input-box"
-      placeholder="Ecrivez votre message..."
-      density="default"
-      autofocus
-    >
-      <template #append-inner>
-        <VBtn @click="sendMessage"> Envoyer un MP </VBtn>
-      </template>
-    </VTextField>
-  </VForm>
+    </PerfectScrollbar>
+    <VDivider class="my-1" />
+    <VForm @submit.prevent="sendMessage">
+      <VTextField
+        v-model="mpContent"
+        variant="solo"
+        class="transparent-input-box"
+        placeholder="Ecrivez votre message..."
+        density="default"
+        autofocus
+      >
+        <template #append-inner>
+          <VBtn type="submit" @click.prevent="sendMessage"> Envoyer un MP </VBtn>
+        </template>
+      </VTextField>
+    </VForm>
+  </div>
 </template>
 
 <script lang="ts">
@@ -86,6 +91,8 @@ import type { User } from 'Auth'
 import MessageTopBar from '@/components/Message/MessageTopBar.vue'
 import useAuthStore from '@/stores/AuthStore'
 import { formatDate } from '@/vuetify/@core/utils/formatters'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import useGameStore from '@/stores/GameStore'
 
 interface MessageGroup {
   senderId: number
@@ -93,7 +100,8 @@ interface MessageGroup {
 }
 export default defineComponent({
   components: {
-    MessageTopBar
+    MessageTopBar,
+    PerfectScrollbar
   },
   props: {
     conversationWith: {
@@ -108,25 +116,39 @@ export default defineComponent({
   setup() {
     const authStore = useAuthStore()
     const messageStore = useMessageStore()
+    const gameStore = useGameStore()
     return {
       messageStore,
-      authStore
+      authStore,
+      gameStore
     }
   },
-  emits: ['update:isLeftSidebarOpen'],
+  emits: ['update:isLeftSidebarOpen', 'refreshContact'],
   data() {
     return {
       loading: false,
-      take: 20,
+      take: 400,
       skip: 0,
-      messages: [] as PrivateMessage[],
-      mpContent: ''
+      mpContent: '',
+      gameStatus: {
+        status: 'free',
+        gameSession: undefined
+      }
     }
   },
   computed: {
+    messages(): PrivateMessage[] {
+      return this.messageStore.currentConversationMessages
+    },
+    messagesByTime(): PrivateMessage[] {
+      return this.messages.slice().sort((a, b) => {
+        return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      })
+    },
     msgGroups(): MessageGroup[] {
+      if (this.messagesByTime.length === 0) return []
       const _msgGroups: MessageGroup[] = []
-      const messages = this.messages
+      const messages = this.messagesByTime
       let msgSenderId = messages[0].senderId
       let msgGroup: MessageGroup = {
         senderId: msgSenderId,
@@ -152,41 +174,61 @@ export default defineComponent({
         if (index === messages.length - 1) _msgGroups.push(msgGroup)
       })
       return _msgGroups
+    },
+    chatLogPS(): PerfectScrollbar {
+      return this.$refs.MessagesLogScroller as PerfectScrollbar
     }
   },
   methods: {
+    refreshContact() {
+      this.$emit('refreshContact')
+      this.fetchGameStatus()
+    },
     async loadPrivateMessages() {
       this.loading = true
-      const messages = (await this.messageStore.getPrivateMessageBetween({
+      await this.messageStore.getPrivateMessageBetween({
         userTwoId: this.conversationWith.id,
         skip: this.skip,
         take: this.take
-      })) as PrivateMessage[]
-      messages.forEach((m: PrivateMessage) => this.messages.push(m))
+      })
       this.loading = false
+      this.$nextTick(() => {
+        this.scrollToBottomInChatLog()
+      })
     },
     async sendMessage() {
       this.loading = true
-      const message = await this.messageStore.sendPrivateMessage({
-        receiverId: this.conversationWith.id,
-        content: this.mpContent
-      })
-      if (message) {
-        this.messages.push(message)
-      }
+      this.messageStore.sendPrivateMessage(this.conversationWith.id, this.mpContent)
+      this.mpContent = ''
       this.loading = false
+      this.$nextTick(() => {
+        this.scrollToBottomInChatLog()
+      })
+    },
+    async fetchGameStatus() {
+      this.gameStatus = await this.gameStore.getUserGameStatus(this.conversationWith.id)
+    },
+    scrollToBottomInChatLog() {
+      const scrollEl = this.chatLogPS.$el
+      scrollEl.scrollTop = scrollEl.scrollHeight
+    },
+    scrollToTopInChatLog() {
+      const scrollEl = this.chatLogPS.$el
+      scrollEl.scrollTop = 0
     },
     formatDate
   },
   watch: {
-    conversationWith() {
-      this.messages = []
-      this.skip = 0
-      this.take = 20
-      this.loadConversations()
+    conversationWith: {
+      handler() {
+        this.loadPrivateMessages()
+        this.fetchGameStatus()
+      },
+      deep: true,
+      immediate: true
     }
   }
 })
 </script>
 
-<style></style>
+<style lang="scss" scoped></style>

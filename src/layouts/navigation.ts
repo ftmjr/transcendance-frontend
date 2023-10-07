@@ -35,6 +35,7 @@ export default [
     title: 'Profile',
     icon: { icon: 'tabler-user' },
     children: [
+      { title: 'Mon profile', to: { name: 'me', params: { tab: 'profile' } } },
       { title: 'Réglages', to: { name: 'settings', params: { tab: 'account' } } },
       { title: 'Historique', to: { name: 'me', params: { tab: 'history' } } }
     ]

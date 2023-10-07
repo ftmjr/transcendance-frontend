@@ -27,7 +27,7 @@ export default defineComponent({
   emits: ['showUserProfile'],
   computed: {
     color(): 'success' | 'error' | 'warning' | 'secondary' {
-      const status = this.profile.status ?? Status.Offline
+      const status = this.profile.status
       if (status === Status.Online) return 'success'
       else if (status === Status.Offline) return 'error'
       else if (status === Status.Busy) return 'warning'

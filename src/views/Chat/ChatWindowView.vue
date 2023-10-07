@@ -27,27 +27,23 @@
         @close="isLeftSidebarOpen = false"
       />
     </VNavigationDrawer>
-    <VMain class="h-96">
+    <VMain>
       <SingleChatView
         v-if="roomsStore.currentRoom"
         :room="roomsStore.currentRoom"
         v-model:is-left-sidebar-open="isLeftSidebarOpen"
       />
-      <div v-else class="h-full">
-        <ChatConversationTopBar
-          :isLeftSidebarOpen="isLeftSidebarOpen"
-          @update:is-left-sidebar-open="(val) => (isLeftSidebarOpen = val)"
-          @show-user-profile="showMyProfile"
-        />
-        <div class="flex h-full flex-col items-center justify-center mb-2">
-          <VAvatar size="109" class="shadow-md mb-6 bg-slate-700">
-            <VIcon size="50" class="rounded text-high-emphasis" icon="tabler-message" />
-          </VAvatar>
-          <p class="text-lg font-medium text-center">
-            Selectionner une conversation
-            <span class="font-normal text-sm">, ou rejoignez une equipe</span>
-          </p>
-        </div>
+      <div v-else class="flex h-full items-center justify-center flex-column">
+        <VAvatar size="109" class="elevation-3 mb-6 bg-surface">
+          <VIcon size="50" class="rounded-0 text-high-emphasis" icon="tabler-message" />
+        </VAvatar>
+        <p
+          class="mb-0 px-6 py-1 font-weight-medium text-lg elevation-3 rounded-xl text-high-emphasis bg-surface"
+          :class="[{ 'cursor-pointer': $vuetify.display.smAndDown }]"
+          @click="startConversation"
+        >
+          Commencez une conversation
+        </p>
       </div>
     </VMain>
   </VLayout>
@@ -62,14 +58,13 @@ import SingleChatView from '@/views/Chat/SingleChatView.vue'
 import ChatConversationListSideBar from '@/views/Chat/ChatConversationListSideBar.vue'
 import ChatUserProfileSidebar from '@/components/rooms/ChatUserProfileSidebar.vue'
 import useRoomsStore from '@/stores/RoomsStore'
-import ChatConversationTopBar from '@/components/rooms/ChatConversationTopBar.vue'
+
 export default defineComponent({
   name: 'ChatWindowView',
   components: {
     ChatConversationListSideBar,
     ChatUserProfileSidebar,
-    SingleChatView,
-    ChatConversationTopBar
+    SingleChatView
   },
   setup() {
     const vuetifyDisplays = useDisplay()
@@ -79,7 +74,8 @@ export default defineComponent({
     return {
       authStore,
       isLeftSidebarOpen,
-      roomsStore
+      roomsStore,
+      vuetifyDisplays
     }
   },
   data() {
@@ -97,6 +93,10 @@ export default defineComponent({
     },
     showMyProfile() {
       this.isUserProfileSidebarOpen = true
+    },
+    startConversation() {
+      if (this.vuetifyDisplays.mdAndUp) return
+      this.isLeftSidebarOpen = true
     }
   }
 })

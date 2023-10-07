@@ -1,36 +1,38 @@
 <template>
-  <ChatConversationTopBar
-    :isLeftSidebarOpen="isLeftSidebarOpen"
-    @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
-    :room="room"
-    :room-members="roomStore.getCurrentRoomMembers"
-  />
-  <PerfectScrollbar
-    ref="MessagesLogScroller"
-    tag="ul"
-    :options="{ wheelPropagation: false }"
-    class="flex-grow-1"
-  >
-    <li v-for="message in messages" :key="message">
-      {{ message }}
-    </li>
-  </PerfectScrollbar>
-  <VDivider class="" />
-  <VForm class="chat-log-message-form mb-5 mx-5" @submit.prevent="sendMessage">
-    <VTextField
-      v-model="chatMessageContent"
-      :disabled="canWrite"
-      variant="solo"
-      class="transparent-input-box"
-      placeholder="Ecrivez votre message..."
-      density="default"
-      autofocus
+  <div class="h-full">
+    <ChatConversationTopBar
+      :isLeftSidebarOpen="isLeftSidebarOpen"
+      @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
+      :room="room"
+      :room-members="roomStore.getCurrentRoomMembers"
+    />
+    <PerfectScrollbar
+      ref="MessagesLogScroller"
+      tag="ul"
+      :options="{ wheelPropagation: false }"
+      class="h-4/6"
     >
-      <template #append-inner>
-        <VBtn @click="sendMessage"> Envoyer</VBtn>
-      </template>
-    </VTextField>
-  </VForm>
+      <li v-for="message in messages" :key="message">
+        {{ message }}
+      </li>
+    </PerfectScrollbar>
+    <VDivider class="my-1" />
+    <VForm @submit.prevent="sendMessage" class="mx-2">
+      <VTextField
+        v-model="chatMessageContent"
+        :disabled="canWrite"
+        variant="solo"
+        class="transparent-input-box"
+        placeholder="Ecrivez votre message..."
+        density="default"
+        autofocus
+      >
+        <template #append-inner>
+          <VBtn type="submit" @click.prevent="sendMessage"> Envoyer </VBtn>
+        </template>
+      </VTextField>
+    </VForm>
+  </div>
 </template>
 
 <script lang="ts">
@@ -38,6 +40,7 @@ import { defineComponent, PropType } from 'vue'
 import useRoomsStore, { ChatRoomWithMembers } from '@/stores/RoomsStore'
 import ChatConversationTopBar from '@/components/rooms/ChatConversationTopBar.vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import useAuthStore from '@/stores/AuthStore'
 
 export default defineComponent({
   components: { ChatConversationTopBar, PerfectScrollbar },
@@ -53,8 +56,10 @@ export default defineComponent({
   },
   emits: ['update:isLeftSidebarOpen'],
   setup() {
+    const authStore = useAuthStore()
     const roomStore = useRoomsStore()
     return {
+      authStore,
       roomStore
     }
   },
@@ -66,6 +71,9 @@ export default defineComponent({
     }
   },
   computed: {
+    chatLogPS(): PerfectScrollbar {
+      return this.$refs.MessagesLogScroller as PerfectScrollbar
+    },
     canWrite(): boolean {
       // @TODO check if user can write in this room
       return false
@@ -95,6 +103,10 @@ export default defineComponent({
     async sendMessage() {
       // @TODO send chat
       // this.roomStore.sendMessage(this.room.id, this.chatMessageContent)
+    },
+    scrollToBottomInChatLog() {
+      const scrollEl = this.chatLogPS.$el
+      scrollEl.scrollTop = scrollEl.scrollHeight
     }
   }
 })
