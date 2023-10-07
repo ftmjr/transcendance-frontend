@@ -1,12 +1,14 @@
 <template>
-  <VCard color="transparent" :loading="isLoading" title="Locked">
+  <VCard color="transparent" :loading="isLoading" title="Locked" class="h-full">
     <VCardText class="flex flex-col justify-center">
       <h5 class="text-h5 text-center font-semibold mb-1">Salut, {{ authStore.getProfile.name }}</h5>
       <VAvatar rounded size="120" class="user-profile-avatar mx-auto">
         <VImg v-if="authStore.getProfile.avatar" :src="authStore.getProfile.avatar" />
         <VIcon v-else color="primary" icon="tabler-user" />
       </VAvatar>
-      <p class="text-center font-light">Votre session est actuellement bloqué, reconnectez-vous</p>
+      <p class="text-center font-light">
+        Votre session est actuellement bloqué, pour des raisons de sécurité
+      </p>
       <VBtn @click="unlock" variant="text"> Debloquer</VBtn>
     </VCardText>
   </VCard>
@@ -43,7 +45,7 @@ export default defineComponent({
         console.log('logOut, error')
       }
       this.isLoading = false
-      this.$router.push({ name: 'dashboard' })
+      this.$router.push({ name: 'unlock-account' })
     }
   }
 })

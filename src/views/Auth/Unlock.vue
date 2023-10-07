@@ -1,18 +1,23 @@
 <template>
-  <div></div>
+  <Loader />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import BaseInput from '@/components/Input.vue'
-import BaseButton from '@/components/Button.vue'
 import useAuthStore from '@/stores/AuthStore'
+import Loader from '@/views/Auth/Loader.vue'
 
 export default defineComponent({
-  name: 'reset-password',
+  components: { Loader },
   setup() {
     const authStore = useAuthStore()
     return { authStore }
+  },
+  async beforeMount() {
+    if (!this.authStore.isLocked || !this.authStore.isLoggedIn) {
+      await this.authStore.logout()
+    }
+    this.$router.push({ name: 'auth' })
   }
 })
 </script>
