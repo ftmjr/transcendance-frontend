@@ -68,7 +68,7 @@ export default defineComponent({
     }
   },
   async beforeMount() {
-    this.users = await this.userStore.getPaginatedUsersWithScore({})
+    this.users = await this.userStore.getPaginatedUsersWithScore({take:100})
     this.fetchUsersGameStatus()
   },
   methods: {
