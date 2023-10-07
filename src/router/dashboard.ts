@@ -4,6 +4,7 @@ import usersRoutes from '@/router/users'
 import DirectMessagesView from '@/views/Dm/DirectMessagesView.vue'
 import ChatWindowView from '@/views/Chat/ChatWindowView.vue'
 import Notifications from '@/views/Notifications.vue'
+import LeaderboardView from '@/views/LeaderboardView.vue'
 
 const dashboardRoutes = {
   path: '/',
@@ -33,7 +34,8 @@ const dashboardRoutes = {
       component: ChatWindowView,
       meta: {
         requiresAuth: true,
-        title: 'Chat'
+        title: 'Chat',
+        layoutWrapperClasses: 'layout-content-height-fixed'
       }
     },
     {
@@ -42,7 +44,8 @@ const dashboardRoutes = {
       component: DirectMessagesView,
       meta: {
         requiresAuth: true,
-        title: 'Direct Messages'
+        title: 'Mes Dm',
+        layoutWrapperClasses: 'layout-content-height-fixed'
       }
     },
     {
@@ -57,10 +60,19 @@ const dashboardRoutes = {
     {
       path: 'leaderboard',
       name: 'leaderboard',
-      component: () => import('@/views/LeaderboardView.vue'),
+      component: LeaderboardView,
       meta: {
         requiresAuth: true,
         title: 'Message'
+      }
+    },
+    {
+      path: 'unlock-account',
+      name: 'unlock-account',
+      component: () => import('@/views/Auth/Unlock.vue'),
+      meta: {
+        requiresAuth: false,
+        title: 'Débloquer mon compte'
       }
     },
     usersRoutes
