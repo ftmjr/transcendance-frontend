@@ -9,6 +9,7 @@ import {
 } from '@/utils/chatSocket'
 import axios from '@/utils/axios'
 import { Profile, User } from 'Auth'
+import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
 export interface JoinRoom {
   userId: number
   password?: string
@@ -102,10 +103,14 @@ const useRoomsStore = defineStore({
     async init(userId: number) {
       await this.getAllMyRooms()
       await this.fetchPublicRooms()
+      const messageStore = useMessageStore()
       this.socketManager = new ChatSocket(
         userId,
         (message: ChatMessage) => {
-          // code for new messages comming from the server via socket
+          // code for new messages from chatRooms coming from the server via socket
+        },
+        (message: PrivateMessage) => {
+          messageStore.handleReceivedMessage(message)
         },
         (error: string) => {
           // code for failed to send message
@@ -114,6 +119,7 @@ const useRoomsStore = defineStore({
           // code on failed connection to the socket server
         }
       )
+      messageStore.setSocketManager(this.socketManager)
     },
     sendMessage(roomId: number, content: string) {
       if (!this.socketManager) return
@@ -125,6 +131,7 @@ const useRoomsStore = defineStore({
     async createRoom(info: CreateRoom) {
       // to be implemented
     },
+    // to be a member of a chat group
     async joinRoom(roomId: number, info: JoinRoom) {
       try {
         const { data } = await axios.post<ChatRoomMember>(`/chat/join-room/${roomId}`, info)
@@ -133,6 +140,12 @@ const useRoomsStore = defineStore({
         console.error(error)
       }
     },
+    // start listening to a room via socket
+    listenToRoom(roomId: number) {
+      if (!this.socketManager || !this.socketManager.socketOperational) return
+      this.socketManager.listenRoom(roomId)
+    },
+    // quit the chat group
     async leaveRoom(roomId: number, userId: number) {
       try {
         await axios.post<ChatRoomMember>('/chat/leave-room', {

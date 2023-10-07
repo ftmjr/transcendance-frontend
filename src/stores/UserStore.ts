@@ -35,7 +35,7 @@ export interface FriendRequestWithSender extends FriendRequest {
   }
 }
 
-interface Contact {
+export interface Contact {
   id: number
   userId: number
   contactId: number
