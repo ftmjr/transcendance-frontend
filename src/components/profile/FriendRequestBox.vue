@@ -134,7 +134,15 @@ export default defineComponent({
       this.state = await this.userStore.checkFriendShip(this.friendId)
       this.blockStatus = await this.userStore.checkBlocked(this.friendId)
       this.loading = false
-    }
+    },
+    async unBlockUser() {
+      this.loading = true;
+      await this.userStore.unblockUser(this.friendId);
+      this.loading = false;
+      this.$nextTick(() => {
+        this.fetchFriendShipState(); // re-fetch friendship state
+      })
+    },
   }
 })
 </script>
