@@ -19,11 +19,7 @@
           <div class="flex-wrap justify-center gap-2 d-flex justify-sm-start flex-grow-1">
             <span class="d-flex">
               <VIcon size="20" icon="tabler-planet" class="me-1" />
-<<<<<<< HEAD
-              <span class="text-body-1">
-=======
               <span class="text-lg font-weight-semibold text-primary">
->>>>>>> b2160aa144bb934c7d035efa50ec60f048eca900
                 {{ info?.username }}
               </span>
             </span>
