@@ -16,8 +16,8 @@
         >
           <template v-slot:prepend>
             <v-avatar
-                :size="60"
-                :class="{
+              :size="60"
+              :class="{
                 'special-avatar-gold': index === 0, // Apply gold style for 1st place
                 'special-avatar-silver': index === 1, // Apply silver style for 2nd place
                 'special-avatar-bronze': index === 2, // Apply bronze style for 3rd place
@@ -30,10 +30,10 @@
           </template>
           <template v-slot:append>
             <GameStatusBadge
-                v-if="item.gameStatus && item.id !== authStore.user?.id"
-                :userGameStatus="item.gameStatus"
-                :user-id="item.id"
-                :status="item.profile.status"
+              v-if="item.gameStatus && item.id !== authStore.user?.id"
+              :userGameStatus="item.gameStatus"
+              :user-id="item.id"
+              :status="item.profile.status"
             />
           </template>
         </v-list-item>
@@ -47,8 +47,8 @@ import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import useUserStore, { UserWithScore } from '@/stores/UserStore'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
-import GameStatusBadge from "@/components/game/GameStatusBadge.vue";
-import useGameStore from "@/stores/GameStore";
+import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
+import useGameStore from '@/stores/GameStore'
 
 export default defineComponent({
   name: 'learderboard-view',
@@ -83,7 +83,7 @@ export default defineComponent({
       })
     }
   },
-  components: {GameStatusBadge, AvatarBadge }
+  components: { GameStatusBadge, AvatarBadge }
 })
 </script>
 
