@@ -1,11 +1,12 @@
 <template>
-  <VCard :loading="loading" color="transparent" class="w-full">
-    <VCol class="w-full">
-      <VRow v-if="blockStatus !== BlockedStatus.BlockedBy && !isMe">
+  <VCard :loading="loading" color="transparent" variant="flat">
+    <div class="flex items-center justify-center gap-4">
+      <div v-if="blockStatus !== BlockedStatus.BlockedBy && !isMe">
         <VBtn
           v-if="status === FriendshipStatus.Friends"
           color="error"
           size="small"
+          variant="outlined"
           @click="userStore"
         >
           <VIcon size="20" start icon="tabler-user-minus" />
@@ -45,31 +46,36 @@
           v-else-if="status === FriendshipStatus.None"
           color="primary"
           variant="outlined"
+          size="small"
           @click="userStore.askFriendRequest(friendId)"
         >
           <VIcon size="20" start icon="tabler-user-plus" />
           Ajouter en ami
         </VBtn>
+      </div>
+      <div v-if="!isMe">
         <VBtn
-          v-else-if="status === BlockedStatus.Blocked"
-          color="error"
-          variant="outlined"
+          v-if="blockStatus === BlockedStatus.Blocked || blockStatus === BlockedStatus.Mutual"
+          color="dark"
+          variant="tonal"
+          size="small"
           @click="userStore.unblockUser(friendId)"
         >
-          <VIcon size="20" start icon="tabler-user-minus" />
+          <VIcon size="20" start icon="tabler-lock" />
           Débloquer
         </VBtn>
         <VBtn
-          v-else-if="status === BlockedStatus.None"
-          color="primary"
-          variant="outlined"
+          v-else-if="blockStatus === BlockedStatus.None"
+          color="dark"
+          size="small"
+          variant="tonal"
           @click="userStore.blockUser(friendId)"
         >
-          <VIcon size="20" start icon="tabler-user-minus" />
+          <VIcon size="20" start icon="mingcute-unlock-fill" />
           Bloquer
         </VBtn>
-      </VRow>
-    </VCol>
+      </div>
+    </div>
   </VCard>
 </template>
 
@@ -128,9 +134,6 @@ export default defineComponent({
       this.state = await this.userStore.checkFriendShip(this.friendId)
       this.blockStatus = await this.userStore.checkBlocked(this.friendId)
       this.loading = false
-    },
-    async blocked(friendId: number){
-      await this.userStore.unblockUser(friendId);
     }
   }
 })

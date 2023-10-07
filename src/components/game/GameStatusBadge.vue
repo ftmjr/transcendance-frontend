@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-2">
+  <div class="flex gap-2 items-center">
     <v-chip v-if="userGameStatus.status === 'playing'" color="green">
       <v-icon left>tabler:device-gamepad</v-icon>
       Joue
@@ -38,6 +38,7 @@
 <script lang="ts" setup>
 import { PropType, ref } from 'vue'
 import useGameStore, { GameSession } from '@/stores/GameStore'
+import { Status } from '@/stores/AuthStore'
 const props = defineProps({
   userGameStatus: {
     type: Object as PropType<{
@@ -51,7 +52,7 @@ const props = defineProps({
     required: true
   },
   status: {
-    type: String,
+    type: String as PropType<Status>,
     required: true
   }
 })

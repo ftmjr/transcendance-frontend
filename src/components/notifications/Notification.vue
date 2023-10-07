@@ -5,20 +5,52 @@
         <v-icon :class="iconClass">{{ iconType }}</v-icon>
         <strong class="ml-2">{{ translatedTitle }}</strong>
       </div>
-      <span class="text-sm">{{ formattedDate }}</span>
+      <div>
+        <VIcon v-if="notification.status === 'UNREAD'" color="primary" small
+          >tabler-circle-dot</VIcon
+        >
+        <VIcon v-else small color="primary">tabler-circle</VIcon>
+      </div>
     </div>
-    <p class="mt-2">{{ notification.message }}</p>
-    <div v-if="isExpiringSoon" class="mt-2 text-red-500 text-sm flex items-center">
-      <v-icon small>mdi-alert-circle</v-icon> Expire bientôt
+    <div class="flex">
+      <div>
+        <p class="mt-2">{{ notification.message }}</p>
+        <div v-if="isExpiringSoon" class="mt-2 text-red-500 text-sm flex items-center">
+          <v-icon small>mdi-alert-circle</v-icon> Expire bientôt
+        </div>
+      </div>
     </div>
     <div>
-      <VBtn v-if="showPlayButton" icon @click.stop="handlePlay(notification.referenceId)">
-        <VIcon>tabler-playstation-x</VIcon>
+      <VBtn
+        v-if="showPlayButton"
+        color="primary"
+        @click.stop="handlePlay(notification.referenceId)"
+      >
+        Commencer
+        <VIcon>mdi-sword-cross</VIcon>
       </VBtn>
-      <VBtnGroup v-if="showAcceptRejectButtons">
-        <VBtn @click.stop="handleAccept(notification.referenceId)" color="success"> Accepter </VBtn>
-        <VBtn @click.stop="handleReject(notification.referenceId)" color="error"> Refuser </VBtn>
+      <VBtnGroup v-if="showAcceptRejectButtons" size="small">
+        <VBtn
+          @click.stop="handleAccept(notification.referenceId)"
+          size="small"
+          variant="outlined"
+          color="success"
+        >
+          Accepter <VIcon>tabler-check</VIcon>
+        </VBtn>
+        <VBtn
+          @click.stop="handleReject(notification.referenceId)"
+          size="small"
+          variant="outlined"
+          color="error"
+        >
+          Refuser
+        </VBtn>
       </VBtnGroup>
+    </div>
+    <div class="flex items-center justify-end">
+      <VIcon small>tabler-calendar-event</VIcon>
+      <span class="text-sm">{{ formattedDate }}</span>
     </div>
   </div>
 </template>
@@ -71,11 +103,11 @@ export default defineComponent({
   computed: {
     notificationClass(): object {
       return {
-        'p-4 mb-4 border rounded cursor-pointer': true,
+        'p-4 mb-4 border-2 rounded cursor-pointer': true,
         'bg-gray-100/10': this.notification.status === NotificationStatus.UNREAD,
         'border-blue-400': this.notification.type === NotificationType.GAME_INVITE,
-        'border-green-400': this.notification.type === NotificationType.FRIEND_REQUEST,
-        'border-orange-400': this.notification.type === NotificationType.GAME_EVENT,
+        'border-green-400/30': this.notification.type === NotificationType.FRIEND_REQUEST,
+        'border-orange-400/10': this.notification.type === NotificationType.GAME_EVENT,
         'border-red-400': this.notification.type === NotificationType.PRIVATE_MESSAGE
       }
     },
@@ -126,18 +158,23 @@ export default defineComponent({
         : this.notification.title
     },
     showPlayButton(): boolean {
-      return (
+      const isCorrectType =
         this.notification.type === NotificationType.GAME_INVITE &&
         this.notification.title === 'Challenge Accepted'
-      )
+      const isExpired =
+        this.notification.expiresAt && new Date(this.notification.expiresAt) < new Date()
+      return isCorrectType && !isExpired
     },
     showAcceptRejectButtons(): boolean {
-      return (
+      const isCorrectType =
         (this.notification.type === NotificationType.GAME_INVITE &&
           this.notification.title === 'Game Invite') ||
         (this.notification.type === NotificationType.FRIEND_REQUEST &&
           this.notification.title === 'Friend Request')
-      )
+      const isExpired =
+        this.notification.expiresAt && new Date(this.notification.expiresAt) < new Date()
+      const isAlreadyResponded = this.notification.status !== NotificationStatus.UNREAD
+      return isCorrectType && !isExpired && !isAlreadyResponded
     }
   },
   methods: {
