@@ -8,31 +8,29 @@
           color="error"
           size="small"
           variant="outlined"
-          @click="userStore.unFriend(friendId)"
+          @click="unFriend"
         >
           <VIcon size="20" start icon="tabler-user-minus" />
           UNFRIEND
         </VBtn>
-
         <!-- CANCEL FRIEND REQUEST -->
         <VBtn
           v-else-if="status === FriendshipStatus.Pending"
           color="warning"
           variant="outlined"
           size="small"
-          @click="userStore.cancelFriendRequest(friendId)"
+          @click="cancelFriendRequest"
         >
           <VIcon size="20" start icon="tabler-x" />
-          REJECT
+          CANCEL FRIEND REQUEST
         </VBtn>
-
          <!-- ACCEPT/DECLINE FRIEND REQUEST -->
         <VBtnGroup v-else-if="status === FriendshipStatus.NeedApproval">
           <VBtn
             color="success"
             size="small"
             variant="outlined"
-            @click="userStore.approveFriendRequest(state.data.id)"
+            @click="acceptFriendRequest"
           >
             <VIcon size="20" start icon="tabler-check" />
             ACCEPT
@@ -40,28 +38,26 @@
           <VBtn
             color="error"
             size="small"
-            @click="userStore.rejectFriendRequest(state.data.id)"
+            @click="declineFriendRequest"
             variant="outlined"
           >
             <VIcon size="20" start icon="tabler-x" />
             DECLINE
           </VBtn>
         </VBtnGroup>
-
         <!-- BEFRIEND, SEND FRIEND REQUEST -->
         <VBtn
           v-else-if="status === FriendshipStatus.None"
           color="primary"
           variant="outlined"
           size="small"
-          @click="userStore.askFriendRequest(friendId)"
+          @click="beFriendRequest"
         >
         <VIcon size="20" start icon="tabler-user-plus" />
              BEFRIEND
         </VBtn>
-        
       </div>
-      <!-- <div v-if="!isMe">
+      <div v-if="!isMe">
         <VBtn
           v-if="blockStatus === BlockedStatus.Blocked || blockStatus === BlockedStatus.Mutual"
           color="dark"
@@ -82,7 +78,7 @@
           <VIcon size="20" start icon="mingcute-unlock-fill" />
           Bloquer
         </VBtn>
-      </div> -->
+      </div>
     </div>
   </VCard>
 </template>
@@ -143,15 +139,40 @@ export default defineComponent({
       this.blockStatus = await this.userStore.checkBlocked(this.friendId)
       this.loading = false
     },
-    async requestStatus() {
-      await this.$nextTick(() => {
-        this.fetchFriendShipState();
-      })
-    },
     async unBlockUser() {
       this.loading = true;
       await this.userStore.unblockUser(this.friendId);
       this.loading = false;
+      this.$nextTick(() => {
+        this.fetchFriendShipState(); // re-fetch friendship state
+      })
+    },
+    async beFriendRequest() {
+      await this.userStore.askFriendRequest(this.friendId)
+      this.$nextTick(() => {
+        this.fetchFriendShipState(); // re-fetch friendship state
+      })
+    },
+    async cancelFriendRequest() {
+      await this.userStore.cancelFriendRequest(this.state.data.id)
+      this.$nextTick(() => {
+        this.fetchFriendShipState(); // re-fetch friendship state
+      })
+    },
+    async acceptFriendRequest() {
+      await this.userStore.approveFriendRequest(this.state.data.id)
+      this.$nextTick(() => {
+        this.fetchFriendShipState(); // re-fetch friendship state
+      })
+    },
+    async declineFriendRequest() {
+      await this.userStore.rejectFriendRequest(this.state.data.id)
+      this.$nextTick(() => {
+        this.fetchFriendShipState(); // re-fetch friendship state
+      })
+    },
+    async unFriend() {
+      await this.userStore.unFriend(this.friendId)
       this.$nextTick(() => {
         this.fetchFriendShipState(); // re-fetch friendship state
       })
