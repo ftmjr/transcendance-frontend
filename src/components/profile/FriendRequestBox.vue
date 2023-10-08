@@ -2,26 +2,31 @@
   <VCard :loading="loading" color="transparent" variant="flat">
     <div class="flex items-center justify-center gap-4">
       <div v-if="blockStatus !== BlockedStatus.BlockedBy && !isMe">
+         <!-- UNFRIEND, DELETE FRIEND -->
         <VBtn
           v-if="status === FriendshipStatus.Friends"
           color="error"
           size="small"
           variant="outlined"
-          @click="userStore"
+          @click="userStore.unFriend(friendId)"
         >
           <VIcon size="20" start icon="tabler-user-minus" />
-          Supprimer des amis
+          UNFRIEND
         </VBtn>
+
+        <!-- CANCEL FRIEND REQUEST -->
         <VBtn
           v-else-if="status === FriendshipStatus.Pending"
           color="warning"
           variant="outlined"
           size="small"
-          @click="userStore.rejectFriendRequest(friendId)"
+          @click="userStore.cancelFriendRequest(friendId)"
         >
           <VIcon size="20" start icon="tabler-x" />
-          Annuler la demande
+          REJECT
         </VBtn>
+
+         <!-- ACCEPT/DECLINE FRIEND REQUEST -->
         <VBtnGroup v-else-if="status === FriendshipStatus.NeedApproval">
           <VBtn
             color="success"
@@ -30,7 +35,7 @@
             @click="userStore.approveFriendRequest(state.data.id)"
           >
             <VIcon size="20" start icon="tabler-check" />
-            Accepter
+            ACCEPT
           </VBtn>
           <VBtn
             color="error"
@@ -39,9 +44,11 @@
             variant="outlined"
           >
             <VIcon size="20" start icon="tabler-x" />
-            Refuser
+            DECLINE
           </VBtn>
         </VBtnGroup>
+
+        <!-- BEFRIEND, SEND FRIEND REQUEST -->
         <VBtn
           v-else-if="status === FriendshipStatus.None"
           color="primary"
@@ -49,11 +56,12 @@
           size="small"
           @click="userStore.askFriendRequest(friendId)"
         >
-          <VIcon size="20" start icon="tabler-user-plus" />
-          Ajouter en ami
+        <VIcon size="20" start icon="tabler-user-plus" />
+             BEFRIEND
         </VBtn>
+        
       </div>
-      <div v-if="!isMe">
+      <!-- <div v-if="!isMe">
         <VBtn
           v-if="blockStatus === BlockedStatus.Blocked || blockStatus === BlockedStatus.Mutual"
           color="dark"
@@ -74,7 +82,7 @@
           <VIcon size="20" start icon="mingcute-unlock-fill" />
           Bloquer
         </VBtn>
-      </div>
+      </div> -->
     </div>
   </VCard>
 </template>
@@ -134,6 +142,11 @@ export default defineComponent({
       this.state = await this.userStore.checkFriendShip(this.friendId)
       this.blockStatus = await this.userStore.checkBlocked(this.friendId)
       this.loading = false
+    },
+    async requestStatus() {
+      await this.$nextTick(() => {
+        this.fetchFriendShipState();
+      })
     },
     async unBlockUser() {
       this.loading = true;

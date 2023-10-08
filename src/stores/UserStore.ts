@@ -136,6 +136,7 @@ const useUserStore = defineStore({
     async askFriendRequest(userId: number): Promise<'success' | 'already' | 'error'> {
       let message: 'success' | 'already' | 'error' = 'success'
       try {
+        console.log(userId)
         await axios.post(`/friends/request-friendship-with/${userId}`)
       } catch (error: AxiosError | any) {
         if (error.response && error.response === 409) {
@@ -166,6 +167,7 @@ const useUserStore = defineStore({
     },
     async rejectFriendRequest(requestId: number): Promise<'success' | 'error'> {
       try {
+        console.log("reject", requestId)
         await axios.delete(`/friends/reject/${requestId}`)
         await this.getReceivedRequests()
         return 'success'

@@ -24,7 +24,7 @@
             <span class="d-flex align-center">
               <VIcon size="20" icon="tabler-calendar" class="me-2" />
               <span class="text-body-1">
-                {{ showDateFormated(info?.joiningDate) }}
+               member since: {{ showDateFormated(info?.joiningDate) }}
               </span>
             </span>
           </div>
