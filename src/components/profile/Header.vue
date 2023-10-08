@@ -30,7 +30,7 @@
           </div>
         </div>
       </div>
-      <FriendRequestBox v-if="id !== 0" :friendId="id" />
+      <FriendRequestBox class="w-full" v-if="id !== 0" :friendId="id" />
     </VCardText>
   </VCard>
 </template>

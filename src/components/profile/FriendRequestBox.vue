@@ -57,7 +57,7 @@
              BEFRIEND
         </VBtn>
       </div>
-      <div v-if="!isMe">
+      <!-- <div v-if="!isMe">
         <VBtn
           v-if="blockStatus === BlockedStatus.Blocked || blockStatus === BlockedStatus.Mutual"
           color="dark"
@@ -66,7 +66,7 @@
           @click="userStore.unblockUser(friendId)"
         >
           <VIcon size="20" start icon="tabler-lock" />
-          Débloquer
+          UNBLOCK
         </VBtn>
         <VBtn
           v-else-if="blockStatus === BlockedStatus.None"
@@ -76,9 +76,9 @@
           @click="userStore.blockUser(friendId)"
         >
           <VIcon size="20" start icon="mingcute-unlock-fill" />
-          Bloquer
+          BLOCK
         </VBtn>
-      </div>
+      </div> -->
     </div>
   </VCard>
 </template>
