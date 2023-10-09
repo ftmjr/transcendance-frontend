@@ -18,11 +18,16 @@
     <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
       <VWindowItem value="profile">
         <div>
-          <p>Profil, bio, major stats etc...</p>
+          <p>[SHORT BIO]</p>
+          <p><i>{{ this.authStore.getProfile?.bio }}</i></p>
+          <br>
+          <br>
+          <p>[PONG STATS]</p>
+          <p>Number of wins : {{}}</p>
         </div>
       </VWindowItem>
       <VWindowItem value="awards">
-        <div>Les recompenses</div>
+        <div>AWARDS</div>
       </VWindowItem>
       <VWindowItem value="friends">
         <Friends />
@@ -37,6 +42,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
+import useGameStore from '@/stores/GameStore'
+import useUserStore from '@/stores/UserStore'
 import type { ProfileData, User, GameHistory } from 'Auth'
 import axios from '@/utils/axios'
 import Histories from '@/views/User/Histories.vue'
@@ -61,7 +68,9 @@ export default defineComponent({
   },
   setup() {
     const authStore = useAuthStore()
-    return { authStore }
+    const gameStore = useGameStore()
+    const userStore = useUserStore()
+    return { authStore, gameStore, userStore }
   },
   data() {
     return {
@@ -70,13 +79,13 @@ export default defineComponent({
       otherTabs: [
         { title: 'Profile', icon: 'tabler-user-check', tab: 'profile' },
         { title: 'Awards', icon: 'dashicons:awards', tab: 'awards' },
-        { title: 'Historique', icon: 'tabler-history', tab: 'history' }
+        { title: 'Game History', icon: 'tabler-history', tab: 'history' }
       ],
       meTabs: [
         { title: 'Profile', icon: 'tabler-user-check', tab: 'profile' },
         { title: 'Awards', icon: 'dashicons:awards', tab: 'awards' },
-        { title: 'Amis', icon: 'tabler-link', tab: 'friends' },
-        { title: 'Historique', icon: 'tabler-history', tab: 'history' }
+        { title: 'Friends', icon: 'tabler-link', tab: 'friends' },
+        { title: 'Game History', icon: 'tabler-history', tab: 'history' }
       ],
       profileData: {
         id: 0,
@@ -87,7 +96,7 @@ export default defineComponent({
           username: 'no username',
           joiningDate: Date.now()
         },
-        bio: ''
+        bio: this.authStore.getProfile?.bio || ''
       } as ProfileData,
       gameHistories: [] as GameHistory[],
       errorMsg: ''
@@ -101,7 +110,7 @@ export default defineComponent({
     tabs(): { title: string; icon: string; tab: string }[] {
       if (this.userIdValue === this.authStore.getUser?.id) return this.meTabs
       return this.otherTabs
-    }
+    },
   },
   async beforeMount() {
     await this.fetchProfileData()
@@ -140,9 +149,10 @@ export default defineComponent({
     },
     getCoalition(OauthInfo: unknown): 'Legion' | 'Torrent' | 'Armada' {
       if (OauthInfo) {
+        return 'Torrent'
         // do something to get 42 colation
       }
-      return 'Legion'
+      return 'Torrent'
     }
   }
 })

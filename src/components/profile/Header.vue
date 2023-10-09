@@ -10,14 +10,14 @@
       </div>
       <div class="pt-6 mt-16 user-profile-info w-full pt-sm-0 mt-sm-0">
         <h6 class="mb-3 text-center text-h6 text-sm-start font-weight-semibold">
-          {{ info?.fullName }}
+          Username: {{ info?.username }}
         </h6>
         <div class="flex-wrap justify-center gap-4 d-flex align-center justify-sm-space-between">
           <div class="flex-wrap justify-center gap-2 d-flex justify-sm-start flex-grow-1">
             <span class="d-flex">
               <VIcon size="20" icon="tabler-planet" class="me-1" />
               <span class="text-lg font-weight-semibold text-primary">
-                {{ info?.username }}
+                Full name: {{ info?.fullName }}
               </span>
             </span>
 
@@ -76,7 +76,7 @@ export default defineComponent({
   },
   methods: {
     showDateFormated(date): string {
-      return new Date(date).toLocaleDateString('fr-FR', {
+      return new Date(date).toLocaleDateString('en-CA', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'

@@ -1,32 +1,32 @@
 export default [
   {
-    title: 'Tableau de bord',
+    title: 'Dashboard',
     icon: { icon: 'tabler-smart-home' },
     to: 'dashboard'
   },
   {
-    title: 'Partie rapide',
+    title: 'Quick Game',
     icon: { icon: 'noto-v1:game-die' },
     to: 'game'
   },
   {
-    title: 'Trouver un joueur',
+    title: 'Find a Player',
     icon: { icon: 'tabler-users-group', color: 'blue' },
     to: 'user-list'
   },
   {
-    title: 'Leader Board',
+    title: 'Leaderboard',
     icon: { icon: 'solar:ranking-linear' },
     to: 'leaderboard'
   },
-  { heading: 'Messagerie' },
+  { heading: 'Conversation' },
   {
-    title: 'Chat',
+    title: 'Chatroom',
     icon: { icon: 'tabler-message' },
     to: 'chat'
   },
   {
-    title: 'DM',
+    title: 'DMs',
     icon: { icon: 'tabler-mail' },
     to: 'dm'
   },
@@ -35,9 +35,9 @@ export default [
     title: 'Profile',
     icon: { icon: 'tabler-user' },
     children: [
-      { title: 'Mon profile', to: { name: 'me', params: { tab: 'profile' } } },
-      { title: 'Réglages', to: { name: 'settings', params: { tab: 'account' } } },
-      { title: 'Historique', to: { name: 'me', params: { tab: 'history' } } }
+      { title: 'View my profile', to: { name: 'me', params: { tab: 'profile' } } },
+      { title: 'Settings', to: { name: 'settings', params: { tab: 'account' } } },
+      { title: 'Historics', to: { name: 'me', params: { tab: 'history' } } }
     ]
   }
 ]

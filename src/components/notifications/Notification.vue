@@ -36,7 +36,7 @@
           variant="outlined"
           color="success"
         >
-          Accepter <VIcon>tabler-check</VIcon>
+          ACCEPT <VIcon>tabler-check</VIcon>
         </VBtn>
         <VBtn
           @click.stop="handleReject(notification.referenceId)"
@@ -44,7 +44,7 @@
           variant="outlined"
           color="error"
         >
-          Refuser
+          DECLINE
         </VBtn>
       </VBtnGroup>
     </div>
@@ -200,7 +200,7 @@ export default defineComponent({
           })
         }
       } else if (this.notification.type === NotificationType.FRIEND_REQUEST) {
-        await this.userStore.approveFriendRequest(referenceId)
+        await this.userStore.approveFriendRequest(this.notification.referenceId)
       }
     },
     async handleReject(referenceId: number) {
