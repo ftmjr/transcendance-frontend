@@ -26,7 +26,7 @@
         color="primary"
         @click.stop="handlePlay(notification.referenceId)"
       >
-        Commencer
+        START
         <VIcon>mdi-sword-cross</VIcon>
       </VBtn>
       <VBtnGroup v-if="showAcceptRejectButtons" size="small">
@@ -36,7 +36,9 @@
           variant="outlined"
           color="success"
         >
-          ACCEPT <VIcon>tabler-check</VIcon>
+          <span v-if="notification.type === 'FRIEND_REQUEST'">
+            VIEW<VIcon>tabler-check</VIcon></span>
+          <span v-else>ACCEPT<VIcon>tabler-check</VIcon></span>
         </VBtn>
         <VBtn
           @click.stop="handleReject(notification.referenceId)"
@@ -200,7 +202,12 @@ export default defineComponent({
           })
         }
       } else if (this.notification.type === NotificationType.FRIEND_REQUEST) {
-        await this.userStore.approveFriendRequest(this.notification.referenceId)
+        this.$router.push({
+            name: 'user-profile',
+            params: { userId: this.notification.referenceId }
+          })
+        // await this.userStore.approveFriendRequest(this.notification.referenceId)
+        console.log("NUMERO ", this.notification.referenceId)
       }
     },
     async handleReject(referenceId: number) {
