@@ -273,11 +273,11 @@ const useAuthStore = defineStore({
         return false
       }
     },
-    async updateUsername( username: string) {
+    async updateUsername(username: string) {
       this.error = { state: false, message: '' }
       try {
         const { data } = await axios.post<User>('users/username/' + username)
-        this.setUser({ ...this.user, username: data.username})
+        this.setUser({ ...this.user, username: data.username })
         return true
       } catch (error) {
         if (error.response && (error.response.status === 403 || error.response.status === 401)) {
@@ -295,7 +295,12 @@ const useAuthStore = defineStore({
         this.setUser(data)
         return true
       } catch (error) {
-        if (error.response && (error.response.status === 400 || error.response.status === 403 || error.response.status === 401)) {
+        if (
+          error.response &&
+          (error.response.status === 400 ||
+            error.response.status === 403 ||
+            error.response.status === 401)
+        ) {
           this.error = { state: true, message: error.response.data.message }
         } else {
           this.error = { state: true, message: `Can't update user info` }

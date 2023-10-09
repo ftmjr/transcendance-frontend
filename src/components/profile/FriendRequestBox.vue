@@ -136,13 +136,13 @@ export default defineComponent({
       this.loading = false
     },
     async unBlockUser() {
-      this.loading = true;
-      await this.userStore.unblockUser(this.friendId);
-      this.loading = false;
+      this.loading = true
+      await this.userStore.unblockUser(this.friendId)
+      this.loading = false
       this.$nextTick(() => {
-        this.fetchFriendShipState(); // re-fetch friendship state
+        this.fetchFriendShipState() // re-fetch friendship state
       })
-    },
+    }
   }
 })
 </script>

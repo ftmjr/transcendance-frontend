@@ -57,7 +57,6 @@
                       />
                     </VCol>
 
-
                     <VCol cols="12" class="d-flex flex-wrap gap-4">
                       <VBtn @click.prevent="updateUsername">Update</VBtn>
                       <VBtn
@@ -72,7 +71,6 @@
                   </VRow>
                 </VForm>
               </VCardText>
-
 
               <VCardText class="pt-2">
                 <VForm class="mt-6" @submit.prevent>
@@ -158,7 +156,7 @@ export default defineComponent({
       infoMsg: '',
       infoColor: 'success',
       activeTab: this.tab,
-      
+
       fields: {
         username: '',
         firstName: '',
@@ -212,7 +210,7 @@ export default defineComponent({
         this.infoColor = 'success'
         this.isInfoBarVisible = true
       } else {
-        this.infoMsg = this.authStore.error.message;
+        this.infoMsg = this.authStore.error.message
         this.infoColor = 'error'
         this.isInfoBarVisible = true
       }
