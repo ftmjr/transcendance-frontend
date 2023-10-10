@@ -182,6 +182,7 @@ export default defineComponent({
       this.$emit('markAsRead', this.notification.id)
     },
     async handlePlay(gameId: number) {
+      this.$emit('markAsRead', this.notification.id)
       if (this.notification.type === NotificationType.GAME_INVITE) {
         this.$router.push({
           name: 'game',
