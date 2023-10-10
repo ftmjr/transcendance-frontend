@@ -66,15 +66,6 @@ const dashboardRoutes = {
         title: 'Message'
       }
     },
-    {
-      path: 'unlock-account',
-      name: 'unlock-account',
-      component: () => import('@/views/Auth/Unlock.vue'),
-      meta: {
-        requiresAuth: false,
-        title: 'Débloquer mon compte'
-      }
-    },
     usersRoutes
   ]
 }
