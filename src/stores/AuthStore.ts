@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { AuthState, ILoginData, RegisterBody, User, Profile } from 'Auth'
+import type { AuthState, ILoginData, RegisterBody, User, Profile, Coalition } from 'Auth'
 import type { AxiosError } from 'axios'
 import axios from '@/utils/axios'
 
@@ -99,6 +99,9 @@ const useAuthStore = defineStore({
     },
     visibleStatus(): Status {
       return this.getProfile.status ?? Status.Offline
+    },
+    getCoalition(): Coalition {
+      return this.resolveCoalition(this.getProfile)
     }
   },
   actions: {
@@ -336,6 +339,23 @@ const useAuthStore = defineStore({
       else if (status === Status.Offline) return 'error'
       else if (status === Status.Busy) return 'warning'
       return 'secondary'
+    },
+    resolveCoalition(profile: Profile): Coalition {
+      if (profile.oauth && profile.oauth?.coalitions) {
+        return profile.oauth.coalitions[0]
+      } else {
+        return {
+          color: '#cc0000',
+          cover_url:
+            'https://cdn.intra.42.fr/coalition/cover/243/42Q_035_22_BG_Coalitions_Legion_3000x2000.jpg',
+          id: 243,
+          image_url: 'https://cdn.intra.42.fr/coalition/image/243/42Q_035_22_Logo_Legion.svg',
+          name: 'Les pongistes',
+          score: 0,
+          slug: 'Pongiste',
+          user_id: 0
+        }
+      }
     }
   }
 })

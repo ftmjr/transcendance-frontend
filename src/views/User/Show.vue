@@ -37,7 +37,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import type { ProfileData, User, GameHistory } from 'Auth'
+import type { ProfileData, User, GameHistory, Coalition } from 'Auth'
 import axios from '@/utils/axios'
 import Histories from '@/views/User/Histories.vue'
 import UserProfileHeader from '@/components/profile/Header.vue'
@@ -104,7 +104,11 @@ export default defineComponent({
     }
   },
   async beforeMount() {
-    await this.fetchProfileData()
+    await this.fetchProfileData(this.userIdValue)
+    if (this.profileData.header.username) {
+      // change page Title
+      document.title = `${this.profileData.header.username} - ${this.activeTab} - Profile | Transcendence`
+    }
   },
   methods: {
     getRoute(tab: string) {
@@ -114,20 +118,20 @@ export default defineComponent({
         return { name: 'user-profile', params: { userId: this.userIdValue, tab: tab } }
       }
     },
-    async fetchProfileData() {
+    async fetchProfileData(userId: number) {
       this.loading = true
       this.errorMsg = ''
       try {
-        const { data } = await axios.get<User>(`/users/profile/${this.userIdValue}`)
+        const { data } = await axios.get<User>(`/users/profile/${userId}`)
         this.profileData = {
           id: data.id,
           header: {
-            coalition: this.getCoalition(data.profile.oauth),
+            coalition: this.authStore.resolveCoalition(data.profile),
             avatar: data?.profile.avatar,
             fullName: `${data.profile.name} ${data.profile.lastname}`,
             username: data.username,
             joiningDate: data.createdAt,
-            isCurrentUser: this.userIdValue === this.authStore.getUser?.id
+            isCurrentUser: userId === this.authStore.getUser?.id
           },
           bio: data.profile.bio,
           status: data.profile.status
@@ -137,12 +141,18 @@ export default defineComponent({
         this.errorMsg = 'Failed to load profile'
       }
       this.loading = false
-    },
-    getCoalition(OauthInfo: unknown): 'Legion' | 'Torrent' | 'Armada' {
-      if (OauthInfo) {
-        // do something to get 42 colation
+    }
+  },
+  watch: {
+    $route(to, from) {
+      // if we moving to the same route we update the profile data
+      const showProfile = to.name === 'user-profile' || to.name === 'me'
+      if (showProfile) {
+        if (to.params.userId !== from.params.userId) {
+          const id = to.params.userId ?? this.authStore.getUser?.id
+          this.fetchProfileData(id)
+        }
       }
-      return 'Legion'
     }
   }
 })
