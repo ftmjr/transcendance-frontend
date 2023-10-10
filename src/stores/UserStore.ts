@@ -255,6 +255,22 @@ const useUserStore = defineStore({
     },
 
     /* User section */
+    async getAllUsers(params: {
+      take?: number
+    }): Promise<User[]> {
+      const { take } = params
+      try {
+        const { data } = await axios.get<UserWithScore[]>('/users/all', {
+          params: {
+            take: 100
+          }
+        })
+        return data
+      } catch (e) {
+        console.log(e)
+      }
+      return []
+    },
     async getPaginatedUser(params: {
       currentPage: number
       perPage: number

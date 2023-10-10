@@ -28,6 +28,7 @@ declare module 'Auth' {
     gameId: number
     event: GameEvent;
     userId: number;
+    competitorId: number;
     timestamp: string;
   }
 
