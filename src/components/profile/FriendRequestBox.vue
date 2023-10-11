@@ -23,23 +23,13 @@
           <VIcon size="20" start icon="tabler-x" />
           Annuler la demande
         </VBtn>
-         <!-- ACCEPT/DECLINE FRIEND REQUEST -->
+        <!-- ACCEPT/DECLINE FRIEND REQUEST -->
         <VBtnGroup v-else-if="status === FriendshipStatus.NeedApproval">
-          <VBtn
-            color="success"
-            size="small"
-            variant="outlined"
-            @click="acceptFriendRequest"
-          >
+          <VBtn color="success" size="small" variant="outlined" @click="acceptFriendRequest">
             <VIcon size="20" start icon="tabler-check" />
             Accepter
           </VBtn>
-          <VBtn
-            color="error"
-            size="small"
-            @click="declineFriendRequest"
-            variant="outlined"
-          >
+          <VBtn color="error" size="small" @click="declineFriendRequest" variant="outlined">
             <VIcon size="20" start icon="tabler-x" />
             Refuser
           </VBtn>
@@ -139,41 +129,41 @@ export default defineComponent({
       this.loading = false
     },
     async unBlockUser() {
-      this.loading = true;
-      await this.userStore.unblockUser(this.friendId);
-      this.loading = false;
+      this.loading = true
+      await this.userStore.unblockUser(this.friendId)
+      this.loading = false
       this.$nextTick(() => {
-        this.fetchFriendShipState(); // re-fetch friendship state
+        this.fetchFriendShipState() // re-fetch friendship state
       })
     },
     async beFriendRequest() {
       await this.userStore.askFriendRequest(this.friendId)
       this.$nextTick(() => {
-        this.fetchFriendShipState(); // re-fetch friendship state
+        this.fetchFriendShipState() // re-fetch friendship state
       })
     },
     async cancelFriendRequest() {
       await this.userStore.cancelFriendRequest(this.state.data.id)
       this.$nextTick(() => {
-        this.fetchFriendShipState(); // re-fetch friendship state
+        this.fetchFriendShipState() // re-fetch friendship state
       })
     },
     async acceptFriendRequest() {
       await this.userStore.approveFriendRequest(this.state.data.id)
       this.$nextTick(() => {
-        this.fetchFriendShipState(); // re-fetch friendship state
+        this.fetchFriendShipState() // re-fetch friendship state
       })
     },
     async declineFriendRequest() {
       await this.userStore.rejectFriendRequest(this.state.data.id)
       this.$nextTick(() => {
-        this.fetchFriendShipState(); // re-fetch friendship state
+        this.fetchFriendShipState() // re-fetch friendship state
       })
     },
     async unFriend() {
       await this.userStore.unFriend(this.friendId)
       this.$nextTick(() => {
-        this.fetchFriendShipState(); // re-fetch friendship state
+        this.fetchFriendShipState() // re-fetch friendship state
       })
     }
   }

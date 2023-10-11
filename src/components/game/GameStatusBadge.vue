@@ -13,19 +13,19 @@
       Libre
     </v-chip>
     <v-btn
-        v-if="userGameStatus.gameSession"
-        size="small"
-        color="deep-purple accent-4"
-        :to="{
-          name: 'game',
-          params: {
-            gameId: userGameStatus.gameSession.gameId
-          },
-          query: {
-            waitingRoom: 'false',
-            isPlayer: 'false'
-          }
-        }"
+      v-if="userGameStatus.gameSession"
+      size="small"
+      color="deep-purple accent-4"
+      :to="{
+        name: 'game',
+        params: {
+          gameId: userGameStatus.gameSession.gameId
+        },
+        query: {
+          waitingRoom: 'false',
+          isPlayer: 'false'
+        }
+      }"
     >
       <v-icon left>tabler-eye</v-icon>
       Watch Game
@@ -53,7 +53,7 @@
 import { PropType, ref } from 'vue'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import { Status } from '@/stores/AuthStore'
-import {useRouter} from "vue-router";
+import { useRouter } from 'vue-router'
 const props = defineProps({
   userGameStatus: {
     type: Object as PropType<{
@@ -73,7 +73,7 @@ const props = defineProps({
 })
 const errorSnackbar = ref(false)
 const errorMsg = ref('')
-const gameStore = useGameStore();
+const gameStore = useGameStore()
 const challengeUser = (user: {
   status: 'playing' | 'inQueue' | 'free'
   gameSession?: GameSession
