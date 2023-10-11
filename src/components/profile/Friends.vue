@@ -1,6 +1,6 @@
 <template>
   <VCard :loading="loading" color="transparent" class="">
-    <VCardTitle class="text-center text-lg font-weight-bold my-4">Mes amis</VCardTitle>
+    <VCardTitle class="text-center text-lg font-weight-bold my-4">List of Friends</VCardTitle>
     <VRow>
       <VCol cols="12" md="6" v-for="data in userStore.contacts" :key="data.id">
         <div class="bg-slate-700/30 rounded-lg mx-1">

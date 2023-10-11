@@ -18,7 +18,12 @@
     <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
       <VWindowItem value="profile">
         <div>
-          <p>Profil, bio, major stats etc...</p>
+          <p>[SHORT BIO]</p>
+          <p><i>{{ this.authStore.getProfile?.bio }}</i></p>
+          <br>
+          <br>
+          <p>[PONG STATS]</p>
+          <p>Number of wins : </p>
         </div>
       </VWindowItem>
       <VWindowItem value="awards">
