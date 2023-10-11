@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
+import { GameHistory } from 'Auth'
 
 export enum GameSessionType {
   Bot,
@@ -21,6 +22,13 @@ export interface GameSession {
   type: GameSessionType
   participants: GamerSession[]
   observers: GamerSession[]
+}
+
+export interface CompleteGameHistory {
+  gameId: number
+  gameName: string
+  winnerId: number
+  histories: GameHistory[]
 }
 
 export enum StartAgainst {
@@ -106,30 +114,30 @@ const useGameStore = defineStore({
       }
     },
     async startGameAgainstQueList(): Promise<'preparing' | string> {
-        if (!this.canStartOrAcceptGameInvitation) {
-            return 'Vous avez deja une session de jeu'
-        }
-        try {
-            const { data } = await axios.post<GameSession>('/game/join-queue')
-            this.joinedGameSession = data
-            return 'preparing'
-        } catch (e) {
-            console.error(e)
-            return 'Une erreur est survenue'
-        }
+      if (!this.canStartOrAcceptGameInvitation) {
+        return 'Vous avez deja une session de jeu'
+      }
+      try {
+        const { data } = await axios.post<GameSession>('/game/join-queue')
+        this.joinedGameSession = data
+        return 'preparing'
+      } catch (e) {
+        console.error(e)
+        return 'Une erreur est survenue'
+      }
     },
     async startViewingGame(gameId: number): Promise<'preparing' | string> {
-        if (!this.canStartOrAcceptGameInvitation) {
-            return 'Vous avez deja une session de jeu'
-        }
-        try {
-            const { data } = await axios.get<GameSession>(`/game/watch-game/${gameId}`)
-            this.joinedGameSession = data
-            return 'preparing'
-        } catch (e) {
-            console.error(e)
-            return 'Une erreur est survenue'
-        }
+      if (!this.canStartOrAcceptGameInvitation) {
+        return 'Vous avez deja une session de jeu'
+      }
+      try {
+        const { data } = await axios.get<GameSession>(`/game/watch-game/${gameId}`)
+        this.joinedGameSession = data
+        return 'preparing'
+      } catch (e) {
+        console.error(e)
+        return 'Une erreur est survenue'
+      }
     },
     async acceptGameInvitation(gameId: number): Promise<'preparing' | string> {
       if (!this.canStartOrAcceptGameInvitation) {
@@ -180,9 +188,10 @@ const useGameStore = defineStore({
     },
     async leaveCurrentGameSession() {
       if (this.joinedGameSession) {
-        await this.gameEnded(this.joinedGameSession.gameId, this.joinedGameSession.hostId);
+        await this.gameEnded(this.joinedGameSession.gameId, this.joinedGameSession.hostId)
       }
     },
+    // allow you to know witch user is currently playing or in a waiting queue
     async getUserGameStatus(
       userId: number
     ): Promise<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }> {
@@ -192,7 +201,8 @@ const useGameStore = defineStore({
       }>(`/game/status/${userId}`)
       return data
     },
-    // allow you to know witch user is currently playing or in a waiting queue
+
+    // same function as getUserGameStatus but for multiple users
     async getUsersGameStatus(
       userIds: number[]
     ): Promise<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }[]> {
@@ -203,6 +213,16 @@ const useGameStore = defineStore({
         }[]
       >(`/game/status`, { userIds })
       return data
+    },
+    // get complete game history for a user
+    async getUserCompleteGameHistory(userId: number): Promise<CompleteGameHistory[]> {
+      try {
+        const { data } = await axios.get<CompleteGameHistory[]>(`/game/history/${userId}`)
+        return data
+      } catch (e) {
+        console.log('failed to get user game history')
+      }
+      return []
     }
   }
 })
