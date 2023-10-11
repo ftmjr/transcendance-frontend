@@ -67,7 +67,7 @@ export default defineComponent({
   methods: {
     markAsRead(notificationId: number) {
       this.notificationStore.markNotificationAsRead(notificationId)
-      this.reloadNotifications();
+      this.reloadNotifications()
     },
     deleteNotification(notificationId: number) {
       this.notificationStore.deleteNotification(notificationId)
@@ -79,7 +79,7 @@ export default defineComponent({
       // TODO: Implement
     },
     reloadNotifications() {
-      this.notificationStore.getNotifications();
+      this.notificationStore.getNotifications()
     }
   }
 })
