@@ -19,11 +19,13 @@
       <VWindowItem value="profile">
         <div>
           <p>[SHORT BIO]</p>
-          <p><i>{{ this.authStore.getProfile?.bio }}</i></p>
-          <br>
-          <br>
+          <p>
+            <i>{{ this.authStore.getProfile?.bio }}</i>
+          </p>
+          <br />
+          <br />
           <p>[PONG STATS]</p>
-          <p>Number of wins : </p>
+          <p>Number of wins :</p>
         </div>
       </VWindowItem>
       <VWindowItem value="awards">
@@ -33,7 +35,7 @@
         <Friends />
       </VWindowItem>
       <VWindowItem value="history">
-        <Histories :histories="gameHistories" />
+        <Histories :user-id="userIdValue" />
       </VWindowItem>
     </VWindow>
   </div>
@@ -100,7 +102,7 @@ export default defineComponent({
   },
   computed: {
     userIdValue(): number {
-      if (this.userId === 'me') return this.authStore.getUser?.id || 0
+      if (this.userId === 'me') return this.authStore.getUser?.id ?? 0
       return this.userId ? parseInt(this.userId) : 0
     },
     tabs(): { title: string; icon: string; tab: string }[] {
