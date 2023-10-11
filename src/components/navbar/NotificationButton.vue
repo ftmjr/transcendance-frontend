@@ -56,11 +56,10 @@ export default defineComponent({
   },
   methods: {
     markAsRead(notificationId: number) {
-      this.notificationStore.markNotificationAsRead(notificationId)
-      this.reloadNotifications()
+      this.notificationStore.markNotificationAsRead(notificationId);
     },
     deleteNotification(notificationId: number) {
-      this.notificationStore.deleteNotification(notificationId)
+      this.notificationStore.deleteNotification(notificationId);
     },
     readAllNotifications() {
       this.$router.push({ name: 'notifications' })

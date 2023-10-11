@@ -12,8 +12,22 @@
       <v-icon left>mdi-account-check-outline</v-icon>
       Libre
     </v-chip>
-    <v-btn v-if="userGameStatus.gameSession" @click="watchGame(userGameStatus.gameSession)">
-      <v-icon left>mdi-eye</v-icon>
+    <v-btn
+        v-if="userGameStatus.gameSession"
+        size="small"
+        color="deep-purple accent-4"
+        :to="{
+          name: 'game',
+          params: {
+            gameId: userGameStatus.gameSession.gameId
+          },
+          query: {
+            waitingRoom: 'false',
+            isPlayer: 'false'
+          }
+        }"
+    >
+      <v-icon left>tabler-eye</v-icon>
       Watch Game
     </v-btn>
     <v-btn v-else variant="outlined" size="small" @click="challengeUser(userGameStatus)">
@@ -39,6 +53,7 @@
 import { PropType, ref } from 'vue'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import { Status } from '@/stores/AuthStore'
+import {useRouter} from "vue-router";
 const props = defineProps({
   userGameStatus: {
     type: Object as PropType<{
@@ -56,12 +71,9 @@ const props = defineProps({
     required: true
   }
 })
-const watchGame = (gameSession: GameSession) => {
-  // logic to watch game
-}
 const errorSnackbar = ref(false)
 const errorMsg = ref('')
-const gameStore = useGameStore()
+const gameStore = useGameStore();
 const challengeUser = (user: {
   status: 'playing' | 'inQueue' | 'free'
   gameSession?: GameSession

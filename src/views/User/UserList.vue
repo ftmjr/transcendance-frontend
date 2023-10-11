@@ -65,7 +65,7 @@
                 </div>
               </td>
               <td>
-                <div class="flex gap-4">
+                <div class="flex gap-4 items-center">
                   <VChip label :color="authStore.resolveAvatarBadgeVariant(user.profile.status)">
                     {{ user.profile.status }}
                   </VChip>

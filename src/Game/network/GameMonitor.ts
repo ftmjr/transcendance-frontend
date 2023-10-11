@@ -6,13 +6,11 @@ export enum PAD_DIRECTION {
   down,
   none
 }
-
 export enum GAME_STATE {
   waiting,
   playing,
   scored
 }
-
 export interface BallServedData {
   userId: number
   position: { x: number; y: number }
@@ -86,6 +84,7 @@ export class GameMonitor {
   private _onScoreUpdated: (score: { player1: number; player2: number }) => void = () => {}
   private _onGameMonitorStateChanged: (state: GameMonitorState) => void = () => {}
 
+  private sendingScored = false;
   constructor(
     private gameName: string,
     private gameUserType: GameUserType,
@@ -185,12 +184,14 @@ export class GameMonitor {
     this.gameNetwork.socket?.on(
       GAME_EVENTS.ScoreChanged,
       (info: { id: number; data: Array<{ userId: number; score: number }> }) => {
-        const score = info.data
+        const score = info.data;
         score.forEach((score) => {
           this.score.set(score.userId, score.score)
         })
         this.vueUpdateObserver.onScoreUpdated(this.getScore())
         this._onScoreUpdated(this.getScore())
+        // since we received we can send another one
+        this.sendingScored = false;
       }
     )
   }
@@ -261,7 +262,9 @@ export class GameMonitor {
       this.gameNetwork.emitFromGame(GAME_EVENTS.BallServed, this.roomId, isIA, position, velocity)
     }
     gameSender.sendGameState = (state: GAME_STATE) => {
+      if (state === GAME_STATE.scored && this.sendingScored) return;
       this.gameNetwork.emitFromGame(GAME_EVENTS.GameStateChanged, this.roomId, isIA, state)
+      if (state === GAME_STATE.scored) this.sendingScored = true;
     }
   }
 
