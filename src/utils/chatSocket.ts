@@ -76,7 +76,7 @@ export class ChatSocket {
         this.operational = true
       })
       this.socket.on('disconnect', () => {
-       // console.log('Disconnected from chat server')
+        // console.log('Disconnected from chat server')
         this.operational = false
       })
       this.socket.on('newMessage', onNewMessage)
