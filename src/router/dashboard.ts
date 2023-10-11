@@ -50,9 +50,17 @@ const dashboardRoutes: RouteRecordRaw = {
       }
     },
     {
-      path: 'dm',
+      path: 'dm/:friendId?',
       name: 'dm',
       component: DirectMessagesView,
+      props: (route) => {
+        const friendId = route.params.friendId
+          ? parseInt(route.params.friendId.toString())
+          : undefined
+        return {
+          friendId
+        }
+      },
       meta: {
         requiresAuth: true,
         title: 'Mes Dm',

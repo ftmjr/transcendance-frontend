@@ -28,7 +28,7 @@ export interface CompleteGameHistory {
   gameId: number
   gameName: string
   winnerId: number
-  histories: GameHistory[]
+  histories: Record<number, GameHistory[]> // {opponentId: GameHistory[]}
 }
 
 export enum StartAgainst {
