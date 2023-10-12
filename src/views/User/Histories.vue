@@ -3,7 +3,7 @@
     <VTable>
       <thead>
       <tr>
-        <th class="text-left">Event</th>
+<!--        <th class="text-left">Event</th>-->
         <th class="text-left">Player</th>
         <th class="text-left">Competitor</th>
         <th class="text-left">Result</th>
@@ -12,15 +12,20 @@
       </thead>
       <tbody>
       <tr v-for="group in groupedHistories" :key="group.gameId" :class="getTdClass(group.events)">
-        <td>
-            <span v-for="(count, event) in group.events" :key="event">
-              <v-icon v-if="getIcon(event)">{{ getIcon(event) }}</v-icon>
+<!--        <td>-->
+<!--            <span v-for="(count, event) in group.events" :key="event">-->
+<!--              <v-icon v-if="getIcon(event)">{{ getIcon(event) }}</v-icon>-->
 <!--              <span v-if="count > 1">({{ count }})</span>-->
-            </span>
-        </td>
+<!--            </span>-->
+<!--        </td>-->
         <td>{{ getUserName(group.userId) }}</td>
         <td>{{ getUserName(group.competitorId) }}</td>
-        <td>{{ group.result }}</td>
+        <td>
+          <span v-for="(count, event) in group.events" :key="event">
+              <v-icon v-if="getIcon(event)">{{ getIcon(event) }}</v-icon>
+            </span>
+          {{ group.result }}
+        </td>
         <td>{{ formatDate(group.latestTimestamp) }}</td>
       </tr>
       </tbody>
