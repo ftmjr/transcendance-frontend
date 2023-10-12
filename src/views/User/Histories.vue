@@ -6,6 +6,7 @@
 <!--        <th class="text-left">Event</th>-->
         <th class="text-left">Player</th>
         <th class="text-left">Competitor</th>
+        <th class="text-left">Score</th>
         <th class="text-left">Result</th>
         <th class="text-left">Date</th>
       </tr>
@@ -20,6 +21,7 @@
 <!--        </td>-->
         <td>{{ getUserName(group.userId) }}</td>
         <td>{{ getUserName(group.competitorId) }}</td>
+        <td>? vs ? //TODO</td>
         <td>
           <span v-for="(count, event) in group.events" :key="event">
               <v-icon v-if="getIcon(event)">{{ getIcon(event) }}</v-icon>
