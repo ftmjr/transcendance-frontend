@@ -1,189 +1,6 @@
-<script lang="ts">
-import { defineComponent } from 'vue'
-import axiosInstance from '@/utils/axios'
-import useAuthStore from '@/stores/AuthStore'
-import DoubleFactorModal from '@/components/profile/DoubleFactorModal.vue'
-
-interface Session {
-  id: number
-  userAgent: string
-  ipAddress: string
-  createdAt: string
-  expiresAt: string
-}
-export default defineComponent({
-  name: 'SecuritySettings',
-  components: {
-    DoubleFactorModal
-  },
-  setup() {
-    const authStore = useAuthStore()
-    return {
-      authStore
-    }
-  },
-  data() {
-    return {
-      lastSessions: [] as Session[],
-      loadingSessions: false,
-      icons: [
-        { icon: 'tabler-brand-windows', color: 'blue', title: 'Windows' },
-        { icon: 'tabler-brand-apple', color: 'secondary', title: 'MacOS' },
-        { icon: 'tabler-brand-android', color: 'green', title: 'Android' },
-        { icon: 'tabler-brand-apple', color: 'secondary', title: 'IPhone' }
-      ],
-      isDoubleFactorDialogVisible: false,
-      isInfoBarVisible: false,
-      infoMsg: '',
-      infoColor: 'success',
-      passwordFieldsVisibility: {
-        currentPassword: false,
-        newPassword: false,
-        confirmPassword: false
-      },
-      passwordFields: {
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      },
-      rules: {
-        required: (value) => !!value || 'Ce champ est requis',
-        min: (v) => v.length >= 6 || 'Minimum 6 caractères',
-        match: () => {
-          return (
-            this.passwordFields.newPassword === this.passwordFields.confirmPassword ||
-            'Les mots de passe ne correspondent pas'
-          )
-        },
-        upperCase: (v) => /[A-Z]/.test(v) || 'Doit contenir au moins une lettre majuscule'
-      },
-      allowTwoFactorDisable: false
-    }
-  },
-  mounted() {
-    this.getSessions()
-  },
-  computed: {
-    isDoubleFactorEnabled() {
-      return this.authStore.getUser.twoFactorEnabled ?? false
-    }
-  },
-  methods: {
-    async getSessions() {
-      this.loadingSessions = true
-      try {
-        const data = (await axiosInstance.get('/auth/sessions')).data
-        this.lastSessions = data
-      } catch (e) {
-        console.log(e)
-      }
-      this.loadingSessions = false
-    },
-    async disconnectSession(session: Session) {
-      // toDo : disconnect session implementation
-      // try {
-      //   await axiosInstance.delete(`/auth/sessions/${session.id}`)
-      // } catch (e) {
-      //   console.log(e)
-      // }
-    },
-    async changePassword() {
-      const worked = await this.authStore.updatePassword(this.passwordFields)
-      if (worked) {
-        this.infoMsg = 'Votre mot de passe a été mis à jour avec succès'
-        this.infoColor = 'success'
-        this.isInfoBarVisible = true
-        this.passwordFields = {
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        }
-      } else {
-        this.infoMsg = this.authStore.getAuthError.message
-        this.infoColor = 'error'
-        this.isInfoBarVisible = true
-      }
-    },
-    async deactivateTwoFactor() {
-      const worked = await this.authStore.deactivate2FA()
-      if (worked) {
-        this.infoMsg = `L'authentification à deux facteurs a été désactivée avec succès`
-        this.infoColor = 'success'
-        this.isInfoBarVisible = true
-        this.allowTwoFactorDisable = false
-      } else {
-        this.infoMsg = `Une erreur est survenue lors de la désactivation de l'authentification à deux facteurs`
-        this.infoColor = 'error'
-        this.isInfoBarVisible = true
-      }
-    },
-    getPlatform(userAgent: string) {
-      if (userAgent.includes('Windows')) {
-        return 'Windows'
-      } else if (userAgent.includes('Mac OS X') || userAgent.includes('Macintosh')) {
-        return 'MacOS'
-      } else if (userAgent.includes('Android')) {
-        return 'Android'
-      } else if (userAgent.includes('iPhone')) {
-        return 'IPhone'
-      } else {
-        return 'Unknown'
-      }
-    },
-    getNavigatorName(userAgent: string) {
-      if (userAgent.includes('Edge')) {
-        return 'Edge'
-      } else if (userAgent.includes('Opera') || userAgent.includes('OPR')) {
-        return 'Opera'
-      } else if (userAgent.includes('Chrome')) {
-        return 'Chrome'
-      } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
-        return 'Safari'
-      } else if (userAgent.includes('Firefox')) {
-        return 'Firefox'
-      } else if (userAgent.includes('MSIE') || userAgent.includes('Trident/7.0')) {
-        return 'Internet Explorer'
-      } else {
-        return 'Unknown'
-      }
-    },
-    getDeviceName(userAgent: string) {
-      if (userAgent.includes('Android')) {
-        return 'Android'
-      } else if (userAgent.includes('iPad')) {
-        return 'iPad'
-      } else if (userAgent.includes('iPhone')) {
-        return 'iPhone'
-      } else if (userAgent.includes('Mac OS X') || userAgent.includes('Macintosh')) {
-        return 'Mac'
-      } else if (userAgent.includes('Windows')) {
-        return 'Windows'
-      } else if (userAgent.includes('Linux')) {
-        return 'Linux'
-      } else {
-        return 'Unknown'
-      }
-    },
-    formatDate(dateStr: string): string {
-      const date = new Date(dateStr)
-      return new Intl.DateTimeFormat('fr-CA', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      }).format(date)
-    },
-    checkSessionExpiryStatus(expiryDateStr: string) {
-      const expiryDate = new Date(expiryDateStr)
-      return expiryDate.getTime() > Date.now() ? 'active' : 'expired'
-    }
-  }
-})
-</script>
-
 <template>
   <VRow>
-    <VCol cols="12">
+    <VCol cols="12" v-if="!isExternalAuth">
       <VCard title="Modifier le mot de passe">
         <VForm @submit.prevent="changePassword">
           <VCardText class="pt-0">
@@ -342,5 +159,196 @@ export default defineComponent({
     {{ infoMsg }}
   </VSnackbar>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+import axiosInstance from '@/utils/axios'
+import useAuthStore from '@/stores/AuthStore'
+import DoubleFactorModal from '@/components/profile/DoubleFactorModal.vue'
+
+interface Session {
+  id: number
+  userAgent: string
+  ipAddress: string
+  createdAt: string
+  expiresAt: string
+}
+export default defineComponent({
+  name: 'SecuritySettings',
+  components: {
+    DoubleFactorModal
+  },
+  setup() {
+    const authStore = useAuthStore()
+    return {
+      authStore
+    }
+  },
+  data() {
+    return {
+      lastSessions: [] as Session[],
+      loadingSessions: false,
+      icons: [
+        { icon: 'tabler-brand-windows', color: 'blue', title: 'Windows' },
+        { icon: 'tabler-brand-apple', color: 'secondary', title: 'MacOS' },
+        { icon: 'tabler-brand-android', color: 'green', title: 'Android' },
+        { icon: 'tabler-brand-apple', color: 'secondary', title: 'IPhone' }
+      ],
+      isDoubleFactorDialogVisible: false,
+      isInfoBarVisible: false,
+      infoMsg: '',
+      infoColor: 'success',
+      passwordFieldsVisibility: {
+        currentPassword: false,
+        newPassword: false,
+        confirmPassword: false
+      },
+      passwordFields: {
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      },
+      rules: {
+        required: (value) => !!value || 'Ce champ est requis',
+        min: (v) => v.length >= 6 || 'Minimum 6 caractères',
+        match: () => {
+          return (
+            this.passwordFields.newPassword === this.passwordFields.confirmPassword ||
+            'Les mots de passe ne correspondent pas'
+          )
+        },
+        upperCase: (v) => /[A-Z]/.test(v) || 'Doit contenir au moins une lettre majuscule'
+      },
+      allowTwoFactorDisable: false
+    }
+  },
+  mounted() {
+    this.getSessions()
+  },
+  computed: {
+    isDoubleFactorEnabled() {
+      return this.authStore.getUser.twoFactorEnabled ?? false
+    },
+    isExternalAuth(): boolean {
+      // check if user have api42 or google auth
+      return (
+        this.authStore.getUser?.api42Id ||
+        this.authStore.getUser?.googleId ||
+        this.authStore.getUser?.facebookId
+      )
+    }
+  },
+  methods: {
+    async getSessions() {
+      this.loadingSessions = true
+      try {
+        const data = (await axiosInstance.get('/auth/sessions')).data
+        this.lastSessions = data
+      } catch (e) {
+        console.log(e)
+      }
+      this.loadingSessions = false
+    },
+    async disconnectSession(session: Session) {
+      // toDo : disconnect session implementation
+      // try {
+      //   await axiosInstance.delete(`/auth/sessions/${session.id}`)
+      // } catch (e) {
+      //   console.log(e)
+      // }
+    },
+    async changePassword() {
+      const worked = await this.authStore.updatePassword(this.passwordFields)
+      if (worked) {
+        this.infoMsg = 'Votre mot de passe a été mis à jour avec succès'
+        this.infoColor = 'success'
+        this.isInfoBarVisible = true
+        this.passwordFields = {
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        }
+      } else {
+        this.infoMsg = this.authStore.getAuthError.message
+        this.infoColor = 'error'
+        this.isInfoBarVisible = true
+      }
+    },
+    async deactivateTwoFactor() {
+      const worked = await this.authStore.deactivate2FA()
+      if (worked) {
+        this.infoMsg = `L'authentification à deux facteurs a été désactivée avec succès`
+        this.infoColor = 'success'
+        this.isInfoBarVisible = true
+        this.allowTwoFactorDisable = false
+      } else {
+        this.infoMsg = `Une erreur est survenue lors de la désactivation de l'authentification à deux facteurs`
+        this.infoColor = 'error'
+        this.isInfoBarVisible = true
+      }
+    },
+    getPlatform(userAgent: string) {
+      if (userAgent.includes('Windows')) {
+        return 'Windows'
+      } else if (userAgent.includes('Mac OS X') || userAgent.includes('Macintosh')) {
+        return 'MacOS'
+      } else if (userAgent.includes('Android')) {
+        return 'Android'
+      } else if (userAgent.includes('iPhone')) {
+        return 'IPhone'
+      } else {
+        return 'Unknown'
+      }
+    },
+    getNavigatorName(userAgent: string) {
+      if (userAgent.includes('Edge')) {
+        return 'Edge'
+      } else if (userAgent.includes('Opera') || userAgent.includes('OPR')) {
+        return 'Opera'
+      } else if (userAgent.includes('Chrome')) {
+        return 'Chrome'
+      } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+        return 'Safari'
+      } else if (userAgent.includes('Firefox')) {
+        return 'Firefox'
+      } else if (userAgent.includes('MSIE') || userAgent.includes('Trident/7.0')) {
+        return 'Internet Explorer'
+      } else {
+        return 'Unknown'
+      }
+    },
+    getDeviceName(userAgent: string) {
+      if (userAgent.includes('Android')) {
+        return 'Android'
+      } else if (userAgent.includes('iPad')) {
+        return 'iPad'
+      } else if (userAgent.includes('iPhone')) {
+        return 'iPhone'
+      } else if (userAgent.includes('Mac OS X') || userAgent.includes('Macintosh')) {
+        return 'Mac'
+      } else if (userAgent.includes('Windows')) {
+        return 'Windows'
+      } else if (userAgent.includes('Linux')) {
+        return 'Linux'
+      } else {
+        return 'Unknown'
+      }
+    },
+    formatDate(dateStr: string): string {
+      const date = new Date(dateStr)
+      return new Intl.DateTimeFormat('fr-CA', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }).format(date)
+    },
+    checkSessionExpiryStatus(expiryDateStr: string) {
+      const expiryDate = new Date(expiryDateStr)
+      return expiryDate.getTime() > Date.now() ? 'active' : 'expired'
+    }
+  }
+})
+</script>
 
 <style scoped></style>

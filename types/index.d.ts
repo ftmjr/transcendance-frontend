@@ -2,6 +2,17 @@
 declare module 'Auth' {
   import {Status} from 'src/stores/AuthStore';
 
+  export interface Coalition {
+    id: number;
+    name: string;
+    slug: string;
+    cover_url: string;
+    image_url: string;
+    color: string;
+    score: number;
+    user_id: number;
+  }
+
   export interface Profile {
     id: number;
     userId: number;
@@ -9,7 +20,11 @@ declare module 'Auth' {
     lastname: string;
     avatar?: string;
     bio?:string;
-    oauth?: unknown;
+    oauth?: {
+        accessToken: string;
+        refreshToken: string;
+        coalitions: Coalition[];
+    };
     status: Status;
   }
 
@@ -53,8 +68,6 @@ declare module 'Auth' {
     lastname: string;
     avatar?: string;
   }
-
-  export type Coalition = 'Legion' | 'Torrent' | 'Armada'
 
   export interface ProfileHeaderData {
     coalition?: Coalition;

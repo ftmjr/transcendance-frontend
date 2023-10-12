@@ -5,8 +5,9 @@ import DirectMessagesView from '@/views/Dm/DirectMessagesView.vue'
 import ChatWindowView from '@/views/Chat/ChatWindowView.vue'
 import Notifications from '@/views/Notifications.vue'
 import LeaderboardView from '@/views/LeaderboardView.vue'
+import { RouteRecordRaw } from 'vue-router'
 
-const dashboardRoutes = {
+const dashboardRoutes: RouteRecordRaw = {
   path: '/',
   component: DashboardLayout,
   children: [
@@ -23,6 +24,16 @@ const dashboardRoutes = {
       path: 'game/:gameId?',
       name: 'game',
       component: () => import('@/views/GameView.vue'),
+      props: (route) => {
+        const waitingRoom = route.query.waitingRoom ? route.query.waitingRoom === 'true' : false
+        const isPlayer = route.query.isPlayer ? route.query.isPlayer === 'true' : true
+        const gameId = route.params.gameId ? parseInt(route.params.gameId.toString()) : undefined
+        return {
+          gameId,
+          waitingRoom: waitingRoom,
+          isPlayer: isPlayer
+        }
+      },
       meta: {
         requiresAuth: true,
         title: 'Game Test'
@@ -39,9 +50,17 @@ const dashboardRoutes = {
       }
     },
     {
-      path: 'dm',
+      path: 'dm/:friendId?',
       name: 'dm',
       component: DirectMessagesView,
+      props: (route) => {
+        const friendId = route.params.friendId
+          ? parseInt(route.params.friendId.toString())
+          : undefined
+        return {
+          friendId
+        }
+      },
       meta: {
         requiresAuth: true,
         title: 'Mes Dm',
@@ -64,15 +83,6 @@ const dashboardRoutes = {
       meta: {
         requiresAuth: true,
         title: 'Message'
-      }
-    },
-    {
-      path: 'unlock-account',
-      name: 'unlock-account',
-      component: () => import('@/views/Auth/Unlock.vue'),
-      meta: {
-        requiresAuth: false,
-        title: 'Débloquer mon compte'
       }
     },
     usersRoutes

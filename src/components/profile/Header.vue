@@ -1,14 +1,15 @@
 <template>
   <VCard v-if="info">
-    <VImg :src="coverImg" :cover="true" max-height="12rem" />
+    <VImg :src="info.coalition.cover_url" :cover="true" max-height="12rem" />
     <VCardText class="justify-center align-bottom d-flex flex-sm-row flex-column gap-x-5">
-      <div class="flex h-0">
+      <div class="flex">
         <VAvatar rounded size="120" class="mx-auto user-profile-avatar">
           <VImg v-if="info.avatar" :src="info.avatar" />
           <VIcon v-else color="primary" icon="tabler-user" />
         </VAvatar>
+        <CoalitionFlag :color="info.coalition.color" :image="info.coalition.image_url" />
       </div>
-      <div class="pt-6 mt-16 user-profile-info w-full pt-sm-0 mt-sm-0">
+      <div class="md:pt-6 md:mt-6 user-profile-info w-full pt-sm-0 mt-sm-0">
         <h6 class="mb-3 text-center text-h6 text-sm-start font-weight-semibold">
           {{ info?.fullName }}
         </h6>
@@ -24,34 +25,27 @@
             <span class="d-flex align-center">
               <VIcon size="20" icon="tabler-calendar" class="me-2" />
               <span class="text-body-1">
-                {{ showDateFormated(info?.joiningDate) }}
+                Membre depuis: {{ showDateFormated(info?.joiningDate) }}
               </span>
             </span>
           </div>
         </div>
       </div>
-      <FriendRequestBox v-if="id !== 0" :friendId="id" />
+      <FriendRequestBox class="w-full" v-if="id !== 0" :friendId="id" />
     </VCardText>
   </VCard>
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import type { Coalition, ProfileHeaderData } from 'Auth'
+import type { ProfileHeaderData } from 'Auth'
 import useAuthStore from '@/stores/AuthStore'
-import armadaBanner from '@/assets/images/banners/Armada_banner.jpg'
-import legionBanner from '@/assets/images/banners/legion_banner.jpg'
-import torrentBanner from '@/assets/images/banners/Torrent_banner.jpg'
 import useUserStore from '@/stores/UserStore'
 import FriendRequestBox from '@/components/profile/FriendRequestBox.vue'
-
-const banners: { [key: string]: string } = {
-  Armada: armadaBanner,
-  Legion: legionBanner,
-  Torrent: torrentBanner
-}
+import CoalitionFlag from '@/components/profile/CoalitionFlag.vue'
 
 export default defineComponent({
   components: {
+    CoalitionFlag,
     FriendRequestBox
   },
   props: {
@@ -69,14 +63,10 @@ export default defineComponent({
     const userStore = useUserStore()
     return { authStore, userStore }
   },
-  computed: {
-    coverImg(): string {
-      return banners[this.info?.coalition as Coalition] || ''
-    }
-  },
+  computed: {},
   methods: {
     showDateFormated(date): string {
-      return new Date(date).toLocaleDateString('fr-FR', {
+      return new Date(date).toLocaleDateString('fr-CA', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'

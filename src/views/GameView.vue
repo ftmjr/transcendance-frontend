@@ -1,5 +1,46 @@
 <template>
   <VCard :loading="loading" title="Pong Game">
+    <div class="flex justify-center">
+      <div>
+        <VAlert
+          v-if="error"
+          type="error"
+          :text="error"
+          closable
+          variant="outlined"
+          @close="error = null"
+        />
+        <VSnackbar
+          v-model="showInfo"
+          :timeout="2000"
+          closable
+          location="center"
+          color="blue"
+          variant="tonal"
+        >
+          {{ info }}
+        </VSnackbar>
+      </div>
+    </div>
+    <div class="flex justify-end items-center mr-4">
+      <VBtn v-show="gameStore.currentGameSession" color="red" @click="leaveGame">
+        <v-tooltip activator="parent" location="bottom">
+          Quitter la partie, ou la file d'attente
+        </v-tooltip>
+        <VIcon>tabler-logout</VIcon>
+      </VBtn>
+    </div>
+    <div v-if="gameStore.isPlayingWithQueList">
+      <VSnackbar
+        v-model="showIsInQueList"
+        :timeout="3000"
+        closable
+        location="right"
+        color="primary"
+      >
+        Vous êtes dans la file d'attente, veuillez patienter...
+      </VSnackbar>
+    </div>
     <PongGamePlayer
       v-if="gameData && !loading"
       :gameData="gameData"
@@ -15,6 +56,7 @@ import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
 import useAuthStore from '@/stores/AuthStore'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import { PongTheme } from '@/Game/pong-scenes/Assets'
+import { Warning } from 'postcss'
 const PongGamePlayer = defineAsyncComponent(() => import('@/components/PongGamePlayer.vue'))
 
 export default defineComponent({
@@ -32,6 +74,10 @@ export default defineComponent({
     theme: {
       type: String as PropType<PongTheme>,
       default: 'Arcade'
+    },
+    waitingRoom: {
+      type: Boolean,
+      default: () => false
     }
   },
   setup() {
@@ -41,7 +87,11 @@ export default defineComponent({
   },
   data() {
     return {
-      loading: false
+      loading: false,
+      error: null,
+      info: null,
+      showInfo: false,
+      showIsInQueList: true
     }
   },
   computed: {
@@ -65,16 +115,47 @@ export default defineComponent({
     }
   },
   beforeMount() {
-    if (!this.gameId) {
-      this.startAgainstBot()
+    if (this.currentGameSession) {
+      this.info = 'Une partie est déjà en cours, elle va etre chargée'
+      this.showInfo = true
+    } else {
+      if (!this.gameId && !this.waitingRoom) {
+        this.startAgainstBot()
+      } else if (this.waitingRoom) {
+        this.startWaitingRoom()
+      } else if (!this.isPlayer) {
+        this.startWatchingGame()
+      }
     }
   },
   methods: {
     async startAgainstBot() {
       this.loading = true
-      await this.gameStore.startGameAgainstBot()
-      // Jaren41
+      const r = await this.gameStore.startGameAgainstBot()
+      if (r !== 'preparing') {
+        this.error = r
+      }
       this.loading = false
+    },
+    async startWaitingRoom() {
+      this.loading = true
+      const r = await this.gameStore.startGameAgainstQueList()
+      if (r !== 'preparing') {
+        this.error = r
+      }
+      this.loading = false
+    },
+    async startWatchingGame() {
+      this.loading = true
+      const r = await this.gameStore.startViewingGame(this.gameId)
+      if (r !== 'preparing') {
+        this.error = r
+      }
+      this.loading = false
+    },
+    async leaveGame() {
+      await this.gameStore.leaveCurrentGameSession()
+      this.$router.push({ name: 'dashboard' })
     }
   }
 })
