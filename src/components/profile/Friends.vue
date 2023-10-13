@@ -11,10 +11,22 @@
             </VAvatar>
           </div>
           <div class="relative -top-12">
-            <VCardText>
+            <VCardText class="flex flex-col items-center">
               <p class="text-center text-lg font-weight-bold">
                 {{ friend.profile.name }} {{ friend.profile.lastname }}
               </p>
+              <RouterLink
+                class="text-center text-lg font-weight-semibold text-purple-500"
+                :to="{
+                  name: 'user-profile',
+                  params: {
+                    userId: friend.id,
+                    tab: 'profile'
+                  }
+                }"
+              >
+                ☁︎ {{ friend.username }}
+              </RouterLink>
             </VCardText>
             <div class="flex flex-column align-center justify-center gap-4">
               <FriendRequestBox :friend-id="friend.id" />
@@ -29,7 +41,13 @@
                   size="small"
                   color="blue"
                   variant="outlined"
-                  :to="{ name: 'user-profile', params: { userId: friend.id } }"
+                  :to="{
+                    name: 'user-profile',
+                    params: {
+                      userId: friend.id,
+                      tab: 'profile'
+                    }
+                  }"
                 >
                   <VIcon left>mdi-account</VIcon>
                   Voir le Profile
