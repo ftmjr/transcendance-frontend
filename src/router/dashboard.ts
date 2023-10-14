@@ -5,6 +5,7 @@ import DirectMessagesView from '@/views/Dm/DirectMessagesView.vue'
 import ChatWindowView from '@/views/Chat/ChatWindowView.vue'
 import Notifications from '@/views/Notifications.vue'
 import LeaderboardView from '@/views/LeaderboardView.vue'
+import GameView from '@/views/GameView.vue'
 import { RouteRecordRaw } from 'vue-router'
 
 const dashboardRoutes: RouteRecordRaw = {
@@ -23,7 +24,7 @@ const dashboardRoutes: RouteRecordRaw = {
     {
       path: 'game/:gameId?',
       name: 'game',
-      component: () => import('@/views/GameView.vue'),
+      component: GameView,
       props: (route) => {
         const waitingRoom = route.query.waitingRoom ? route.query.waitingRoom === 'true' : false
         const isPlayer = route.query.isPlayer ? route.query.isPlayer === 'true' : true

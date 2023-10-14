@@ -227,7 +227,9 @@ export default defineComponent({
   },
   computed: {
     isDoubleFactorEnabled() {
-      return this.authStore.getUser.twoFactorEnabled ?? false
+      const user = this.authStore.getUser
+      if (!user) return false
+      return user.twoFactorEnabled ?? false
     },
     isExternalAuth(): boolean {
       // check if user have api42 or google auth
