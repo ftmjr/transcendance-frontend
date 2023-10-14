@@ -342,19 +342,20 @@ const useAuthStore = defineStore({
     },
     resolveCoalition(profile: Profile): Coalition {
       if (profile.oauth && profile.oauth?.coalitions) {
-        return profile.oauth.coalitions[0]
-      } else {
-        return {
-          color: '#cc0000',
-          cover_url:
-            'https://cdn.intra.42.fr/coalition/cover/243/42Q_035_22_BG_Coalitions_Legion_3000x2000.jpg',
-          id: 243,
-          image_url: 'https://cdn.intra.42.fr/coalition/image/243/42Q_035_22_Logo_Legion.svg',
-          name: 'Les pongistes',
-          score: 0,
-          slug: 'Pongiste',
-          user_id: 0
+        if (profile.oauth.coalitions.length) {
+          return profile.oauth.coalitions[0]
         }
+      }
+      return {
+        color: '#cc0000',
+        cover_url:
+          'https://cdn.intra.42.fr/coalition/cover/243/42Q_035_22_BG_Coalitions_Legion_3000x2000.jpg',
+        id: 243,
+        image_url: 'https://cdn.intra.42.fr/coalition/image/243/42Q_035_22_Logo_Legion.svg',
+        name: 'Les pongistes',
+        score: 0,
+        slug: 'Pongiste',
+        user_id: 0
       }
     }
   }
