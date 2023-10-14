@@ -5,9 +5,14 @@ export default [
     to: 'dashboard'
   },
   {
-    title: 'Partie rapide',
+    title: 'Partie rapide 🤖',
     icon: { icon: 'noto-v1:game-die' },
     to: 'game'
+  },
+  {
+    title: 'Waiting Room',
+    icon: { icon: 'medical-icon:i-waiting-area', color: 'green' },
+    to: { name: 'game', query: { waitingRoom: true } }
   },
   {
     title: 'Trouver un joueur',
@@ -15,18 +20,18 @@ export default [
     to: 'user-list'
   },
   {
-    title: 'Leader Board',
+    title: 'Leaderboard',
     icon: { icon: 'solar:ranking-linear' },
     to: 'leaderboard'
   },
-  { heading: 'Messagerie' },
+  { heading: 'Conversation' },
   {
-    title: 'Chat',
+    title: 'Chatrooms',
     icon: { icon: 'tabler-message' },
     to: 'chat'
   },
   {
-    title: 'DM',
+    title: 'DMs',
     icon: { icon: 'tabler-mail' },
     to: 'dm'
   },

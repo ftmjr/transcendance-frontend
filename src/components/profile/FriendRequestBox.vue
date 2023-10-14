@@ -7,47 +7,40 @@
           color="error"
           size="small"
           variant="outlined"
-          @click="userStore"
+          @click="unFriend"
         >
           <VIcon size="20" start icon="tabler-user-minus" />
           Supprimer des amis
         </VBtn>
+        <!-- CANCEL FRIEND REQUEST -->
         <VBtn
           v-else-if="status === FriendshipStatus.Pending"
           color="warning"
           variant="outlined"
           size="small"
-          @click="userStore.rejectFriendRequest(friendId)"
+          @click="cancelFriendRequest"
         >
           <VIcon size="20" start icon="tabler-x" />
           Annuler la demande
         </VBtn>
+        <!-- ACCEPT/DECLINE FRIEND REQUEST -->
         <VBtnGroup v-else-if="status === FriendshipStatus.NeedApproval">
-          <VBtn
-            color="success"
-            size="small"
-            variant="outlined"
-            @click="userStore.approveFriendRequest(state.data.id)"
-          >
+          <VBtn color="success" size="small" variant="outlined" @click="acceptFriendRequest">
             <VIcon size="20" start icon="tabler-check" />
             Accepter
           </VBtn>
-          <VBtn
-            color="error"
-            size="small"
-            @click="userStore.rejectFriendRequest(state.data.id)"
-            variant="outlined"
-          >
+          <VBtn color="error" size="small" @click="declineFriendRequest" variant="outlined">
             <VIcon size="20" start icon="tabler-x" />
             Refuser
           </VBtn>
         </VBtnGroup>
+        <!-- BEFRIEND, SEND FRIEND REQUEST -->
         <VBtn
           v-else-if="status === FriendshipStatus.None"
           color="primary"
           variant="outlined"
           size="small"
-          @click="userStore.askFriendRequest(friendId)"
+          @click="beFriendRequest"
         >
           <VIcon size="20" start icon="tabler-user-plus" />
           Ajouter en ami
@@ -136,13 +129,43 @@ export default defineComponent({
       this.loading = false
     },
     async unBlockUser() {
-      this.loading = true;
-      await this.userStore.unblockUser(this.friendId);
-      this.loading = false;
+      this.loading = true
+      await this.userStore.unblockUser(this.friendId)
+      this.loading = false
       this.$nextTick(() => {
-        this.fetchFriendShipState(); // re-fetch friendship state
+        this.fetchFriendShipState() // re-fetch friendship state
       })
     },
+    async beFriendRequest() {
+      await this.userStore.askFriendRequest(this.friendId)
+      this.$nextTick(() => {
+        this.fetchFriendShipState() // re-fetch friendship state
+      })
+    },
+    async cancelFriendRequest() {
+      await this.userStore.cancelFriendRequest(this.state.data.id)
+      this.$nextTick(() => {
+        this.fetchFriendShipState() // re-fetch friendship state
+      })
+    },
+    async acceptFriendRequest() {
+      await this.userStore.approveFriendRequest(this.state.data.id)
+      this.$nextTick(() => {
+        this.fetchFriendShipState() // re-fetch friendship state
+      })
+    },
+    async declineFriendRequest() {
+      await this.userStore.rejectFriendRequest(this.state.data.id)
+      this.$nextTick(() => {
+        this.fetchFriendShipState() // re-fetch friendship state
+      })
+    },
+    async unFriend() {
+      await this.userStore.unFriend(this.friendId)
+      this.$nextTick(() => {
+        this.fetchFriendShipState() // re-fetch friendship state
+      })
+    }
   }
 })
 </script>

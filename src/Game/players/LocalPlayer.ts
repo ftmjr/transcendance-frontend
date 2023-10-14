@@ -1,5 +1,5 @@
 import type { GameSender, GameMonitor } from '@/Game/network/GameMonitor'
-import { GAME_STATE, PAD_DIRECTION } from '@/Game/network/GameMonitor'
+import { PAD_DIRECTION } from '@/Game/network/GameMonitor'
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PonGameScene from '@/Game/pong-scenes/PongGame'
 export class LocalPlayer implements GameSender, Player {
@@ -10,9 +10,10 @@ export class LocalPlayer implements GameSender, Player {
     private gameMonitor: GameMonitor,
     private scene: PonGameScene,
     private position: { x: number; y: number },
-    private paddleSpriteKey: string
+    private paddleSpriteKey: string,
+    public readonly userId: number
   ) {
-    this.gameMonitor.decorateSender(this, 'player')
+    this.gameMonitor.decorateSender(this)
     this.localPlayerGroup = scene.physics.add.group({
       collideWorldBounds: true
     })
@@ -52,7 +53,7 @@ export class LocalPlayer implements GameSender, Player {
   }
 
   scorePoint() {
-    this.sendGameState(GAME_STATE.scored)
+    this.sendScored()
   }
 
   serveBall() {
@@ -74,5 +75,5 @@ export class LocalPlayer implements GameSender, Player {
   // methods from GameSender interface that will be decorated by GameMonitor
   sendPadMove(dir: PAD_DIRECTION): void {}
   sendBallServe(position: { x: number; y: number }, velocity: { x: number; y: number }): void {}
-  sendGameState(state: GAME_STATE): void {}
+  sendScored(): void {}
 }

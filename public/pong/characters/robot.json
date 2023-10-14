@@ -52,7 +52,7 @@
 					}
 				},
 				{
-					"filename": "character_robot_run2.png",
+					"filename": "run2",
 					"rotated": true,
 					"trimmed": true,
 					"sourceSize": {
@@ -493,7 +493,7 @@
 					}
 				},
 				{
-					"filename": "character_robot_run1.png",
+					"filename": "run1",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -892,7 +892,7 @@
 					}
 				},
 				{
-					"filename": "character_robot_run0.png",
+					"filename": "run0",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {

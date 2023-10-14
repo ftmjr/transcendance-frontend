@@ -133,10 +133,10 @@ const useUserStore = defineStore({
   },
   actions: {
     /* Friendship section */
-    async askFriendRequest(userId: number): Promise<'success' | 'already' | 'error'> {
+    async askFriendRequest(targetId: number): Promise<'success' | 'already' | 'error'> {
       let message: 'success' | 'already' | 'error' = 'success'
       try {
-        await axios.post(`/friends/request-friendship-with/${userId}`)
+        await axios.post(`/friends/request-friendship-with/${targetId}`)
       } catch (error: AxiosError | any) {
         if (error.response && error.response === 409) {
           this.error = 'already'

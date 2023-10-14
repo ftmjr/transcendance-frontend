@@ -4,15 +4,16 @@ import type { GameMonitor, GameSender, PAD_DIRECTION } from '@/Game/network/Game
 import { GAME_STATE } from '@/Game/network/GameMonitor'
 export class AIPlayer implements GameSender, Player {
   private aiPlayerGroup: Phaser.Physics.Arcade.Group
-  private aiPaddle: Phaser.Physics.Arcade.Sprite
+  private readonly aiPaddle: Phaser.Physics.Arcade.Sprite
 
   constructor(
     private gameMonitor: GameMonitor,
     private scene: PonGameScene,
     private position: { x: number; y: number },
-    private paddleSpriteKey: string
+    private paddleSpriteKey: string,
+    public readonly userId: number = 0
   ) {
-    this.gameMonitor.decorateSender(this, 'ia')
+    this.gameMonitor.decorateSender(this)
     this.aiPlayerGroup = scene.physics.add.group({
       collideWorldBounds: true
     })
@@ -57,7 +58,7 @@ export class AIPlayer implements GameSender, Player {
   }
 
   scorePoint() {
-    this.sendGameState(GAME_STATE.scored)
+    this.sendScored()
   }
 
   onBallHit() {
@@ -71,5 +72,5 @@ export class AIPlayer implements GameSender, Player {
   // methods from GameSender interface that will be decorated by GameMonitor
   sendPadMove(dir: PAD_DIRECTION): void {}
   sendBallServe(position: { x: number; y: number }, velocity: { x: number; y: number }): void {}
-  sendGameState(state: GAME_STATE): void {}
+  sendScored(): void {}
 }

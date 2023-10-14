@@ -1,20 +1,25 @@
 import type { PreloadSceneData } from '@/Game/pong-scenes/Preload'
-import { GameUserType } from '@/Game/network/GameNetwork'
-import type { GameMonitor, NetworkUser } from '@/Game/network/GameMonitor'
+import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
+import type { GameMonitor } from '@/Game/network/GameMonitor'
 import { PongSprite } from '@/Game/pong-scenes/Assets'
 import type { ScoreBoard } from '@/Game/pong-scenes/PongGame'
+import { GameSession } from '@/stores/GameStore'
 
 export class EndGame extends Phaser.Scene {
-  private userType: GameUserType = GameUserType.Player
+  private currentUser: GameUser & { type: GameUserType } = null as unknown as GameUser & {
+    type: GameUserType
+  }
   private gameMonitor: GameMonitor = null as unknown as GameMonitor
+  private gameSession: GameSession = null as unknown as GameSession
   private scoreImages: { player1: ScoreBoard; player2: ScoreBoard } | undefined
   constructor() {
     super('EndGame')
   }
 
   init(data: PreloadSceneData) {
-    this.userType = data.userType
+    this.currentUser = data.currentUser
     this.gameMonitor = data.gameMonitor
+    this.gameSession = data.gameSession
   }
 
   preload() {}
@@ -42,7 +47,7 @@ export class EndGame extends Phaser.Scene {
     this.scoreImages.player2.digit1.setVisible(false)
     this.printScore()
     this.printUsersInfo()
-    // text game over on the center of the screen
+    // text game over in the center of the screen
     const gameOverText = this.add.text(width / 2, height / 2, 'Bye', {
       fontFamily: 'Arial',
       fontSize: 36
@@ -53,9 +58,9 @@ export class EndGame extends Phaser.Scene {
   update() {}
 
   printScore() {
-    const score = this.gameMonitor.getScore()
-    const digits1 = score.player1.toString().split('')
-    const digits2 = score.player2.toString().split('')
+    const scores = this.gameMonitor.scores
+    const digits1 = scores[0].score.toString().split('')
+    const digits2 = scores[1].score.toString().split('')
     if (digits1.length > 1) {
       this.scoreImages?.player1.digit1.setVisible(true)
       this.scoreImages?.player1.digit1.setFrame(digits1[1])
@@ -73,22 +78,12 @@ export class EndGame extends Phaser.Scene {
   }
 
   printUsersInfo() {
-    const players = Array.from(this.gameMonitor.getPlayers().values())
-    let player1: NetworkUser | undefined = undefined
-    let player2: NetworkUser | undefined = undefined
-    if (players.length !== 2) {
-      player1 = players[0]
-    } else {
-      const ids = [players[0].userId ?? 0, players[1].userId ?? 0]
-      player1 = this.gameMonitor.hostId === ids[0] ? players[0] : players[1]
-      player2 = this.gameMonitor.hostId === ids[0] ? players[1] : players[0]
-    }
-    const isPlayer1Winner =
-      this.gameMonitor.getScore().player1 > this.gameMonitor.getScore().player2
-    this.printUserNameAndScore(player1, isPlayer1Winner, 0)
-    this.printUserNameAndScore(player2, !isPlayer1Winner, 1)
+    const players = this.gameMonitor.players
+    const isWinner = this.gameMonitor.scores[0].score >= this.gameMonitor.scores[1].score
+    this.printUserNameAndScore(players[0], isWinner, 0)
+    this.printUserNameAndScore(players[1], !isWinner, 1)
   }
-  printUserNameAndScore(player: NetworkUser | undefined, isWinner: boolean, i: number = 0) {
+  printUserNameAndScore(player: GameUser, isWinner: boolean, i: number = 0) {
     const positions = [
       { x: this.scale.width / 2 - 65, y: this.scale.height / 2 + 140 },
       { x: this.scale.width / 2 + 65, y: this.scale.height / 2 + 140 }

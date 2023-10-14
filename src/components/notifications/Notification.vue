@@ -24,10 +24,18 @@
       <VBtn
         v-if="showPlayButton"
         color="primary"
+        size="small"
         @click.stop="handlePlay(notification.referenceId)"
       >
-        Commencer
-        <VIcon>mdi-sword-cross</VIcon>
+        COMMENCER <VIcon>mdi-sword-cross</VIcon>
+      </VBtn>
+      <VBtn
+        v-else-if="notification.type === 'FRIEND_REQUEST'"
+        @click.stop="handleAccept(notification.referenceId)"
+        color="blue"
+        variant="outlined"
+      >
+        VOIR <VIcon>tabler-eye</VIcon>
       </VBtn>
       <VBtnGroup v-if="showAcceptRejectButtons" size="small">
         <VBtn
@@ -36,7 +44,7 @@
           variant="outlined"
           color="success"
         >
-          Accepter <VIcon>tabler-check</VIcon>
+          <span>ACCEPTER<VIcon>tabler-check</VIcon></span>
         </VBtn>
         <VBtn
           @click.stop="handleReject(notification.referenceId)"
@@ -44,7 +52,7 @@
           variant="outlined"
           color="error"
         >
-          Refuser
+          REFUSER<VIcon>tabler-x</VIcon>
         </VBtn>
       </VBtnGroup>
     </div>
@@ -167,10 +175,8 @@ export default defineComponent({
     },
     showAcceptRejectButtons(): boolean {
       const isCorrectType =
-        (this.notification.type === NotificationType.GAME_INVITE &&
-          this.notification.title === 'Game Invite') ||
-        (this.notification.type === NotificationType.FRIEND_REQUEST &&
-          this.notification.title === 'Friend Request')
+        this.notification.type === NotificationType.GAME_INVITE &&
+        this.notification.title === 'Game Invite'
       const isExpired =
         this.notification.expiresAt && new Date(this.notification.expiresAt) < new Date()
       const isAlreadyResponded = this.notification.status !== NotificationStatus.UNREAD
@@ -179,9 +185,11 @@ export default defineComponent({
   },
   methods: {
     markAsRead() {
+      if (this.showAcceptRejectButtons) return
       this.$emit('markAsRead', this.notification.id)
     },
     async handlePlay(gameId: number) {
+      this.$emit('markAsRead', this.notification.id)
       if (this.notification.type === NotificationType.GAME_INVITE) {
         this.$router.push({
           name: 'game',
@@ -200,16 +208,19 @@ export default defineComponent({
           })
         }
       } else if (this.notification.type === NotificationType.FRIEND_REQUEST) {
-        await this.userStore.approveFriendRequest(referenceId)
+        // referenceId is now the id of the user who sent the friend request, we push to view
+        this.$router.push({
+          name: 'user-profile',
+          params: { userId: this.notification.referenceId }
+        })
       }
     },
     async handleReject(referenceId: number) {
       this.$emit('markAsRead', this.notification.id)
       if (this.notification.type === NotificationType.GAME_INVITE) {
         await this.gameStore.refuseGameInvitation(referenceId)
-      } else if (this.notification.type === NotificationType.FRIEND_REQUEST) {
-        await this.userStore.rejectFriendRequest(referenceId)
       }
+      // no more reject friends since no reference on the request but on the user. We can only view the sender
     }
   }
 })

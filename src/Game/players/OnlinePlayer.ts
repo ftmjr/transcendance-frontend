@@ -1,7 +1,8 @@
-import type { GameReceiver, GAME_STATE, GameMonitor, NetworkUser } from '@/Game/network/GameMonitor'
+import type { GameReceiver, GAME_STATE, GameMonitor } from '@/Game/network/GameMonitor'
 import { PAD_DIRECTION } from '@/Game/network/GameMonitor'
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PongGameScene from '@/Game/pong-scenes/PongGame'
+import { GameUser } from '@/Game/network/GameNetwork'
 
 export class OnlinePlayer implements GameReceiver, Player {
   private onlineUserGroup: Phaser.Physics.Arcade.Group
@@ -9,13 +10,14 @@ export class OnlinePlayer implements GameReceiver, Player {
   private padDirection: PAD_DIRECTION = PAD_DIRECTION.none
 
   constructor(
-    private user: NetworkUser,
+    private user: GameUser,
     private gameMonitor: GameMonitor,
     private scene: PongGameScene,
     private position: { x: number; y: number },
-    private paddleSpriteKey: string
+    private paddleSpriteKey: string,
+    public readonly userId: number
   ) {
-    this.gameMonitor.listenToAPlayer(this, user.userId)
+    this.gameMonitor.listenToAPlayer(this)
     this.onlineUserGroup = scene.physics.add.group({
       collideWorldBounds: true
     })

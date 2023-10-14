@@ -13,7 +13,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import assetBg from '@/assets/images/authBg.png'
 import useAuthStore from '@/stores/AuthStore'
 
 export default defineComponent({
@@ -23,7 +22,7 @@ export default defineComponent({
   },
   data() {
     return {
-      bgImages: [assetBg, '/pong/backgrounds/pink_pong_bg.png']
+      bgImages: ['/authbg.png', '/pong/backgrounds/pink_pong_bg.png']
     }
   },
   computed: {

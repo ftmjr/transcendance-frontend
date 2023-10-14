@@ -32,6 +32,8 @@ router.beforeEach((to, from, next) => {
       case LoginStatus.LOCKED:
         if (to.name === 'locked-screen') {
           next()
+        } else if (to.name === 'auth') {
+          next({ name: 'auth' })
         } else {
           next({ name: 'locked-screen' })
         }

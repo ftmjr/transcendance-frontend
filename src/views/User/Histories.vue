@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { defineComponent } from 'vue'
 import { formatDate } from '@core/utils/formatters'
 import type { GameHistory } from 'Auth'
 import useUserStore from "@/stores/UserStore";
@@ -49,6 +49,7 @@ interface GroupedHistory {
   latestTimestamp: string
 }
 
+// TODO: This component is not finished yet, need to be refatored to display correctly
 export default defineComponent({
   setup() {
     const userStore = useUserStore()
@@ -63,8 +64,8 @@ export default defineComponent({
     }
   },
   props: {
-    histories: {
-      type: Array as PropType<GameHistory[]>,
+    userId: {
+      type: Number,
       required: true
     }
   },
@@ -111,12 +112,18 @@ export default defineComponent({
         MATCH_WON: 'mdi-trophy',
         MATCH_LOST: 'mdi-skull'
       }
-      return icons[event]
     },
-    getTdClass(events: Record<string, number>): string {
-      if (Object.keys(events).includes('MATCH_WON')) return 'bg-green-400'
-      if (Object.keys(events).includes('MATCH_LOST')) return 'bg-red-400'
-      return ''
+    getGameType(gameHistory: CompleteGameHistory): GameSessionType {
+      // Determine the game type base on game name
+      switch (gameHistory.gameName) {
+        case 'Bot Game':
+          return GameSessionType.Bot
+        case 'QueList Game':
+          return GameSessionType.QueListGame
+        case 'Challenge Game':
+        default:
+          return GameSessionType.PrivateGame
+      }
     },
     formatDate,
     async fetchNames() {

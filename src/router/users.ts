@@ -1,6 +1,6 @@
-import Settings from '@/views/user/Settings.vue'
+import Settings from '@/views/User/Settings.vue'
 import UserList from '@/views/User/UserList.vue'
-import UserShowView from '@/views/user/Show.vue'
+import UserShowView from '@/views/User/Show.vue'
 
 const usersRoutes = {
   path: 'users',
