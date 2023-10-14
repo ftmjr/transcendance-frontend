@@ -42,8 +42,8 @@
       </VSnackbar>
     </div>
     <PongGamePlayer
-      v-if="gameData && !loading"
-      :gameData="gameData"
+      v-if="currentGameSession && !loading"
+      :gameSession="currentGameSession"
       :user="player"
       :debugMode="true"
     />
@@ -71,10 +71,6 @@ export default defineComponent({
       type: Boolean,
       default: () => true
     },
-    theme: {
-      type: String as PropType<PongTheme>,
-      default: 'Arcade'
-    },
     waitingRoom: {
       type: Boolean,
       default: () => false
@@ -95,23 +91,16 @@ export default defineComponent({
     }
   },
   computed: {
-    player(): GameUser {
+    player(): GameUser & { type: GameUserType } {
       return {
         userId: this.authStore.getUser.id,
         username: this.authStore.getUser.username,
-        avatar: this.authStore.getProfile.avatar
+        avatar: this.authStore.getProfile.avatar,
+        type: this.isPlayer ? GameUserType.Player : GameUserType.Viewer
       }
     },
     currentGameSession(): GameSession | null {
       return this.gameStore.currentGameSession
-    },
-    gameData() {
-      if (!this.currentGameSession) return null
-      return {
-        room: this.currentGameSession.gameId,
-        playerType: this.isPlayer ? GameUserType.Player : GameUserType.Viewer,
-        theme: this.theme
-      }
     }
   },
   beforeMount() {

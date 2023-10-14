@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
 import { GameHistory } from 'Auth'
+import { PongTheme } from '@/Game/pong-scenes/Assets'
 
 export enum GameSessionType {
   Bot,
@@ -16,12 +17,18 @@ export interface GamerSession {
   isHost?: boolean
 }
 
+export interface GameRules {
+  maxScore: number
+  maxTime: number
+  theme?: PongTheme
+}
 export interface GameSession {
   gameId: number
   hostId: number
   type: GameSessionType
   participants: GamerSession[]
   observers: GamerSession[]
+  rules: GameRules
 }
 
 export interface CompleteGameHistory {

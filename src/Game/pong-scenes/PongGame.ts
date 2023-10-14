@@ -2,13 +2,14 @@ import Phaser from 'phaser'
 import type { GameMonitor } from '@/Game/network/GameMonitor'
 import { AIPlayer } from '@/Game/players/AIPlayer'
 import { LocalPlayer } from '@/Game/players/LocalPlayer'
-import { GameUserType } from '@/Game/network/GameNetwork'
+import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
 import type { PreloadSceneData } from '@/Game/pong-scenes/Preload'
 import { PongSprite } from '@/Game/pong-scenes/Assets'
 import type { PongTheme } from '@/Game/pong-scenes/Assets'
 import { OnlinePlayer } from '@/Game/players/OnlinePlayer'
 import { PongBall } from '@/Game/players/PongBall'
 import { GameMonitorState } from '@/Game/network/GameMonitor'
+import { GameSession } from '@/stores/GameStore'
 
 export interface Player {
   getSprite(): Phaser.Physics.Arcade.Sprite
@@ -21,14 +22,16 @@ export interface Player {
 
 export type ScoreBoard = { digit1: Phaser.GameObjects.Image; digit2: Phaser.GameObjects.Image }
 export default class PongGame extends Phaser.Scene {
+  private currentUser: GameUser & { type: GameUserType } = null as unknown as GameUser & {
+    type: GameUserType
+  }
+  private gameMonitor: GameMonitor = null as unknown as GameMonitor
+  private gameSession: GameSession = null as unknown as GameSession
   public cursorkeys: Phaser.Types.Input.Keyboard.CursorKeys | undefined
   public cam: Phaser.Cameras.Scene2D.Camera | undefined
-  private userType: GameUserType = GameUserType.Player
-  private gameMonitor: GameMonitor = null as unknown as GameMonitor
   private awayPlayer: Player = null as unknown as Player
   private homePlayer: Player = null as unknown as Player
   private ball: PongBall = null as unknown as PongBall
-  private networkIsOperational: boolean = false
   private middleLine: Phaser.GameObjects.Graphics | undefined
   private scoreLines: Phaser.Physics.Arcade.Group =
     undefined as unknown as Phaser.Physics.Arcade.Group
@@ -51,10 +54,10 @@ export default class PongGame extends Phaser.Scene {
   }
 
   init(data: PreloadSceneData) {
-    this.userType = data.userType
+    this.currentUser = data.currentUser
     this.gameMonitor = data.gameMonitor
-    this.networkIsOperational = this.gameMonitor.isOperational()
-    this.theme = data.theme
+    this.theme = data.gameSession.rules.theme ?? 'Classic'
+    this.gameSession = data.gameSession
   }
 
   preload() {}
@@ -91,20 +94,28 @@ export default class PongGame extends Phaser.Scene {
     this.scoreImages.player2.digit1.setVisible(false)
 
     this.createLines()
-
-    if (this.userType === GameUserType.Player) {
-      this.gameMonitor.gameSceneReady()
+    if (this.currentUser.type === GameUserType.Player) {
+      this.gameMonitor.gameSceneIsReady()
     }
-    this.gameMonitor.setOnScoreChanged((score) => {
-      this.updateScoreWithSync(score)
-    })
-    this.gameMonitor.setOnGameMonitorStateChanged((state) => {
-      this.updatedGameMonitorState(state)
+    this.gameMonitor.setPhaserNewScoreRoutine(() => {
+      this.updatedScoreRoutine()
     })
   }
 
   update() {
-    if (this._gameReady) {
+    if (!this._gameReady) {
+      if (this.gameMonitor.state >= GameMonitorState.PlayingSceneLoaded) {
+        this.createPlayersOnTheField()
+        this.createBallOnTheField()
+        this._gameReady = true
+      }
+    } else if (this.gameMonitor.state === GameMonitorState.Ended) {
+      this.scene.start('EndGame', {
+        currentUser: this.currentUser,
+        gameMonitor: this.gameMonitor,
+        gameSession: this.gameSession
+      })
+    } else {
       this.homePlayer.update()
       if (this.gameMonitor.isAgainstIA()) {
         ;(this.awayPlayer as AIPlayer).update(
@@ -116,21 +127,6 @@ export default class PongGame extends Phaser.Scene {
       } else {
         this.awayPlayer.update()
       }
-    }
-  }
-
-  private updatedGameMonitorState(state: GameMonitorState) {
-    if (state === GameMonitorState.PlayingSceneLoaded) {
-      this.createPlayersOnTheField()
-      this.createBallOnTheField()
-      this._gameReady = true
-    } else if (state === GameMonitorState.Ended) {
-      // game ended either by a player or by the server show the end scene
-      this.scene.start('EndGame', {
-        userType: this.userType,
-        gameMonitor: this.gameMonitor,
-        theme: this.theme
-      })
     }
   }
 
@@ -158,7 +154,7 @@ export default class PongGame extends Phaser.Scene {
     this.rightLine.setPushable(false)
   }
   private createPlayersOnTheField() {
-    switch (this.userType) {
+    switch (this.currentUser.type) {
       case GameUserType.Viewer:
         this.createViewGamePlayers()
         break
@@ -176,7 +172,8 @@ export default class PongGame extends Phaser.Scene {
       this.gameMonitor,
       this,
       { x: 30, y: this.scale.height / 2 },
-      PongSprite.Paddle
+      PongSprite.Paddle,
+      this.currentUser.userId
     )
     this.awayPlayer = new AIPlayer(
       this.gameMonitor,
@@ -187,42 +184,47 @@ export default class PongGame extends Phaser.Scene {
   }
 
   private createOnlineGamePlayers() {
-    const opponent = this.gameMonitor.getOpponent()
+    const players = this.gameMonitor.players
+    const opponent = players.find((player) => player.userId !== this.currentUser.userId)
     const homePosition = { x: 30, y: this.scale.height / 2 }
     const awayPosition = { x: this.scale.width - 30, y: this.scale.height / 2 }
-    const isHost = this.gameMonitor.getCurrentUser().isHost
+    const isHost = this.gameMonitor.hostId === this.currentUser.userId
     const p1 = new LocalPlayer(
       this.gameMonitor,
       this,
       isHost ? homePosition : awayPosition,
-      PongSprite.Paddle
+      PongSprite.Paddle,
+      this.currentUser.userId
     )
     const p2 = new OnlinePlayer(
       opponent,
       this.gameMonitor,
       this,
       isHost ? awayPosition : homePosition,
-      PongSprite.AwayPaddle
+      PongSprite.AwayPaddle,
+      opponent.userId
     )
     this.homePlayer = isHost ? p1 : p2
     this.awayPlayer = isHost ? p2 : p1
   }
 
   private createViewGamePlayers() {
-    const players = Array.from(this.gameMonitor.getPlayers().values())
+    const players = this.gameMonitor.players
     this.homePlayer = new OnlinePlayer(
       players[0],
       this.gameMonitor,
       this,
       { x: 30, y: this.scale.height / 2 },
-      PongSprite.AwayPaddle
+      PongSprite.AwayPaddle,
+      players[0].userId
     )
     this.awayPlayer = new OnlinePlayer(
       players[1],
       this.gameMonitor,
       this,
       { x: this.scale.width - 30, y: this.scale.height / 2 },
-      PongSprite.AwayPaddle
+      PongSprite.AwayPaddle,
+      players[1].userId
     )
   }
 
@@ -242,9 +244,12 @@ export default class PongGame extends Phaser.Scene {
     return this.ball
   }
 
-  private updateScoreWithSync(score: { player1: number; player2: number }) {
-    const digitsScore1 = score.player1.toString().split('')
-    const digitsScore2 = score.player2.toString().split('')
+  private updatedScoreRoutine() {
+    const scores = this.gameMonitor.scores
+    // check if there is two scores
+    if (scores.length < 2) return
+    const digitsScore1 = scores[0].score.toString().split('')
+    const digitsScore2 = scores[1].score.toString().split('')
     if (digitsScore1.length > 1) {
       this.scoreImages?.player1.digit1.setVisible(true)
       this.scoreImages?.player1.digit1.setFrame(digitsScore1[1])
@@ -259,10 +264,10 @@ export default class PongGame extends Phaser.Scene {
     } else {
       this.scoreImages?.player2.digit2.setFrame(digitsScore2[0])
     }
-    this.scoredRoutine()
+    this.camGoalShake()
   }
 
-  scoredRoutine() {
+  camGoalShake() {
     this.cam?.shake(100, 0.01)
     this.scoreSound?.play({
       ...this.soundConfig,

@@ -1,22 +1,26 @@
-import { GameUserType } from '@/Game/network/GameNetwork'
-import type { GameMonitor, NetworkUser } from '@/Game/network/GameMonitor'
+import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
+import type { GameMonitor } from '@/Game/network/GameMonitor'
 import type { PongTheme } from '@/Game/pong-scenes/Assets'
 import { getPongSprites, PongSprite } from '@/Game/pong-scenes/Assets'
 import type { GameObjects } from 'phaser'
 import { GameMonitorState } from '@/Game/network/GameMonitor'
+import { GameSession } from '@/stores/GameStore'
 
 export interface PreloadSceneData {
-  userType: GameUserType
+  currentUser: GameUser & { type: GameUserType }
   gameMonitor: GameMonitor
-  theme: PongTheme
+  gameSession: GameSession
 }
 
 export default class PreloadPong extends Phaser.Scene {
-  private userType: GameUserType = GameUserType.Player
+  private currentUser: GameUser & { type: GameUserType } = null as unknown as GameUser & {
+    type: GameUserType
+  }
   private gameMonitor: GameMonitor = null as unknown as GameMonitor
+  private gameSession: GameSession = null as unknown as GameSession
   private bottomText: Phaser.GameObjects.Text | undefined = undefined
   private topText: Phaser.GameObjects.Text | undefined = undefined
-  private theme: PongTheme = 'Soccer'
+  private theme: PongTheme = 'Classic'
   private spritesKeys: Record<PongSprite, string> = getPongSprites(this.theme)
   private progressBar: GameObjects.Graphics | undefined = undefined
   private progressBox: GameObjects.Graphics | undefined = undefined
@@ -98,12 +102,20 @@ export default class PreloadPong extends Phaser.Scene {
     this.load.audio(PongSprite.WallSong, this.spritesKeys.WallSong)
     this.load.audio(PongSprite.PaddleSong, this.spritesKeys.PaddleSong)
     this.load.audio(PongSprite.ScoreSong, this.spritesKeys.ScoreSong)
+
+    // try to load images in gameSession
+    this.gameSession.participants.forEach((player) => {
+      if (player.avatar) {
+        this.load.image(player.avatar, player.avatar)
+      }
+    })
   }
 
   init(data: PreloadSceneData) {
-    this.userType = data.userType
+    this.currentUser = data.currentUser
     this.gameMonitor = data.gameMonitor
-    this.theme = data.theme
+    this.theme = data.gameSession.rules.theme ?? 'Classic'
+    this.gameSession = data.gameSession
     this.spritesKeys = getPongSprites(this.theme)
   }
 
@@ -120,9 +132,9 @@ export default class PreloadPong extends Phaser.Scene {
       fontSize: '18px',
       color: '#d6d3f0'
     })
-    switch (this.userType) {
+    switch (this.currentUser.type) {
       case GameUserType.Player:
-        this.bottomText.setText('Waiting for an opponent...')
+        this.bottomText.setText(`En attente d'un adversaire...`)
         break
       case GameUserType.Viewer:
         this.bottomText.setText('Waiting for game to start...')
@@ -131,18 +143,20 @@ export default class PreloadPong extends Phaser.Scene {
       fontSize: '18px',
       color: '#5DD9C1'
     })
+    this.printPlayersInfo()
+    this.gameMonitor.setPhaserNewPlayerListRoutine(() => {
+      this.printPlayersInfo()
+    })
   }
 
   update() {
-    // Update the player info display
-    this.printPlayersInfo()
     // Check network status and if ready show start button
     this.checkNetworkAndState()
   }
 
   checkNetworkAndState() {
-    if (!this.gameMonitor.isOperational()) {
-      this.bottomText?.setText('Network is down.')
+    if (!this.gameMonitor.isNetworkOperational()) {
+      this.bottomText?.setText('Waiting for network...')
       return
     }
     switch (this.gameMonitor.state) {
@@ -159,7 +173,7 @@ export default class PreloadPong extends Phaser.Scene {
         this.startButton?.destroy()
         this.startButtonText?.setText('Server - sync')
         this.time.delayedCall(300, () => {
-          this.startGame()
+          this.startGameScene()
         })
         break
     }
@@ -167,43 +181,58 @@ export default class PreloadPong extends Phaser.Scene {
   printPlayersInfo() {
     const width = this.scale.width
     const height = this.scale.height
-    const players = Array.from(this.gameMonitor.getPlayers().values()) || []
+    const players = this.gameMonitor.players
     const playersPositions = [
       { x: width / 2 - 150, y: height / 2 },
       { x: width / 2 + 150, y: height / 2 }
     ]
-    const frames = ['character_malePerson_jump.png', 'character_malePerson_switch1.png']
     // remove old player info
     this.playerTexts.forEach((text) => text.destroy())
     this.playerImages.forEach((image) => image.destroy())
     this.playerTexts = []
     this.playerImages = []
     players.forEach((player, index) => {
-      const atlasName = this.getOrLoadUserAvatar(player)
-      const playerImage = this.add.image(0, 0, atlasName, frames[index]).setScale(0.8) // Adjust scale as necessary
-      const playerText = this.add.text(0, 80, player.username).setOrigin(0.5, 0.5)
-      const container = this.add.container(playersPositions[index].x, playersPositions[index].y, [
-        playerImage,
-        playerText
-      ])
-      this.playerImages.push(playerImage)
-      this.playerTexts.push(playerText)
+      this.getOrLoadUserAvatar(player).then(({ name, isAtlas }) => {
+        let playerImage: GameObjects.Image
+        if (isAtlas) {
+          playerImage = this.add.image(0, 0, name, 'run0').setScale(0.8)
+        } else {
+          playerImage = this.add.image(0, 0, name).setDisplaySize(100, 100)
+        }
+        const playerText = this.add.text(0, 80, player.username).setOrigin(0.5, 0.5)
+        const container = this.add.container(playersPositions[index].x, playersPositions[index].y, [
+          playerImage,
+          playerText
+        ])
+        this.playerImages.push(playerImage)
+        this.playerTexts.push(playerText)
+      })
     })
   }
-  getOrLoadUserAvatar(user: NetworkUser): string {
-    // future logic to load avatar depending on user
-    return PongSprite.MaleAtlasSprites
-  }
-  printIaPlayerInfo() {
-    const width = this.scale.width
-    const height = this.scale.height
-    const playerImage = this.add
-      .image(0, 0, PongSprite.RobotAtlasSprites, 'character_robot_hold.png')
-      .setScale(0.8) // Adjust scale as necessary
-    const playerText = this.add.text(0, 80, 'IA', { color: '#ffffff' }).setOrigin(0.5, 0.5)
-    const container = this.add.container(width / 2 + 150, height / 2, [playerImage, playerText])
-    this.playerImages.push(playerImage)
-    this.playerTexts.push(playerText)
+  async getOrLoadUserAvatar(user: GameUser): Promise<{ name?: string; isAtlas: boolean }> {
+    if (user.avatar) {
+      // Check if the image is already loaded
+      if (!this.textures.exists(user.avatar)) {
+        await new Promise((resolve: (val: string) => void) => {
+          this.load.image(user.avatar, user.avatar)
+          this.load.once('complete', () => resolve('loaded'))
+          this.load.start()
+        })
+      }
+      return {
+        name: user.avatar,
+        isAtlas: false
+      }
+    } else if (user.userId === 0) {
+      return {
+        name: PongSprite.RobotAtlasSprites,
+        isAtlas: true
+      }
+    }
+    return {
+      name: PongSprite.MaleAtlasSprites,
+      isAtlas: true
+    }
   }
   createStartButton() {
     if (this.startButton) return
@@ -232,11 +261,11 @@ export default class PreloadPong extends Phaser.Scene {
       this.startButton?.disableInteractive()
     })
   }
-  startGame() {
+  startGameScene() {
     this.scene.start('PongGame', {
-      theme: this.theme,
-      userType: this.userType,
-      gameMonitor: this.gameMonitor
+      currentUser: this.currentUser,
+      gameMonitor: this.gameMonitor,
+      gameSession: this.gameSession
     })
   }
 }

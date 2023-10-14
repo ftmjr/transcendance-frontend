@@ -1,6 +1,6 @@
 import type { GameUserType } from '@/Game/network/GameNetwork'
 
-export type PongTheme = 'Arcade' | 'Soccer'
+export type PongTheme = 'Classic' | 'Arcade' | 'Soccer'
 
 export interface GameDataI {
   theme: PongTheme
