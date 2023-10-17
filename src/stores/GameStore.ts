@@ -111,7 +111,8 @@ const useGameStore = defineStore({
       try {
         const { data } = await axios.post<GameSession>('/game/start', {
           againstBot: false,
-          opponent: userId
+          opponent: userId,
+          rules
         })
         this.joinedGameSession = data
         return 'preparing'
