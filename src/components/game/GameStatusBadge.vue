@@ -30,30 +30,16 @@
       <v-icon left>tabler-eye</v-icon>
       Watch Game
     </v-btn>
-    <v-btn v-else variant="outlined" size="small" @click="challengeUser(userGameStatus)">
-      <v-icon left>mdi-sword-cross</v-icon>
-      Challenge
-    </v-btn>
+    <challenge-modal v-else :status="status" :user-id="userId" :user-game-status="userGameStatus" />
   </div>
-  <VSnackbar
-    v-model="errorSnackbar"
-    transition="scale-transition"
-    location="top"
-    color="dark"
-    :timeout="2000"
-  >
-    <template #actions>
-      <VBtn color="error" variant="outlined" @click="errorSnackbar = false"> Fermer </VBtn>
-    </template>
-    <span>{{ errorMsg }}</span>
-  </VSnackbar>
 </template>
 
 <script lang="ts" setup>
 import { PropType, ref } from 'vue'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import { Status } from '@/stores/AuthStore'
-import { useRouter } from 'vue-router'
+import ChallengeModal from "@/components/game/ChallengeModal.vue";
+
 const props = defineProps({
   userGameStatus: {
     type: Object as PropType<{
@@ -71,23 +57,6 @@ const props = defineProps({
     required: true
   }
 })
-const errorSnackbar = ref(false)
-const errorMsg = ref('')
-const gameStore = useGameStore()
-const challengeUser = (user: {
-  status: 'playing' | 'inQueue' | 'free'
-  gameSession?: GameSession
-}) => {
-  if (user.status === 'free') {
-    if (props.status !== 'Online') {
-      errorSnackbar.value = true
-      errorMsg.value = `Le joueur n'est pas en ligne`
-    } else {
-      gameStore.startGameAgainstPlayer(props.userId)
-    }
-  } else {
-    errorSnackbar.value = true
-    errorMsg.value = `Le joueur n'est pas libre`
-  }
-}
+const gameStore = useGameStore();
+
 </script>
