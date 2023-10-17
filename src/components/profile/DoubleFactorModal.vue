@@ -20,7 +20,7 @@
       </VCardText>
       <VCardText v-else class="pt-6 flex flex-col items-center">
         <img :src="qrCode" alt="QR Code" />
-        <OtpInput v-model="verificationCode" />
+        <VOtpInput v-model="verificationCode" />
         <p v-if="errorMessage" class="text-error">{{ errorMessage }}</p>
         <VBtn @click="activateCode">Activez le 2FA</VBtn>
       </VCardText>
@@ -31,12 +31,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import OtpInput from '@/components/profile/OtpInput.vue'
+import { VOtpInput } from 'vuetify/labs/VOtpInput';
 
 export default defineComponent({
   name: 'DoubleFactorModal',
   components: {
-    OtpInput
+    VOtpInput
   },
   props: {
     isDialogVisible: {
