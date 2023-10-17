@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  input[type="text"] {
+    @apply bg-darkBlue;
+    @apply border-transparent;
+    @apply text-white;
+  }
+  /* Change the focus ring color */
+  input[type="text"]:focus {
+    //no ring on focus
+    @apply ring-0;
+    outline: none; /* Remove the default outline */
+  }
+
+  textarea {
+    @apply bg-darkBlue;
+    @apply border-transparent;
+    @apply text-white;
+  }
+}
