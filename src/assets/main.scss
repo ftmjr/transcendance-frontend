@@ -4,7 +4,7 @@
 
 @layer base {
   input[type="text"] {
-    @apply bg-darkBlue;
+    @apply bg-transparent;
     @apply border-transparent;
     @apply text-white;
   }
@@ -16,7 +16,7 @@
   }
 
   textarea {
-    @apply bg-darkBlue;
+    @apply bg-transparent;
     @apply border-transparent;
     @apply text-white;
   }
