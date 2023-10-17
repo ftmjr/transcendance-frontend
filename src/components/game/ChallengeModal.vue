@@ -1,14 +1,11 @@
 <template>
-  <VDialog
-      v-model="isDialogVisible"
-      max-width="600"
-  >
+  <VDialog v-model="isDialogVisible" max-width="600">
     <template #activator="{ props }">
       <VBtn v-bind="props" variant="outlined" size="small">
         Challenge <v-icon left>mdi-sword-cross</v-icon>
       </VBtn>
     </template>
-    <VBtn icon @click="isDialogVisible = !isDialogVisible"  class="v-dialog-close-btn">
+    <VBtn icon @click="isDialogVisible = !isDialogVisible" class="v-dialog-close-btn">
       <VIcon icon="tabler-x" />
     </VBtn>
     <VCard title="Règles du jeu">
@@ -25,16 +22,31 @@
               </VCol>
               <VCol class="text-right">
                 <v-slider
-                    v-model="gameRulesFields.maxScore"
-                    :color="color"
-                    track-color="grey"
-                    min="2" max="20" :step="1"
+                  v-model="gameRulesFields.maxScore"
+                  :color="color"
+                  track-color="grey"
+                  min="2"
+                  max="20"
+                  :step="1"
+                  show-ticks
                 >
                   <template v-slot:prepend>
-                    <v-btn size="small" variant="text" icon="mdi-minus" :color="color" @click="decrement"></v-btn>
+                    <v-btn
+                      size="small"
+                      variant="text"
+                      icon="mdi-minus"
+                      :color="color"
+                      @click="decrement"
+                    ></v-btn>
                   </template>
                   <template v-slot:append>
-                    <v-btn size="small" variant="text" icon="mdi-plus" :color="color" @click="increment"></v-btn>
+                    <v-btn
+                      size="small"
+                      variant="text"
+                      icon="mdi-plus"
+                      :color="color"
+                      @click="increment"
+                    ></v-btn>
                   </template>
                 </v-slider>
               </VCol>
@@ -42,20 +54,20 @@
           </VCol>
           <VCol cols="12">
             <VAutocomplete
-                v-model="gameRulesFields.theme"
-                :items="themes"
-                item-value="name"
-                item-title="name"
-                label="Theme"
-                variant="outlined"
+              v-model="gameRulesFields.theme"
+              :items="themes"
+              item-value="name"
+              item-title="name"
+              label="Theme"
+              variant="outlined"
             >
               <template #item="{ props, item }">
                 <v-list-item
-                    v-bind="props"
-                    :title="item?.raw?.name"
-                    :color="item.raw.color"
-                    :active-color="item.raw.color"
-                    :class="item?.raw?.styleClassName"
+                  v-bind="props"
+                  :title="item?.raw?.name"
+                  :color="item.raw.color"
+                  :active-color="item.raw.color"
+                  :class="item?.raw?.styleClassName"
                 >
                 </v-list-item>
               </template>
@@ -64,7 +76,7 @@
         </VRow>
       </VCardText>
       <VCardText class="flex justify-end flex-wrap gap-3 items-center">
-        <VAlert v-if="status !== 'online'" type="warning" variant="outlined" dismissible>
+        <VAlert v-if="status !== 'Online'" type="warning" variant="outlined" dismissible>
           You can't challenge this player because he is not online
         </VAlert>
         <VBtn variant="tonal" color="secondary" @click="isDialogVisible = false">Fermer</VBtn>
@@ -75,10 +87,10 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, PropType, reactive, ref, watch} from 'vue'
-import useGameStore, {GameSession} from "@/stores/GameStore";
-import type { PongTheme } from "@/Game/pong-scenes/Assets";
-import {Status} from "@/stores/AuthStore";
+import { computed, PropType, reactive, ref, watch } from 'vue'
+import useGameStore, { GameSession } from '@/stores/GameStore'
+import type { PongTheme } from '@/Game/pong-scenes/Assets'
+import { Status } from '@/stores/AuthStore'
 
 const props = defineProps({
   userGameStatus: {
@@ -97,80 +109,78 @@ const props = defineProps({
     required: true
   }
 })
-const gameStore = useGameStore();
-const isDialogVisible = ref(false);
-const isDialogLoading = ref(false);
-const isDialogError = ref(false);
-const errorMsg = ref('');
+const gameStore = useGameStore()
+const isDialogVisible = ref(false)
+const isDialogLoading = ref(false)
+const isDialogError = ref(false)
+const errorMsg = ref('')
 
-const themes = ref<Array<{
-  name: PongTheme
-  styleClassName: string[];
-  color:string;
-}>>([
+const themes = ref<
+  Array<{
+    name: PongTheme
+    styleClassName: string[]
+    color: string
+  }>
+>([
   { name: 'Classic', styleClassName: ['classic-theme-bg', 'bg-dark-100'], color: 'dark' },
   { name: 'Arcade', styleClassName: ['arcade-theme-bg bg', 'bg-blue-300'], color: 'sky-blue' },
-  { name: 'Soccer', styleClassName: ['soccer-theme-bg', 'bg-green-300'], color: 'light-green' },
-]);
+  { name: 'Soccer', styleClassName: ['soccer-theme-bg', 'bg-green-300'], color: 'light-green' }
+])
 
 const gameRulesFields = reactive({
   maxScore: 12,
   maxTime: 300,
-  theme: 'Classic' as  PongTheme
-});
+  theme: 'Classic' as PongTheme
+})
 
 // computed can be challenged or not (if user is playing or in queue)
 // if user is playing or in queue, we can't challenge him
 // if user is free, we can challenge him if status is online
 const canBeChallenged = computed(() => {
-  return props.userGameStatus.status === 'free' && props.status === 'online';
-});
+  return props.userGameStatus.status === 'free' && props.status === 'Online'
+})
 
 const color = computed<string>(() => {
-  if (gameRulesFields.maxScore < 5) return 'red';
-  if (gameRulesFields.maxScore < 8) return 'orange';
-  if (gameRulesFields.maxScore <= 12) return 'success';
-  if (gameRulesFields.maxScore < 18) return 'teal';
-  return 'indigo';
-});
+  if (gameRulesFields.maxScore < 5) return 'red'
+  if (gameRulesFields.maxScore < 8) return 'orange'
+  if (gameRulesFields.maxScore <= 12) return 'success'
+  if (gameRulesFields.maxScore < 18) return 'teal'
+  return 'indigo'
+})
 
 const increment = () => {
   if (gameRulesFields.maxScore < 20) {
-    gameRulesFields.maxScore++;
+    gameRulesFields.maxScore++
   }
 }
 const decrement = () => {
   if (gameRulesFields.maxScore > 2) {
-    gameRulesFields.maxScore--;
+    gameRulesFields.maxScore--
   }
 }
 
 const startChallenge = async () => {
-  isDialogLoading.value = true;
-  const r =  await gameStore.startGameAgainstPlayer(
-      props.userId,
-      gameRulesFields
-  );
-  isDialogLoading.value = false;
+  isDialogLoading.value = true
+  const r = await gameStore.startGameAgainstPlayer(props.userId, gameRulesFields)
+  isDialogLoading.value = false
   if (r !== 'preparing') {
-    isDialogError.value = true;
-    errorMsg.value = r;
+    isDialogError.value = true
+    errorMsg.value = r
   } else {
-    isDialogVisible.value = false;
+    isDialogVisible.value = false
   }
 }
 
 // set all fields to default values when dialog is closed
 watch(isDialogVisible, (newVal) => {
   if (!newVal) {
-    gameRulesFields.maxScore = 12;
-    gameRulesFields.maxTime = 300;
-    gameRulesFields.theme = 'Classic';
-    errorMsg.value = '';
-    isDialogError.value = false;
+    gameRulesFields.maxScore = 12
+    gameRulesFields.maxTime = 300
+    gameRulesFields.theme = 'Classic'
+    errorMsg.value = ''
+    isDialogError.value = false
   }
 })
-
 </script>
 
 <style scoped>

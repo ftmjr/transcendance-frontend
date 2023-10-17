@@ -265,6 +265,7 @@ export default class PongGame extends Phaser.Scene {
       this.scoreImages?.player2.digit2.setFrame(digitsScore2[0])
     }
     this.camGoalShake()
+    this.ball.resetBall()
   }
 
   camGoalShake() {
@@ -273,6 +274,5 @@ export default class PongGame extends Phaser.Scene {
       ...this.soundConfig,
       volume: 0.5
     })
-    this.ball.resetBall()
   }
 }

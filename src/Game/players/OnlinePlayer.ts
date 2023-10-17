@@ -71,6 +71,6 @@ export class OnlinePlayer implements GameReceiver, Player {
   onBallServed(position: { x: number; y: number }, velocity: { x: number; y: number }): void {
     const ball = this.scene.getBall()
     ball.getSprite().setData('inMiddle', true)
-    ball.serveBall(velocity)
+    ball.serveBall(position, velocity)
   }
 }

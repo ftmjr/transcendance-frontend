@@ -1,7 +1,7 @@
 <template>
   <VCard v-if="info">
     <VImg :src="info.coalition.cover_url" :cover="true" max-height="12rem" />
-    <VCardText class="flex flex-col gap-2  md:flex-row md:justify-between">
+    <VCardText class="flex flex-col gap-2 md:flex-row md:justify-between">
       <div class="flex">
         <VAvatar rounded size="120" class="mx-auto user-profile-avatar -mb-6">
           <VImg v-if="info.avatar" :src="info.avatar" />
@@ -18,13 +18,16 @@
             <VIcon size="20" icon="game-icons:space-suit" :color="info.coalition.color" />
             <span class="text-lg font-weight-semibold text-primary">{{ info?.username }}</span>
           </span>
-          <v-tooltip :text="`A rejoins la communauté le ${showDateFormated(info?.joiningDate)}`" bottom>
-              <template #activator="{ props }">
-                <span class="flex items-center" v-bind="props">
-                  <VIcon size="20" icon="tabler-calendar" class="me-2" />
-                  <span class="text-body-1">{{ showDateFormated(info?.joiningDate) }}</span>
-                </span>
-              </template>
+          <v-tooltip
+            :text="`A rejoins la communauté le ${showDateFormated(info?.joiningDate)}`"
+            bottom
+          >
+            <template #activator="{ props }">
+              <span class="flex items-center" v-bind="props">
+                <VIcon size="20" icon="tabler-calendar" class="me-2" />
+                <span class="text-body-1">{{ showDateFormated(info?.joiningDate) }}</span>
+              </span>
+            </template>
           </v-tooltip>
         </div>
       </div>

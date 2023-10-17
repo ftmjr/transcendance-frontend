@@ -38,7 +38,7 @@
 import { PropType, ref } from 'vue'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import { Status } from '@/stores/AuthStore'
-import ChallengeModal from "@/components/game/ChallengeModal.vue";
+import ChallengeModal from '@/components/game/ChallengeModal.vue'
 
 const props = defineProps({
   userGameStatus: {
@@ -57,6 +57,5 @@ const props = defineProps({
     required: true
   }
 })
-const gameStore = useGameStore();
-
+const gameStore = useGameStore()
 </script>

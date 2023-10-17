@@ -14,7 +14,7 @@
     </div>
     <div class="flex">
       <div>
-        <p class="mt-2">{{ notification.message }}</p>
+        <p class="mt-2" v-html="notification.message"></p>
         <div v-if="isExpiringSoon" class="mt-2 text-red-500 text-sm flex items-center">
           <v-icon small>mdi-alert-circle</v-icon> Expire bientôt
         </div>
