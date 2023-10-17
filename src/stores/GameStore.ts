@@ -104,7 +104,7 @@ const useGameStore = defineStore({
         return 'Une erreur est survenue'
       }
     },
-    async startGameAgainstPlayer(userId: number): Promise<'preparing' | string> {
+    async startGameAgainstPlayer(userId: number, rules: GameRules): Promise<'preparing' | string> {
       if (!this.canStartOrAcceptGameInvitation) {
         return 'Vous avez deja une session de jeu'
       }
