@@ -247,7 +247,7 @@ const useUserStore = defineStore({
     },
     async unblockUser(userId: number): Promise<'success' | 'error'> {
       try {
-        await axios.delete(`block/${userId}`)
+        await axios.delete(`/users/unblock/${userId}`)
         return 'success'
       } catch (e) {
         return 'error'

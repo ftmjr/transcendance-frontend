@@ -52,7 +52,7 @@
           color="dark"
           variant="tonal"
           size="small"
-          @click="userStore.unblockUser(friendId)"
+          @click="unBlockUser"
         >
           <VIcon size="20" start icon="tabler-lock" />
           Débloquer
@@ -62,7 +62,7 @@
           color="dark"
           size="small"
           variant="tonal"
-          @click="userStore.blockUser(friendId)"
+          @click="blockUser"
         >
           <VIcon size="20" start icon="mingcute-unlock-fill" />
           Bloquer
@@ -128,14 +128,6 @@ export default defineComponent({
       this.blockStatus = await this.userStore.checkBlocked(this.friendId)
       this.loading = false
     },
-    async unBlockUser() {
-      this.loading = true
-      await this.userStore.unblockUser(this.friendId)
-      this.loading = false
-      this.$nextTick(() => {
-        this.fetchFriendShipState() // re-fetch friendship state
-      })
-    },
     async beFriendRequest() {
       console.log("beFriendRequest() friend id =", this.friendId)
       await this.userStore.askFriendRequest(this.friendId)
@@ -166,7 +158,23 @@ export default defineComponent({
       this.$nextTick(() => {
         this.fetchFriendShipState() // re-fetch friendship state
       })
-    }
+    },
+    async blockUser() {
+      this.loading = true
+      await this.userStore.blockUser(this.friendId)
+      this.loading = false
+      this.$nextTick(() => {
+        this.fetchFriendShipState() // re-fetch friendship state
+      })
+    },
+    async unBlockUser() {
+      this.loading = true
+      await this.userStore.unblockUser(this.friendId)
+      this.loading = false
+      this.$nextTick(() => {
+        this.fetchFriendShipState() // re-fetch friendship state
+      })
+    },
   }
 })
 </script>

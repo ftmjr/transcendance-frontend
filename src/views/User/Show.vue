@@ -99,7 +99,6 @@ export default defineComponent({
   computed: {
     userIdValue(): number {
       if (this.userId === 'me') return this.authStore.getUser?.id ?? 0
-      console.log("SHOW userIdValue() = ", this.userId)
       return this.userId ? parseInt(this.userId) : 0
     },
     tabs(): { title: string; icon: string; tab: string }[] {
@@ -127,6 +126,7 @@ export default defineComponent({
       this.errorMsg = ''
       try {
         const { data } = await axios.get<User>(`/users/profile/${userId}`)
+        console.log("show vue = ", data)
         this.profileData = {
           id: data.id,
           header: {
