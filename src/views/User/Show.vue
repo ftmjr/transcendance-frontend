@@ -18,14 +18,10 @@
     <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
       <VWindowItem value="profile">
         <div>
-          <p>[SHORT BIO]</p>
+          <p>short bio</p>
           <p>
-            <i>{{ this.authStore.getProfile?.bio }}</i>
+            <i>{{ this.profileData?.bio }}</i>
           </p>
-          <br />
-          <br />
-          <p>[PONG STATS]</p>
-          <p>Number of wins :</p>
         </div>
       </VWindowItem>
       <VWindowItem value="awards">
@@ -103,6 +99,7 @@ export default defineComponent({
   computed: {
     userIdValue(): number {
       if (this.userId === 'me') return this.authStore.getUser?.id ?? 0
+      console.log("SHOW userIdValue() = ", this.userId)
       return this.userId ? parseInt(this.userId) : 0
     },
     tabs(): { title: string; icon: string; tab: string }[] {
@@ -155,10 +152,10 @@ export default defineComponent({
       // if we moving to the same route we update the profile data
       const showProfile = to.name === 'user-profile' || to.name === 'me'
       if (showProfile) {
-        if (to.params.userId !== from.params.userId) {
+        // if (to.params.userId !== from.params.userId) {
           const id = to.params.userId ?? this.authStore.getUser?.id
           this.fetchProfileData(id)
-        }
+        // }
       }
     }
   }

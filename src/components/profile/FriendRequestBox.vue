@@ -137,6 +137,7 @@ export default defineComponent({
       })
     },
     async beFriendRequest() {
+      console.log("beFriendRequest() friend id =", this.friendId)
       await this.userStore.askFriendRequest(this.friendId)
       this.$nextTick(() => {
         this.fetchFriendShipState() // re-fetch friendship state

@@ -35,7 +35,7 @@
         color="blue"
         variant="outlined"
       >
-        VOIR <VIcon>tabler-eye</VIcon>
+        VOIR SOURCE ID <VIcon>tabler-eye</VIcon>
       </VBtn>
       <VBtnGroup v-if="showAcceptRejectButtons" size="small">
         <VBtn
@@ -198,6 +198,7 @@ export default defineComponent({
       }
     },
     async handleAccept(referenceId: number) {
+      console.log("handleAccept() this notification =", this.notification)
       this.$emit('markAsRead', this.notification.id)
       if (this.notification.type === NotificationType.GAME_INVITE) {
         const r = await this.gameStore.acceptGameInvitation(referenceId)
