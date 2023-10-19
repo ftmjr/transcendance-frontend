@@ -36,11 +36,15 @@
         <VMenu activator="parent">
           <VList>
             <VListItem prepend-icon="tabler-eye">
+              <VBtn @click="showProfile">
               <VListItemTitle> Voir le profil</VListItemTitle>
+            </VBtn>
             </VListItem>
             <VListItem prepend-icon="tabler-ban">
-              <VListItemTitle>Bloquer le contact</VListItemTitle>
-            </VListItem>
+              <VBtn @click="blockContact">
+              <VListItemTitle>Bloquer</VListItemTitle>
+            </VBtn>
+          </VListItem>
           </VList>
         </VMenu>
       </VBtn>
@@ -56,6 +60,11 @@ import type { User } from 'Auth'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 import { GameSession } from '@/stores/GameStore'
+import useUserStore, {
+  BlockedStatus,
+  CheckFriendshipResponse,
+  FriendshipStatus
+} from '@/stores/UserStore'
 
 export default defineComponent({
   name: 'MessageTopBar',
@@ -81,8 +90,10 @@ export default defineComponent({
   },
   setup() {
     const authStore = useAuthStore()
+    const userStore = useUserStore()
     return {
-      authStore
+      authStore,
+      userStore,
     }
   },
   emits: ['update:isLeftSidebarOpen'],
@@ -97,8 +108,13 @@ export default defineComponent({
     }
   },
   methods: {
-    async blockContact() {},
-    async showProfile() {}
+    async blockContact() {
+      console.log("inside MessageTopBar")
+    await this.userStore.blockUser(this.contact.profile.userId)
+    },
+    async showProfile() {
+      console.log(this.contact.profile.userId)
+    }
   }
 })
 </script>
