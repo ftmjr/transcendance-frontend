@@ -1,7 +1,8 @@
 <template>
   <VCard :loading="loading" color="transparent" variant="flat">
     <div class="flex items-center justify-center gap-4">
-      <div v-if="blockStatus !== BlockedStatus.BlockedBy && !isMe">
+
+      <div v-if="blockStatus !== BlockedStatus.BlockedBy && !isMe && blockStatus === BlockedStatus.None">
         <VBtn
           v-if="status === FriendshipStatus.Friends"
           color="error"
@@ -46,13 +47,14 @@
           Ajouter en ami
         </VBtn>
       </div>
+
       <div v-if="!isMe">
         <VBtn
           v-if="blockStatus === BlockedStatus.Blocked || blockStatus === BlockedStatus.Mutual"
           color="dark"
           variant="tonal"
           size="small"
-          @click="unBlockUser"
+          @click="unblockUser"
         >
           <VIcon size="20" start icon="tabler-lock" />
           Débloquer
@@ -167,7 +169,7 @@ export default defineComponent({
         this.fetchFriendShipState() // re-fetch friendship state
       })
     },
-    async unBlockUser() {
+    async unblockUser() {
       this.loading = true
       await this.userStore.unblockUser(this.friendId)
       this.loading = false
