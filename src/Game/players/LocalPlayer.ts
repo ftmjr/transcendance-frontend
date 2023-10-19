@@ -58,14 +58,14 @@ export class LocalPlayer implements GameSender, Player {
 
   serveBall() {
     const ball = this.scene.getBall()
-    if (!ball.getSprite().getData('inMiddle')) return
+    if (!ball.getSprite().getData('inMiddle')) return // don't serve if not in middle
     let ballServeVelocity = { x: 360, y: Phaser.Math.Between(-10, 80) }
     if (Math.random() > 0.49) {
       ballServeVelocity = { x: -360, y: Phaser.Math.Between(-80, 10) }
     }
     const ballPosition = { x: ball.getSprite().x, y: ball.getSprite().y }
     this.sendBallServe(ballPosition, ballServeVelocity)
-    ball.serveBall(ballServeVelocity)
+    ball.serveBall(ballPosition, ballServeVelocity)
   }
 
   onBallHit() {

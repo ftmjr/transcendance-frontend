@@ -9,7 +9,7 @@
     <VCardText>
       <VForm @submit.prevent="validateCode">
         <VCol>
-          <OtpInput v-model="verificationCode" />
+          <VOtpInput v-model="verificationCode" />
           <p v-if="errorMessage" class="text-error text-center font-lighter">{{ errorMessage }}</p>
         </VCol>
         <VCol cols="12">
@@ -24,12 +24,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import OtpInput from '@/components/profile/OtpInput.vue'
+import { VOtpInput } from 'vuetify/labs/VOtpInput'
 
 export default defineComponent({
   name: 'two-factors',
   components: {
-    OtpInput
+    VOtpInput
   },
   setup() {
     const authStore = useAuthStore()

@@ -66,10 +66,11 @@ export class PongBall {
     })
   }
 
-  serveBall(velocity: { x: number; y: number }) {
+  serveBall(position: { x: number; y: number }, velocity: { x: number; y: number }) {
     if (!this.ball.getData('inMiddle')) return
     this.ball.setActive(true)
     this.ball.setData('inMiddle', false)
+    this.ball.setPosition(this.scene.scale.width / 2, this.scene.scale.height / 2)
     this.ball.setVelocity(velocity.x, velocity.y)
   }
 

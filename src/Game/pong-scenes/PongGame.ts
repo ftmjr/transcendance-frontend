@@ -40,7 +40,7 @@ export default class PongGame extends Phaser.Scene {
     undefined as unknown as Phaser.Physics.Arcade.Sprite
   public rightLine: Phaser.Physics.Arcade.Sprite =
     undefined as unknown as Phaser.Physics.Arcade.Sprite
-  public theme: PongTheme = 'Soccer'
+  public theme: PongTheme = 'Classic'
   private scoreImages: { player1: ScoreBoard; player2: ScoreBoard } | undefined
   public wallSound: Phaser.Sound.BaseSound | undefined
   public paddleSound: Phaser.Sound.BaseSound | undefined
@@ -265,6 +265,7 @@ export default class PongGame extends Phaser.Scene {
       this.scoreImages?.player2.digit2.setFrame(digitsScore2[0])
     }
     this.camGoalShake()
+    this.ball.resetBall()
   }
 
   camGoalShake() {
@@ -273,6 +274,5 @@ export default class PongGame extends Phaser.Scene {
       ...this.soundConfig,
       volume: 0.5
     })
-    this.ball.resetBall()
   }
 }
