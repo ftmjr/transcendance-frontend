@@ -114,6 +114,10 @@ export default defineComponent({
     },
     async showProfile() {
       console.log(this.contact.profile.userId)
+      this.$router.push({
+          name: 'user-profile',
+          params: { userId: this.contact.profile.userId }
+        })
     }
   }
 })
