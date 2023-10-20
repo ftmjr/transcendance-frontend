@@ -11,7 +11,7 @@ let isRefreshing = false
 // Request interceptor
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const authStore = useAuthStore();
+    const authStore = useAuthStore()
     if (authStore.token && !authStore.isExpired) {
       config.headers['Authorization'] = `Bearer ${authStore.token}`
       isRefreshing = false

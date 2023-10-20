@@ -1,10 +1,10 @@
 import Settings from '@/views/User/Settings.vue'
 import UserList from '@/views/User/UserList.vue'
 import UserShowView from '@/views/User/UserShow.vue'
-import useAuthStore from "@/stores/AuthStore";
+import useAuthStore from '@/stores/AuthStore'
 import { RouteRecordRaw } from 'vue-router'
 
-const usersRoutes: RouteRecordRaw  = {
+const usersRoutes: RouteRecordRaw = {
   path: 'users',
   children: [
     {
@@ -21,8 +21,8 @@ const usersRoutes: RouteRecordRaw  = {
       name: 'me',
       component: UserShowView,
       props: (route) => {
-        const userId = useAuthStore().user?.id ? useAuthStore().user?.id : undefined;
-        const tab = route.params.tab ? route.params.tab : undefined;
+        const userId = useAuthStore().user?.id ? useAuthStore().user?.id : undefined
+        const tab = route.params.tab ? route.params.tab : undefined
         return {
           userId,
           tab
@@ -38,8 +38,8 @@ const usersRoutes: RouteRecordRaw  = {
       name: 'user-profile',
       component: UserShowView,
       props: (route) => {
-        const userId = parseInt(route.params.userId.toString()) ?? undefined;
-        const tab = route.params.tab ? route.params.tab : undefined;
+        const userId = parseInt(route.params.userId.toString()) ?? undefined
+        const tab = route.params.tab ? route.params.tab : undefined
         return {
           userId,
           tab

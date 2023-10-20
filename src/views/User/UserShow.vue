@@ -1,18 +1,8 @@
 <template>
   <div>
-    <user-profile-header
-      :id="profileData.id"
-      class="mb-5"
-      :info="profileData.header"
-    />
-    <VTabs
-      v-model="activeTab"
-      class="v-tabs-pill"
-    >
-      <VTabs
-        v-model="activeTab"
-        class="v-tabs-pill"
-      >
+    <user-profile-header :id="profileData.id" class="mb-5" :info="profileData.header" />
+    <VTabs v-model="activeTab" class="v-tabs-pill">
+      <VTabs v-model="activeTab" class="v-tabs-pill">
         <VTab
           v-for="item in tabs"
           :key="item.icon"
@@ -20,28 +10,20 @@
           :to="getRoute(item.tab)"
           :loading="loading"
         >
-          <VIcon
-            size="20"
-            start
-            :icon="item.icon"
-          />
+          <VIcon size="20" start :icon="item.icon" />
           {{ item.title }}
         </VTab>
       </VTabs>
     </VTabs>
-    <VWindow
-      v-model="activeTab"
-      class="mt-6 disable-tab-transition"
-      :touch="false"
-    >
+    <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
       <VWindowItem value="profile">
         <div>
           <p>[SHORT BIO]</p>
           <p>
             <i>{{ authStore.getProfile?.bio }}</i>
           </p>
-          <br>
-          <br>
+          <br />
+          <br />
           <p>[PONG STATS]</p>
           <p>Number of wins :</p>
         </div>
@@ -60,9 +42,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import type { ProfileData, User, GameHistory, Profile } from "@/interfaces/User";
+import type { ProfileData, User, GameHistory, Profile } from '@/interfaces/User'
 import axios from '@/utils/axios'
 import Histories from '@/views/User/Histories.vue'
 import UserProfileHeader from '@/components/profile/Header.vue'
@@ -80,7 +62,7 @@ export default defineComponent({
   props: {
     userId: {
       type: Number,
-      required: true,
+      required: true
     },
     tab: {
       type: String as PropType<Tab>,
@@ -117,7 +99,7 @@ export default defineComponent({
         },
         bio: '',
         email: '',
-        profile: null as unknown as Profile,
+        profile: null as unknown as Profile
       } as ProfileData,
       gameHistories: [] as GameHistory[],
       errorMsg: ''
@@ -125,7 +107,7 @@ export default defineComponent({
   },
   computed: {
     tabs(): TabItem[] {
-      if (this.userId === this.authStore.getUser?.id) return this.meTabs;
+      if (this.userId === this.authStore.getUser?.id) return this.meTabs
       return this.otherTabs
     }
   },
@@ -134,7 +116,7 @@ export default defineComponent({
       const showProfile = to.name === 'user-profile' || to.name === 'me'
       if (showProfile) {
         if (to.params.userId !== from.params.userId) {
-          const id = to.params.userId ?? this.authStore.getUser?.id;
+          const id = to.params.userId ?? this.authStore.getUser?.id
           this.fetchProfileData(id)
         }
       }

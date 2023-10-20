@@ -8,18 +8,10 @@
       size="small"
       @click="$emit('close')"
     >
-      <VIcon
-        size="18"
-        icon="tabler-x"
-        color="error"
-        class="text-medium-emphasis"
-      />
+      <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
     </VBtn>
   </div>
-  <div
-    v-if="authStore.getProfile"
-    class="flex mb-2 px-1"
-  >
+  <div v-if="authStore.getProfile" class="flex mb-2 px-1">
     <AvatarBadge
       :profile="authStore.getProfile"
       :username="authStore.getUser.username"
@@ -33,19 +25,12 @@
       class="ms-4 me-1 transparent-input-box"
     >
       <template #prepend-inner>
-        <VIcon
-          size="22"
-          icon="tabler-search"
-        />
+        <VIcon size="22" icon="tabler-search" />
       </template>
     </VTextField>
   </div>
   <VDivider />
-  <PerfectScrollbar
-    tag="ul"
-    class="chat-contacts-list px-3"
-    :options="{ wheelPropagation: false }"
-  >
+  <PerfectScrollbar tag="ul" class="chat-contacts-list px-3" :options="{ wheelPropagation: false }">
     <li class="py-4">
       <span class="chat-contact-header text-primary text-xl font-weight-medium">Conversations</span>
     </li>
@@ -63,10 +48,7 @@
       </template>
     </MessageContact>
 
-    <span
-      v-show="!messageStore.getConversingWith.length"
-      class="no-chat-items-text text-disabled"
-    >
+    <span v-show="!messageStore.getConversingWith.length" class="no-chat-items-text text-disabled">
       Aucune Conversation
     </span>
     <li class="my-4">

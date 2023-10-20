@@ -1,8 +1,5 @@
 <template>
-  <VCard
-    :loading="loading"
-    title="Pong Game"
-  >
+  <VCard :loading="loading" title="Pong Game">
     <div class="flex justify-center">
       <div>
         <VAlert
@@ -26,15 +23,8 @@
       </div>
     </div>
     <div class="flex justify-end items-center mr-4">
-      <VBtn
-        v-show="gameStore.currentGameSession"
-        color="red"
-        @click="leaveGame"
-      >
-        <v-tooltip
-          activator="parent"
-          location="bottom"
-        >
+      <VBtn v-show="gameStore.currentGameSession" color="red" @click="leaveGame">
+        <v-tooltip activator="parent" location="bottom">
           Quitter la partie, ou la file d'attente
         </v-tooltip>
         <VIcon>tabler-logout</VIcon>
@@ -143,11 +133,11 @@ export default defineComponent({
       this.loading = false
     },
     async startWatchingGame() {
-      this.loading = true;
+      this.loading = true
       if (!this.gameId) {
         throw new Error('gameId is not defined')
       }
-      const r = await this.gameStore.startViewingGame(this.gameId);
+      const r = await this.gameStore.startViewingGame(this.gameId)
       if (r !== 'preparing') {
         this.error = r
       }

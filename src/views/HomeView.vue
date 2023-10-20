@@ -1,9 +1,6 @@
 <template>
   <VRow>
-    <VCol
-      cols="12"
-      md="6"
-    >
+    <VCol cols="12" md="6">
       <TopChatCard />
     </VCol>
   </VRow>

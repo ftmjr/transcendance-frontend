@@ -12,18 +12,12 @@
       :options="{ wheelPropagation: false }"
       class="h-4/6"
     >
-      <li
-        v-for="message in messages"
-        :key="message"
-      >
+      <li v-for="message in messages" :key="message">
         {{ message }}
       </li>
     </PerfectScrollbar>
     <VDivider class="my-1" />
-    <VForm
-      class="mx-2"
-      @submit.prevent="sendMessage"
-    >
+    <VForm class="mx-2" @submit.prevent="sendMessage">
       <VTextField
         v-model="chatMessageContent"
         :disabled="canWrite"
@@ -34,12 +28,7 @@
         autofocus
       >
         <template #append-inner>
-          <VBtn
-            type="submit"
-            @click.prevent="sendMessage"
-          >
-            Envoyer
-          </VBtn>
+          <VBtn type="submit" @click.prevent="sendMessage"> Envoyer </VBtn>
         </template>
       </VTextField>
     </VForm>

@@ -7,6 +7,7 @@ import { VIcon } from 'vuetify/components'
 export const config: Config = {
   app: {
     title: 'Pong',
+    // @ts-expect-error img not reconized
     logo: h('img', { src: '/src/assets/logo.png' }, null),
     contentWidth: ref(ContentWidth.Boxed),
     contentLayoutNav: ref(AppContentLayoutNav.Vertical),

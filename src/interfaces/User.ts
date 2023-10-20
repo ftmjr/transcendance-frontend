@@ -85,7 +85,7 @@ export interface ProfileHeaderData {
   avatar: string
   fullName: string
   username: string
-  joiningDate: Date
+  joiningDate: string
   isCurrentUser: boolean
 }
 export interface ProfileData {

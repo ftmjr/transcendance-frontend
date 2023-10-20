@@ -1,10 +1,8 @@
 <template>
-  <li
-    class="cursor-pointer"
-    :class="{ 'chat-contact-active': isActive }"
-  >
+  <li class="cursor-pointer" :class="{ 'chat-contact-active': isActive }">
     <div class="flex items-center contact">
       <VBadge
+        v-if="contact.profile?.status"
         dot
         location="bottom right"
         offset-x="3"
@@ -27,7 +25,7 @@
       </VBadge>
 
       <div class="flex ms-4 overflow-hidden">
-        <span>{{ contact.profile.name }} {{ contact.profile.lastname }}</span>
+        <span>{{ contact.profile?.name }} {{ contact.profile?.lastname }}</span>
       </div>
     </div>
     <div>
@@ -40,7 +38,7 @@
 import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import useMessageStore from '@/stores/MessageStore'
-import type { User } from 'Auth'
+import type { User } from '@/interfaces/User'
 import { avatarText } from '@core/utils/formatters'
 
 export default defineComponent({
