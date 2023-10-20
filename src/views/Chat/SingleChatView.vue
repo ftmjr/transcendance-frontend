@@ -49,7 +49,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import useRoomsStore, { ChatRoomWithMembers } from '@/stores/RoomsStore'
-import ChatConversationTopBar from '@/components/rooms/ChatConversationTopBar.vue'
+import ChatConversationTopBar from '@/components/chatRooms/ChatConversationTopBar.vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import useAuthStore from '@/stores/AuthStore'
 

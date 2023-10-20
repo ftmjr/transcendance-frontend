@@ -96,7 +96,7 @@
 import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
 import { PropType, defineComponent } from 'vue'
 import { User } from '@/interfaces/User'
-import MessageTopBar from '@/components/Message/MessageTopBar.vue'
+import MessageTopBar from '@/components/messages/MessageTopBar.vue'
 import useAuthStore from '@/stores/AuthStore'
 import { formatDate } from '@/vuetify/@core/utils/formatters'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'

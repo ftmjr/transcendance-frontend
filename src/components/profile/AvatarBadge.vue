@@ -9,7 +9,6 @@
   >
     <VAvatar
       size="38"
-      class="cursor-pointer"
       @click="$emit('showUserProfile')"
     >
       <VImg

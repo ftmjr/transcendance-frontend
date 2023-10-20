@@ -55,7 +55,7 @@ const useSearchBarStore = defineStore({
       },
       {
         icon: 'tabler-mail',
-        title: 'Message Privé',
+        title: 'messages Privé',
         url: { name: 'dm' },
         category: 'Recherches populaires'
       },

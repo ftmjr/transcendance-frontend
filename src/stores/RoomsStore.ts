@@ -107,16 +107,16 @@ const useRoomsStore = defineStore({
       this.socketManager = new ChatSocket(
         userId,
         (message: ChatMessage) => {
-          // code for new messages from chatRooms coming from the server via socket
+          console.log('chat room message received', message);
         },
         (message: PrivateMessage) => {
           messageStore.handleReceivedMessage(message)
         },
         (error: string) => {
-          // code for failed to send message
+          console.log('failed sending msg', error);
         },
         (error: string) => {
-          // code on failed connection to the socket server
+          console.log('failed connecting', error);
         }
       )
       if (!this.socketManager) return
@@ -135,8 +135,8 @@ const useRoomsStore = defineStore({
     // to be a member of a chat group
     async joinRoom(roomId: number, info: JoinRoom) {
       try {
-        const { data } = await axios.post<ChatRoomMember>(`/chat/join-room/${roomId}`, info)
-        await this.getAllMyRooms()
+        await axios.post<ChatRoomMember>(`/chat/join-room/${roomId}`, info)
+        await this.getAllMyRooms();
       } catch (error) {
         console.error(error)
       }

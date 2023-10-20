@@ -26,6 +26,8 @@
     "vue-router": "^4.2.5",
     "vue3-perfect-scrollbar": "^1.6.1",
     "vuetify": "^3.3.22",
+    "vue-chartjs": "^5.2.0",
+    "chart.js": "^4.4.0",
     "xvfb": "^0.4.0"
   },
   "devDependencies": {

@@ -38,7 +38,7 @@
 import { defineComponent } from 'vue'
 import { formatDate } from '@core/utils/formatters'
 import useGameStore, { CompleteGameHistory, GameSessionType } from '@/stores/GameStore'
-import AvatarBadge from '@/components/profile/AvatarBadge.vue'
+// import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 
 // TODO: This component is not finished yet, need to be refatored to display correctly
 export default defineComponent({

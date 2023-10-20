@@ -66,7 +66,7 @@ import useAuthStore from '@/stores/AuthStore'
 import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar'
 import SingleChatView from '@/views/Chat/SingleChatView.vue'
 import ChatConversationListSideBar from '@/views/Chat/ChatConversationListSideBar.vue'
-import ChatUserProfileSidebar from '@/components/rooms/ChatUserProfileSidebar.vue'
+import ChatUserProfileSidebar from '@/components/chatRooms/ChatUserProfileSidebar.vue'
 import useRoomsStore from '@/stores/RoomsStore'
 
 export default defineComponent({

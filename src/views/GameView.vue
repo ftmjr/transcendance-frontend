@@ -92,8 +92,8 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      error: null,
-      info: null,
+      error: null as unknown as string,
+      info: null as unknown as string,
       showInfo: false,
       showIsInQueList: true
     }
@@ -120,7 +120,7 @@ export default defineComponent({
         this.startAgainstBot()
       } else if (this.waitingRoom) {
         this.startWaitingRoom()
-      } else if (!this.isPlayer) {
+      } else if (!this.isPlayer && this.gameId) {
         this.startWatchingGame()
       }
     }
@@ -143,8 +143,11 @@ export default defineComponent({
       this.loading = false
     },
     async startWatchingGame() {
-      this.loading = true
-      const r = await this.gameStore.startViewingGame(this.gameId)
+      this.loading = true;
+      if (!this.gameId) {
+        throw new Error('gameId is not defined')
+      }
+      const r = await this.gameStore.startViewingGame(this.gameId);
       if (r !== 'preparing') {
         this.error = r
       }

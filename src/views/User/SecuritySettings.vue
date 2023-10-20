@@ -299,12 +299,7 @@ export default defineComponent({
       this.loadingSessions = false
     },
     async disconnectSession(session: Session) {
-      // toDo : disconnect session implementation
-      // try {
-      //   await axiosInstance.delete(`/auth/sessions/${session.id}`)
-      // } catch (e) {
-      //   console.log(e)
-      // }
+      console.log('try disconnecting session', session);
     },
     async changePassword() {
       const worked = await this.authStore.updatePassword(this.passwordFields)

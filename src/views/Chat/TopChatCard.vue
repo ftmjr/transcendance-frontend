@@ -151,10 +151,10 @@ export default defineComponent({
       return room.members.some((member) => member.id === this.authStore.getUser.id)
     },
     goToChatRoom(roomId: number) {
-      // go to chat room
+
     },
     joinRoom(roomId: number) {
-      // join room
+
     }
   }
 })

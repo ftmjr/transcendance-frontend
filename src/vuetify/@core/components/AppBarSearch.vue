@@ -7,7 +7,7 @@ import { useMagicKeys } from '@vueuse/core'
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
   (e: 'update:searchQuery', value: string): void
-  (e: 'itemSelected', value: any): void
+  (e: 'itemSelected', value: unknown): void
 }
 
 interface Suggestion {
@@ -24,7 +24,7 @@ interface Suggestions {
 interface Props {
   isDialogVisible: boolean
   searchQuery: string
-  searchResults: any[]
+  searchResults: unknown[]
   suggestions?: Suggestions[]
   noDataSuggestion?: Suggestion[]
 }

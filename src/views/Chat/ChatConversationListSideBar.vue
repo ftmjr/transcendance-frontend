@@ -79,7 +79,7 @@
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import RoomContact from '@/components/rooms/RoomContact.vue'
+import RoomContact from '@/components/chatRooms/RoomContact.vue'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import useRoomsStore from '@/stores/RoomsStore'
 

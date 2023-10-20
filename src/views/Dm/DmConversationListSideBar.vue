@@ -87,7 +87,7 @@ import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import useMessageStore from '@/stores/MessageStore'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import MessageContact from '@/components/Message/MessageContact.vue'
+import MessageContact from '@/components/messages/MessageContact.vue'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import useUserStore from '@/stores/UserStore'
 

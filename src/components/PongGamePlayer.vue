@@ -103,7 +103,7 @@
 <script setup lang="ts">
 import { ref, onBeforeUnmount, onMounted, reactive, nextTick } from 'vue'
 import type { PropType } from 'vue'
-import Phaser from 'phaser'
+import Phaser, { AUTO } from 'phaser'
 import PongGameScene from '@/Game/pong-scenes/PongGame'
 import PreloadScene from '@/Game/pong-scenes/Preload'
 import { GameNetwork, GameUserType } from '@/Game/network/GameNetwork'
@@ -194,7 +194,7 @@ onMounted(() => {
     gameSession: props?.gameSession
   }
   const config: Phaser.Types.Core.GameConfig = {
-    type: Phaser.AUTO,
+    type: AUTO,
     scale: {
       mode: Phaser.Scale.FIT,
       parent: 'Game-container',

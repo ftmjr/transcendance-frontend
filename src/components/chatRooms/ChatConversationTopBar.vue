@@ -52,7 +52,7 @@
 import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import useRoomsStore, { ChatRoomWithMembers, MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
-import RoomContact from '@/components/rooms/RoomContact.vue'
+import RoomContact from '@/components/chatRooms/RoomContact.vue'
 
 export default defineComponent({
   name: 'ChatTopBar',
