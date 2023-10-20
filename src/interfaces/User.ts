@@ -91,7 +91,7 @@ export interface ProfileHeaderData {
 export interface ProfileData {
   id: number
   header: ProfileHeaderData
-  Profile: Profile
+  profile: Profile
   email: string
 }
 export interface AuthState {

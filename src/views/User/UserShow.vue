@@ -1,18 +1,8 @@
 <template>
   <div>
-    <user-profile-header
-      :id="profileData.id"
-      class="mb-5"
-      :info="profileData.header"
-    />
-    <VTabs
-      v-model="activeTab"
-      class="v-tabs-pill"
-    >
-      <VTabs
-        v-model="activeTab"
-        class="v-tabs-pill"
-      >
+    <user-profile-header :id="profileData.id" class="mb-5" :info="profileData.header" />
+    <VTabs v-model="activeTab" class="v-tabs-pill">
+      <VTabs v-model="activeTab" class="v-tabs-pill">
         <VTab
           v-for="item in tabs"
           :key="item.icon"
@@ -50,23 +40,26 @@
         <div>Les recompenses</div>
       </VWindowItem>
       <VWindowItem value="friends">
-        <Friends />
+        <Friends v-if="userId === authStore.getUser?.id" />
       </VWindowItem>
       <VWindowItem value="history">
-        <Histories :user-id="userIdValue" />
+        <Histories :user-id="userId" />
       </VWindowItem>
     </VWindow>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from "vue";
 import useAuthStore from '@/stores/AuthStore'
-import type { ProfileData, User, GameHistory } from '@/interfaces/User'
+import type { ProfileData, User, GameHistory, Profile } from "@/interfaces/User";
 import axios from '@/utils/axios'
 import Histories from '@/views/User/Histories.vue'
 import UserProfileHeader from '@/components/profile/Header.vue'
 import Friends from '@/components/profile/Friends.vue'
+
+type Tab = 'profile' | 'awards' | 'history' | 'friends'
+type TabItem = { title: string; icon: string; tab: Tab }
 
 export default defineComponent({
   components: {
@@ -76,11 +69,11 @@ export default defineComponent({
   },
   props: {
     userId: {
-      type: String,
-      default: () => 'me'
+      type: Number,
+      required: true,
     },
     tab: {
-      type: String,
+      type: String as PropType<Tab>,
       default: () => 'profile'
     }
   },
@@ -96,13 +89,13 @@ export default defineComponent({
         { title: 'Profile', icon: 'tabler-user-check', tab: 'profile' },
         { title: 'Awards', icon: 'dashicons:awards', tab: 'awards' },
         { title: 'Historique', icon: 'tabler-history', tab: 'history' }
-      ],
+      ] as TabItem[],
       meTabs: [
         { title: 'Profile', icon: 'tabler-user-check', tab: 'profile' },
         { title: 'Awards', icon: 'dashicons:awards', tab: 'awards' },
         { title: 'Amis', icon: 'tabler-link', tab: 'friends' },
         { title: 'Historique', icon: 'tabler-history', tab: 'history' }
-      ],
+      ] as TabItem[],
       profileData: {
         id: 0,
         header: {
@@ -112,47 +105,43 @@ export default defineComponent({
           username: 'no username',
           joiningDate: Date.now()
         },
-        bio: ''
+        bio: '',
+        email: '',
+        profile: null as unknown as Profile,
       } as ProfileData,
       gameHistories: [] as GameHistory[],
       errorMsg: ''
     }
   },
   computed: {
-    userIdValue(): number {
-      if (this.userId === 'me') return this.authStore.getUser?.id ?? 0
-      return this.userId ? parseInt(this.userId) : 0
-    },
-    tabs(): { title: string; icon: string; tab: string }[] {
-      if (this.userIdValue === this.authStore.getUser?.id) return this.meTabs
+    tabs(): TabItem[] {
+      if (this.userId === this.authStore.getUser?.id) return this.meTabs;
       return this.otherTabs
     }
   },
   watch: {
     $route(to, from) {
-      // if we moving to the same route we update the profile data
       const showProfile = to.name === 'user-profile' || to.name === 'me'
       if (showProfile) {
         if (to.params.userId !== from.params.userId) {
-          const id = to.params.userId ?? this.authStore.getUser?.id
+          const id = to.params.userId ?? this.authStore.getUser?.id;
           this.fetchProfileData(id)
         }
       }
     }
   },
   async beforeMount() {
-    await this.fetchProfileData(this.userIdValue)
+    await this.fetchProfileData(this.userId)
     if (this.profileData.header.username) {
-      // change page Title
-      document.title = `${this.profileData.header.username} - ${this.activeTab} - Profile | Transcendence`
+      document.title = `${this.profileData.header.username} - ${this.activeTab} | Transcendence`
     }
   },
   methods: {
     getRoute(tab: string) {
-      if (this.userId === 'me') {
+      if (this.userId === this.authStore.getUser?.id) {
         return { name: 'me', params: { tab: tab } }
       } else {
-        return { name: 'user-profile', params: { userId: this.userIdValue, tab: tab } }
+        return { name: 'user-profile', params: { userId: this.userId, tab: tab } }
       }
     },
     async fetchProfileData(userId: number) {
@@ -170,6 +159,8 @@ export default defineComponent({
             joiningDate: data.createdAt,
             isCurrentUser: userId === this.authStore.getUser?.id
           },
+          profile: data.profile,
+          email: data.email,
           bio: data.profile.bio,
           status: data.profile.status
         }

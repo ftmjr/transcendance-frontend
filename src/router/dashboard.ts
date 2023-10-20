@@ -41,9 +41,15 @@ const dashboardRoutes: RouteRecordRaw = {
       }
     },
     {
-      path: 'chat',
+      path: 'chat/:roomId?',
       name: 'chat',
       component: ChatWindowView,
+      props: (route) => {
+        const roomId = route.params.roomId ? parseInt(route.params.roomId.toString()) : undefined
+        return {
+          roomId
+        }
+      },
       meta: {
         requiresAuth: true,
         title: 'Chat',
