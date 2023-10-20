@@ -1,4 +1,4 @@
-import Settings from '@/views/User/Settings.vue'
+import Settings from '@/views/User/UserSettings.vue'
 import UserList from '@/views/User/UserList.vue'
 import UserShowView from '@/views/User/UserShow.vue'
 import useAuthStore from '@/stores/AuthStore'

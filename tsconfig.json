@@ -30,7 +30,7 @@
     ],
     "skipLibCheck": true,
     "types": [
-      "vite/client",
+      "vite/client"
     ]
   },
   "include": [
@@ -39,7 +39,7 @@
     "shims.d.ts",
     "src/**/*",
     "src/**/*.vue",
-    "themeConfig.ts"
+    "themeConfig.ts",
   ],
   "exclude": [
     "dist",

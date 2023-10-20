@@ -1,8 +1,18 @@
 <template>
   <div>
-    <user-profile-header :id="profileData.id" class="mb-5" :info="profileData.header" />
-    <VTabs v-model="activeTab" class="v-tabs-pill">
-      <VTabs v-model="activeTab" class="v-tabs-pill">
+    <user-profile-header
+      :id="profileData.id"
+      class="mb-5"
+      :info="profileData.header"
+    />
+    <VTabs
+      v-model="activeTab"
+      class="v-tabs-pill"
+    >
+      <VTabs
+        v-model="activeTab"
+        class="v-tabs-pill"
+      >
         <VTab
           v-for="item in tabs"
           :key="item.icon"
@@ -10,20 +20,28 @@
           :to="getRoute(item.tab)"
           :loading="loading"
         >
-          <VIcon size="20" start :icon="item.icon" />
+          <VIcon
+            size="20"
+            start
+            :icon="item.icon"
+          />
           {{ item.title }}
         </VTab>
       </VTabs>
     </VTabs>
-    <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
+    <VWindow
+      v-model="activeTab"
+      class="mt-6 disable-tab-transition"
+      :touch="false"
+    >
       <VWindowItem value="profile">
         <div>
           <p>[SHORT BIO]</p>
           <p>
             <i>{{ authStore.getProfile?.bio }}</i>
           </p>
-          <br />
-          <br />
+          <br>
+          <br>
           <p>[PONG STATS]</p>
           <p>Number of wins :</p>
         </div>

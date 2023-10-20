@@ -98,8 +98,15 @@ const resolveCategories = (val: string) => {
     @update:model-value="dialogModelValueUpdate"
     @keyup.esc="clearSearchAndCloseDialog"
   >
-    <VCard height="100%" width="100%" class="position-relative">
-      <VCardText class="pt-1" style="max-height: 65px">
+    <VCard
+      height="100%"
+      width="100%"
+      class="position-relative"
+    >
+      <VCardText
+        class="pt-1"
+        style="max-height: 65px"
+      >
         <VTextField
           ref="refSearchInput"
           v-model="searchQuery"
@@ -112,8 +119,16 @@ const resolveCategories = (val: string) => {
           @update:model-value="$emit('update:searchQuery', searchQuery)"
         >
           <template #prepend-inner>
-            <VBtn icon variant="text" size="x-small" class="text-high-emphasis ms-n1">
-              <VIcon size="22" icon="tabler-search" />
+            <VBtn
+              icon
+              variant="text"
+              size="x-small"
+              class="text-high-emphasis ms-n1"
+            >
+              <VIcon
+                size="22"
+                icon="tabler-search"
+              />
             </VBtn>
           </template>
           <template #append-inner>
@@ -125,31 +140,58 @@ const resolveCategories = (val: string) => {
                 [esc]
               </div>
 
-              <VBtn icon variant="text" size="x-small" @click="clearSearchAndCloseDialog">
-                <VIcon size="22" icon="tabler-x" />
+              <VBtn
+                icon
+                variant="text"
+                size="x-small"
+                @click="clearSearchAndCloseDialog"
+              >
+                <VIcon
+                  size="22"
+                  icon="tabler-x"
+                />
               </VBtn>
             </div>
           </template>
         </VTextField>
       </VCardText>
       <VDivider />
-      <PerfectScrollbar :options="{ wheelPropagation: false, suppressScrollX: true }" class="h-100">
+      <PerfectScrollbar
+        :options="{ wheelPropagation: false, suppressScrollX: true }"
+        class="h-100"
+      >
         <VList
           v-show="searchQuery.length && !!searchResults.length"
           ref="refSearchList"
           density="compact"
           class="app-bar-search-list"
         >
-          <template v-for="item in searchResults" :key="item.title">
-            <VListSubheader v-if="'header' in item" class="text-disabled">
+          <template
+            v-for="item in searchResults"
+            :key="item.title"
+          >
+            <VListSubheader
+              v-if="'header' in item"
+              class="text-disabled"
+            >
               {{ resolveCategories(item.title) }}
             </VListSubheader>
 
             <template v-else>
-              <slot name="searchResult" :item="item">
-                <VListItem link @click="$emit('itemSelected', item)">
+              <slot
+                name="searchResult"
+                :item="item"
+              >
+                <VListItem
+                  link
+                  @click="$emit('itemSelected', item)"
+                >
                   <template #prepend>
-                    <VIcon size="20" :icon="item.icon" class="me-3" />
+                    <VIcon
+                      size="20"
+                      :icon="item.icon"
+                      class="me-3"
+                    />
                   </template>
 
                   <template #append>
@@ -169,10 +211,16 @@ const resolveCategories = (val: string) => {
           </template>
         </VList>
 
-        <div v-show="!!searchResults && !searchQuery" class="h-100">
+        <div
+          v-show="!!searchResults && !searchQuery"
+          class="h-100"
+        >
           <slot name="suggestions">
             <VCardText class="app-bar-search-suggestions h-100 pa-10">
-              <VRow v-if="props.suggestions" class="gap-y-4">
+              <VRow
+                v-if="props.suggestions"
+                class="gap-y-4"
+              >
                 <VCol
                   v-for="suggestion in props.suggestions"
                   :key="suggestion.title"
@@ -195,7 +243,11 @@ const resolveCategories = (val: string) => {
                       @click="$emit('itemSelected', item)"
                     >
                       <template #prepend>
-                        <VIcon :icon="item.icon" size="20" class="me-2" />
+                        <VIcon
+                          :icon="item.icon"
+                          size="20"
+                          class="me-2"
+                        />
                       </template>
                     </VListItem>
                   </VList>
@@ -205,15 +257,26 @@ const resolveCategories = (val: string) => {
           </slot>
         </div>
 
-        <div v-show="!searchResults.length && searchQuery.length" class="h-100">
+        <div
+          v-show="!searchResults.length && searchQuery.length"
+          class="h-100"
+        >
           <slot name="noData">
             <VCardText class="h-100">
               <div
                 class="app-bar-search-suggestions d-flex flex-column align-center justify-center text-high-emphasis h-100"
               >
-                <VIcon size="75" icon="tabler-file-x" />
-                <h6 class="text-h6 my-3">Aucun Résultat trouvé pour "{{ searchQuery }}"</h6>
-                <div v-if="props.noDataSuggestion" class="mt-8">
+                <VIcon
+                  size="75"
+                  icon="tabler-file-x"
+                />
+                <h6 class="text-h6 my-3">
+                  Aucun Résultat trouvé pour "{{ searchQuery }}"
+                </h6>
+                <div
+                  v-if="props.noDataSuggestion"
+                  class="mt-8"
+                >
                   <span class="d-flex justify-center text-disabled">Essayez la recherche</span>
                   <h6
                     v-for="suggestion in props.noDataSuggestion"
@@ -221,7 +284,11 @@ const resolveCategories = (val: string) => {
                     class="app-bar-search-suggestion text-sm font-weight-regular cursor-pointer mt-3"
                     @click="$emit('itemSelected', suggestion)"
                   >
-                    <VIcon size="20" :icon="suggestion.icon" class="me-3" />
+                    <VIcon
+                      size="20"
+                      :icon="suggestion.icon"
+                      class="me-3"
+                    />
                     <span class="text-sm">{{ suggestion.title }}</span>
                   </h6>
                 </div>

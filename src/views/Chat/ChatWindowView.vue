@@ -33,9 +33,19 @@
         v-model:is-left-sidebar-open="isLeftSidebarOpen"
         :room="roomsStore.currentRoom"
       />
-      <div v-else class="flex h-full items-center justify-center flex-column">
-        <VAvatar size="109" class="elevation-3 mb-6 bg-surface">
-          <VIcon size="50" class="rounded-0 text-high-emphasis" icon="tabler-message" />
+      <div
+        v-else
+        class="flex h-full items-center justify-center flex-column"
+      >
+        <VAvatar
+          size="109"
+          class="elevation-3 mb-6 bg-surface"
+        >
+          <VIcon
+            size="50"
+            class="rounded-0 text-high-emphasis"
+            icon="tabler-message"
+          />
         </VAvatar>
         <p
           class="mb-0 px-6 py-1 font-weight-medium text-lg elevation-3 rounded-xl text-high-emphasis bg-surface"

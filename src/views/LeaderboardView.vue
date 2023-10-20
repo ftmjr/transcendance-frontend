@@ -1,10 +1,17 @@
 <template>
-  <v-card class="mx-auto" max-width="">
+  <v-card
+    class="mx-auto"
+    max-width=""
+  >
     <v-card-title> THE PONG LEADERBOARD </v-card-title>
 
     <v-divider />
 
-    <v-virtual-scroll :items="users" height="500" item-height="48">
+    <v-virtual-scroll
+      :items="users"
+      height="500"
+      item-height="48"
+    >
       <template #default="{ item, index }">
         <v-list-item
           :style="index === 0 ? 'font-weight: bold; color: #99842e;' : ''"
@@ -26,7 +33,10 @@
             >
               {{ index + 1 }}
             </v-avatar>
-            <AvatarBadge :profile="item.profile" :username="item.username" />
+            <AvatarBadge
+              :profile="item.profile"
+              :username="item.username"
+            />
           </template>
           <template #append>
             <GameStatusBadge

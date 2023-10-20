@@ -8,10 +8,16 @@
       class="d-md-none me-3"
       @click="isLeftSidebarOpenLocal = true"
     >
-      <VIcon size="24" icon="tabler-menu-2" />
+      <VIcon
+        size="24"
+        icon="tabler-menu-2"
+      />
     </VBtn>
     <template v-if="contact">
-      <div class="flex align-center cursor-pointer" @click="showProfile">
+      <div
+        class="flex align-center cursor-pointer"
+        @click="showProfile"
+      >
         <AvatarBadge
           v-if="contact.profile"
           :profile="contact.profile"
@@ -35,8 +41,16 @@
         />
       </div>
 
-      <VBtn variant="text" color="default" icon size="small">
-        <VIcon size="22" icon="tabler-dots-vertical" />
+      <VBtn
+        variant="text"
+        color="default"
+        icon
+        size="small"
+      >
+        <VIcon
+          size="22"
+          icon="tabler-dots-vertical"
+        />
         <VMenu activator="parent">
           <VList>
             <VListItem prepend-icon="tabler-eye">

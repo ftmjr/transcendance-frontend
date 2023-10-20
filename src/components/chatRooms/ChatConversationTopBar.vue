@@ -8,18 +8,33 @@
       class="d-md-none me-3"
       @click="isLeftSidebarOpenLocal = true"
     >
-      <VIcon size="24" icon="tabler-menu-2" />
+      <VIcon
+        size="24"
+        icon="tabler-menu-2"
+      />
     </VBtn>
     <template v-if="roomMembers">
-      <RoomContact v-if="room" :room="room" :profiles="roomMembers" />
+      <RoomContact
+        v-if="room"
+        :room="room"
+        :profiles="roomMembers"
+      />
       <VSpacer />
 
       <div class="sm:flex items-center hidden">
         <p>Some Action button</p>
       </div>
 
-      <VBtn variant="text" color="default" icon size="small">
-        <VIcon size="22" icon="tabler-dots-vertical" />
+      <VBtn
+        variant="text"
+        color="default"
+        icon
+        size="small"
+      >
+        <VIcon
+          size="22"
+          icon="tabler-dots-vertical"
+        />
         <VMenu activator="parent">
           <VList>
             <VListItem prepend-icon="tabler-pencil">

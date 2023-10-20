@@ -27,7 +27,10 @@
           }
         ]"
       >
-        <div class="chat-avatar" :class="msgGrp.senderId !== conversationWith.id ? 'ms-4' : 'me-4'">
+        <div
+          class="chat-avatar"
+          :class="msgGrp.senderId !== conversationWith.id ? 'ms-4' : 'me-4'"
+        >
           <VAvatar size="38">
             <VImg
               :src="
@@ -77,7 +80,12 @@
         autofocus
       >
         <template #append-inner>
-          <VBtn type="submit" @click.prevent="sendMessage"> Envoyer un MP </VBtn>
+          <VBtn
+            type="submit"
+            @click.prevent="sendMessage"
+          >
+            Envoyer un MP
+          </VBtn>
         </template>
       </VTextField>
     </VForm>

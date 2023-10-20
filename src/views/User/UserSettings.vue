@@ -7,7 +7,11 @@
         :value="item.tab"
         :to="{ name: 'settings', params: { tab: item.tab } }"
       >
-        <VIcon size="20" start :icon="item.icon" />
+        <VIcon
+          size="20"
+          start
+          :icon="item.icon"
+        />
         {{ item.title }}
       </VTab>
     </VTabs>
@@ -36,7 +40,7 @@
                       accept=".jpeg,.png,.jpg,GIF"
                       hidden
                       @input="startUploadNewAvatar"
-                    />
+                    >
                   </div>
                   <p class="text-sm font-weight-light mb-0">
                     Fichier pris en charge: JPG, GIF or PNG
@@ -47,9 +51,15 @@
               <VDivider />
 
               <VCardText class="pt-2">
-                <VForm class="mt-6" @submit.prevent>
+                <VForm
+                  class="mt-6"
+                  @submit.prevent
+                >
                   <VRow>
-                    <VCol md="6" cols="12">
+                    <VCol
+                      md="6"
+                      cols="12"
+                    >
                       <VTextField
                         v-model="fields.username"
                         label="Username"
@@ -57,8 +67,13 @@
                       />
                     </VCol>
 
-                    <VCol cols="12" class="d-flex flex-wrap gap-4">
-                      <VBtn @click.prevent="updateUsername"> Update </VBtn>
+                    <VCol
+                      cols="12"
+                      class="d-flex flex-wrap gap-4"
+                    >
+                      <VBtn @click.prevent="updateUsername">
+                        Update
+                      </VBtn>
                       <VBtn
                         color="secondary"
                         variant="tonal"
@@ -73,9 +88,15 @@
               </VCardText>
 
               <VCardText class="pt-2">
-                <VForm class="mt-6" @submit.prevent>
+                <VForm
+                  class="mt-6"
+                  @submit.prevent
+                >
                   <VRow>
-                    <VCol md="6" cols="12">
+                    <VCol
+                      md="6"
+                      cols="12"
+                    >
                       <VTextField
                         v-model="fields.firstName"
                         label="Prénom"
@@ -83,7 +104,10 @@
                       />
                     </VCol>
 
-                    <VCol md="6" cols="12">
+                    <VCol
+                      md="6"
+                      cols="12"
+                    >
                       <VTextField
                         v-model="fields.lastName"
                         label="Nom de famille"
@@ -91,7 +115,10 @@
                       />
                     </VCol>
 
-                    <VCol cols="12" md="6">
+                    <VCol
+                      cols="12"
+                      md="6"
+                    >
                       <VTextarea
                         v-model="fields.bio"
                         label="Biographie"
@@ -99,8 +126,13 @@
                       />
                     </VCol>
 
-                    <VCol cols="12" class="d-flex flex-wrap gap-4">
-                      <VBtn @click.prevent="updateUserInformation"> Enregistrer </VBtn>
+                    <VCol
+                      cols="12"
+                      class="d-flex flex-wrap gap-4"
+                    >
+                      <VBtn @click.prevent="updateUserInformation">
+                        Enregistrer
+                      </VBtn>
                       <VBtn
                         color="secondary"
                         variant="tonal"
@@ -121,7 +153,12 @@
         <SecuritySettings />
       </VWindowItem>
     </VWindow>
-    <VSnackbar v-model="isInfoBarVisible" multi-line :timeout="1000" :color="infoColor">
+    <VSnackbar
+      v-model="isInfoBarVisible"
+      multi-line
+      :timeout="1000"
+      :color="infoColor"
+    >
       {{ infoMsg }}
     </VSnackbar>
   </div>
@@ -169,8 +206,8 @@ export default defineComponent({
     inputElement(): HTMLInputElement {
       return this.$refs.refInputEl
     },
-    avatar(): string | null {
-      return this.authStore.getProfile?.avatar ?? null
+    avatar(): string {
+      return this.authStore.getProfile?.avatar ?? ''
     }
   },
   mounted() {
@@ -204,7 +241,11 @@ export default defineComponent({
       }
     },
     async updateUserInformation() {
-      const worked = await this.authStore.updateUserInfo(this.fields)
+      const worked = await this.authStore.updateUserInfo({
+        firstName:this.fields.firstName,
+        lastName: this.fields.lastName,
+        bio: this.fields.bio
+      })
       if (worked) {
         this.infoMsg = 'Vos informations ont été mises à jour avec succès'
         this.infoColor = 'success'
