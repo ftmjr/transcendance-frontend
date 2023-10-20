@@ -54,11 +54,15 @@
         <VMenu activator="parent">
           <VList>
             <VListItem prepend-icon="tabler-eye">
+              <VBtn @click="showProfile">
               <VListItemTitle> Voir le profil</VListItemTitle>
+            </VBtn>
             </VListItem>
             <VListItem prepend-icon="tabler-ban">
-              <VListItemTitle>Bloquer le contact</VListItemTitle>
-            </VListItem>
+              <VBtn @click="blockContact">
+              <VListItemTitle>Bloquer</VListItemTitle>
+            </VBtn>
+          </VListItem>
           </VList>
         </VMenu>
       </VBtn>

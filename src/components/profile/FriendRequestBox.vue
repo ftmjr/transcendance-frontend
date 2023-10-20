@@ -86,7 +86,7 @@
           color="dark"
           variant="tonal"
           size="small"
-          @click="userStore.unblockUser(friendId)"
+          @click="unblockUser"
         >
           <VIcon
             size="20"
@@ -100,7 +100,7 @@
           color="dark"
           size="small"
           variant="tonal"
-          @click="userStore.blockUser(friendId)"
+          @click="blockUser"
         >
           <VIcon
             size="20"
