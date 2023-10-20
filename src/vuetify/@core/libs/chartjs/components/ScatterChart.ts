@@ -10,7 +10,7 @@ import {
   Tooltip
 } from 'chart.js'
 import type { PropType } from 'vue'
-import { defineComponent } from 'vue'
+import { defineComponent, h } from 'vue'
 import { Scatter } from 'vue-chartjs'
 
 ChartJS.register(Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale)

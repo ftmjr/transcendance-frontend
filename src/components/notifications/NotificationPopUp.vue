@@ -39,7 +39,7 @@ export default defineComponent({
         return this.visible
       },
       set(val) {
-        this.$emit('update:visible', val)
+        this.$emit('update:visible', val);
       }
     }
   }

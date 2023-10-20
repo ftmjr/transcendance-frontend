@@ -44,7 +44,7 @@ export default defineComponent({
     }
   },
   beforeMount() {
-    if (this.authStore.isLoggedIn) {
+    if (this.authStore.isLoggedIn && this.authStore.getUser?.id) {
       if (!this.notificationStore.socketOperational) {
         this.notificationStore.init(this.authStore.getUser.id)
       }

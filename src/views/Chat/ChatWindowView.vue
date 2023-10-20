@@ -76,6 +76,11 @@ export default defineComponent({
     ChatUserProfileSidebar,
     SingleChatView
   },
+  props:{
+    roomId: {
+      type: Number,
+    }
+  },
   setup() {
     const vuetifyDisplays = useDisplay()
     const authStore = useAuthStore()
@@ -94,8 +99,11 @@ export default defineComponent({
     }
   },
   beforeMount() {
-    this.roomsStore.getAllMyRooms()
-    this.roomsStore.fetchPublicRooms()
+    this.roomsStore.getAllMyRooms();
+    this.roomsStore.fetchPublicRooms();
+    if (this.roomId) {
+      this.roomsStore.setCurrentRoom(this.roomId);
+    }
   },
   methods: {
     openChatOfRoom(roomId: number) {

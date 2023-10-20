@@ -31,34 +31,34 @@
       />
     </VBtn>
   </div>
-  <div class="text-center px-6">
+  <div class="text-center px-6" v-if="authStore.getProfile">
     <VBadge
       location="bottom right"
       offset-x="7"
       offset-y="4"
       bordered
-      :color="authStore.resolveAvatarBadgeVariant(authStore.getProfile.status)"
+      :color="authStore.resolveAvatarBadgeVariant(authStore.getProfile?.status)"
       class="chat-user-profile-badge mb-5"
     >
       <VAvatar
         size="84"
         variant="tonal"
-        :class="`text-${authStore.resolveAvatarBadgeVariant(authStore.getProfile.status)}`"
+        :class="`text-${authStore.resolveAvatarBadgeVariant(authStore.getProfile?.status)}`"
       >
         <VImg
           v-if="authStore.getProfile?.avatar"
-          :src="authStore.getProfile.avatar"
+          :src="authStore.getProfile?.avatar"
         />
         <span
           v-else
           class="text-3xl"
-        >{{ avatarText(authStore.getUser.username) }}</span>
+        >{{ avatarText(authStore.getUser?.username) }}</span>
       </VAvatar>
     </VBadge>
     <h2 class="mb-1 text-high-emphasis font-weight-medium text-base">
-      {{ authStore.getUser.username }}
+      {{ authStore.getUser?.username }}
     </h2>
-    <h6>{{ authStore.getProfile.name }} {{ authStore.getProfile.lastname }}</h6>
+    <h6>{{ authStore.getProfile?.name }} {{ authStore.getProfile?.lastname }}</h6>
   </div>
   <div
     v-if="roomsStore.currentRoom"

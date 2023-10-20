@@ -10,6 +10,7 @@ import {
 import axios from '@/utils/axios'
 import { Profile, User } from '@/interfaces/User'
 import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
+import { isAxiosError } from "axios";
 export interface JoinRoom {
   userId: number
   password?: string
@@ -101,9 +102,9 @@ const useRoomsStore = defineStore({
   },
   actions: {
     async init(userId: number) {
-      await this.getAllMyRooms()
-      await this.fetchPublicRooms()
-      const messageStore = useMessageStore()
+      await this.getAllMyRooms();
+      await this.fetchPublicRooms();
+      const messageStore = useMessageStore();
       this.socketManager = new ChatSocket(
         userId,
         (message: ChatMessage) => {
@@ -132,14 +133,29 @@ const useRoomsStore = defineStore({
     async createRoom(info: CreateRoom) {
       // to be implemented
     },
-    // to be a member of a chat group
-    async joinRoom(roomId: number, info: JoinRoom) {
+
+    /*
+    * Join a room
+    * @param roomId the id of the room to join
+    * @param info the info to join the room (userId, password)
+    * @returns ChatRoomMember if success, string if error
+    */
+    async joinRoom(roomId: number, info: JoinRoom): Promise<ChatRoomMember | string> {
+      let errorMessage = `Vous n'êtes pas autorisé à rejoindre cette salle`;
       try {
-        await axios.post<ChatRoomMember>(`/chat/join-room/${roomId}`, info)
+        const { data } = await axios.post<ChatRoomMember>(`/chat/join-room/${roomId}`, info)
         await this.getAllMyRooms();
+        await this.setCurrentRoom(roomId);
+        return data;
       } catch (error) {
-        console.error(error)
+        if (isAxiosError(error)){
+          const status = error.response?.status;
+          if (status === 401 || status === 403 || status === 404) {
+            errorMessage = error.response?.data.message ?? `Vous n'êtes pas autorisé à rejoindre cette salle`;
+          }
+        }
       }
+      return errorMessage;
     },
     // start listening to a room via socket
     listenToRoom(roomId: number) {
@@ -175,26 +191,34 @@ const useRoomsStore = defineStore({
         console.error(error)
       }
     },
-    // give more info about the room
-    async setCurrentRoom(roomId: number) {
+    async setCurrentRoom(roomId: number): Promise<'success'| string> {
       try {
         const members = await this.getRoomMembersData(roomId)
-        if (members) {
-          this.currentRoomMembers = members
-          this.currentReadRoomId = roomId
+        if (Array.isArray(members)) {
+          this.currentRoomMembers = members;
+          this.currentReadRoomId = roomId;
+          return 'success';
+        } else {
+          return members;
         }
       } catch (error) {
         console.error(error)
       }
+      return 'impossible de récupérer les membres de la salle';
     },
-    async getRoomMembersData(roomId: number): Promise<MemberRoomWithUserProfiles[]> {
+    async getRoomMembersData(roomId: number): Promise<MemberRoomWithUserProfiles[] | string> {
+      let errorMessage = `Vous n'êtes pas autorisé à voir les membres de cette salle`;
       try {
         const { data } = await axios.get<MemberRoomWithUserProfiles[]>(`/chat/room/${roomId}`)
         return data
       } catch (error) {
-        console.error(error)
+        if (isAxiosError(error)){
+          if (error.response?.status === 401 || error.response?.status === 403) {
+            errorMessage = error.response.data.message ?? `Vous n'êtes pas autorisé à voir les membres de cette salle`;
+          }
+        }
       }
-      return []
+      return errorMessage;
     },
     async getAllMyRooms() {
       try {
@@ -202,7 +226,7 @@ const useRoomsStore = defineStore({
         this.rooms = data
         if (data.length > 0) {
           this.currentReadRoomId = data[0].id
-          await this.setCurrentRoom(data[0].id)
+          await this.setCurrentRoom(data[0].id);
         }
       } catch (error) {
         console.error(error)

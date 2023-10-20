@@ -112,20 +112,25 @@
       </VCarouselItem>
     </VCarousel>
   </VCard>
+  <NotificationPopUp
+    v-model:visible="popUpVisible"
+    :snackbar-msg="popUpMessage"
+  />
 </template>
 
 <script lang="ts">
 import { defineComponent, h } from 'vue'
 import { VIcon } from 'vuetify/components'
-import { ChatRoom } from '@/utils/chatSocket'
 import useAuthStore from '@/stores/AuthStore'
 import useRoomsStore, { ChatRoomWithMembers } from '@/stores/RoomsStore'
+import NotificationPopUp from "@/components/notifications/NotificationPopUp.vue";
 
 export default defineComponent({
   name: 'TopChatCard',
+  components: { NotificationPopUp },
   setup() {
-    const authStore = useAuthStore()
-    const roomsStore = useRoomsStore()
+    const authStore = useAuthStore();
+    const roomsStore = useRoomsStore();
     return {
       authStore,
       roomsStore
@@ -133,7 +138,9 @@ export default defineComponent({
   },
   data() {
     return {
-      loading: false
+      loading: false,
+      popUpVisible: false,
+      popUpMessage: ''
     }
   },
   computed: {
@@ -147,14 +154,25 @@ export default defineComponent({
   },
   methods: {
     h,
-    isCurrentUserAMember(room: ChatRoom) {
-      return room.members.some((member) => member.id === this.authStore.getUser.id)
+    isCurrentUserAMember(room: ChatRoomWithMembers) {
+      return room.members.some((member) => member.id === this.authStore.getUser?.id)
     },
     goToChatRoom(roomId: number) {
-
+      this.$router.push({ name: 'chat', params: { roomId: roomId } })
     },
-    joinRoom(roomId: number) {
-
+    async joinRoom(roomId: number) {
+      this.loading = true
+      const result =  await this.roomsStore.joinRoom(roomId, {
+        userId: this.authStore.getUser?.id ?? 0,
+      })
+      if (typeof result === 'string') {
+        this.popUpMessage = result;
+        this.popUpVisible = true;
+      } else {
+        this.popUpMessage = 'Vous avez rejoint le chat avec succès';
+        this.popUpVisible = true;
+      }
+      this.loading = false
     }
   }
 })

@@ -1,8 +1,18 @@
 <template>
   <div>
-    <user-profile-header :id="profileData.id" class="mb-5" :info="profileData.header" />
-    <VTabs v-model="activeTab" class="v-tabs-pill">
-      <VTabs v-model="activeTab" class="v-tabs-pill">
+    <user-profile-header
+      :id="profileData.id"
+      class="mb-5"
+      :info="profileData.header"
+    />
+    <VTabs
+      v-model="activeTab"
+      class="v-tabs-pill"
+    >
+      <VTabs
+        v-model="activeTab"
+        class="v-tabs-pill"
+      >
         <VTab
           v-for="item in tabs"
           :key="item.icon"
