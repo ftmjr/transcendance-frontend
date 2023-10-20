@@ -25,14 +25,20 @@ import useAuthStore from '@/stores/AuthStore'
 import useGlobalStore from '@/stores/GlobalStore'
 import ProfileImage from '@/components/ProfileImage.vue'
 export default defineComponent({
-  name: 'profile-card',
+  name: 'ProfileCard',
+  components: {
+    ProfileImage
+  },
   setup() {
     const authStore = useAuthStore()
     const globalStore = useGlobalStore()
     return { authStore, globalStore }
   },
-  components: {
-    ProfileImage
+  data() {
+    return {
+      loading: false,
+      friends: []
+    }
   },
   computed: {
     user() {
@@ -40,12 +46,6 @@ export default defineComponent({
     },
     profile() {
       return this.authStore.getUser?.profile
-    }
-  },
-  data() {
-    return {
-      loading: false,
-      friends: []
     }
   }
 })

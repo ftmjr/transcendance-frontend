@@ -200,7 +200,7 @@ export default class PreloadPong extends Phaser.Scene {
           playerImage = this.add.image(0, 0, name).setDisplaySize(100, 100)
         }
         const playerText = this.add.text(0, 80, player.username).setOrigin(0.5, 0.5)
-        const container = this.add.container(playersPositions[index].x, playersPositions[index].y, [
+        this.add.container(playersPositions[index].x, playersPositions[index].y, [
           playerImage,
           playerText
         ])
@@ -209,7 +209,7 @@ export default class PreloadPong extends Phaser.Scene {
       })
     })
   }
-  async getOrLoadUserAvatar(user: GameUser): Promise<{ name?: string; isAtlas: boolean }> {
+  async getOrLoadUserAvatar(user: GameUser): Promise<{ name: string; isAtlas: boolean }> {
     if (user.avatar) {
       // Check if the image is already loaded
       if (!this.textures.exists(user.avatar)) {
@@ -242,7 +242,7 @@ export default class PreloadPong extends Phaser.Scene {
         color: '#190933'
       })
       .setOrigin(0.5, 0.5)
-    const container = this.add.container(this.scale.width / 2, this.scale.height / 2 + 160, [
+    this.add.container(this.scale.width / 2, this.scale.height / 2 + 160, [
       this.startButton,
       this.startButtonText
     ])

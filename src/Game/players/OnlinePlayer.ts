@@ -1,4 +1,4 @@
-import type { GameReceiver, GAME_STATE, GameMonitor } from '@/Game/network/GameMonitor'
+import type { GameReceiver, GameMonitor } from '@/Game/network/GameMonitor'
 import { PAD_DIRECTION } from '@/Game/network/GameMonitor'
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PongGameScene from '@/Game/pong-scenes/PongGame'

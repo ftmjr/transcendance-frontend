@@ -4,8 +4,15 @@
     v-bind="$attrs"
     @click="isAppSearchBarVisible = !isAppSearchBarVisible"
   >
-    <VBtn icon variant="text" size="small">
-      <VIcon icon="tabler-search" size="24" />
+    <VBtn
+      icon
+      variant="text"
+      size="small"
+    >
+      <VIcon
+        icon="tabler-search"
+        size="24"
+      />
     </VBtn>
     <span class="d-none d-md-flex align-center text-disabled">
       <span class="m-2">Recherche</span>
@@ -19,8 +26,7 @@
     :suggestions="searchBarStore.getSuggestionGroups"
     :no-data-suggestion="searchBarStore.getNoDataSuggestions"
     @item-selected="redirectToSuggestedOrSearchedPage"
-  >
-  </VuetifyAppSearchBar>
+  />
 </template>
 
 <script lang="ts">
@@ -45,6 +51,13 @@ export default defineComponent({
       isAppSearchBarVisible: false
     }
   },
+  watch: {
+    searchQuery(newValue, oldValue) {
+      if (newValue.length > 0 && newValue !== oldValue) {
+        this.startSearch()
+      }
+    }
+  },
   methods: {
     redirectToSuggestedOrSearchedPage(selected: SearchItem) {
       if (selected.url) {
@@ -54,13 +67,6 @@ export default defineComponent({
     },
     startSearch() {
       this.searchBarStore.search(this.searchQuery)
-    }
-  },
-  watch: {
-    searchQuery(newValue, oldValue) {
-      if (newValue.length > 0 && newValue !== oldValue) {
-        this.startSearch()
-      }
     }
   }
 })

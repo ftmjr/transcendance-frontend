@@ -1,5 +1,8 @@
 <template>
-  <v-dialog v-model="globalStore.dialogs.create" max-width="500px">
+  <v-dialog
+    v-model="globalStore.dialogs.create"
+    max-width="500px"
+  >
     <v-card>
       <v-card-title>Create Chat Room</v-card-title>
       <v-alert
@@ -11,32 +14,41 @@
       />
       <v-card-text>
         <v-text-field
-          label="Chatroom Name"
           v-model="chatStore.createInfo.name"
+          label="Chatroom Name"
           :error-messages="chatStore.error"
         />
         <v-text-field
           v-if="chatStore.createInfo.protected"
-          label="Password"
           v-model="chatStore.createInfo.password"
+          label="Password"
           type="password"
         />
         <v-switch
           v-model="chatStore.createInfo.protected"
           label="Protected"
           color="indigo"
-        ></v-switch>
-        <v-switch v-model="chatStore.createInfo.private" label="Private" color="indigo"></v-switch>
+        />
+        <v-switch
+          v-model="chatStore.createInfo.private"
+          label="Private"
+          color="indigo"
+        />
       </v-card-text>
       <v-card-actions>
         <v-btn
           :color="isCreatable ? 'primary' : 'disabled'"
-          @click="chatStore.createRoom()"
           :disabled="!isCreatable"
+          @click="chatStore.createRoom()"
         >
           Create
         </v-btn>
-        <v-btn color="error" @click="chatStore.resetCreateForm">Cancel</v-btn>
+        <v-btn
+          color="error"
+          @click="chatStore.resetCreateForm"
+        >
+          Cancel
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -48,7 +60,7 @@ import useGlobalStore from '@/stores/GlobalStore'
 import useChatStore from '@/stores/ChatStore'
 
 export default defineComponent({
-  name: 'create-dialog',
+  name: 'CreateDialog',
   setup() {
     const chatStore = useChatStore()
     const globalStore = useGlobalStore()

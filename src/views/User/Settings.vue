@@ -1,31 +1,53 @@
 <template>
   <div>
-    <VTabs v-model="activeTab" class="v-tabs-pill">
+    <VTabs
+      v-model="activeTab"
+      class="v-tabs-pill"
+    >
       <VTab
         v-for="item in tabs"
         :key="item.icon"
         :value="item.tab"
         :to="{ name: 'settings', params: { tab: item.tab } }"
       >
-        <VIcon size="20" start :icon="item.icon" />
+        <VIcon
+          size="20"
+          start
+          :icon="item.icon"
+        />
         {{ item.title }}
       </VTab>
     </VTabs>
-    <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
+    <VWindow
+      v-model="activeTab"
+      class="mt-6 disable-tab-transition"
+      :touch="false"
+    >
       <VWindowItem value="account">
         <VRow>
           <VCol cols="12">
             <VCard title="Information du profil">
               <VCardText class="flex">
-                <VAvatar rounded size="100" class="me-6" :image="avatar" />
+                <VAvatar
+                  rounded
+                  size="100"
+                  class="me-6"
+                  :image="avatar"
+                />
                 <form
                   ref="refUpdateAvatarForm"
                   class="flex flex-column justify-center gap-4"
                   @submit.prevent
                 >
                   <div class="flex flex-wrap gap-2">
-                    <VBtn color="primary" @click="inputElement?.click()">
-                      <VIcon icon="tabler-cloud-upload" class="d-sm-none" />
+                    <VBtn
+                      color="primary"
+                      @click="inputElement?.click()"
+                    >
+                      <VIcon
+                        icon="tabler-cloud-upload"
+                        class="d-sm-none"
+                      />
                       <span class="d-none d-sm-block">Changer d'avatar</span>
                     </VBtn>
 
@@ -36,7 +58,7 @@
                       accept=".jpeg,.png,.jpg,GIF"
                       hidden
                       @input="startUploadNewAvatar"
-                    />
+                    >
                   </div>
                   <p class="text-sm font-weight-light mb-0">
                     Fichier pris en charge: JPG, GIF or PNG
@@ -47,9 +69,15 @@
               <VDivider />
 
               <VCardText class="pt-2">
-                <VForm class="mt-6" @submit.prevent>
+                <VForm
+                  class="mt-6"
+                  @submit.prevent
+                >
                   <VRow>
-                    <VCol md="6" cols="12">
+                    <VCol
+                      md="6"
+                      cols="12"
+                    >
                       <VTextField
                         v-model="fields.username"
                         label="Username"
@@ -57,8 +85,13 @@
                       />
                     </VCol>
 
-                    <VCol cols="12" class="d-flex flex-wrap gap-4">
-                      <VBtn @click.prevent="updateUsername">Update</VBtn>
+                    <VCol
+                      cols="12"
+                      class="d-flex flex-wrap gap-4"
+                    >
+                      <VBtn @click.prevent="updateUsername">
+                        Update
+                      </VBtn>
                       <VBtn
                         color="secondary"
                         variant="tonal"
@@ -73,9 +106,15 @@
               </VCardText>
 
               <VCardText class="pt-2">
-                <VForm class="mt-6" @submit.prevent>
+                <VForm
+                  class="mt-6"
+                  @submit.prevent
+                >
                   <VRow>
-                    <VCol md="6" cols="12">
+                    <VCol
+                      md="6"
+                      cols="12"
+                    >
                       <VTextField
                         v-model="fields.firstName"
                         label="Prénom"
@@ -83,7 +122,10 @@
                       />
                     </VCol>
 
-                    <VCol md="6" cols="12">
+                    <VCol
+                      md="6"
+                      cols="12"
+                    >
                       <VTextField
                         v-model="fields.lastName"
                         label="Nom de famille"
@@ -91,7 +133,10 @@
                       />
                     </VCol>
 
-                    <VCol cols="12" md="6">
+                    <VCol
+                      cols="12"
+                      md="6"
+                    >
                       <VTextarea
                         v-model="fields.bio"
                         label="Biographie"
@@ -99,8 +144,13 @@
                       />
                     </VCol>
 
-                    <VCol cols="12" class="d-flex flex-wrap gap-4">
-                      <VBtn @click.prevent="updateUserInformation">Enregistrer</VBtn>
+                    <VCol
+                      cols="12"
+                      class="d-flex flex-wrap gap-4"
+                    >
+                      <VBtn @click.prevent="updateUserInformation">
+                        Enregistrer
+                      </VBtn>
                       <VBtn
                         color="secondary"
                         variant="tonal"
@@ -121,7 +171,12 @@
         <SecuritySettings />
       </VWindowItem>
     </VWindow>
-    <VSnackbar v-model="isInfoBarVisible" multi-line :timeout="1000" :color="infoColor">
+    <VSnackbar
+      v-model="isInfoBarVisible"
+      multi-line
+      :timeout="1000"
+      :color="infoColor"
+    >
       {{ infoMsg }}
     </VSnackbar>
   </div>

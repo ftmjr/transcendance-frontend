@@ -78,7 +78,10 @@ const handleNavScroll = (evt: Event) => {
   >
     <div class="nav-header">
       <slot name="nav-header">
-        <RouterLink to="/" class="app-logo d-flex align-center gap-x-3 app-title-wrapper">
+        <RouterLink
+          to="/"
+          class="app-logo d-flex align-center gap-x-3 app-title-wrapper"
+        >
           <VNodeRenderer :nodes="config.app.logo" />
 
           <Transition name="vertical-nav-app-title">
@@ -119,7 +122,10 @@ const handleNavScroll = (evt: Event) => {
     <slot name="before-nav-items">
       <div class="vertical-nav-items-shadow" />
     </slot>
-    <slot name="nav-items" :update-is-vertical-nav-scrolled="updateIsVerticalNavScrolled">
+    <slot
+      name="nav-items"
+      :update-is-vertical-nav-scrolled="updateIsVerticalNavScrolled"
+    >
       <PerfectScrollbar
         :key="isAppRtl"
         tag="ul"
@@ -152,7 +158,9 @@ const handleNavScroll = (evt: Event) => {
   inline-size: variables.$layout-vertical-nav-width;
   inset-block-start: 0;
   inset-inline-start: 0;
-  transition: transform 0.25s ease-in-out, inline-size 0.25s ease-in-out,
+  transition:
+    transform 0.25s ease-in-out,
+    inline-size 0.25s ease-in-out,
     box-shadow 0.25s ease-in-out;
   will-change: transform, inline-size;
 

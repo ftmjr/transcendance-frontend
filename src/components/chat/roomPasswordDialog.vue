@@ -8,17 +8,24 @@
           type="error"
           title="Action Failed"
           :text="chatStore.error"
-        ></v-alert>
+        />
         <v-text-field
-          label="Password"
           v-model="chatStore.joinInfo.password"
+          label="Password"
           type="password"
           :error-messages="chatStore.error"
-        ></v-text-field>
+        />
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="chatStore.updateRoomPassword"> Update </v-btn>
-        <v-btn color="error" @click="globalStore.closeRoomPasswordDialog">Cancel</v-btn>
+        <v-btn @click="chatStore.updateRoomPassword">
+          Update
+        </v-btn>
+        <v-btn
+          color="error"
+          @click="globalStore.closeRoomPasswordDialog"
+        >
+          Cancel
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -30,12 +37,12 @@ import useChatStore from '@/stores/ChatStore'
 import globalStore from '@/stores/GlobalStore'
 
 export default defineComponent({
-  name: 'room-password-dialog',
-  methods: { globalStore },
+  name: 'RoomPasswordDialog',
   setup() {
     const chatStore = useChatStore()
     return { chatStore }
-  }
+  },
+  methods: { globalStore }
 })
 </script>
 

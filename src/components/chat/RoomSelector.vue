@@ -1,8 +1,8 @@
 <template>
   <aside class="chatRoom-select-container">
     <v-select
-      bg-color="background"
       v-model="chatStore.selectedRoom"
+      bg-color="background"
       :items="rooms"
       item-title="name"
       label="Select"
@@ -10,7 +10,7 @@
       return-object
       single-line
       width="100"
-    ></v-select>
+    />
   </aside>
 </template>
 
@@ -21,7 +21,12 @@ import useChatStore from '@/stores/ChatStore'
 import useGlobalStore from '@/stores/GlobalStore'
 
 export default defineComponent({
-  name: 'room-selector',
+  name: 'RoomSelector',
+  props: {
+    rooms: {
+      required: true
+    }
+  },
   setup() {
     const chatStore = useChatStore()
     const globalStore = useGlobalStore()
@@ -39,11 +44,6 @@ export default defineComponent({
       }
     })
     return { chatStore, globalStore }
-  },
-  props: {
-    rooms: {
-      required: true
-    }
   }
 })
 </script>

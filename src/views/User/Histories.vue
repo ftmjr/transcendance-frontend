@@ -1,5 +1,8 @@
 <template>
-  <v-card title="Historiques des Actions" :loading="loading">
+  <v-card
+    title="Historiques des Actions"
+    :loading="loading"
+  >
     <VTable>
       <thead>
         <tr>
@@ -10,7 +13,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="history in histories" :key="history.gameId">
+        <tr
+          v-for="history in histories"
+          :key="history.gameId"
+        >
           <td>
             <div>
               {{ getOpponentId(history) }}
@@ -55,6 +61,14 @@ export default defineComponent({
     return {
       histories: [] as CompleteGameHistory[],
       loading: false
+    }
+  },
+  watch: {
+    userId: {
+      immediate: true,
+      handler() {
+        this.fetchHistories()
+      }
     }
   },
   methods: {
@@ -124,14 +138,6 @@ export default defineComponent({
         }
       })
       return goals.map((goal) => `user ${goal.userId}: ${goal.goals}`)
-    }
-  },
-  watch: {
-    userId: {
-      immediate: true,
-      handler() {
-        this.fetchHistories()
-      }
     }
   }
 })

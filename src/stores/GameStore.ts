@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
-import { GameHistory } from 'Auth'
+import { GameHistory } from '@/interfaces/User'
 import { PongTheme } from '@/Game/pong-scenes/Assets'
 
 export enum GameSessionType {

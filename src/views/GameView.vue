@@ -1,5 +1,8 @@
 <template>
-  <VCard :loading="loading" title="Pong Game">
+  <VCard
+    :loading="loading"
+    title="Pong Game"
+  >
     <div class="flex justify-center">
       <div>
         <VAlert
@@ -23,8 +26,15 @@
       </div>
     </div>
     <div class="flex justify-end items-center mr-4">
-      <VBtn v-show="gameStore.currentGameSession" color="red" @click="leaveGame">
-        <v-tooltip activator="parent" location="bottom">
+      <VBtn
+        v-show="gameStore.currentGameSession"
+        color="red"
+        @click="leaveGame"
+      >
+        <v-tooltip
+          activator="parent"
+          location="bottom"
+        >
           Quitter la partie, ou la file d'attente
         </v-tooltip>
         <VIcon>tabler-logout</VIcon>
@@ -43,20 +53,18 @@
     </div>
     <PongGamePlayer
       v-if="currentGameSession && !loading"
-      :gameSession="currentGameSession"
+      :game-session="currentGameSession"
       :user="player"
-      :debugMode="true"
+      :debug-mode="true"
     />
   </VCard>
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent, PropType } from 'vue'
+import { defineAsyncComponent, defineComponent } from 'vue'
 import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
 import useAuthStore from '@/stores/AuthStore'
 import useGameStore, { GameSession } from '@/stores/GameStore'
-import { PongTheme } from '@/Game/pong-scenes/Assets'
-import { Warning } from 'postcss'
 const PongGamePlayer = defineAsyncComponent(() => import('@/components/PongGamePlayer.vue'))
 
 export default defineComponent({

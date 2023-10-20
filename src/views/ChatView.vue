@@ -3,23 +3,33 @@
     <chat-user-avatar :avatar-url="authStore.getAvatar" />
     <room-selector :rooms="chatStore.getRooms" />
   </header>
-  <BaseButton @click="globalStore.openJoinDialog">Join a Chat Room</BaseButton>
-  <BaseButton @click="globalStore.openCreateDialog">Create Chat Room</BaseButton>
-  <BaseButton v-if="chatStore.getRoom.name !== 'General'" @click="chatStore.leaveRoom"
-    >Leave Chat Room</BaseButton
+  <BaseButton @click="globalStore.openJoinDialog">
+    Join a Chat Room
+  </BaseButton>
+  <BaseButton @click="globalStore.openCreateDialog">
+    Create Chat Room
+  </BaseButton>
+  <BaseButton
+    v-if="chatStore.getRoom.name !== 'General'"
+    @click="chatStore.leaveRoom"
   >
-  <BaseButton v-if="chatStore.isOwner" @click="globalStore.openRoomPasswordDialog"
-    >Set/Change Password</BaseButton
+    Leave Chat Room
+  </BaseButton>
+  <BaseButton
+    v-if="chatStore.isOwner"
+    @click="globalStore.openRoomPasswordDialog"
   >
+    Set/Change Password
+  </BaseButton>
 
   <messages-container />
 
   <v-text-field
+    v-model="chatStore.message"
     bg-color="background"
     label="Message"
-    v-model="chatStore.message"
-    @keyup.enter="chatStore.sendMessage"
     :disabled="chatStore.isMuted"
+    @keyup.enter="chatStore.sendMessage"
   />
 
   <members-drawer />
@@ -28,7 +38,10 @@
   <password-dialog v-model="globalStore.dialogs.password" />
   <room-password-dialog v-model="globalStore.dialogs.roomPassword" />
   <create-dialog v-model="globalStore.dialogs.create" />
-  <profile-dialog v-if="globalStore.dialogs.profile" v-model="globalStore.dialogs.profile" />
+  <profile-dialog
+    v-if="globalStore.dialogs.profile"
+    v-model="globalStore.dialogs.profile"
+  />
   <waiting-dialog v-model="globalStore.dialogs.waiting" />
   <invite-dialog v-model="globalStore.dialogs.invite" />
 </template>
@@ -52,7 +65,7 @@ import CreateDialog from '@/components/chat/CreateDialog.vue'
 import RoomPasswordDialog from '@/components/chat/roomPasswordDialog.vue'
 
 export default defineComponent({
-  name: 'ChatRoom-View',
+  name: 'ChatRoomView',
   components: {
     RoomPasswordDialog,
     CreateDialog,

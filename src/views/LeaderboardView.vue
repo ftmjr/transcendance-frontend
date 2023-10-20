@@ -1,11 +1,18 @@
 <template>
-  <v-card class="mx-auto" max-width="">
+  <v-card
+    class="mx-auto"
+    max-width=""
+  >
     <v-card-title> THE PONG LEADERBOARD </v-card-title>
 
-    <v-divider></v-divider>
+    <v-divider />
 
-    <v-virtual-scroll :items="users" height="500" item-height="48">
-      <template v-slot:default="{ item, index }">
+    <v-virtual-scroll
+      :items="users"
+      height="500"
+      item-height="48"
+    >
+      <template #default="{ item, index }">
         <v-list-item
           :style="index === 0 ? 'font-weight: bold; color: #99842e;' : ''"
           :title="index == 0 ? item.username + ' <PONG BOSS>' : item.username"
@@ -14,7 +21,7 @@
             'MATCH_WON'
           )}  Loss: ${getCountByEvent(item.gameHistories, 'MATCH_LOST')}`"
         >
-          <template v-slot:prepend>
+          <template #prepend>
             <v-avatar
               :size="60"
               :class="{
@@ -26,12 +33,15 @@
             >
               {{ index + 1 }}
             </v-avatar>
-            <AvatarBadge :profile="item.profile" :username="item.username" />
+            <AvatarBadge
+              :profile="item.profile"
+              :username="item.username"
+            />
           </template>
-          <template v-slot:append>
+          <template #append>
             <GameStatusBadge
               v-if="item.gameStatus && item.id !== authStore.user?.id"
-              :userGameStatus="item.gameStatus"
+              :user-game-status="item.gameStatus"
               :user-id="item.id"
               :status="item.profile.status"
             />
@@ -51,7 +61,8 @@ import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 import useGameStore from '@/stores/GameStore'
 
 export default defineComponent({
-  name: 'learderboard-view',
+  name: 'LearderboardView',
+  components: { GameStatusBadge, AvatarBadge },
   setup() {
     const userStore = useUserStore()
     const authStore = useAuthStore()
@@ -82,8 +93,7 @@ export default defineComponent({
         })
       })
     }
-  },
-  components: { GameStatusBadge, AvatarBadge }
+  }
 })
 </script>
 

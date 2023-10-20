@@ -1,5 +1,8 @@
 <template>
-  <li class="cursor-pointer" :class="{ 'chat-contact-active': isActive }">
+  <li
+    class="cursor-pointer"
+    :class="{ 'chat-contact-active': isActive }"
+  >
     <div class="flex items-center contact">
       <VBadge
         dot
@@ -28,7 +31,7 @@
       </div>
     </div>
     <div>
-      <slot name="firstMessage"></slot>
+      <slot name="firstMessage" />
     </div>
   </li>
 </template>

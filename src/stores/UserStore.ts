@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-import type { User, Profile } from 'Auth'
-import type { AxiosError } from 'axios'
+import type { User, Profile } from '@/interfaces/User'
 import axios from '@/utils/axios'
+import { isAxiosError } from 'axios'
 
 export enum FriendshipStatus {
   Friends = 'friends',
@@ -118,7 +118,7 @@ const useUserStore = defineStore({
     getStats(): AppStatData {
       return this.stats
     },
-    getContact() {
+    getContact(): User[] {
       return this.contacts
     },
     getBlockedUsers(): BlockedUser[] {
@@ -137,9 +137,11 @@ const useUserStore = defineStore({
       let message: 'success' | 'already' | 'error' = 'success'
       try {
         await axios.post(`/friends/request-friendship-with/${targetId}`)
-      } catch (error: AxiosError | any) {
-        if (error.response && error.response === 409) {
-          this.error = 'already'
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (error.response && error.response.status === 409) {
+            message = 'already'
+          }
         } else {
           message = 'error'
         }
@@ -167,7 +169,6 @@ const useUserStore = defineStore({
     async rejectFriendRequest(requestId: number): Promise<'success' | 'error'> {
       try {
         await axios.delete(`/friends/reject/${requestId}`)
-        await this.getReceivedRequests()
         return 'success'
       } catch (e) {
         return 'error'
@@ -191,11 +192,9 @@ const useUserStore = defineStore({
         return 'error'
       }
     },
-    async fetchUserFriends(userId) {},
     async fetchSentRequests(): Promise<'success' | 'error'> {
       try {
         const { data } = await axios.get('/friends/sent')
-
         this.sentRequest = data as FriendRequestWithReceiver[]
         return 'success'
       } catch (e) {
@@ -207,7 +206,7 @@ const useUserStore = defineStore({
         const { data } = await axios.get<CheckFriendshipResponse>(`/friends/check/${userId}`)
         return data
       } catch (error) {
-        this.errorMsg = 'Not friends'
+        console.log('failed to check friendship status')
       }
       return { status: FriendshipStatus.None, data: null }
     },
@@ -237,9 +236,9 @@ const useUserStore = defineStore({
     },
     async blockUser(userId: number): Promise<'success' | 'error'> {
       try {
-        const { data } = await axios.post(`/users/block/${userId}`)
-        const blocked = data as BlockedUser
-        //to-do filter contact and remove the blocked user
+        const { data } = await axios.post<BlockedUser>(`/users/block/${userId}`)
+        this.blockedUsers.push(data)
+        await this.loadAllMyFriends()
         return 'success'
       } catch (error) {
         return 'error'
@@ -248,6 +247,8 @@ const useUserStore = defineStore({
     async unblockUser(userId: number): Promise<'success' | 'error'> {
       try {
         await axios.delete(`block/${userId}`)
+        await this.loadBlockedUsers()
+        await this.loadAllMyFriends()
         return 'success'
       } catch (e) {
         return 'error'
@@ -306,11 +307,6 @@ const useUserStore = defineStore({
         console.log(e)
         return 'error'
       }
-    },
-
-    async loadReceivedRequests(): Promise<'success' | 'error'> {
-      this.receivedRequest = []
-      return 'success'
     }
   }
 })

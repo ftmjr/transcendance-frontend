@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
-import type { User } from 'Auth'
-import type { AxiosError } from 'axios'
+import type { User } from '@/interfaces/User'
 import axios from '@/utils/axios'
 import useUserStore from '@/stores/UserStore'
 import { ChatSocket } from '@/utils/chatSocket'
+import { isAxiosError } from 'axios'
 
 export interface MessageState {
   conversationsUsers: User[]
@@ -85,7 +85,7 @@ const useMessageStore = defineStore({
         const current = this.getConversingWith.find(
           (user: User) => user.id === this.currentContactId
         )
-        return current
+        if (current) return current
       }
       return null
     },
@@ -99,6 +99,9 @@ const useMessageStore = defineStore({
       })
     },
     currentConversationMessages(): PrivateMessage[] {
+      if (!this.currentConversationUser) {
+        return []
+      }
       return this.messages.get(this.currentConversationUser) || []
     }
   },
@@ -120,7 +123,6 @@ const useMessageStore = defineStore({
         const contactFound = contacts.findIndex((user: User) => user.id === userId)
         if (contactFound >= 0) {
           this.conversationsUsers.push(contacts[contactFound])
-          this.listenToPrivateMessages(contacts[contactFound].id)
           this.currentConversationUser = contacts[contactFound].id
         }
       }
@@ -145,8 +147,14 @@ const useMessageStore = defineStore({
             take: 200
           })
         })
-      } catch (error: AxiosError | any) {
-        console.error('Failed to load conversations:', error.message)
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (error.response) {
+            console.error('Failed to load conversations:', error.response.data.message)
+          }
+        } else {
+          console.error('Failed to load conversations:')
+        }
       }
     },
     async getPrivateMessageBetween(info: {
@@ -164,8 +172,8 @@ const useMessageStore = defineStore({
           }
         })
         this.messages.set(userTwoId, data)
-      } catch (error: AxiosError | any) {
-        console.error('Failed to load all private messages:', error.message)
+      } catch (error) {
+        console.error('Failed to load all private messages:', error)
       }
     },
     async sendPrivateMessageViaHttp(message: MPData): Promise<PrivateMessage | null> {
@@ -176,15 +184,10 @@ const useMessageStore = defineStore({
           }
         })
         return data as PrivateMessage
-      } catch (error: AxiosError | any) {
-        console.error('Failed to send private message:', error.message)
+      } catch (error) {
+        console.error('Failed to send private message:', error)
       }
       return null
-    },
-    // listen to private messages from friendId
-    listenToPrivateMessages(friendId: number) {
-      if (!this.socketManager || !this.socketManager.socketOperational) return
-      this.socketManager.listenPrivateMessageFrom(friendId)
     },
     sendPrivateMessage(friendId: number, content: string) {
       if (!this.socketManager || !this.socketManager.operational) return

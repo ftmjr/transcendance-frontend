@@ -2,6 +2,9 @@
 import { defineComponent } from 'vue'
 import { useTheme } from 'vuetify'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
+import useNotificationStore from '@/stores/NotificationStore'
+import useAuthStore from '@/stores/AuthStore'
+import useRoomsStore from '@/stores/RoomsStore'
 export default defineComponent({
   setup() {
     const {
@@ -13,9 +16,16 @@ export default defineComponent({
     syncConfigThemeWithVuetifyTheme()
     const { global } = useTheme()
     const color = global.current.value.colors.primary
+
+    const notificationStore = useNotificationStore()
+    const authStore = useAuthStore()
+    const roomsStore = useRoomsStore()
     return {
       isAppRtl,
-      color
+      color,
+      authStore,
+      roomsStore,
+      notificationStore
     }
   },
   computed: {
@@ -31,6 +41,16 @@ export default defineComponent({
       return result
         ? `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}`
         : null
+    }
+  },
+  beforeMount() {
+    if (this.authStore.isLoggedIn) {
+      if (!this.notificationStore.socketOperational) {
+        this.notificationStore.init(this.authStore.getUser.id)
+      }
+      if (!this.roomsStore.socketOperational) {
+        this.roomsStore.init(this.authStore.getUser.id)
+      }
     }
   }
 })

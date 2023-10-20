@@ -1,5 +1,9 @@
 <template>
-  <VCard :loading="loading" color="transparent" variant="flat">
+  <VCard
+    :loading="loading"
+    color="transparent"
+    variant="flat"
+  >
     <div class="flex items-center justify-center gap-4">
       <div v-if="blockStatus !== BlockedStatus.BlockedBy && !isMe">
         <VBtn
@@ -9,7 +13,11 @@
           variant="outlined"
           @click="unFriend"
         >
-          <VIcon size="20" start icon="tabler-user-minus" />
+          <VIcon
+            size="20"
+            start
+            icon="tabler-user-minus"
+          />
           Supprimer des amis
         </VBtn>
         <!-- CANCEL FRIEND REQUEST -->
@@ -20,17 +28,39 @@
           size="small"
           @click="cancelFriendRequest"
         >
-          <VIcon size="20" start icon="tabler-x" />
+          <VIcon
+            size="20"
+            start
+            icon="tabler-x"
+          />
           Annuler la demande
         </VBtn>
         <!-- ACCEPT/DECLINE FRIEND REQUEST -->
         <VBtnGroup v-else-if="status === FriendshipStatus.NeedApproval">
-          <VBtn color="success" size="small" variant="outlined" @click="acceptFriendRequest">
-            <VIcon size="20" start icon="tabler-check" />
+          <VBtn
+            color="success"
+            size="small"
+            variant="outlined"
+            @click="acceptFriendRequest"
+          >
+            <VIcon
+              size="20"
+              start
+              icon="tabler-check"
+            />
             Accepter
           </VBtn>
-          <VBtn color="error" size="small" @click="declineFriendRequest" variant="outlined">
-            <VIcon size="20" start icon="tabler-x" />
+          <VBtn
+            color="error"
+            size="small"
+            variant="outlined"
+            @click="declineFriendRequest"
+          >
+            <VIcon
+              size="20"
+              start
+              icon="tabler-x"
+            />
             Refuser
           </VBtn>
         </VBtnGroup>
@@ -42,7 +72,11 @@
           size="small"
           @click="beFriendRequest"
         >
-          <VIcon size="20" start icon="tabler-user-plus" />
+          <VIcon
+            size="20"
+            start
+            icon="tabler-user-plus"
+          />
           Ajouter en ami
         </VBtn>
       </div>
@@ -54,7 +88,11 @@
           size="small"
           @click="userStore.unblockUser(friendId)"
         >
-          <VIcon size="20" start icon="tabler-lock" />
+          <VIcon
+            size="20"
+            start
+            icon="tabler-lock"
+          />
           Débloquer
         </VBtn>
         <VBtn
@@ -64,7 +102,11 @@
           variant="tonal"
           @click="userStore.blockUser(friendId)"
         >
-          <VIcon size="20" start icon="mingcute-unlock-fill" />
+          <VIcon
+            size="20"
+            start
+            icon="mingcute-unlock-fill"
+          />
           Bloquer
         </VBtn>
       </div>

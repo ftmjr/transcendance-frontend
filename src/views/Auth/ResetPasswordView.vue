@@ -1,15 +1,13 @@
 <template>
-  <div></div>
+  <div />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import BaseInput from '@/components/Input.vue'
-import BaseButton from '@/components/Button.vue'
 import useAuthStore from '@/stores/AuthStore'
 
 export default defineComponent({
-  name: 'reset-password',
+  name: 'ResetPassword',
   setup() {
     const authStore = useAuthStore()
     return { authStore }

@@ -73,7 +73,11 @@ export class LocalPlayer implements GameSender, Player {
   }
 
   // methods from GameSender interface that will be decorated by GameMonitor
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   sendPadMove(dir: PAD_DIRECTION): void {}
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   sendBallServe(position: { x: number; y: number }, velocity: { x: number; y: number }): void {}
   sendScored(): void {}
 }

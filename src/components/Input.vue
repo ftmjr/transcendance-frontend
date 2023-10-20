@@ -1,15 +1,18 @@
 <template>
   <div class="">
-    <label :for="name" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">
+    <label
+      :for="name"
+      class="block mb-2 text-sm font-medium text-gray-400 dark:text-white"
+    >
       {{ label }}
     </label>
     <div class="relative">
       <input
+        :id="name"
         ref="inputElement"
         :value="value"
         :type="(showPassword && 'text') || type"
         :name="name"
-        :id="name"
         :maxlength="maxLength"
         :min="min"
         :max="max"
@@ -18,12 +21,12 @@
           (error || typeError) && 'border-red-600 focus:border-red-600',
           classnames ? classnames : styles[type]
         ]"
+        :required="required"
+        autocomplete="off"
         @input="handleInput"
         @keydown="handleKeyPress"
         @keyup="handleKeyUp"
-        :required="required"
-        autocomplete="off"
-      />
+      >
       <button
         v-if="type === 'password'"
         type="button"
@@ -64,7 +67,10 @@
         </span>
       </button>
     </div>
-    <span v-if="error" class="text-xs text-red-600">
+    <span
+      v-if="error"
+      class="text-xs text-red-600"
+    >
       {{ errorMessage }}
     </span>
   </div>

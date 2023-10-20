@@ -10,14 +10,14 @@
     :disabled="disabled"
     @click="onclick"
   >
-    <slot></slot>
+    <slot />
   </button>
 </template>
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import type { ButtonProps } from 'Components'
 export default defineComponent({
-  name: 'base-button',
+  name: 'BaseButton',
   props: {
     type: {
       type: String as PropType<ButtonProps['type']>,

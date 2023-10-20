@@ -13,7 +13,7 @@ import { defineComponent, type PropType } from 'vue'
 import type { SocialLoginProps, ButtonProps } from 'Components'
 
 export default defineComponent({
-  name: 'social-login-button',
+  name: 'SocialLoginButton',
   props: {
     provider: {
       type: String as PropType<SocialLoginProps['provider']>,

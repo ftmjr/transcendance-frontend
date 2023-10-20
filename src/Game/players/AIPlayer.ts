@@ -1,7 +1,6 @@
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PonGameScene from '@/Game/pong-scenes/PongGame'
 import type { GameMonitor, GameSender, PAD_DIRECTION } from '@/Game/network/GameMonitor'
-import { GAME_STATE } from '@/Game/network/GameMonitor'
 export class AIPlayer implements GameSender, Player {
   private aiPlayerGroup: Phaser.Physics.Arcade.Group
   private readonly aiPaddle: Phaser.Physics.Arcade.Sprite
@@ -70,7 +69,11 @@ export class AIPlayer implements GameSender, Player {
   }
 
   // methods from GameSender interface that will be decorated by GameMonitor
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   sendPadMove(dir: PAD_DIRECTION): void {}
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   sendBallServe(position: { x: number; y: number }, velocity: { x: number; y: number }): void {}
   sendScored(): void {}
 }

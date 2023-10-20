@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
-
 import useAuthStore from '@/stores/AuthStore'
 import useGlobalStore from '@/stores/GlobalStore'
-import { User } from 'Auth'
+import { User } from '@/interfaces/User'
 
 const useChatStore = defineStore({
   id: 'chat',

@@ -1,11 +1,15 @@
 <template>
   <v-layout>
-    <v-navigation-drawer expand-on-hover rail location="right">
-      <template v-slot:prepend>
+    <v-navigation-drawer
+      expand-on-hover
+      rail
+      location="right"
+    >
+      <template #prepend>
         <v-list-item
-          v-model="chatStore.dmReceiver"
           v-for="member in chatStore.getConversations"
           :key="member.id"
+          v-model="chatStore.dmReceiver"
           :class="{
             'pale-green-background': member.profile.status === 'Online',
             'received-message': true
@@ -19,7 +23,7 @@
           <div
             v-if="globalStore.getNotification(member) != member.profile.status"
             class="status-circle"
-          ></div>
+          />
         </v-list-item>
       </template>
     </v-navigation-drawer>
@@ -32,7 +36,7 @@ import useGlobalStore from '@/stores/GlobalStore'
 import useChatStore from '@/stores/ChatStore'
 
 export default defineComponent({
-  name: 'conversations-drawer',
+  name: 'ConversationsDrawer',
   setup() {
     const chatStore = useChatStore()
     const globalStore = useGlobalStore()

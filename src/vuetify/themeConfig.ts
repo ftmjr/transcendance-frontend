@@ -8,6 +8,7 @@ import { h } from 'vue'
 export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
     title: 'Pong',
+    // @ts-expect-error - type is string, but we need to pass h() function
     logo: h('img', { src: '/src/assets/logo.png' }, null),
     contentWidth: ContentWidth.Boxed,
     contentLayoutNav: AppContentLayoutNav.Vertical,

@@ -1,7 +1,17 @@
 <template>
   <div class="pt-2 me-2 text-end">
-    <VBtn variant="text" color="error" icon size="small" @click="$emit('close')">
-      <VIcon size="18" class="text-medium-emphasis" icon="tabler-x" />
+    <VBtn
+      variant="text"
+      color="error"
+      icon
+      size="small"
+      @click="$emit('close')"
+    >
+      <VIcon
+        size="18"
+        class="text-medium-emphasis"
+        icon="tabler-x"
+      />
     </VBtn>
   </div>
   <div class="text-end">
@@ -13,7 +23,12 @@
       size="small"
       @click="$emit('close')"
     >
-      <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
+      <VIcon
+        size="18"
+        icon="tabler-x"
+        color="error"
+        class="text-medium-emphasis"
+      />
     </VBtn>
   </div>
   <div class="text-center px-6">
@@ -22,16 +37,22 @@
       offset-x="7"
       offset-y="4"
       bordered
-      :color="authStore.resolveAvatarBadgeVariant(this.authStore.getProfile.status)"
+      :color="authStore.resolveAvatarBadgeVariant(authStore.getProfile.status)"
       class="chat-user-profile-badge mb-5"
     >
       <VAvatar
         size="84"
         variant="tonal"
-        :class="`text-${authStore.resolveAvatarBadgeVariant(this.authStore.getProfile.status)}`"
+        :class="`text-${authStore.resolveAvatarBadgeVariant(authStore.getProfile.status)}`"
       >
-        <VImg v-if="profile.avatar" :src="profile.avatar" />
-        <span v-else class="text-3xl">{{ avatarText(authStore.getUser.username) }}</span>
+        <VImg
+          v-if="authStore.getProfile?.avatar"
+          :src="authStore.getProfile.avatar"
+        />
+        <span
+          v-else
+          class="text-3xl"
+        >{{ avatarText(authStore.getUser.username) }}</span>
       </VAvatar>
     </VBadge>
     <h2 class="mb-1 text-high-emphasis font-weight-medium text-base">
@@ -39,9 +60,17 @@
     </h2>
     <h6>{{ authStore.getProfile.name }} {{ authStore.getProfile.lastname }}</h6>
   </div>
-  <div v-if="this.roomsStore.currentRoom" class="mb-5 w-full">
-    <p class="text-md text-center font-weight-bold py-2">STATUS</p>
-    <p class="text-center font-weight-semibold" :class="`text-${printedRole.bgClass}`">
+  <div
+    v-if="roomsStore.currentRoom"
+    class="mb-5 w-full"
+  >
+    <p class="text-md text-center font-weight-bold py-2">
+      STATUS
+    </p>
+    <p
+      class="text-center font-weight-semibold"
+      :class="`text-${printedRole?.bgClass}`"
+    >
       {{ printedRole.printRole }}
       sur le groupe selectionné
     </p>
@@ -50,8 +79,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import useAuthStore, { Status } from '@/stores/AuthStore'
-import type { Profile } from 'Auth'
+import useAuthStore from '@/stores/AuthStore'
+import { Status } from '@/interfaces/User'
 import { avatarText } from '@core/utils/formatters'
 import useRoomsStore, { rolePrint } from '@/stores/RoomsStore'
 import { ChatMemberRole } from '@/utils/chatSocket'
@@ -60,8 +89,8 @@ export default defineComponent({
   name: 'ChatUserProfileSidebar',
   emits: ['close'],
   setup() {
-    const authStore = useAuthStore()
-    const roomsStore = useRoomsStore()
+    const authStore = useAuthStore();
+    const roomsStore = useRoomsStore();
     return {
       authStore,
       roomsStore
@@ -78,12 +107,9 @@ export default defineComponent({
     }
   },
   computed: {
-    profile(): Profile {
-      return this.authStore.getProfile
-    },
     status: {
       get(): Status {
-        return this.profile.status ?? Status.Offline
+        return this.authStore.visibleStatus
       },
       set(value: Status) {
         this.authStore.changeMyStatus(value)
@@ -92,11 +118,15 @@ export default defineComponent({
     role(): ChatMemberRole {
       const room = this.roomsStore.currentRoom
       if (room) {
-        return room.members.find((member) => member.memberId === this.authStore.getUser.id)?.role
+        const member = room.members.find((member) => {
+          if (!this.authStore.getUser) return false;
+          return member.id === this.authStore.getUser.id
+        })
+        if (member) return member.role
       }
       return ChatMemberRole.USER
     },
-    printedRole(): { role: ChatMemberRole; printRole: string; color?: string; bgClass?: string } {
+    printedRole(): { role: ChatMemberRole; printRole: string; color?: string; bgClass?: string } | undefined {
       return rolePrint.find((role) => role.role === this.role)
     }
   },

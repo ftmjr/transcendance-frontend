@@ -1,12 +1,11 @@
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
-import { UserSearchResult } from 'Auth'
-import { AxiosError } from 'axios'
+import { UserSearchResult } from '@/interfaces/User'
 
 export interface Suggestion {
   icon: string
   title: string
-  url: { name: string; params?: object }
+  url: { name: string; params?: object; query?: object }
 }
 
 interface SuggestionGroupContent extends Suggestion {
@@ -20,7 +19,7 @@ export interface SuggestionGroup {
 
 export type SearchItem = {
   id: number | string
-  url: { name: string; params?: object }
+  url: { name: string; params?: object; query?: object }
   icon: string
   title: string
   category: string
@@ -54,11 +53,22 @@ const useSearchBarStore = defineStore({
         url: { name: 'user-list' },
         category: 'Recherches populaires'
       },
-      { icon: 'noto-v1:game-die', title: 'Jeu rapide', url: { name: 'game' }, category: 'Jeu' },
+      {
+        icon: 'tabler-mail',
+        title: 'Message Privé',
+        url: { name: 'dm' },
+        category: 'Recherches populaires'
+      },
+      {
+        icon: 'noto-v1:game-die',
+        title: 'Jeur contre le bot',
+        url: { name: 'game' },
+        category: 'Jeu'
+      },
       {
         icon: 'grommet-icons:group',
-        title: 'Compétitions',
-        url: { name: 'game' },
+        title: 'Rejoindre une file pour jouer',
+        url: { name: 'game', query: { waitingRoom: true } },
         category: 'Jeu'
       },
       {
@@ -79,7 +89,12 @@ const useSearchBarStore = defineStore({
         url: { name: 'me', params: { tab: 'history' } },
         category: 'Profile'
       },
-      { icon: 'bxs:contact', title: 'Mes Contacts', url: { name: 'friends' }, category: 'Profile' },
+      {
+        icon: 'bxs:contact',
+        title: 'Mes Contacts',
+        url: { name: 'me', params: { tab: 'friends' } },
+        category: 'Profile'
+      },
       {
         icon: 'tabler-lock',
         title: 'Sécurité',
@@ -147,26 +162,27 @@ const useSearchBarStore = defineStore({
     },
     async searchForUser(searchTerm: string): Promise<Array<SearchItem | SearchHeader>> {
       try {
-        const { data } = await axios.post('users/search', searchTerm, {
+        const { data } = await axios.post<UserSearchResult[]>('users/search', searchTerm, {
           headers: {
             'Content-Type': 'application/json'
           }
         })
         const header = { header: 'users', title: 'Utilisateurs' }
-        const users = data as Array<UserSearchResult>
-        return [
-          header,
-          ...users.map((user) => ({
-            id: user.id,
-            url: { name: 'profile', params: { id: user.id } },
-            icon: user.avatar,
-            title: `${user.name} ${user.lastname}`,
-            category: header.title
-          }))
-        ]
-      } catch (error: AxiosError | any) {
-        return []
+        const users = data.map(
+          (user) =>
+            ({
+              id: user.id,
+              url: { name: 'user-profile', params: { userId: user.id } },
+              icon: user.avatar,
+              title: `${user.name} ${user.lastname}`,
+              category: header.title
+            }) as SearchItem
+        )
+        return [header, ...users]
+      } catch (error) {
+        console.error(error)
       }
+      return []
     },
     async searchForCompetition(searchTerm: string): Promise<Array<SearchItem | SearchHeader>> {
       try {
@@ -195,12 +211,13 @@ const useSearchBarStore = defineStore({
       }
     },
     async searchInPagesSuggestions(searchTerm: string): Promise<Array<SearchItem | SearchHeader>> {
-      const suggestionsMatched = this.suggestions.filter((suggestion: SuggestionGroupContent) =>
-        suggestion.title.toLowerCase().includes(searchTerm.toLowerCase())
+      const suggestionsMatched: SuggestionGroupContent[] = this.suggestions.filter(
+        (suggestion: SuggestionGroupContent) =>
+          suggestion.title.toLowerCase().includes(searchTerm.toLowerCase())
       )
       return suggestionsMatched.reduce(
         (acc: Array<SearchItem | SearchHeader>, suggestion: SuggestionGroupContent) => {
-          const header = acc.find((item) => item?.header === suggestion.category)
+          const header = acc.find((item) => item.title === suggestion.category)
           if (!header) {
             acc.push({
               header: suggestion.category,

@@ -1,11 +1,28 @@
 <template>
   <main class="w-screen h-screen overflow-hidden">
-    <VRow no-gutters class="w-full h-full">
-      <VCol cols="12" sm="6" md="8" class="hidden sm:block h-full w-full">
-        <img :src="bgImage" alt="landing" class="object-cover w-full h-full" />
+    <VRow
+      no-gutters
+      class="w-full h-full"
+    >
+      <VCol
+        cols="12"
+        sm="6"
+        md="8"
+        class="hidden sm:block h-full w-full"
+      >
+        <img
+          :src="bgImage"
+          alt="landing"
+          class="object-cover w-full h-full"
+        >
       </VCol>
-      <VCol cols="12" sm="6" md="4" class="mx-auto p-0 flex justify-center sm:block">
-        <router-view></router-view>
+      <VCol
+        cols="12"
+        sm="6"
+        md="4"
+        class="mx-auto p-0 flex justify-center sm:block"
+      >
+        <router-view />
       </VCol>
     </VRow>
   </main>

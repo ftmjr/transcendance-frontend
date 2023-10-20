@@ -1,23 +1,46 @@
 <template>
-  <VDialog v-model="isDialogVisible" max-width="600">
+  <VDialog
+    v-model="isDialogVisible"
+    max-width="600"
+  >
     <template #activator="{ props }">
-      <VBtn v-bind="props" variant="outlined" size="small">
-        Challenge <v-icon left>mdi-sword-cross</v-icon>
+      <VBtn
+        v-bind="props"
+        variant="outlined"
+        size="small"
+      >
+        Challenge <v-icon left>
+          mdi-sword-cross
+        </v-icon>
       </VBtn>
     </template>
-    <VBtn icon @click="isDialogVisible = !isDialogVisible" class="v-dialog-close-btn">
+    <VBtn
+      icon
+      class="v-dialog-close-btn"
+      @click="isDialogVisible = !isDialogVisible"
+    >
       <VIcon icon="tabler-x" />
     </VBtn>
     <VCard title="Règles du jeu">
-      <VAlert v-if="isDialogError" type="error" dismissible>
+      <VAlert
+        v-if="isDialogError"
+        type="error"
+        dismissible
+      >
         {{ errorMsg }}
       </VAlert>
       <VCardText>
         <VRow>
           <VCol>
-            <v-row class="mb-4" justify="space-between">
+            <v-row
+              class="mb-4"
+              justify="space-between"
+            >
               <VCol class="text-left">
-                <span class="text-h2 font-weight-light" v-text="gameRulesFields.maxScore"></span>
+                <span
+                  class="text-h2 font-weight-light"
+                  v-text="gameRulesFields.maxScore"
+                />
                 <span class="subheading font-weight-light me-1">Buts</span>
               </VCol>
               <VCol class="text-right">
@@ -30,23 +53,23 @@
                   :step="1"
                   show-ticks
                 >
-                  <template v-slot:prepend>
+                  <template #prepend>
                     <v-btn
                       size="small"
                       variant="text"
                       icon="mdi-minus"
                       :color="color"
                       @click="decrement"
-                    ></v-btn>
+                    />
                   </template>
-                  <template v-slot:append>
+                  <template #append>
                     <v-btn
                       size="small"
                       variant="text"
                       icon="mdi-plus"
                       :color="color"
                       @click="increment"
-                    ></v-btn>
+                    />
                   </template>
                 </v-slider>
               </VCol>
@@ -68,19 +91,34 @@
                   :color="item.raw.color"
                   :active-color="item.raw.color"
                   :class="item?.raw?.styleClassName"
-                >
-                </v-list-item>
+                />
               </template>
             </VAutocomplete>
           </VCol>
         </VRow>
       </VCardText>
       <VCardText class="flex justify-end flex-wrap gap-3 items-center">
-        <VAlert v-if="status !== 'Online'" type="warning" variant="outlined" dismissible>
+        <VAlert
+          v-if="status !== 'Online'"
+          type="warning"
+          variant="outlined"
+          dismissible
+        >
           You can't challenge this player because he is not online
         </VAlert>
-        <VBtn variant="tonal" color="secondary" @click="isDialogVisible = false">Fermer</VBtn>
-        <VBtn @click="startChallenge" :disabled="!canBeChallenged">Challenger</VBtn>
+        <VBtn
+          variant="tonal"
+          color="secondary"
+          @click="isDialogVisible = false"
+        >
+          Fermer
+        </VBtn>
+        <VBtn
+          :disabled="!canBeChallenged"
+          @click="startChallenge"
+        >
+          Challenger
+        </VBtn>
       </VCardText>
     </VCard>
   </VDialog>
@@ -90,7 +128,7 @@
 import { computed, PropType, reactive, ref, watch } from 'vue'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import type { PongTheme } from '@/Game/pong-scenes/Assets'
-import { Status } from '@/stores/AuthStore'
+import { Status } from '@/interfaces/User'
 
 const props = defineProps({
   userGameStatus: {
@@ -137,7 +175,7 @@ const gameRulesFields = reactive({
 // if user is playing or in queue, we can't challenge him
 // if user is free, we can challenge him if status is online
 const canBeChallenged = computed(() => {
-  return props.userGameStatus.status === 'free' && props.status === 'Online'
+  return props.userGameStatus?.status === 'free' && props.status === Status.Online
 })
 
 const color = computed<string>(() => {
@@ -161,7 +199,7 @@ const decrement = () => {
 
 const startChallenge = async () => {
   isDialogLoading.value = true
-  const r = await gameStore.startGameAgainstPlayer(props.userId, gameRulesFields)
+  const r = await gameStore.startGameAgainstPlayer(props.userId as number, gameRulesFields)
   isDialogLoading.value = false
   if (r !== 'preparing') {
     isDialogError.value = true

@@ -10,19 +10,22 @@
           <BaseButton
             classnames="col-span-4 h-16 bg-gray-50 text-uppercase font-bold font-darkBlue"
             @click="globalStore.openJoinDialog"
-            >Join a Chat Room</BaseButton
           >
+            Join a Chat Room
+          </BaseButton>
           <BaseButton
             classnames="col-span-4 h-16 bg-gray-50 text-uppercase font-bold font-darkBlue"
             @click="globalStore.openCreateDialog"
-            >Create Chat Room</BaseButton
           >
+            Create Chat Room
+          </BaseButton>
           <BaseButton
-            classnames="col-span-4 h-16 bg-gray-50 text-uppercase font-bold font-darkBlue"
             v-if="chatStore.getRoom.name !== 'General'"
+            classnames="col-span-4 h-16 bg-gray-50 text-uppercase font-bold font-darkBlue"
             @click="chatStore.leaveRoom"
-            >Leave Chat Room</BaseButton
           >
+            Leave Chat Room
+          </BaseButton>
         </div>
         <div>
           <messages-container />
@@ -53,7 +56,10 @@
   <join-dialog v-model="globalStore.dialogs.join" />
   <password-dialog v-model="globalStore.dialogs.password" />
   <create-dialog v-model="globalStore.dialogs.create" />
-  <profile-dialog v-if="globalStore.dialogs.profile" v-model="globalStore.dialogs.profile" />
+  <profile-dialog
+    v-if="globalStore.dialogs.profile"
+    v-model="globalStore.dialogs.profile"
+  />
   <waiting-dialog v-model="globalStore.dialogs.waiting" />
   <invite-dialog v-model="globalStore.dialogs.invite" />
 </template>
@@ -77,7 +83,7 @@ import CreateDialog from '@/components/chat/CreateDialog.vue'
 import ProfileCard from '@/components/ProfileCard.vue'
 
 export default defineComponent({
-  name: 'ChatRoom-View',
+  name: 'ChatRoomView',
   components: {
     CreateDialog,
     WaitingDialog,
