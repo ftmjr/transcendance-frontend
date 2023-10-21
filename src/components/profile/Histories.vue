@@ -1,0 +1,198 @@
+<template>
+  <v-card title="Historiques des Actions" :loading="loading">
+    <VTable>
+      <thead>
+        <tr>
+          <th>Opposant</th>
+          <th>Date</th>
+          <th>Résultat</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="history in histories" :key="history.gameId">
+          <td>
+            <avatar-badge :user-id="getOpponentId(history) ?? 0" :show-name="true" :size="32" />
+          </td>
+          <td>{{ getDate(history) }}</td>
+          <td>
+            <VChip v-if="getIsUserWon(history)" label color="success"> Victoire </VChip>
+            <VChip v-else label color="error"> Défaite / Abandon </VChip>
+          </td>
+          <td>
+            <div
+              v-for="(userActions, i) in getActions(history)"
+              :key="userActions.userId"
+              class="flex items-center gap-2"
+            >
+              <avatar-badge :user-id="userActions.userId ?? 0" :size="24" />
+              {{ userActions.goals }} But(s)
+              <div class="v-avatar-group">
+                <VAvatar
+                  v-for="(eventInfo, index) in userActions.event"
+                  :key="index"
+                  :size="eventInfo.color === 'yellow' ? 32 : 24"
+                  :variant="eventInfo.color === 'yellow' ? 'elevated' : 'tonal'"
+                  :color="eventInfo.color"
+                  :icon="eventInfo.icon"
+                />
+              </div>
+              <p
+                v-if="i === 0 && getGameType(history) !== GameSessionType.Bot"
+                class="border-l border-r px-1 border-slate-200 font-weight-light text-slate-200 text-sm"
+              >
+                VS
+              </p>
+              <p v-else class="font-weight-light text-slate-200 text-sm">Contre l'ordinateur</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </VTable>
+  </v-card>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+import { formatDate } from '@core/utils/formatters'
+import useGameStore, { CompleteGameHistory, GameSessionType } from '@/stores/GameStore'
+import useUserStore from '@/stores/UserStore'
+import AvatarBadge from '@/components/profile/AvatarBadge.vue'
+import { GameEvent } from '@/interfaces/User'
+
+type EventIcons = {
+  icon: 'ph:soccer-ball-fill' | 'tabler:trophy' | 'arcticons:quicklyquit'
+  color: 'success' | 'yellow' | 'error'
+}
+interface ActionsBox {
+  userId: number
+  goals: number
+  event: EventIcons[]
+}
+
+export default defineComponent({
+  components: {
+    AvatarBadge
+  },
+  props: {
+    userId: {
+      type: Number,
+      required: true
+    }
+  },
+  setup() {
+    const userStore = useUserStore()
+    const gameStore = useGameStore()
+    return {
+      gameStore,
+      userStore
+    }
+  },
+  data() {
+    return {
+      histories: [] as CompleteGameHistory[],
+      loading: false
+    }
+  },
+  computed: {
+    GameSessionType() {
+      return GameSessionType
+    }
+  },
+  watch: {
+    userId: {
+      immediate: true,
+      handler() {
+        this.fetchHistories()
+      }
+    }
+  },
+  methods: {
+    formatDate,
+    async fetchHistories() {
+      this.loading = true
+      try {
+        this.histories = await this.gameStore.getUserCompleteGameHistory(this.userId)
+      } catch (e) {
+        console.error(e)
+      } finally {
+        this.loading = false
+      }
+    },
+    getGameType(gameHistory: CompleteGameHistory): GameSessionType {
+      // Determine the game type base on game name
+      switch (gameHistory.gameName) {
+        case 'Bot Game':
+          return GameSessionType.Bot
+        case 'QueList Game':
+          return GameSessionType.QueListGame
+        case 'Challenge Game':
+        default:
+          return GameSessionType.PrivateGame
+      }
+    },
+    getPlayersIds(gameHistory: CompleteGameHistory): number[] {
+      const ids = Object.keys(gameHistory.histories)
+      return ids.map((id) => parseInt(id, 10))
+    },
+    getOpponentId(gameHistory: CompleteGameHistory): number | null {
+      const gameType = this.getGameType(gameHistory)
+      if (gameType === GameSessionType.Bot) {
+        return 0
+      }
+      // find the first one different from the user
+      const playersId = this.getPlayersIds(gameHistory)
+      const opponentId = playersId.find((id) => id !== this.userId)
+      if (!opponentId) {
+        return null
+      }
+      return opponentId
+    },
+    getDate(gameHistory: CompleteGameHistory): string {
+      const eventOfCurrentUser = Object.values(gameHistory.histories).find((UserHistories) => {
+        return UserHistories.find((userHistory) => userHistory.userId === this.userId)
+      })
+      if (!eventOfCurrentUser) {
+        return ''
+      }
+      const timestamp = eventOfCurrentUser[0].timestamp
+      return formatDate(timestamp)
+    },
+    getIsUserWon(gameHistory: CompleteGameHistory) {
+      const winner = gameHistory.winnerId
+      return winner === this.userId
+    },
+    pushGameEvents(event: GameEvent, actions: ActionsBox) {
+      switch (event) {
+        case GameEvent.ACTION_PERFORMED:
+          actions.event.push({ icon: 'ph:soccer-ball-fill', color: 'success' })
+          actions.goals++
+          break
+        case GameEvent.MATCH_WON:
+          actions.event.push({ icon: 'tabler:trophy', color: 'yellow' })
+          break
+        case GameEvent.PLAYER_LEFT:
+          actions.event.push({ icon: 'arcticons:quicklyquit', color: 'error' })
+          break
+      }
+    },
+    getActions(gameHistory: CompleteGameHistory): ActionsBox[] {
+      // build a map with [userId, ACTION_PERFORMED count]
+      const actions = new Map<number, ActionsBox>()
+      for (const userID in gameHistory.histories) {
+        const histories = gameHistory.histories[userID]
+        const actionsInfo = {
+          userId: parseInt(userID, 10),
+          goals: 0,
+          event: []
+        }
+        histories.forEach((history) => {
+          this.pushGameEvents(history.event, actionsInfo)
+        })
+        actions.set(parseInt(userID, 10), actionsInfo)
+      }
+      return Array.from(actions.values())
+    }
+  }
+})
+</script>
