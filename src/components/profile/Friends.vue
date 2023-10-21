@@ -1,6 +1,6 @@
 <template>
-  <VCard :loading="loading" color="transparent" class="">
-    <VCardTitle class="text-center text-lg font-weight-bold my-4"> List of Friends </VCardTitle>
+  <VCard :loading="loading" color="transparent">
+    <VCardTitle class="text-center text-lg font-weight-bold my-4"> Mes Amis </VCardTitle>
     <VRow>
       <VCol v-for="(friend, index) in userStore.contacts" :key="friend.id" cols="12" md="6">
         <div class="bg-slate-700/30 rounded-lg mx-1 mt-8">

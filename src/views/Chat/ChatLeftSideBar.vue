@@ -31,6 +31,19 @@
         </template>
       </VTextField>
     </div>
+    <v-toolbar color="#C8CAFEFF">
+      <v-toolbar-title class="text-slate-700">Salles de discussion</v-toolbar-title>
+      <VBtn
+        variant="elevated"
+        icon
+        size="small"
+        color="primary"
+        rounded
+        @click="$emit('createRoom')"
+      >
+        <VIcon size="18" icon="tabler-edit" color="#C8CAFEFF" class="text-medium-emphasis" />
+      </VBtn>
+    </v-toolbar>
     <VDivider />
     <PerfectScrollbar
       tag="ul"
@@ -38,11 +51,6 @@
       :options="{ wheelPropagation: true }"
     >
       <li class="py-4">
-        <span class="chat-contact-header text-primary text-xl font-weight-medium"
-          >Salles de discussion</span
-        >
-      </li>
-      <li>
         <span
           v-show="roomsStore.filteredRooms.length === 0"
           class="no-chat-items-text text-disabled"

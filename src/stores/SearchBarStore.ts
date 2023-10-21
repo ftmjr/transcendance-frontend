@@ -66,7 +66,7 @@ const useSearchBarStore = defineStore({
         category: 'Jeu'
       },
       {
-        icon: 'grommet-icons:group',
+        icon: 'medical-icon:i-waiting-area',
         title: 'Rejoindre une file pour jouer',
         url: { name: 'game', query: { waitingRoom: true } },
         category: 'Jeu'

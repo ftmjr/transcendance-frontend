@@ -23,7 +23,7 @@ const navItems: VerticalNavItems = [
   },
   {
     title: 'Leaderboard',
-    icon: { icon: 'solar:ranking-linear' },
+    icon: { icon: 'solar:ranking-linear', color: 'yellow' },
     to: 'leaderboard'
   },
   { heading: 'Conversation' },

@@ -10,7 +10,21 @@
       :permanent="$vuetify.display.mdAndUp"
       class="chat-list-sidebar"
     >
-      <ChatLeftSideBar @close="isLeftSidebarOpen = false" />
+      <ChatLeftSideBar
+        @close="isLeftSidebarOpen = false"
+        @create-room="showCreateRoomForm = !showCreateRoomForm"
+      />
+    </VNavigationDrawer>
+    <VNavigationDrawer
+      v-model="showCreateRoomForm"
+      :absolute="true"
+      :touchless="true"
+      location="start"
+      width="380"
+      :temporary="$vuetify.display.smAndDown"
+      :permanent="$vuetify.display.mdAndUp"
+    >
+      <CreateRoomForm @close="showCreateRoomForm = false" />
     </VNavigationDrawer>
     <NotificationPopUp v-model:visible="showErrorPopUp" :message="errorRoomAccessMsg" />
   </VLayout>
@@ -25,12 +39,14 @@ import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar'
 import useUserStore from '@/stores/UserStore'
 import ChatLeftSideBar from '@/views/Chat/ChatLeftSideBar.vue'
 import NotificationPopUp from '@/components/notifications/NotificationPopUp.vue'
+import CreateRoomForm from '@/views/Chat/CreateRoomForm.vue'
 
 export default defineComponent({
   name: 'ChatWindowView',
   components: {
     NotificationPopUp,
-    ChatLeftSideBar
+    ChatLeftSideBar,
+    CreateRoomForm
   },
   props: {
     roomId: {
@@ -56,6 +72,7 @@ export default defineComponent({
     return {
       loading: false,
       errorRoomAccessMsg: '',
+      showCreateRoomForm: false,
       showErrorPopUp: false
     }
   },
