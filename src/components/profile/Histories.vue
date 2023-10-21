@@ -1,5 +1,10 @@
 <template>
-  <v-card title="Historiques des Actions" :loading="loading">
+  <v-card title="Historique" :loading="loading">
+    <v-card-text>
+      <p class="font-weight-semibold">Total Won : {{ getCountByEvent('MATCH_WON') }}</p>
+      <p class="font-weight-semibold">Total Lost or Left : {{ getCountByEvent('MATCH_LOST') }}</p>
+      <p class="font-weight-semibold">Total Score : {{ getCountByEvent('ACTION_PERFORMED') }}</p>
+    </v-card-text>
     <VTable>
       <thead>
         <tr>
@@ -192,6 +197,20 @@ export default defineComponent({
         actions.set(parseInt(userID, 10), actionsInfo)
       }
       return Array.from(actions.values())
+    },
+    getCountByEvent(event) {
+      let count = 0
+      this.histories.forEach((gameHistory) => {
+        const histories = Object.values(gameHistory.histories);
+        histories.forEach((userHistories) => {
+          userHistories.forEach((userHistory) => {
+            if (userHistory.event === event && userHistory.userId === this.userId) {
+              count++
+            }
+          })
+        })
+      })
+      return count
     }
   }
 })
