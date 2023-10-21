@@ -10,19 +10,18 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="history in histories" :key="history.gameId">
-          <td>
-            <div>
-              {{ getOpponentId(history) }}
-              <!--            <AvatarBadge />-->
-            </div>
-          </td>
-          <td>{{ getDate(history) }}</td>
-          <td>{{ getIsUserWon(history) ? 'Victoire' : 'Perdu/Abandon' }}</td>
-          <td>
-            {{ getActions(history) }}
-          </td>
-        </tr>
+      <tr v-for="history in histories" :key="history.gameId">
+        <td>
+          <div>
+            {{ getUserName(getOpponentId(history)) }}
+          </div>
+        </td>
+        <td>{{ getDate(history) }}</td>
+        <td>{{ getIsUserWon(history) ? 'Victoire' : 'Perdu/Abandon' }}</td>
+        <td>
+          {{ getActions(history) }}
+        </td>
+      </tr>
       </tbody>
     </VTable>
   </v-card>
@@ -32,7 +31,9 @@
 import { defineComponent } from 'vue'
 import { formatDate } from '@core/utils/formatters'
 import useGameStore, { CompleteGameHistory, GameSessionType } from '@/stores/GameStore'
-// import AvatarBadge from '@/components/profile/AvatarBadge.vue'
+import useUserStore from "@/stores/UserStore";
+import {User} from "Auth";
+import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 
 // TODO: This component is not finished yet, need to be refatored to display correctly
 export default defineComponent({
@@ -46,24 +47,22 @@ export default defineComponent({
     }
   },
   setup() {
+    const userStore = useUserStore()
     const gameStore = useGameStore()
     return {
-      gameStore
+      gameStore,
+      userStore
     }
   },
   data() {
     return {
       histories: [] as CompleteGameHistory[],
+      users: [] as User[],
       loading: false
     }
   },
-  watch: {
-    userId: {
-      immediate: true,
-      handler() {
-        this.fetchHistories()
-      }
-    }
+  mounted() {
+    this.fetchNames()
   },
   methods: {
     formatDate,
@@ -121,7 +120,7 @@ export default defineComponent({
       const winner = gameHistory.winnerId
       return winner === this.userId
     },
-    getActions(gameHistory: CompleteGameHistory): string[] {
+    getActions(gameHistory: CompleteGameHistory): string {
       //
       const usersHistories = Object.values(gameHistory.histories)
       const goals = usersHistories.map((userHistory) => {
@@ -131,7 +130,20 @@ export default defineComponent({
           goals: goals.length
         }
       })
-      return goals.map((goal) => `user ${goal.userId}: ${goal.goals}`)
+      const goalStrings = goals.map((goal) => `${goal.goals}`);
+      const goalsString = goalStrings.join(' vs ');
+      return goalsString;
+    },
+    async fetchNames() {
+      this.loading = true
+      const users = await this.userStore.getAllUsers(100)
+      this.users = users
+      this.loading = false
+    },
+    getUserName(userId: number): string {
+      if (userId === 0) return 'AI BOT'
+      const user = this.users.find((user) => user.id === userId)
+      return user ? user.username : ''
     }
   }
 })
