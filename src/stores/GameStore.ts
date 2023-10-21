@@ -231,6 +231,15 @@ const useGameStore = defineStore({
         console.log('failed to get user game history')
       }
       return []
+    },
+    async getSimpleGameHistory(userId: number): Promise<GameHistory[]> {
+      try {
+        const { data } = await axios.get<GameHistory[]>(`/game/simple-history/${userId}`)
+        return data
+      } catch (e) {
+        console.log('failed to get user game history')
+      }
+      return []
     }
   }
 })

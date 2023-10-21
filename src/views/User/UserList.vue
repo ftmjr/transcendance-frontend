@@ -30,9 +30,13 @@
           <VSpacer />
           <div class="w-1/3">
             <VTextField
-              v-model="searchQuery"
+              v-model.lazy="searchQuery"
+              :loding="loading"
               class="transparent-input-box"
               placeholder="Rechercher"
+              hint="Sensible a la casse"
+              :persistent-hint="true"
+              clearable
             />
           </div>
         </VCardText>
@@ -49,7 +53,7 @@
             <tr v-for="user in users" :key="user.id">
               <td>
                 <div class="flex items-center">
-                  <AvatarBadge :profile="user.profile" :username="user.username" />
+                  <AvatarBadge :user-id="user.id" :user="user" />
 
                   <div class="d-flex flex-column">
                     <h6 class="text-base">
@@ -73,7 +77,7 @@
                     v-if="user.gameStatus && user.id !== authStore.user?.id"
                     :user-game-status="user.gameStatus"
                     :user-id="user.id"
-                    :status="user.profile.status"
+                    :status="user.profile?.status"
                   />
                 </div>
               </td>
@@ -96,11 +100,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useUserStore from '@/stores/UserStore'
-import type { User } from '@/interfaces/User'
+import type { Profile, User } from '@/interfaces/User'
 import { avatarText } from '@/vuetify/@core/utils/formatters'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import useAuthStore from '@/stores/AuthStore'
-import useGameStore from '@/stores/GameStore'
+import useGameStore, { GameSession } from '@/stores/GameStore'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 
 const userListStatsMeta: Array<{
@@ -140,6 +144,12 @@ const userListStatsMeta: Array<{
   }
 ]
 
+type userGameStatus = {
+  status: 'playing' | 'inQueue' | 'free'
+  gameSession?: GameSession
+}
+type SpecialUser = User & { gameStatus: userGameStatus; profile: Profile }
+
 export default defineComponent({
   name: 'UserList',
   components: { AvatarBadge, GameStatusBadge },
@@ -161,7 +171,7 @@ export default defineComponent({
       totalUser: 0,
       searchQuery: '',
       userListStatsMeta,
-      users: [] as User[]
+      users: [] as SpecialUser[]
     }
   },
   computed: {
@@ -183,6 +193,10 @@ export default defineComponent({
     rowPerPage() {
       this.currentPage = 1
       this.fetchUsers()
+    },
+    searchQuery() {
+      this.currentPage = 1
+      this.fetchUsers()
     }
   },
   beforeMount() {
@@ -202,17 +216,26 @@ export default defineComponent({
     },
     async fetchUsers() {
       this.loading = true
-      const users = await this.userStore.getPaginatedUser({
-        currentPage: this.currentPage,
-        perPage: this.rowPerPage
-      })
-      this.users = users
+      if (!this.searchQuery) {
+        const users = await this.userStore.getPaginatedUser({
+          currentPage: this.currentPage,
+          perPage: this.rowPerPage
+        })
+        this.users = users as SpecialUser[]
+      } else {
+        const users = await this.userStore.searchUsers({
+          searchTerm: this.searchQuery,
+          currentPage: this.currentPage,
+          perPage: this.rowPerPage
+        })
+        this.users = users as SpecialUser[]
+      }
       this.fetchUsersGameStatus()
       this.loading = false
     },
     fetchUsersGameStatus() {
       this.users.forEach((user) => {
-        this.gameStore.getUserGameStatus(user.id).then((userGameStatus) => {
+        this.gameStore.getUserGameStatus(user.id).then((userGameStatus: userGameStatus) => {
           user.gameStatus = userGameStatus
         })
       })

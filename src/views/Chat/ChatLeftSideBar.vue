@@ -14,9 +14,9 @@
     </div>
     <div class="flex mb-2 px-1">
       <AvatarBadge
-        v-if="authStore.getProfile && authStore.getUser"
-        :profile="authStore.getProfile"
-        :username="authStore.getUser.username"
+        v-if="authStore.getUser"
+        :user-id="authStore.getUser.id"
+        :user="authStore.getUser"
         @show-user-profile="$emit('showUserProfile')"
       />
       <VTextField
@@ -32,7 +32,7 @@
       </VTextField>
     </div>
     <v-toolbar color="#C8CAFEFF">
-      <v-toolbar-title class="text-slate-700">Salles de discussion</v-toolbar-title>
+      <v-toolbar-title class="text-slate-700"> Salles de discussion </v-toolbar-title>
       <VBtn
         variant="elevated"
         icon

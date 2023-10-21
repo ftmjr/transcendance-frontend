@@ -13,9 +13,9 @@
   </div>
   <div class="flex mb-2 px-1">
     <AvatarBadge
-      v-if="authStore.getProfile && authStore.getUser"
-      :profile="authStore.getProfile"
-      :username="authStore.getUser?.username"
+      v-if="authStore.getUser"
+      :user="authStore.getUser"
+      :user-id="authStore.getUser.id"
       @show-user-profile="$emit('showUserProfile')"
     />
     <VTextField

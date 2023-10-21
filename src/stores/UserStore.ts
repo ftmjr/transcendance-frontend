@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import type { User, Profile } from '@/interfaces/User'
+import type { Profile, User } from '@/interfaces/User'
+import { Status } from '@/interfaces/User'
 import axios from '@/utils/axios'
 import { isAxiosError } from 'axios'
 
@@ -91,6 +92,10 @@ export interface userOrderBy {
   }
   createdAt?: SortOrder
   updatedAt?: SortOrder
+}
+
+export type ShortUserProfile = Pick<User, 'id' | 'profile' | 'username' | 'email' | 'updatedAt'> & {
+  profile: Profile
 }
 
 const useUserStore = defineStore({
@@ -260,6 +265,39 @@ const useUserStore = defineStore({
     },
 
     /* User section */
+    async getProfile(userId: number): Promise<User | null> {
+      try {
+        const { data } = await axios.get<User>(`/users/profile/${userId}`)
+        return data
+      } catch (e) {
+        console.log(e)
+      }
+      return null
+    },
+    async getShortUserProfile(userId: number): Promise<ShortUserProfile | null> {
+      try {
+        if (userId === 0)
+          return {
+            id: 0,
+            profile: {
+              id: 0,
+              userId: 0,
+              name: 'AI',
+              lastname: 'Bot',
+              avatar: '/public/pong/characters/fortnite_style_ai_avatar.png',
+              status: Status.Online
+            },
+            username: 'AI',
+            email: 'ai',
+            updatedAt: new Date().toISOString()
+          }
+        const { data } = await axios.get<ShortUserProfile>(`/users/short-profile/${userId}`)
+        return data
+      } catch (e) {
+        console.log(e)
+      }
+      return null
+    },
     async getPaginatedUser(params: {
       currentPage: number
       perPage: number
@@ -300,7 +338,27 @@ const useUserStore = defineStore({
       }
       return []
     },
-
+    async searchUsers(params: {
+      searchTerm: string
+      currentPage: number
+      perPage: number
+    }): Promise<User[]> {
+      const { currentPage, perPage, searchTerm } = params
+      const skip = (currentPage - 1) * perPage
+      try {
+        const { data } = await axios.get<User[]>('users/search', {
+          params: {
+            query: searchTerm,
+            skip: skip ?? 0,
+            take: perPage ?? 100
+          }
+        })
+        return data
+      } catch (e) {
+        console.log(e)
+      }
+      return []
+    },
     /* Statistics */
     async getAppStatistics(): Promise<'success' | 'error'> {
       try {

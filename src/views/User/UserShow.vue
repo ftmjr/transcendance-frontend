@@ -17,16 +17,21 @@
     </VTabs>
     <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
       <VWindowItem value="profile">
-        <div>
-          <p>[SHORT BIO]</p>
-          <p>
-            <i>{{ authStore.getProfile?.bio }}</i>
-          </p>
-          <br />
-          <br />
-          <p>[PONG STATS]</p>
-          <p>Number of wins :</p>
-        </div>
+        <VCard :loading="loading" color="transparent">
+          <VCard v-if="profileData.profile">
+            <div class="bg-purple-500/30">
+              <v-card-title class="text-h6"> [SHORT BIO] </v-card-title>
+              <p v-if="profileData.profile.bio" class="text-center pb-2 font-mono">
+                <i>{{ profileData.profile.bio }}</i>
+              </p>
+              <p v-else class="text-center pb-2 font-mono text-sm">
+                <i>Aucune bio, pour l'instant</i>
+              </p>
+            </div>
+          </VCard>
+          <div class="my-2" />
+          <PlayerSimpleStats :histories="gameHistories" />
+        </VCard>
       </VWindowItem>
       <VWindowItem value="awards">
         <div>Les recompenses</div>
@@ -46,15 +51,17 @@ import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import type { ProfileData, User, GameHistory, Profile } from '@/interfaces/User'
 import axios from '@/utils/axios'
-import Histories from '@/views/User/Histories.vue'
+import Histories from '@/components/profile/Histories.vue'
 import UserProfileHeader from '@/components/profile/Header.vue'
 import Friends from '@/components/profile/Friends.vue'
+import PlayerSimpleStats from '@/components/profile/PlayerSimpleStats.vue'
 
 type Tab = 'profile' | 'awards' | 'history' | 'friends'
 type TabItem = { title: string; icon: string; tab: Tab }
 
 export default defineComponent({
   components: {
+    PlayerSimpleStats,
     Histories,
     UserProfileHeader,
     Friends

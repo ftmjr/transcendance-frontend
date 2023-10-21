@@ -54,7 +54,8 @@ defineProps({
   },
   status: {
     type: String as PropType<Status>,
-    required: true
+    required: false,
+    default: Status.Offline
   }
 })
 </script>

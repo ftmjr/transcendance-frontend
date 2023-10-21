@@ -26,7 +26,7 @@
             >
               {{ index + 1 }}
             </v-avatar>
-            <AvatarBadge :profile="item.profile" :username="item.username" />
+            <AvatarBadge :user-id="item.id" :user="item" />
           </template>
           <template #append>
             <GameStatusBadge

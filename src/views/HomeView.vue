@@ -3,6 +3,14 @@
     <VCol cols="12" md="6">
       <TopChatCard />
     </VCol>
+    <VCol>
+      <PlayerSimpleStats
+        v-if="authStore.getUser"
+        :histories="authStore.getUser.gameHistories"
+        :user-id="authStore.getUser.id"
+        :color-class="colorClasses"
+      />
+    </VCol>
   </VRow>
 </template>
 
@@ -10,15 +18,18 @@
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import TopChatCard from '@/components/chatRooms/TopChatCard.vue'
+import PlayerSimpleStats from '@/components/profile/PlayerSimpleStats.vue'
 // import useGlobalStore from "@/stores/GlobalStore";
 // import InviteDialog from "@/components/chat/InviteDialog.vue";
 
 export default defineComponent({
-  components: { TopChatCard },
+  components: { PlayerSimpleStats, TopChatCard },
   setup() {
     // const globalStore = useGlobalStore()
     const authStore = useAuthStore()
-    return { authStore }
+    const coalition = authStore.getCoalition
+    const colorClasses = [`bg-[${coalition.color}]`, 'bg-opacity-30']
+    return { authStore, colorClasses }
   }
 })
 </script>

@@ -12,12 +12,7 @@
     </VBtn>
     <template v-if="contact">
       <div class="flex align-center cursor-pointer" @click="showProfile">
-        <AvatarBadge
-          v-if="contact.profile"
-          :profile="contact.profile"
-          :username="contact.username"
-        />
-
+        <AvatarBadge v-if="contact.profile" :user-id="contact.id" :user="contact" />
         <div class="flex-grow-1 ms-4 overflow-hidden">
           <h6 class="font-mono font-medium">
             {{ contact.profile.name }} {{ contact.profile.lastname }}

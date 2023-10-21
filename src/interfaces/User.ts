@@ -70,6 +70,7 @@ export interface User {
   twoFactorEnabled: boolean
   gameHistories?: GameHistory[]
   createdAt: string
+  updatedAt: string
 }
 export interface ProfileHeaderData {
   coalition?: Coalition
