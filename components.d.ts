@@ -24,6 +24,7 @@ declare module 'vue' {
     NotificationButton: typeof import('./src/components/navbar/NotificationButton.vue')['default']
     NotificationPopUp: typeof import('./src/components/notifications/NotificationPopUp.vue')['default']
     PongGamePlayer: typeof import('./src/components/PongGamePlayer.vue')['default']
+    RoomCard: typeof import('./src/components/chatRooms/RoomCard.vue')['default']
     RoomContact: typeof import('./src/components/chatRooms/RoomContact.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

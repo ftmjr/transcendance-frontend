@@ -201,7 +201,7 @@ const useUserStore = defineStore({
         return 'error'
       }
     },
-    async checkFriendShip(userId: number) {
+    async checkFriendShip(userId: number): Promise<CheckFriendshipResponse> {
       try {
         const { data } = await axios.get<CheckFriendshipResponse>(`/friends/check/${userId}`)
         return data
@@ -227,6 +227,10 @@ const useUserStore = defineStore({
     },
     async checkBlocked(friendId: number): Promise<BlockedStatus> {
       try {
+        const isInLocal = this.blockedUsers.find((user) => user.blockedUserId === friendId)
+        if (isInLocal) {
+          return BlockedStatus.Blocked
+        }
         const { data } = await axios.get<BlockedStatus>(`/users/check-blocked/${friendId}`)
         return data
       } catch (e) {
@@ -246,7 +250,7 @@ const useUserStore = defineStore({
     },
     async unblockUser(userId: number): Promise<'success' | 'error'> {
       try {
-        await axios.delete(`block/${userId}`)
+        await axios.delete(`/users/unblock/${userId}`)
         await this.loadBlockedUsers()
         await this.loadAllMyFriends()
         return 'success'

@@ -1,61 +1,18 @@
 <template>
   <VLayout class="bg-surface rounded border p-2 border-solid border-slate-400 shadow-sm">
     <VNavigationDrawer
-      v-model="isUserProfileSidebarOpen"
-      temporary
-      touchless
-      absolute
-      class=""
-      location="start"
-      width="370"
-    >
-      <ChatUserProfileSidebar @close="isUserProfileSidebarOpen = false" />
-    </VNavigationDrawer>
-    <VNavigationDrawer
       v-model="isLeftSidebarOpen"
-      absolute
-      touchless
+      :absolute="true"
+      :touchless="true"
       location="start"
       width="370"
       :temporary="$vuetify.display.smAndDown"
       :permanent="$vuetify.display.mdAndUp"
-      class="pt-2"
+      class="chat-list-sidebar"
     >
-      <ChatConversationListSideBar
-        @open-chat-of-contact="openChatOfRoom"
-        @show-user-profile="showMyProfile"
-        @close="isLeftSidebarOpen = false"
-      />
+      <ChatLeftSideBar @close="isLeftSidebarOpen = false" />
     </VNavigationDrawer>
-    <VMain>
-      <SingleChatView
-        v-if="roomsStore.currentRoom"
-        v-model:is-left-sidebar-open="isLeftSidebarOpen"
-        :room="roomsStore.currentRoom"
-      />
-      <div
-        v-else
-        class="flex h-full items-center justify-center flex-column"
-      >
-        <VAvatar
-          size="109"
-          class="elevation-3 mb-6 bg-surface"
-        >
-          <VIcon
-            size="50"
-            class="rounded-0 text-high-emphasis"
-            icon="tabler-message"
-          />
-        </VAvatar>
-        <p
-          class="mb-0 px-6 py-1 font-weight-medium text-lg elevation-3 rounded-xl text-high-emphasis bg-surface"
-          :class="[{ 'cursor-pointer': $vuetify.display.smAndDown }]"
-          @click="startConversation"
-        >
-          Commencez une conversation
-        </p>
-      </div>
-    </VMain>
+    <NotificationPopUp v-model:visible="showErrorPopUp" :message="errorRoomAccessMsg" />
   </VLayout>
 </template>
 
@@ -63,58 +20,71 @@
 import { defineComponent } from 'vue'
 import { useDisplay } from 'vuetify'
 import useAuthStore from '@/stores/AuthStore'
-import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar'
-import SingleChatView from '@/views/Chat/SingleChatView.vue'
-import ChatConversationListSideBar from '@/views/Chat/ChatConversationListSideBar.vue'
-import ChatUserProfileSidebar from '@/components/chatRooms/ChatUserProfileSidebar.vue'
 import useRoomsStore from '@/stores/RoomsStore'
+import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar'
+import useUserStore from '@/stores/UserStore'
+import ChatLeftSideBar from '@/views/Chat/ChatLeftSideBar.vue'
+import NotificationPopUp from '@/components/notifications/NotificationPopUp.vue'
 
 export default defineComponent({
   name: 'ChatWindowView',
   components: {
-    ChatConversationListSideBar,
-    ChatUserProfileSidebar,
-    SingleChatView
+    NotificationPopUp,
+    ChatLeftSideBar
   },
   props: {
     roomId: {
-      type: Number
+      type: Number,
+      default: undefined
     }
   },
   setup() {
     const vuetifyDisplays = useDisplay()
     const authStore = useAuthStore()
     const roomsStore = useRoomsStore()
+    const userStore = useUserStore()
     const { isLeftSidebarOpen } = useResponsiveLeftSidebar(vuetifyDisplays.smAndDown)
     return {
       authStore,
       isLeftSidebarOpen,
       roomsStore,
-      vuetifyDisplays
+      vuetifyDisplays,
+      userStore
     }
   },
   data() {
     return {
-      isUserProfileSidebarOpen: false
+      loading: false,
+      errorRoomAccessMsg: '',
+      showErrorPopUp: false
     }
   },
   beforeMount() {
-    this.roomsStore.getAllMyRooms()
-    this.roomsStore.fetchPublicRooms()
+    this.loadRooms()
     if (this.roomId) {
-      this.roomsStore.setCurrentRoom(this.roomId)
+      this.accessRoom(this.roomId)
     }
   },
   methods: {
-    openChatOfRoom(roomId: number) {
-      this.roomsStore.setCurrentRoom(roomId)
+    async loadRooms() {
+      this.loading = true
+      await this.roomsStore.getAllMyRooms()
+      await this.roomsStore.fetchPublicRooms()
+      await this.userStore.loadAllMyFriends()
+      await this.userStore.loadBlockedUsers()
+      this.loading = false
+    },
+    async accessRoom(roomId: number) {
+      this.loading = true
+      const check = await this.roomsStore.setCurrentRoom(roomId)
+      if (check !== 'success') {
+        this.errorRoomAccessMsg = check
+        this.showErrorPopUp = true
+      }
+      this.loading = false
     },
     showMyProfile() {
-      this.isUserProfileSidebarOpen = true
-    },
-    startConversation() {
-      if (this.vuetifyDisplays.mdAndUp) return
-      this.isLeftSidebarOpen = true
+      this.$router.push({ name: 'user.show', params: { id: this.authStore.getUser?.id } })
     }
   }
 })

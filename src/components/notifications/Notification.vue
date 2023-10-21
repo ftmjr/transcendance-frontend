@@ -1,8 +1,5 @@
 <template>
-  <div
-    :class="notificationClass"
-    @click="markAsRead"
-  >
+  <div :class="notificationClass" @click="markAsRead">
     <div class="flex justify-between items-center">
       <div class="flex items-center">
         <v-icon :class="iconClass">
@@ -11,35 +8,17 @@
         <strong class="ml-2">{{ translatedTitle }}</strong>
       </div>
       <div>
-        <VIcon
-          v-if="notification.status === 'UNREAD'"
-          color="primary"
-          small
-        >
+        <VIcon v-if="notification.status === 'UNREAD'" color="primary" small>
           tabler-circle-dot
         </VIcon>
-        <VIcon
-          v-else
-          small
-          color="primary"
-        >
-          tabler-circle
-        </VIcon>
+        <VIcon v-else small color="primary"> tabler-circle </VIcon>
       </div>
     </div>
     <div class="flex">
       <div>
-        <p
-          class="mt-2"
-          v-html="notification.message"
-        />
-        <div
-          v-if="isExpiringSoon"
-          class="mt-2 text-red-500 text-sm flex items-center"
-        >
-          <v-icon small>
-            mdi-alert-circle
-          </v-icon> Expire bientôt
+        <p class="mt-2" v-html="notification.message" />
+        <div v-if="isExpiringSoon" class="mt-2 text-red-500 text-sm flex items-center">
+          <v-icon small> mdi-alert-circle </v-icon> Expire bientôt
         </div>
       </div>
     </div>
@@ -60,10 +39,7 @@
       >
         VOIR <VIcon>tabler-eye</VIcon>
       </VBtn>
-      <VBtnGroup
-        v-if="showAcceptRejectButtons"
-        size="small"
-      >
+      <VBtnGroup v-if="showAcceptRejectButtons" size="small">
         <VBtn
           size="small"
           variant="outlined"
@@ -83,9 +59,7 @@
       </VBtnGroup>
     </div>
     <div class="flex items-center justify-end">
-      <VIcon small>
-        tabler-calendar-event
-      </VIcon>
+      <VIcon small> tabler-calendar-event </VIcon>
       <span class="text-sm">{{ formattedDate }}</span>
     </div>
   </div>

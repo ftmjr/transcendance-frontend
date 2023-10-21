@@ -2,20 +2,14 @@
   <div class="flex flex-col mt-2">
     <v-row v-if="props.debugMode">
       <!-- Received Data -->
-      <v-col
-        cols="12"
-        md="3"
-      >
+      <v-col cols="12" md="3">
         <v-card class="mx-2 p-2">
           <v-card-title>
             <h3>Props Data</h3>
           </v-card-title>
           <v-card-subtitle class="d-flex align-center">
             <v-avatar>
-              <img
-                :src="props.user?.avatar"
-                alt=""
-              >
+              <img :src="props.user?.avatar" alt="" />
             </v-avatar>
             {{ props.user.username }}
           </v-card-subtitle>
@@ -27,20 +21,14 @@
         </v-card>
       </v-col>
       <!-- Network Data -->
-      <v-col
-        cols="12"
-        md="9"
-      >
+      <v-col cols="12" md="9">
         <v-card class="p-2 mr-2">
           <v-card-title>
             <h3>Network Monitor</h3>
           </v-card-title>
           <v-card-text>
             <p>Host ID: {{ gameMonitor.hostId }}</p>
-            <p
-              class="text-primary"
-              :class="statesInfo[gameMonitorState].color"
-            >
+            <p class="text-primary" :class="statesInfo[gameMonitorState].color">
               Game Monitor State: {{ statesInfo[gameMonitorState].text }}
             </p>
             <p>Network score : {{ scoreDisplayed }}</p>
@@ -51,10 +39,7 @@
                 <v-list-subheader class="font-weight-semibold text-primary">
                   Players
                 </v-list-subheader>
-                <v-list-item
-                  v-for="player in gameMonitor.players"
-                  :key="player.userId"
-                >
+                <v-list-item v-for="player in gameMonitor.players" :key="player.userId">
                   <VAvatar size="38">
                     <VImg
                       v-if="player.avatar"
@@ -72,10 +57,7 @@
                 <v-list-subheader class="font-weight-semibold text-primary">
                   Viewers/Observers
                 </v-list-subheader>
-                <v-list-item
-                  v-for="viewer in gameMonitor.viewers"
-                  :key="viewer.userId"
-                >
+                <v-list-item v-for="viewer in gameMonitor.viewers" :key="viewer.userId">
                   <VAvatar size="38">
                     <VImg
                       v-if="viewer.avatar"
@@ -92,11 +74,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <div
-      id="Game-container"
-      ref="gameContainer"
-      class="pongGame"
-    />
+    <div id="Game-container" ref="gameContainer" class="pongGame" />
   </div>
 </template>
 

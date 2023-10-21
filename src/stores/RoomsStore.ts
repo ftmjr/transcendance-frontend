@@ -88,6 +88,16 @@ const useRoomsStore = defineStore({
           !this.rooms.find((r: ChatRoomWithMembers) => r.id === room.id)
       )
     },
+    filteredPublic(): ChatRoomWithMembers[] {
+      const publicNotAlreadyJoined = this.publicButNotJoined
+      if (!this.searchTerm) {
+        return publicNotAlreadyJoined
+      }
+      const term = this.searchTerm.toLowerCase()
+      return this.publicButNotJoined.filter((room: ChatRoomWithMembers) => {
+        return room.name.toLowerCase().includes(term)
+      })
+    },
     currentRoom(): ChatRoomWithMembers | null {
       return (
         this.rooms.find((room: ChatRoomWithMembers) => room.id === this.currentReadRoomId) ?? null
