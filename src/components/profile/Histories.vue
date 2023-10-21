@@ -1,9 +1,18 @@
 <template>
-  <v-card title="Historique" :loading="loading">
+  <v-card
+    title="Historique"
+    :loading="loading"
+  >
     <v-card-text>
-      <p class="font-weight-semibold">Total Won : {{ getCountByEvent('MATCH_WON') }}</p>
-      <p class="font-weight-semibold">Total Lost or Left : {{ getCountByEvent('MATCH_LOST') }}</p>
-      <p class="font-weight-semibold">Total Score : {{ getCountByEvent('ACTION_PERFORMED') }}</p>
+      <p class="font-weight-semibold">
+        Total Won : {{ getCountByEvent('MATCH_WON') }}
+      </p>
+      <p class="font-weight-semibold">
+        Total Lost or Left : {{ getCountByEvent('MATCH_LOST') }}
+      </p>
+      <p class="font-weight-semibold">
+        Total Score : {{ getCountByEvent('ACTION_PERFORMED') }}
+      </p>
     </v-card-text>
     <VTable>
       <thead>
@@ -15,14 +24,33 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="history in histories" :key="history.gameId">
+        <tr
+          v-for="history in histories"
+          :key="history.gameId"
+        >
           <td>
-            <avatar-badge :user-id="getOpponentId(history) ?? 0" :show-name="true" :size="32" />
+            <avatar-badge
+              :user-id="getOpponentId(history) ?? 0"
+              :show-name="true"
+              :size="32"
+            />
           </td>
           <td>{{ getDate(history) }}</td>
           <td>
-            <VChip v-if="getIsUserWon(history)" label color="success"> Victoire </VChip>
-            <VChip v-else label color="error"> Défaite / Abandon </VChip>
+            <VChip
+              v-if="getIsUserWon(history)"
+              label
+              color="success"
+            >
+              Victoire
+            </VChip>
+            <VChip
+              v-else
+              label
+              color="error"
+            >
+              Défaite / Abandon
+            </VChip>
           </td>
           <td>
             <div
@@ -30,7 +58,10 @@
               :key="userActions.userId"
               class="flex items-center gap-2"
             >
-              <avatar-badge :user-id="userActions.userId ?? 0" :size="24" />
+              <avatar-badge
+                :user-id="userActions.userId ?? 0"
+                :size="24"
+              />
               {{ userActions.goals }} But(s)
               <div class="v-avatar-group">
                 <VAvatar
@@ -48,7 +79,12 @@
               >
                 VS
               </p>
-              <p v-else class="font-weight-light text-slate-200 text-sm">Contre l'ordinateur</p>
+              <p
+                v-else
+                class="font-weight-light text-slate-200 text-sm"
+              >
+                Contre l'ordinateur
+              </p>
             </div>
           </td>
         </tr>

@@ -26,7 +26,10 @@
     >
       <CreateRoomForm @close="showCreateRoomForm = false" />
     </VNavigationDrawer>
-    <NotificationPopUp v-model:visible="showErrorPopUp" :message="errorRoomAccessMsg" />
+    <NotificationPopUp
+      v-model:visible="showErrorPopUp"
+      :message="errorRoomAccessMsg"
+    />
   </VLayout>
 </template>
 

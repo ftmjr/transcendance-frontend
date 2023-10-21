@@ -1,11 +1,21 @@
 <template>
-  <VCard class="p-2" color="surface">
+  <VCard
+    class="p-2"
+    color="surface"
+  >
     <div class="w-full flex items-center justify-between gap-2">
       <p class="font-weight-semibold">
         {{ room.name }}
       </p>
-      <VAvatar v-if="room.avatar" :size="42" :image="room.avatar" />
-      <div v-if="profiles" class="v-avatar-group">
+      <VAvatar
+        v-if="room.avatar"
+        :size="42"
+        :image="room.avatar"
+      />
+      <div
+        v-if="profiles"
+        class="v-avatar-group"
+      >
         <VAvatar
           v-for="memberData in profiles"
           :key="memberData.id"
@@ -14,7 +24,10 @@
           color="secondary"
           :image="memberData.member.profile?.avatar"
         >
-          <VTooltip activator="parent" location="top">
+          <VTooltip
+            activator="parent"
+            location="top"
+          >
             {{ memberData.member.username }}
           </VTooltip>
         </VAvatar>
