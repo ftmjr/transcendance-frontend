@@ -1,5 +1,10 @@
 <template>
   <v-card title="Historiques des Actions" :loading="loading">
+    <v-card-text>
+      <div>Total Won : {{ getCountByEvent('MATCH_WON') }}</div>
+      <div>Total Lost or Left : {{ getCountByEvent('MATCH_LOST') }}</div>
+      <div>Total Score : {{ getCountByEvent('ACTION_PERFORMED') }}</div>
+    </v-card-text>
     <VTable>
       <thead>
       <tr>
@@ -136,14 +141,22 @@ export default defineComponent({
     },
     async fetchNames() {
       this.loading = true
-      const users = await this.userStore.getAllUsers(100)
-      this.users = users
+      this.users = await this.userStore.getAllUsers(100)
       this.loading = false
     },
     getUserName(userId: number): string {
       if (userId === 0) return 'AI BOT'
       const user = this.users.find((user) => user.id === userId)
       return user ? user.username : ''
+    },
+    getCountByEvent(event) {
+      const user = this.users.find((user) => user.id === this.userId);
+      if (user && user.gameHistories && Array.isArray(user.gameHistories)) {
+        const filteredHistories = user.gameHistories.filter((history) => history.event === event);
+        return filteredHistories.length;
+      } else {
+        return 0;
+      }
     }
   },
   watch: {
