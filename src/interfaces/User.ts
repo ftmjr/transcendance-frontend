@@ -71,15 +71,6 @@ export interface User {
   gameHistories?: GameHistory[]
   createdAt: string
 }
-
-export interface UserSearchResult {
-  id: number
-  username: string
-  email: string
-  name: string
-  lastname: string
-  avatar?: string
-}
 export interface ProfileHeaderData {
   coalition?: Coalition
   avatar: string

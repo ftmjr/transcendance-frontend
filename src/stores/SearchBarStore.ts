@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
-import { UserSearchResult } from '@/interfaces/User'
+import { User } from '@/interfaces/User'
 
 export interface Suggestion {
   icon: string
@@ -151,7 +151,6 @@ const useSearchBarStore = defineStore({
       if (query.length > 0) {
         const results = await Promise.all([
           this.searchForUser(query),
-          this.searchForCompetition(query),
           this.searchInPagesSuggestions(query)
         ])
         this.searchResults = results.flat()
@@ -162,9 +161,9 @@ const useSearchBarStore = defineStore({
     },
     async searchForUser(searchTerm: string): Promise<Array<SearchItem | SearchHeader>> {
       try {
-        const { data } = await axios.post<UserSearchResult[]>('users/search', searchTerm, {
-          headers: {
-            'Content-Type': 'application/json'
+        const { data } = await axios.get<User[]>('users/search', {
+          params: {
+            query: searchTerm
           }
         })
         const header = { header: 'users', title: 'Utilisateurs' }
@@ -173,8 +172,9 @@ const useSearchBarStore = defineStore({
             ({
               id: user.id,
               url: { name: 'user-profile', params: { userId: user.id } },
-              icon: user.avatar,
-              title: `${user.name} ${user.lastname}`,
+              icon: 'tabler-user',
+              avatar: user.profile?.avatar ?? '',
+              title: `${user.profile?.name} ${user.profile?.lastname} - @${user.username}`,
               category: header.title
             }) as SearchItem
         )
@@ -183,32 +183,6 @@ const useSearchBarStore = defineStore({
         console.error(error)
       }
       return []
-    },
-    async searchForCompetition(searchTerm: string): Promise<Array<SearchItem | SearchHeader>> {
-      try {
-        const { data } = await axios.post('competition/search', searchTerm, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        const header = { header: 'competition', title: 'Compétitions' }
-        const competitions = data as Array<{
-          id: number
-          name: string
-        }>
-        return [
-          header,
-          ...competitions.map((competition) => ({
-            id: competition.id,
-            url: { name: 'competition', params: { id: competition.id } },
-            icon: 'tabler:trophy',
-            title: competition.name,
-            category: header.title
-          }))
-        ]
-      } catch (e) {
-        return []
-      }
     },
     async searchInPagesSuggestions(searchTerm: string): Promise<Array<SearchItem | SearchHeader>> {
       const suggestionsMatched: SuggestionGroupContent[] = this.suggestions.filter(
