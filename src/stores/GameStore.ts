@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
-import { GameHistory } from 'Auth'
+import { GameHistory } from '@/interfaces/User'
 import { PongTheme } from '@/Game/pong-scenes/Assets'
 
 export enum GameSessionType {
@@ -104,14 +104,15 @@ const useGameStore = defineStore({
         return 'Une erreur est survenue'
       }
     },
-    async startGameAgainstPlayer(userId: number): Promise<'preparing' | string> {
+    async startGameAgainstPlayer(userId: number, rules: GameRules): Promise<'preparing' | string> {
       if (!this.canStartOrAcceptGameInvitation) {
         return 'Vous avez deja une session de jeu'
       }
       try {
         const { data } = await axios.post<GameSession>('/game/start', {
           againstBot: false,
-          opponent: userId
+          opponent: userId,
+          rules
         })
         this.joinedGameSession = data
         return 'preparing'
@@ -225,6 +226,15 @@ const useGameStore = defineStore({
     async getUserCompleteGameHistory(userId: number): Promise<CompleteGameHistory[]> {
       try {
         const { data } = await axios.get<CompleteGameHistory[]>(`/game/history/${userId}`)
+        return data
+      } catch (e) {
+        console.log('failed to get user game history')
+      }
+      return []
+    },
+    async getSimpleGameHistory(userId: number): Promise<GameHistory[]> {
+      try {
+        const { data } = await axios.get<GameHistory[]>(`/game/simple-history/${userId}`)
         return data
       } catch (e) {
         console.log('failed to get user game history')

@@ -16,6 +16,6 @@ export const FooterType = {
 } as const
 
 export const AppContentLayoutNav = {
-  Vertical: 'vertical'
-  // Horizontal: 'horizontal',
+  Vertical: 'vertical',
+  Horizontal: 'horizontal'
 } as const

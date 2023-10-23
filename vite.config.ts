@@ -1,9 +1,10 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vuetify from 'vite-plugin-vuetify'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,7 +12,20 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000
   },
-  plugins: [vue(), vueJsx(), vuetify()],
+  plugins: [
+    vue(),
+    vueJsx(),
+    vuetify(),
+    Components({
+      dirs: ['/src/vuetify/@core', 'src/components'],
+      dts: true,
+    }),
+    AutoImport({
+      imports: ['vue', 'vue-router', '@vueuse/core', '@vueuse/math', 'pinia'],
+      vueTemplate: true,
+      dts: true,
+    }),
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -22,5 +36,11 @@ export default defineConfig({
       '@styles': fileURLToPath(new URL('./src/vuetify/styles/', import.meta.url)),
       '@configured-variables': fileURLToPath(new URL('./src/vuetify/styles/variables/_template.scss', import.meta.url)),
     }
-  }
+  },
+  optimizeDeps: {
+    exclude: ['vuetify'],
+    entries: [
+      './src/**/*.vue',
+    ],
+  },
 })

@@ -1,4 +1,4 @@
-import type { GameReceiver, GAME_STATE, GameMonitor } from '@/Game/network/GameMonitor'
+import type { GameReceiver, GameMonitor } from '@/Game/network/GameMonitor'
 import { PAD_DIRECTION } from '@/Game/network/GameMonitor'
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PongGameScene from '@/Game/pong-scenes/PongGame'
@@ -71,6 +71,6 @@ export class OnlinePlayer implements GameReceiver, Player {
   onBallServed(position: { x: number; y: number }, velocity: { x: number; y: number }): void {
     const ball = this.scene.getBall()
     ball.getSprite().setData('inMiddle', true)
-    ball.serveBall(velocity)
+    ball.serveBall(position, velocity)
   }
 }

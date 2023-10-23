@@ -1,4 +1,6 @@
-export default [
+import { VerticalNavItems } from '@layouts/types'
+
+const navItems: VerticalNavItems = [
   {
     title: 'Tableau de bord',
     icon: { icon: 'tabler-smart-home' },
@@ -12,7 +14,7 @@ export default [
   {
     title: 'Waiting Room',
     icon: { icon: 'medical-icon:i-waiting-area', color: 'green' },
-    to: { name: 'game', query: { waitingRoom: true } }
+    to: { name: 'game', query: { waitingRoom: 'true' } }
   },
   {
     title: 'Trouver un joueur',
@@ -21,7 +23,7 @@ export default [
   },
   {
     title: 'Leaderboard',
-    icon: { icon: 'solar:ranking-linear' },
+    icon: { icon: 'solar:ranking-linear', color: 'yellow' },
     to: 'leaderboard'
   },
   { heading: 'Conversation' },
@@ -46,3 +48,4 @@ export default [
     ]
   }
 ]
+export default navItems

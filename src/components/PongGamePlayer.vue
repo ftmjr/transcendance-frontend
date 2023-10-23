@@ -2,14 +2,20 @@
   <div class="flex flex-col mt-2">
     <v-row v-if="props.debugMode">
       <!-- Received Data -->
-      <v-col cols="12" md="3">
+      <v-col
+        cols="12"
+        md="3"
+      >
         <v-card class="mx-2 p-2">
           <v-card-title>
             <h3>Props Data</h3>
           </v-card-title>
           <v-card-subtitle class="d-flex align-center">
             <v-avatar>
-              <img :src="props.user.avatar" alt="" />
+              <img
+                :src="props.user?.avatar"
+                alt=""
+              >
             </v-avatar>
             {{ props.user.username }}
           </v-card-subtitle>
@@ -21,14 +27,20 @@
         </v-card>
       </v-col>
       <!-- Network Data -->
-      <v-col cols="12" md="9">
+      <v-col
+        cols="12"
+        md="9"
+      >
         <v-card class="p-2 mr-2">
           <v-card-title>
             <h3>Network Monitor</h3>
           </v-card-title>
           <v-card-text>
             <p>Host ID: {{ gameMonitor.hostId }}</p>
-            <p class="text-primary" :class="statesInfo[gameMonitorState].color">
+            <p
+              class="text-primary"
+              :class="statesInfo[gameMonitorState].color"
+            >
               Game Monitor State: {{ statesInfo[gameMonitorState].text }}
             </p>
             <p>Network score : {{ scoreDisplayed }}</p>
@@ -36,10 +48,13 @@
           <VRow>
             <VCol>
               <v-list :key="playersKey">
-                <v-list-subheader class="font-weight-semibold text-primary"
-                  >Players</v-list-subheader
+                <v-list-subheader class="font-weight-semibold text-primary">
+                  Players
+                </v-list-subheader>
+                <v-list-item
+                  v-for="player in gameMonitor.players"
+                  :key="player.userId"
                 >
-                <v-list-item v-for="player in gameMonitor.players" :key="player.userId">
                   <VAvatar size="38">
                     <VImg
                       v-if="player.avatar"
@@ -57,7 +72,10 @@
                 <v-list-subheader class="font-weight-semibold text-primary">
                   Viewers/Observers
                 </v-list-subheader>
-                <v-list-item v-for="viewer in gameMonitor.viewers" :key="viewer.userId">
+                <v-list-item
+                  v-for="viewer in gameMonitor.viewers"
+                  :key="viewer.userId"
+                >
                   <VAvatar size="38">
                     <VImg
                       v-if="viewer.avatar"
@@ -74,22 +92,25 @@
         </v-card>
       </v-col>
     </v-row>
-    <div class="pongGame" id="Game-container" ref="gameContainer"></div>
+    <div
+      id="Game-container"
+      ref="gameContainer"
+      class="pongGame"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onBeforeUnmount, onMounted, reactive, nextTick } from 'vue'
 import type { PropType } from 'vue'
-import Phaser from 'phaser'
+import Phaser, { AUTO } from 'phaser'
 import PongGameScene from '@/Game/pong-scenes/PongGame'
 import PreloadScene from '@/Game/pong-scenes/Preload'
-import type { PreloadSceneData } from '@/Game/pong-scenes/Preload'
 import { GameNetwork, GameUserType } from '@/Game/network/GameNetwork'
 import type { GameUser } from '@/Game/network/GameNetwork'
 import { GameMonitor, GameMonitorState } from '@/Game/network/GameMonitor'
 import { EndGame } from '@/Game/pong-scenes/EndGame'
-import { avatarText } from '../vuetify/@core/utils/formatters'
+import { avatarText } from '@core/utils/formatters'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import { useRouter } from 'vue-router'
 const gameContainer = ref(null)
@@ -108,14 +129,18 @@ const props = defineProps({
   }
 })
 let game: Phaser.Game | undefined
-const gameNetwork = new GameNetwork(props.user)
+const gameNetwork = new GameNetwork(props?.user as GameUser & { type: GameUserType })
 const scoreDisplayed = reactive({ player1: 0, player2: 0 })
 const gameMonitorState = ref(GameMonitorState.InitGame)
 const playersKey = ref(0)
 const viewerKey = ref(0)
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const onPlayersUpdated = (players: GameUser[]) => {
   playersKey.value += 1
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const onViewersUpdated = (viewers: GameUser[]) => {
   viewerKey.value += 1
 }
@@ -141,7 +166,7 @@ const router = useRouter()
 const handleGameEnd = async () => {
   await nextTick()
   setTimeout(async () => {
-    await gameStore.gameEnded(props.gameSession.gameId, props.user.userId)
+    await gameStore.gameEnded(props.gameSession?.gameId as number, props.user?.userId as number)
     await router.push({ name: 'me', params: { tab: 'history' } })
   }, 2000)
 }
@@ -151,21 +176,30 @@ const onGameMonitorStateChange = (state: GameMonitorState) => {
     handleGameEnd()
   }
 }
-const gameMonitor = new GameMonitor(props.gameSession.gameId, props.user.type, gameNetwork, {
-  onPlayersUpdated,
-  onViewersUpdated,
-  onScoreUpdated,
-  onGameMonitorStateChange
-})
+const gameMonitor = new GameMonitor(
+  props.gameSession?.gameId as number,
+  props.user?.type as GameUserType,
+  gameNetwork,
+  {
+    onPlayersUpdated,
+    onViewersUpdated,
+    onScoreUpdated,
+    onGameMonitorStateChange
+  }
+)
 
 onMounted(() => {
-  const gameData: PreloadSceneData = {
-    currentUser: props.user,
+  const gameData: {
+    currentUser: (GameUser & { type: GameUserType }) | undefined
+    gameMonitor: GameMonitor
+    gameSession: GameSession | undefined
+  } = {
+    currentUser: props?.user,
     gameMonitor,
-    gameSession: props.gameSession
+    gameSession: props?.gameSession
   }
   const config: Phaser.Types.Core.GameConfig = {
-    type: Phaser.AUTO,
+    type: AUTO,
     scale: {
       mode: Phaser.Scale.FIT,
       parent: 'Game-container',

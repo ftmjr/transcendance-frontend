@@ -8,13 +8,19 @@
       size="small"
       @click="$emit('close')"
     >
-      <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
+      <VIcon
+        size="18"
+        icon="tabler-x"
+        color="error"
+        class="text-medium-emphasis"
+      />
     </VBtn>
   </div>
-  <div class="flex mb-2 px-1" v-if="authStore.getProfile">
+  <div class="flex mb-2 px-1">
     <AvatarBadge
-      :profile="authStore.getProfile"
-      :username="authStore.getUser.username"
+      v-if="authStore.getUser"
+      :user="authStore.getUser"
+      :user-id="authStore.getUser.id"
       @show-user-profile="$emit('showUserProfile')"
     />
     <VTextField
@@ -25,12 +31,19 @@
       class="ms-4 me-1 transparent-input-box"
     >
       <template #prepend-inner>
-        <VIcon size="22" icon="tabler-search" />
+        <VIcon
+          size="22"
+          icon="tabler-search"
+        />
       </template>
     </VTextField>
   </div>
   <VDivider />
-  <PerfectScrollbar tag="ul" class="chat-contacts-list px-3" :options="{ wheelPropagation: false }">
+  <PerfectScrollbar
+    tag="ul"
+    class="chat-contacts-list px-3"
+    :options="{ wheelPropagation: false }"
+  >
     <li class="py-4">
       <span class="chat-contact-header text-primary text-xl font-weight-medium">Conversations</span>
     </li>
@@ -48,7 +61,10 @@
       </template>
     </MessageContact>
 
-    <span v-show="!messageStore.getConversingWith.length" class="no-chat-items-text text-disabled">
+    <span
+      v-show="!messageStore.getConversingWith.length"
+      class="no-chat-items-text text-disabled"
+    >
       Aucune Conversation
     </span>
     <li class="my-4">
@@ -69,7 +85,7 @@ import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import useMessageStore from '@/stores/MessageStore'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import MessageContact from '@/components/Message/MessageContact.vue'
+import MessageContact from '@/components/messages/MessageContact.vue'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import useUserStore from '@/stores/UserStore'
 
@@ -79,6 +95,7 @@ export default defineComponent({
     MessageContact,
     AvatarBadge
   },
+  emits: ['openChatOfContact', 'showUserProfile', 'close'],
   setup() {
     const authStore = useAuthStore()
     const messageStore = useMessageStore()
@@ -89,7 +106,6 @@ export default defineComponent({
       messageStore
     }
   },
-  emits: ['openChatOfContact', 'showUserProfile', 'close'],
   data() {
     return {
       loading: false

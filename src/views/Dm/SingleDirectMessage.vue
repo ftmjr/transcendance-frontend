@@ -1,10 +1,10 @@
 <template>
   <div class="h-full">
     <MessageTopBar
-      :isLeftSidebarOpen="isLeftSidebarOpen"
+      :is-left-sidebar-open="isLeftSidebarOpen"
       :contact="conversationWith"
-      @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
       :user-game-status="gameStatus"
+      @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
     />
     <VDivider class="mb-1" />
     <PerfectScrollbar
@@ -27,7 +27,10 @@
           }
         ]"
       >
-        <div class="chat-avatar" :class="msgGrp.senderId !== conversationWith.id ? 'ms-4' : 'me-4'">
+        <div
+          class="chat-avatar"
+          :class="msgGrp.senderId !== conversationWith.id ? 'ms-4' : 'me-4'"
+        >
           <VAvatar size="38">
             <VImg
               :src="
@@ -77,7 +80,12 @@
         autofocus
       >
         <template #append-inner>
-          <VBtn type="submit" @click.prevent="sendMessage"> Envoyer un MP </VBtn>
+          <VBtn
+            type="submit"
+            @click.prevent="sendMessage"
+          >
+            Envoyer un MP
+          </VBtn>
         </template>
       </VTextField>
     </VForm>
@@ -87,8 +95,8 @@
 <script lang="ts">
 import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
 import { PropType, defineComponent } from 'vue'
-import type { User } from 'Auth'
-import MessageTopBar from '@/components/Message/MessageTopBar.vue'
+import { User } from '@/interfaces/User'
+import MessageTopBar from '@/components/messages/MessageTopBar.vue'
 import useAuthStore from '@/stores/AuthStore'
 import { formatDate } from '@/vuetify/@core/utils/formatters'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
@@ -113,6 +121,7 @@ export default defineComponent({
       default: false
     }
   },
+  emits: ['update:isLeftSidebarOpen', 'refreshContact'],
   setup() {
     const authStore = useAuthStore()
     const messageStore = useMessageStore()
@@ -123,7 +132,6 @@ export default defineComponent({
       gameStore
     }
   },
-  emits: ['update:isLeftSidebarOpen', 'refreshContact'],
   data() {
     return {
       loading: false,
@@ -179,6 +187,16 @@ export default defineComponent({
       return this.$refs.MessagesLogScroller as PerfectScrollbar
     }
   },
+  watch: {
+    conversationWith: {
+      handler() {
+        this.loadPrivateMessages()
+        this.fetchGameStatus()
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   methods: {
     refreshContact() {
       this.$emit('refreshContact')
@@ -217,16 +235,6 @@ export default defineComponent({
       scrollEl.scrollTop = 0
     },
     formatDate
-  },
-  watch: {
-    conversationWith: {
-      handler() {
-        this.loadPrivateMessages()
-        this.fetchGameStatus()
-      },
-      deep: true,
-      immediate: true
-    }
   }
 })
 </script>

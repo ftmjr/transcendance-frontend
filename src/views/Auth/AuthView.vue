@@ -1,8 +1,26 @@
 <template>
-  <VCard color="transparent" :loading="isLoading">
-    <v-tabs v-model="activeTab" color="red" fixed-tabs align-tabs="end" class="w-full">
-      <VTab v-for="item in tabs" :key="item.tab" :value="item.tab">
-        <VIcon v-if="item.tab === activeTab" size="24" start :icon="item.icon" />
+  <VCard
+    color="transparent"
+    :loading="isLoading"
+  >
+    <v-tabs
+      v-model="activeTab"
+      color="red"
+      fixed-tabs
+      align-tabs="end"
+      class="w-full"
+    >
+      <VTab
+        v-for="item in tabs"
+        :key="item.tab"
+        :value="item.tab"
+      >
+        <VIcon
+          v-if="item.tab === activeTab"
+          size="24"
+          start
+          :icon="item.icon"
+        />
         <template v-if="item.tab !== activeTab">
           {{ item.callToAction }}
         </template>
@@ -10,16 +28,21 @@
     </v-tabs>
     <VDivider />
     <VWindow v-model="activeTab">
-      <VWindowItem :value="tabs[0].tab" class="px-4 pt-12">
+      <VWindowItem
+        :value="tabs[0].tab"
+        class="px-4 pt-12"
+      >
         <VCardText>
-          <h4 class="mb-4 text-2xl font-semibold text-center">Connexion</h4>
+          <h4 class="mb-4 text-2xl font-semibold text-center">
+            Connexion
+          </h4>
         </VCardText>
         <VForm @submit.prevent="login">
           <VRow>
             <VCol cols="12">
               <VTextField
-                class="transparent-input-box"
                 v-model="loginFields.username"
+                class="transparent-input-box"
                 label="Pseudo"
                 type="text"
                 :rules="[rules.required, rules.min]"
@@ -27,8 +50,8 @@
             </VCol>
             <VCol cols="12">
               <VTextField
-                class="transparent-input-box"
                 v-model="loginFields.password"
+                class="transparent-input-box"
                 label="Mot de passe"
                 :rules="[rules.required]"
                 :type="passwordFieldsVisibility.password ? 'text' : 'password'"
@@ -39,20 +62,46 @@
                   passwordFieldsVisibility.password = !passwordFieldsVisibility.password
                 "
               />
-              <VAlert v-if="authError.state" variant="tonal" color="error" class="mt-4">{{
-                authError.message
-              }}</VAlert>
-              <VBtn type="submit" block class="mt-4 mb-8"> Se Connecter </VBtn>
+              <VAlert
+                v-if="authError.state"
+                variant="tonal"
+                color="error"
+                class="mt-4"
+              >
+                {{ authError.message }}
+              </VAlert>
+              <VBtn
+                type="submit"
+                block
+                class="mt-4 mb-8"
+              >
+                Se Connecter
+              </VBtn>
             </VCol>
-            <VCol cols="12" class="flex align-center">
+            <VCol
+              cols="12"
+              class="flex align-center"
+            >
               <VDivider />
               <span class="mx-4 font-medium text-gray-400 rounded-md">Avec</span>
               <VDivider />
             </VCol>
-            <VCol cols="12" class="text-center">
+            <VCol
+              cols="12"
+              class="text-center"
+            >
               <div class="flex-wrap justify-center gap-3 d-flex">
-                <VBtn variant="tonal" color="cyan" rounded size="large" href="/api/auth/42">
-                  <VIcon icon="simple-icons:42" class="mr-1" />
+                <VBtn
+                  variant="tonal"
+                  color="cyan"
+                  rounded
+                  size="large"
+                  href="/api/auth/42"
+                >
+                  <VIcon
+                    icon="simple-icons:42"
+                    class="mr-1"
+                  />
                   Best school
                 </VBtn>
                 <VBtn
@@ -62,7 +111,10 @@
                   size="large"
                   href="/api/auth/google"
                 >
-                  <VIcon icon="flat-color-icons:google" class="mr-1" />
+                  <VIcon
+                    icon="flat-color-icons:google"
+                    class="mr-1"
+                  />
                   Google
                 </VBtn>
               </div>
@@ -70,24 +122,38 @@
           </VRow>
         </VForm>
       </VWindowItem>
-      <VWindowItem :value="tabs[1].tab" class="px-4 pt-12">
+      <VWindowItem
+        :value="tabs[1].tab"
+        class="px-4 pt-12"
+      >
         <VCardText>
-          <h4 class="mb-4 text-2xl font-semibold text-center">Création de compte</h4>
+          <h4 class="mb-4 text-2xl font-semibold text-center">
+            Création de compte
+          </h4>
         </VCardText>
-        <VForm @submit.prevent="signUp" v-model="validSignUpForm">
+        <VForm
+          v-model="validSignUpForm"
+          @submit.prevent="signUp"
+        >
           <VRow>
-            <VCol cols="12" md="6">
+            <VCol
+              cols="12"
+              md="6"
+            >
               <VTextField
-                class="transparent-input-box"
                 v-model="signUpFields.firstName"
+                class="transparent-input-box"
                 :rules="[rules.required, rules.min]"
                 label="Prenom"
               />
             </VCol>
-            <VCol cols="12" md="6">
+            <VCol
+              cols="12"
+              md="6"
+            >
               <VTextField
-                class="transparent-input-box"
                 v-model="signUpFields.lastName"
+                class="transparent-input-box"
                 :rules="[rules.required, rules.min]"
                 label="Nom de famille"
               />
@@ -95,24 +161,24 @@
 
             <VCol cols="12">
               <VTextField
-                class="transparent-input-box"
                 v-model="signUpFields.username"
+                class="transparent-input-box"
                 :rules="[rules.required, rules.min]"
                 label="Pseudo"
               />
             </VCol>
             <VCol cols="12">
               <v-text-field
-                class="transparent-input-box"
                 v-model="signUpFields.email"
+                class="transparent-input-box"
                 :rules="[rules.required, rules.email]"
                 label="Email"
               />
             </VCol>
             <VCol cols="12">
               <VTextField
-                class="transparent-input-box"
                 v-model="signUpFields.password"
+                class="transparent-input-box"
                 :rules="[rules.required, rules.minPass, rules.upperCase]"
                 :type="passwordFieldsVisibility.newPassword ? 'text' : 'password'"
                 :append-inner-icon="
@@ -126,8 +192,8 @@
             </VCol>
             <VCol cols="12">
               <VTextField
-                class="transparent-input-box"
                 v-model="signUpFields.passwordConfirmation"
+                class="transparent-input-box"
                 :rules="[rules.required, rules.minPass, rules.upperCase, rules.match]"
                 :type="passwordFieldsVisibility.confirmPassword ? 'text' : 'password'"
                 :append-inner-icon="
@@ -141,10 +207,20 @@
               />
             </VCol>
             <VCol cols="12">
-              <VAlert v-if="authError.state" variant="tonal" color="error" class="mt-4">{{
-                authError.message
-              }}</VAlert>
-              <VBtn type="submit" block class="mt-4 mb-8" :disabled="!validSignUpForm">
+              <VAlert
+                v-if="authError.state"
+                variant="tonal"
+                color="error"
+                class="mt-4"
+              >
+                {{ authError.message }}
+              </VAlert>
+              <VBtn
+                type="submit"
+                block
+                class="mt-4 mb-8"
+                :disabled="!validSignUpForm"
+              >
                 Créer le compte <VIcon icon="tabler-edit" />
               </VBtn>
             </VCol>
@@ -171,7 +247,7 @@ const tabList: Array<{ title: string; callToAction: string; icon: string; tab: T
 ]
 
 export default defineComponent({
-  name: 'auth-view',
+  name: 'AuthView',
   components: {},
   setup() {
     const authStore = useAuthStore()

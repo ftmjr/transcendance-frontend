@@ -1,6 +1,12 @@
 <template>
   <VRow>
-    <VCol v-for="meta in userListStatsMeta" :key="meta.title" cols="12" sm="6" lg="3">
+    <VCol
+      v-for="meta in userListStatsMeta"
+      :key="meta.title"
+      cols="12"
+      sm="6"
+      lg="3"
+    >
       <VCard>
         <VCardText class="flex justify-space-between">
           <div>
@@ -12,7 +18,12 @@
             </div>
             <span>{{ meta.subtitle }}</span>
           </div>
-          <VAvatar rounded variant="tonal" :color="meta.color" :icon="meta.icon" />
+          <VAvatar
+            rounded
+            variant="tonal"
+            :color="meta.color"
+            :icon="meta.icon"
+          />
         </VCardText>
       </VCard>
     </VCol>
@@ -30,9 +41,13 @@
           <VSpacer />
           <div class="w-1/3">
             <VTextField
+              v-model.lazy="searchQuery"
+              :loding="loading"
               class="transparent-input-box"
-              v-model="searchQuery"
               placeholder="Rechercher"
+              hint="Sensible a la casse"
+              :persistent-hint="true"
+              clearable
             />
           </div>
         </VCardText>
@@ -41,15 +56,25 @@
         <VTable class="bg-transparent">
           <thead>
             <tr>
-              <th scope="col">UTILISATEURS</th>
-              <th scope="col">STATUS</th>
+              <th scope="col">
+                UTILISATEURS
+              </th>
+              <th scope="col">
+                STATUS
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="user in users" :key="user.id">
+            <tr
+              v-for="user in users"
+              :key="user.id"
+            >
               <td>
                 <div class="flex items-center">
-                  <AvatarBadge :profile="user.profile" :username="user.username" />
+                  <AvatarBadge
+                    :user-id="user.id"
+                    :user="user"
+                  />
 
                   <div class="d-flex flex-column">
                     <h6 class="text-base">
@@ -66,14 +91,17 @@
               </td>
               <td>
                 <div class="flex gap-4 items-center">
-                  <VChip label :color="authStore.resolveAvatarBadgeVariant(user.profile.status)">
+                  <VChip
+                    label
+                    :color="authStore.resolveAvatarBadgeVariant(user.profile.status)"
+                  >
                     {{ user.profile.status }}
                   </VChip>
                   <GameStatusBadge
                     v-if="user.gameStatus && user.id !== authStore.user?.id"
-                    :userGameStatus="user.gameStatus"
+                    :user-game-status="user.gameStatus"
                     :user-id="user.id"
-                    :status="user.profile.status"
+                    :status="user.profile?.status"
                   />
                 </div>
               </td>
@@ -86,7 +114,12 @@
           <span class="text-sm text-disabled">
             {{ paginationData }}
           </span>
-          <VPagination v-model="currentPage" size="small" :total-visible="5" :length="totalPage" />
+          <VPagination
+            v-model="currentPage"
+            size="small"
+            :total-visible="5"
+            :length="totalPage"
+          />
         </VCardText>
       </VCard>
     </VCol>
@@ -96,11 +129,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useUserStore from '@/stores/UserStore'
-import type { User } from 'Auth'
+import type { Profile, User } from '@/interfaces/User'
 import { avatarText } from '@/vuetify/@core/utils/formatters'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import useAuthStore from '@/stores/AuthStore'
-import useGameStore from '@/stores/GameStore'
+import useGameStore, { GameSession } from '@/stores/GameStore'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 
 const userListStatsMeta: Array<{
@@ -140,6 +173,12 @@ const userListStatsMeta: Array<{
   }
 ]
 
+type userGameStatus = {
+  status: 'playing' | 'inQueue' | 'free'
+  gameSession?: GameSession
+}
+type SpecialUser = User & { gameStatus: userGameStatus; profile: Profile }
+
 export default defineComponent({
   name: 'UserList',
   components: { AvatarBadge, GameStatusBadge },
@@ -161,7 +200,7 @@ export default defineComponent({
       totalUser: 0,
       searchQuery: '',
       userListStatsMeta,
-      users: [] as User[]
+      users: [] as SpecialUser[]
     }
   },
   computed: {
@@ -172,6 +211,21 @@ export default defineComponent({
     },
     totalPage(): number {
       return Math.ceil(this.totalUser / this.rowPerPage) ?? 0
+    }
+  },
+  watch: {
+    currentPage(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.fetchUsers()
+      }
+    },
+    rowPerPage() {
+      this.currentPage = 1
+      this.fetchUsers()
+    },
+    searchQuery() {
+      this.currentPage = 1
+      this.fetchUsers()
     }
   },
   beforeMount() {
@@ -191,31 +245,29 @@ export default defineComponent({
     },
     async fetchUsers() {
       this.loading = true
-      const users = await this.userStore.getPaginatedUser({
-        currentPage: this.currentPage,
-        perPage: this.rowPerPage
-      })
-      this.users = users
+      if (!this.searchQuery) {
+        const users = await this.userStore.getPaginatedUser({
+          currentPage: this.currentPage,
+          perPage: this.rowPerPage
+        })
+        this.users = users as SpecialUser[]
+      } else {
+        const users = await this.userStore.searchUsers({
+          searchTerm: this.searchQuery,
+          currentPage: this.currentPage,
+          perPage: this.rowPerPage
+        })
+        this.users = users as SpecialUser[]
+      }
       this.fetchUsersGameStatus()
       this.loading = false
     },
     fetchUsersGameStatus() {
       this.users.forEach((user) => {
-        this.gameStore.getUserGameStatus(user.id).then((userGameStatus) => {
+        this.gameStore.getUserGameStatus(user.id).then((userGameStatus: userGameStatus) => {
           user.gameStatus = userGameStatus
         })
       })
-    }
-  },
-  watch: {
-    currentPage(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.fetchUsers()
-      }
-    },
-    rowPerPage() {
-      this.currentPage = 1
-      this.fetchUsers()
     }
   }
 })

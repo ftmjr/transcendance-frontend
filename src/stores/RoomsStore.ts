@@ -8,8 +8,9 @@ import {
   RoomType
 } from '@/utils/chatSocket'
 import axios from '@/utils/axios'
-import { Profile, User } from 'Auth'
+import { Profile, User } from '@/interfaces/User'
 import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
+import { isAxiosError } from 'axios'
 export interface JoinRoom {
   userId: number
   password?: string
@@ -87,6 +88,16 @@ const useRoomsStore = defineStore({
           !this.rooms.find((r: ChatRoomWithMembers) => r.id === room.id)
       )
     },
+    filteredPublic(): ChatRoomWithMembers[] {
+      const publicNotAlreadyJoined = this.publicButNotJoined
+      if (!this.searchTerm) {
+        return publicNotAlreadyJoined
+      }
+      const term = this.searchTerm.toLowerCase()
+      return this.publicButNotJoined.filter((room: ChatRoomWithMembers) => {
+        return room.name.toLowerCase().includes(term)
+      })
+    },
     currentRoom(): ChatRoomWithMembers | null {
       return (
         this.rooms.find((room: ChatRoomWithMembers) => room.id === this.currentReadRoomId) ?? null
@@ -107,19 +118,20 @@ const useRoomsStore = defineStore({
       this.socketManager = new ChatSocket(
         userId,
         (message: ChatMessage) => {
-          // code for new messages from chatRooms coming from the server via socket
+          console.log('chat room message received', message)
         },
         (message: PrivateMessage) => {
           messageStore.handleReceivedMessage(message)
         },
         (error: string) => {
-          // code for failed to send message
+          console.log('failed sending msg', error)
         },
         (error: string) => {
-          // code on failed connection to the socket server
+          console.log('failed connecting', error)
         }
       )
-      messageStore.setSocketManager(this.socketManager)
+      if (!this.socketManager) return
+      messageStore.setSocketManager(this.socketManager as ChatSocket)
     },
     sendMessage(roomId: number, content: string) {
       if (!this.socketManager) return
@@ -131,18 +143,35 @@ const useRoomsStore = defineStore({
     async createRoom(info: CreateRoom) {
       // to be implemented
     },
-    // to be a member of a chat group
-    async joinRoom(roomId: number, info: JoinRoom) {
+
+    /*
+     * Join a room
+     * @param roomId the id of the room to join
+     * @param info the info to join the room (userId, password)
+     * @returns ChatRoomMember if success, string if error
+     */
+    async joinRoom(roomId: number, info: JoinRoom): Promise<ChatRoomMember | string> {
+      let errorMessage = `Vous n'êtes pas autorisé à rejoindre cette salle`
       try {
         const { data } = await axios.post<ChatRoomMember>(`/chat/join-room/${roomId}`, info)
         await this.getAllMyRooms()
+        await this.setCurrentRoom(roomId)
+        return data
       } catch (error) {
-        console.error(error)
+        if (isAxiosError(error)) {
+          const status = error.response?.status
+          if (status === 401 || status === 403 || status === 404) {
+            errorMessage =
+              error.response?.data.message ?? `Vous n'êtes pas autorisé à rejoindre cette salle`
+          }
+        }
       }
+      return errorMessage
     },
     // start listening to a room via socket
     listenToRoom(roomId: number) {
-      if (!this.socketManager || !this.socketManager.socketOperational) return
+      if (!this.socketManager) return
+      if (!this.socketManager.operational) return
       this.socketManager.listenRoom(roomId)
     },
     // quit the chat group
@@ -160,39 +189,49 @@ const useRoomsStore = defineStore({
     async deleteRoom(roomId: number) {
       try {
         const { data } = await axios.post<ChatRoom>(`/chat/delete-room/${roomId}`)
-        this.rooms = this.rooms.filter((room) => room.id !== roomId)
+        this.rooms = this.rooms.filter((room) => room.id !== data.id)
       } catch (error) {
         console.error(error)
       }
     },
     async fetchPublicRooms() {
       try {
-        const { data } = await axios.get<ChatRoomWithMembers>('/chat/public')
+        const { data } = await axios.get<ChatRoomWithMembers[]>('/chat/public')
         this.publicRooms = data
       } catch (error) {
         console.error(error)
       }
     },
-    // give more info about the room
-    async setCurrentRoom(roomId: number) {
+    async setCurrentRoom(roomId: number): Promise<'success' | string> {
       try {
         const members = await this.getRoomMembersData(roomId)
-        if (members) {
+        if (Array.isArray(members)) {
           this.currentRoomMembers = members
           this.currentReadRoomId = roomId
+          return 'success'
+        } else {
+          return members
         }
       } catch (error) {
         console.error(error)
       }
+      return 'impossible de récupérer les membres de la salle'
     },
-    async getRoomMembersData(roomId: number): Promise<MemberRoomWithUserProfiles[]> {
+    async getRoomMembersData(roomId: number): Promise<MemberRoomWithUserProfiles[] | string> {
+      let errorMessage = `Vous n'êtes pas autorisé à voir les membres de cette salle`
       try {
         const { data } = await axios.get<MemberRoomWithUserProfiles[]>(`/chat/room/${roomId}`)
         return data
       } catch (error) {
-        console.error(error)
-        return null
+        if (isAxiosError(error)) {
+          if (error.response?.status === 401 || error.response?.status === 403) {
+            errorMessage =
+              error.response.data.message ??
+              `Vous n'êtes pas autorisé à voir les membres de cette salle`
+          }
+        }
       }
+      return errorMessage
     },
     async getAllMyRooms() {
       try {

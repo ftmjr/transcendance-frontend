@@ -16,16 +16,15 @@ axiosInstance.interceptors.request.use(
       config.headers['Authorization'] = `Bearer ${authStore.token}`
       isRefreshing = false
     } else if (authStore.isExpired) {
-      // if (!isRefreshing) {
-      //   const token = await authStore.refreshToken()
-      //   config.headers['Authorization'] = `Bearer ${token}`
-      //   isRefreshing = true
-      // }
+      if (!isRefreshing) {
+        const token = await authStore.refreshToken()
+        config.headers['Authorization'] = `Bearer ${token}`
+        isRefreshing = true
+      }
     }
     return config
   },
   (error) => {
-    // Handle request error
     return Promise.reject(error)
   }
 )

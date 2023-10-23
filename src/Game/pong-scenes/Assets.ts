@@ -61,7 +61,7 @@ export function getPongSprites(theme: PongTheme): Record<PongSprite, string> {
         [PongSprite.Background]: '/pong/backgrounds/arcade_bg_ia-min.png',
         [PongSprite.EndBackground]: '/pong/backgrounds/pink_big_bg.png',
         [PongSprite.GameButton]: '/pong/backgrounds/grey_button.png',
-        [PongSprite.GameField]: '/pong/arcade/back_blue.png',
+        [PongSprite.GameField]: '/pong/backgrounds/black_pattern.png',
         [PongSprite.FieldCenter]: '/pong/soccer/center_round.png',
         [PongSprite.GoalLine]: '/pong/arcade/pattern_18.png',
         [PongSprite.Paddle]: '/pong/paddle.png',

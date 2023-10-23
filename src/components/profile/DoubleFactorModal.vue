@@ -4,25 +4,61 @@
     :model-value="isDialogVisible"
     @update:model-value="dialogModelValueUpdate"
   >
-    <VBtn icon class="v-dialog-close-btn" @click="dialogModelValueUpdate(false)">
-      <VIcon icon="tabler-x" color="error" />
+    <VBtn
+      icon
+      class="v-dialog-close-btn"
+      @click="dialogModelValueUpdate(false)"
+    >
+      <VIcon
+        icon="tabler-x"
+        color="error"
+      />
     </VBtn>
-    <VCard class="pa-5 pa-sm-15" :loading="isLoading">
+    <VCard
+      class="pa-5 pa-sm-15"
+      :loading="isLoading"
+    >
       <VCardItem class="text-center">
-        <VCardTitle class="text-h5 font-weight-medium">Activation du double facteur</VCardTitle>
-        <VCardSubtitle v-if="!isVerified" class="mt-3">Scannez L'image</VCardSubtitle>
-        <VCardSubtitle v-if="isVerified" class="mt-3 text-success"
-          >Youpi le double facteur est actif!</VCardSubtitle
+        <VCardTitle class="text-h5 font-weight-medium">
+          Activation du double facteur
+        </VCardTitle>
+        <VCardSubtitle
+          v-if="!isVerified"
+          class="mt-3"
         >
+          Scannez L'image
+        </VCardSubtitle>
+        <VCardSubtitle
+          v-if="isVerified"
+          class="mt-3 text-success"
+        >
+          Youpi le double facteur est actif!
+        </VCardSubtitle>
       </VCardItem>
-      <VCardText v-if="isLoading" class="text-center">
-        <VIcon icon="tabler-loader"></VIcon>
+      <VCardText
+        v-if="isLoading"
+        class="text-center"
+      >
+        <VIcon icon="tabler-loader" />
       </VCardText>
-      <VCardText v-else class="pt-6 flex flex-col items-center">
-        <img :src="qrCode" alt="QR Code" />
-        <OtpInput v-model="verificationCode" />
-        <p v-if="errorMessage" class="text-error">{{ errorMessage }}</p>
-        <VBtn @click="activateCode">Activez le 2FA</VBtn>
+      <VCardText
+        v-else
+        class="pt-6 flex flex-col items-center"
+      >
+        <img
+          :src="qrCode"
+          alt="QR Code"
+        >
+        <VOtpInput v-model="verificationCode" />
+        <p
+          v-if="errorMessage"
+          class="text-error"
+        >
+          {{ errorMessage }}
+        </p>
+        <VBtn @click="activateCode">
+          Activez le 2FA
+        </VBtn>
       </VCardText>
     </VCard>
   </VDialog>
@@ -31,12 +67,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import OtpInput from '@/components/profile/OtpInput.vue'
+import { VOtpInput } from 'vuetify/labs/VOtpInput'
 
 export default defineComponent({
   name: 'DoubleFactorModal',
   components: {
-    OtpInput
+    VOtpInput
   },
   props: {
     isDialogVisible: {
@@ -61,6 +97,13 @@ export default defineComponent({
       return this.authStore.user.twoFactorEnabled
     }
   },
+  watch: {
+    isDialogVisible(value: boolean) {
+      if (value) {
+        this.generateQrCode()
+      }
+    }
+  },
   methods: {
     dialogModelValueUpdate(value: boolean) {
       this.$emit('update:isDialogVisible', value)
@@ -79,13 +122,6 @@ export default defineComponent({
         this.errorMessage = 'Le code est invalide'
       }
       this.isLoading = false
-    }
-  },
-  watch: {
-    isDialogVisible(value: boolean) {
-      if (value) {
-        this.generateQrCode()
-      }
     }
   }
 })

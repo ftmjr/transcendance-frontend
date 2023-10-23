@@ -54,12 +54,11 @@ interface EmitEvents {
 
 export class ChatSocket {
   socket: Socket<ListenEvents, EmitEvents> | undefined
-  public userId: number | undefined
   public operational: boolean = false
   public managedRoomIds: number[] = []
 
   constructor(
-    userId: number,
+    public userId: number,
     onNewMessage: (message: ChatMessage) => void,
     onNewMp: (message: PrivateMessage) => void,
     onFailedToSendMessage: (error: string) => void,
@@ -76,7 +75,6 @@ export class ChatSocket {
         this.operational = true
       })
       this.socket.on('disconnect', () => {
-        // console.log('Disconnected from chat server')
         this.operational = false
       })
       this.socket.on('newMessage', onNewMessage)

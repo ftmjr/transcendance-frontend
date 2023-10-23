@@ -4,7 +4,6 @@ import dashboardRoutes from '@/router/dashboard'
 import authRoutes from '@/router/auth'
 
 const router = createRouter({
-  // @ts-ignore
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     dashboardRoutes,
@@ -53,7 +52,7 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-router.afterEach((to, from) => {
+router.afterEach((to) => {
   if (to?.meta?.title) {
     let title = 'Transcendence'
     title = `${to.meta.title} | ${title}`

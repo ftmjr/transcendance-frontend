@@ -1,14 +1,20 @@
 <template>
   <VRow>
-    <VCol cols="12" v-if="!isExternalAuth">
+    <VCol
+      v-if="!isExternalAuth"
+      cols="12"
+    >
       <VCard title="Modifier le mot de passe">
         <VForm @submit.prevent="changePassword">
           <VCardText class="pt-0">
             <VRow class="mb-3">
-              <VCol cols="12" md="6">
+              <VCol
+                cols="12"
+                md="6"
+              >
                 <VTextField
-                  class="transparent-input-box"
                   v-model="passwordFields.currentPassword"
+                  class="transparent-input-box"
                   :rules="[rules.required, rules.min]"
                   :type="passwordFieldsVisibility.currentPassword ? 'text' : 'password'"
                   :append-inner-icon="
@@ -23,10 +29,13 @@
               </VCol>
             </VRow>
             <VRow>
-              <VCol cols="12" md="6">
+              <VCol
+                cols="12"
+                md="6"
+              >
                 <VTextField
-                  class="transparent-input-box"
                   v-model="passwordFields.newPassword"
+                  class="transparent-input-box"
                   :rules="[rules.required, rules.min, rules.upperCase]"
                   :type="passwordFieldsVisibility.newPassword ? 'text' : 'password'"
                   :append-inner-icon="
@@ -38,10 +47,13 @@
                   "
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol
+                cols="12"
+                md="6"
+              >
                 <VTextField
-                  class="transparent-input-box"
                   v-model="passwordFields.confirmPassword"
+                  class="transparent-input-box"
                   :rules="[rules.required, rules.min, rules.upperCase, rules.match]"
                   :type="passwordFieldsVisibility.confirmPassword ? 'text' : 'password'"
                   :append-inner-icon="
@@ -57,7 +69,9 @@
             </VRow>
           </VCardText>
           <VCardText class="flex flex-wrap gap-4">
-            <VBtn @click="changePassword">Modifier</VBtn>
+            <VBtn @click="changePassword">
+              Modifier
+            </VBtn>
           </VCardText>
         </VForm>
       </VCard>
@@ -75,10 +89,19 @@
             recommandons fortement d'activer cette option.
           </p>
 
-          <VBtn class="mt-1" @click="isDoubleFactorDialogVisible = true"> Activez </VBtn>
+          <VBtn
+            class="mt-1"
+            @click="isDoubleFactorDialogVisible = true"
+          >
+            Activez
+          </VBtn>
         </VCardText>
         <VCardText v-else>
-          <VAlert color="warning" variant="tonal" class="mb-4">
+          <VAlert
+            color="warning"
+            variant="tonal"
+            class="mb-4"
+          >
             <VAlertTitle class="mb-1 text-sm">
               Double facteur<span class="text-white pl-1"> activé</span>, etes-vous sur de vouloir
               le désactiver ?
@@ -106,34 +129,53 @@
     </VCol>
 
     <VCol cols="12">
-      <VCard title="Sessions récentes" :loading="loadingSessions">
+      <VCard
+        title="Sessions récentes"
+        :loading="loadingSessions"
+      >
         <VDivider />
         <VTable class="bg-transparent">
           <thead>
             <tr>
-              <th scope="col">Navigateur</th>
-              <th scope="col">Terminal</th>
-              <th scope="col">Location/IP</th>
-              <th scope="col">Créer le</th>
-              <th scope="col">Etat</th>
+              <th scope="col">
+                Navigateur
+              </th>
+              <th scope="col">
+                Terminal
+              </th>
+              <th scope="col">
+                Location/IP
+              </th>
+              <th scope="col">
+                Créer le
+              </th>
+              <th scope="col">
+                Etat
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="session in lastSessions" :key="session.id">
+            <tr
+              v-for="session in lastSessions"
+              :key="session.id"
+            >
               <td class="flex align-center">
-                <template v-for="iconObj in icons" :key="iconObj.title">
+                <template
+                  v-for="iconObj in icons"
+                  :key="iconObj.title"
+                >
                   <VIcon
                     v-if="getPlatform(session.userAgent) === iconObj.title"
                     :icon="iconObj.icon"
                     :color="iconObj.color"
                   />
                 </template>
-                <span
-                  >{{ getNavigatorName(session.userAgent) }} -
-                  {{ getPlatform(session.userAgent) }}</span
-                >
+                <span>{{ getNavigatorName(session.userAgent) }} -
+                  {{ getPlatform(session.userAgent) }}</span>
               </td>
-              <td class="text-base font-weight-semibold">{{ getDeviceName(session.userAgent) }}</td>
+              <td class="text-base font-weight-semibold">
+                {{ getDeviceName(session.userAgent) }}
+              </td>
               <td>{{ session.ipAddress }}</td>
               <td>{{ formatDate(session.createdAt) }}</td>
               <td>
@@ -155,7 +197,12 @@
     </VCol>
   </VRow>
   <DoubleFactorModal v-model:is-dialog-visible="isDoubleFactorDialogVisible" />
-  <VSnackbar v-model="isInfoBarVisible" multi-line :timeout="2000" :color="infoColor">
+  <VSnackbar
+    v-model="isInfoBarVisible"
+    multi-line
+    :timeout="2000"
+    :color="infoColor"
+  >
     {{ infoMsg }}
   </VSnackbar>
 </template>
@@ -222,12 +269,11 @@ export default defineComponent({
       allowTwoFactorDisable: false
     }
   },
-  mounted() {
-    this.getSessions()
-  },
   computed: {
     isDoubleFactorEnabled() {
-      return this.authStore.getUser.twoFactorEnabled ?? false
+      const user = this.authStore.getUser
+      if (!user) return false
+      return user.twoFactorEnabled ?? false
     },
     isExternalAuth(): boolean {
       // check if user have api42 or google auth
@@ -237,6 +283,9 @@ export default defineComponent({
         this.authStore.getUser?.facebookId
       )
     }
+  },
+  mounted() {
+    this.getSessions()
   },
   methods: {
     async getSessions() {
@@ -250,12 +299,7 @@ export default defineComponent({
       this.loadingSessions = false
     },
     async disconnectSession(session: Session) {
-      // toDo : disconnect session implementation
-      // try {
-      //   await axiosInstance.delete(`/auth/sessions/${session.id}`)
-      // } catch (e) {
-      //   console.log(e)
-      // }
+      console.log('try disconnecting session', session)
     },
     async changePassword() {
       const worked = await this.authStore.updatePassword(this.passwordFields)

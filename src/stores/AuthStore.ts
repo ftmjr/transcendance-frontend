@@ -1,14 +1,16 @@
 import { defineStore } from 'pinia'
-import type { AuthState, ILoginData, RegisterBody, User, Profile, Coalition } from 'Auth'
-import type { AxiosError } from 'axios'
+import type {
+  AuthState,
+  ILoginData,
+  RegisterBody,
+  User,
+  Profile,
+  Coalition
+} from '@/interfaces/User'
+import { Status } from '@/interfaces/User'
 import axios from '@/utils/axios'
-
-export enum Status {
-  Online = 'Online',
-  Offline = 'Offline',
-  Away = 'Away',
-  Busy = 'Busy'
-}
+import { isAxiosError } from 'axios'
+import jwt_decode from 'jwt-decode'
 
 export interface JwtPayload {
   email: string
@@ -27,16 +29,11 @@ export enum LoginStatus {
   TWOFA_CHECK = '2faCheck',
   LOCKED = 'locked'
 }
-function decodeJWT(token): JwtPayload | null {
-  try {
-    const payloadBase64 = token.split('.')[1]
-    const decodedPayload = atob(payloadBase64)
-    const decoded = JSON.parse(decodedPayload)
-    if (!decoded || !decoded.exp) throw new Error('Invalid token')
-    return decoded
-  } catch (e) {
-    return null // Or handle the error as you see fit
-  }
+
+function decodeJWT(token: string): JwtPayload | null {
+  const decoded = jwt_decode<JwtPayload>(token)
+  if (!decoded || !decoded.exp) return null
+  return decoded
 }
 
 const useAuthStore = defineStore({
@@ -55,10 +52,19 @@ const useAuthStore = defineStore({
   },
   getters: {
     getTokenData(): JwtPayload | null {
-      return decodeJWT(this.token)
+      if (this.token) {
+        return decodeJWT(this.token)
+      }
+      return null
     },
     isExpired() {
-      return this.getTokenData?.exp < Math.floor(Date.now() / 1000)
+      if (this.token) {
+        const decoded = decodeJWT(this.token)
+        if (decoded) {
+          return decoded.exp < Date.now() / 1000
+        }
+      }
+      return false
     },
     status(): LoginStatus {
       if (this.user) {
@@ -82,13 +88,13 @@ const useAuthStore = defineStore({
       }
       return LoginStatus.NOT_LOGGED
     },
-    isLoggedIn() {
+    isLoggedIn(): boolean {
       return this.status === LoginStatus.LOGGED
     },
-    is2FA() {
+    is2FA(): boolean {
       return this.status === LoginStatus.TWOFA_CHECK
     },
-    isLocked() {
+    isLocked(): boolean {
       return this.status === LoginStatus.LOCKED
     },
     getUser(): User | null {
@@ -98,9 +104,10 @@ const useAuthStore = defineStore({
       return this.getUser?.profile ?? null
     },
     visibleStatus(): Status {
-      return this.getProfile.status ?? Status.Offline
+      return this.getProfile?.status ?? Status.Offline
     },
     getCoalition(): Coalition {
+      // @ts-expect-error : resolveCoalition, an action
       return this.resolveCoalition(this.getProfile)
     }
   },
@@ -129,14 +136,15 @@ const useAuthStore = defineStore({
             'Content-Type': 'application/json'
           }
         })
-
         const { accessToken, user } = data as ILoginData
         this.setUser(user)
         this.setToken(accessToken)
         return true
-      } catch (error: AxiosError | any) {
-        if (error.response && error.response.status === 401) {
-          this.error = { state: true, message: error.response.data.message }
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (error.response && error.response.status === 403) {
+            this.error = { state: true, message: error.response.data.message }
+          }
         }
       }
       return false
@@ -147,14 +155,25 @@ const useAuthStore = defineStore({
         this.removeUser()
         this.removeToken()
         await axios.get('auth/logout')
-      } catch (error: AxiosError | any) {
-        this.error = { state: true, message: error.response.data.message }
+      } catch (error) {
+        if (isAxiosError(error)) {
+          this.error = {
+            state: true,
+            message: error.response?.data.message ?? 'Echec de déconnexion'
+          }
+        }
       }
     },
     async register(userInfos: RegisterBody): Promise<boolean> {
       this.error = { state: false, message: '' }
       if (!userInfos || userInfos.password !== userInfos.passwordConfirmation) return false
-      const { passwordConfirmation, ...body } = userInfos
+      const body = {
+        username: userInfos.username,
+        email: userInfos.email,
+        password: userInfos.password,
+        firstName: userInfos.firstName,
+        lastName: userInfos.lastName
+      }
       try {
         const { data } = await axios.post('auth/signup', body, {
           headers: {
@@ -165,9 +184,11 @@ const useAuthStore = defineStore({
         this.setUser(user)
         this.setToken(accessToken)
         return true
-      } catch (error: AxiosError | any) {
-        if (error.response && error.response.status === 403) {
-          this.error = { state: true, message: error.response.data.message }
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (error.response && error.response.status === 403) {
+            this.error = { state: true, message: error.response.data.message }
+          }
         }
       }
       return false
@@ -197,13 +218,15 @@ const useAuthStore = defineStore({
         const { accessToken } = data as { accessToken: string }
         this.setToken(accessToken)
         return accessToken
-      } catch (error: AxiosError | any) {
-        if (error.response && error.response.status === 401) {
-          await this.logout()
-          this.error = { state: true, message: error.response.data.message }
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (error.response && error.response.status === 401) {
+            this.error = { state: true, message: error.response.data.message }
+          }
         } else {
           this.error = { state: true, message: 'Failed to refresh token' }
         }
+        await this.logout()
       }
       return null
     },
@@ -220,7 +243,7 @@ const useAuthStore = defineStore({
     async activate2FA(otpCode: string): Promise<boolean> {
       this.error = { state: false, message: '' }
       try {
-        if (!this.user.twoFactorEnabled) {
+        if (!this.user?.twoFactorEnabled) {
           await axios.post('auth/2fa/turn-on', {
             twoFactorAuthenticationCode: otpCode
           })
@@ -267,9 +290,11 @@ const useAuthStore = defineStore({
         this.setUser(data)
         return true
       } catch (error) {
-        if (error.response && (error.response.status === 403 || error.response.status === 401)) {
-          const message = JSON.stringify(error.response.data.message ?? 'error')
-          this.error = { state: true, message }
+        if (isAxiosError(error)) {
+          if (error.response && (error.response.status === 403 || error.response.status === 401)) {
+            const message = JSON.stringify(error.response.data.message ?? 'error')
+            this.error = { state: true, message }
+          }
         } else {
           this.error = { state: true, message: `Can't update password` }
         }
@@ -280,11 +305,17 @@ const useAuthStore = defineStore({
       this.error = { state: false, message: '' }
       try {
         const { data } = await axios.post<User>('users/username/' + username)
-        this.setUser({ ...this.user, username: data.username })
+        if (this.user) {
+          this.setUser({ ...this.user, username: data.username })
+        } else {
+          this.setUser(data)
+        }
         return true
       } catch (error) {
-        if (error.response && (error.response.status === 403 || error.response.status === 401)) {
-          this.error = { state: true, message: error.response.data.message }
+        if (isAxiosError(error)) {
+          if (error.response && (error.response.status === 403 || error.response.status === 401)) {
+            this.error = { state: true, message: error.response.data.message }
+          }
         } else {
           this.error = { state: true, message: `Can't update username` }
         }
@@ -298,19 +329,22 @@ const useAuthStore = defineStore({
         this.setUser(data)
         return true
       } catch (error) {
-        if (
-          error.response &&
-          (error.response.status === 400 ||
-            error.response.status === 403 ||
-            error.response.status === 401)
-        ) {
-          this.error = { state: true, message: error.response.data.message }
+        if (isAxiosError(error)) {
+          if (
+            error.response &&
+            (error.response.status === 400 ||
+              error.response.status === 403 ||
+              error.response.status === 401)
+          ) {
+            this.error = { state: true, message: error.response.data.message }
+          }
         } else {
           this.error = { state: true, message: `Can't update user info` }
         }
         return false
       }
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async changeMyStatus(value: Status): Promise<'success' | 'error'> {
       try {
         // @ TODO: update user status, to be done later
@@ -328,7 +362,9 @@ const useAuthStore = defineStore({
             'Content-Type': 'multipart/form-data'
           }
         })
-        this.setUser({ ...this.user, profile: data })
+        if (this.user) {
+          this.user.profile = data
+        }
         return 'success'
       } catch (e) {
         return 'error'
@@ -342,19 +378,20 @@ const useAuthStore = defineStore({
     },
     resolveCoalition(profile: Profile): Coalition {
       if (profile.oauth && profile.oauth?.coalitions) {
-        return profile.oauth.coalitions[0]
-      } else {
-        return {
-          color: '#cc0000',
-          cover_url:
-            'https://cdn.intra.42.fr/coalition/cover/243/42Q_035_22_BG_Coalitions_Legion_3000x2000.jpg',
-          id: 243,
-          image_url: 'https://cdn.intra.42.fr/coalition/image/243/42Q_035_22_Logo_Legion.svg',
-          name: 'Les pongistes',
-          score: 0,
-          slug: 'Pongiste',
-          user_id: 0
+        if (profile.oauth.coalitions.length) {
+          return profile.oauth.coalitions[0]
         }
+      }
+      return {
+        color: '#cc0000',
+        cover_url:
+          'https://cdn.intra.42.fr/coalition/cover/243/42Q_035_22_BG_Coalitions_Legion_3000x2000.jpg',
+        id: 243,
+        image_url: 'https://cdn.intra.42.fr/coalition/image/243/42Q_035_22_Logo_Legion.svg',
+        name: 'Les pongistes',
+        score: 0,
+        slug: 'Pongiste',
+        user_id: 0
       }
     }
   }

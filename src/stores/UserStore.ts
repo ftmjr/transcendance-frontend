@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
-import type { User, Profile } from 'Auth'
-import type { AxiosError } from 'axios'
+import type { Profile, User } from '@/interfaces/User'
+import { Status } from '@/interfaces/User'
 import axios from '@/utils/axios'
+import { isAxiosError } from 'axios'
 
 export enum FriendshipStatus {
   Friends = 'friends',
@@ -93,6 +94,10 @@ export interface userOrderBy {
   updatedAt?: SortOrder
 }
 
+export type ShortUserProfile = Pick<User, 'id' | 'profile' | 'username' | 'email' | 'updatedAt'> & {
+  profile: Profile
+}
+
 const useUserStore = defineStore({
   id: 'userStore',
   state: (): UserStoreState => {
@@ -118,7 +123,7 @@ const useUserStore = defineStore({
     getStats(): AppStatData {
       return this.stats
     },
-    getContact() {
+    getContact(): User[] {
       return this.contacts
     },
     getBlockedUsers(): BlockedUser[] {
@@ -137,9 +142,11 @@ const useUserStore = defineStore({
       let message: 'success' | 'already' | 'error' = 'success'
       try {
         await axios.post(`/friends/request-friendship-with/${targetId}`)
-      } catch (error: AxiosError | any) {
-        if (error.response && error.response === 409) {
-          this.error = 'already'
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (error.response && error.response.status === 409) {
+            message = 'already'
+          }
         } else {
           message = 'error'
         }
@@ -167,7 +174,6 @@ const useUserStore = defineStore({
     async rejectFriendRequest(requestId: number): Promise<'success' | 'error'> {
       try {
         await axios.delete(`/friends/reject/${requestId}`)
-        await this.getReceivedRequests()
         return 'success'
       } catch (e) {
         return 'error'
@@ -191,23 +197,21 @@ const useUserStore = defineStore({
         return 'error'
       }
     },
-    async fetchUserFriends(userId) {},
     async fetchSentRequests(): Promise<'success' | 'error'> {
       try {
         const { data } = await axios.get('/friends/sent')
-
         this.sentRequest = data as FriendRequestWithReceiver[]
         return 'success'
       } catch (e) {
         return 'error'
       }
     },
-    async checkFriendShip(userId: number) {
+    async checkFriendShip(userId: number): Promise<CheckFriendshipResponse> {
       try {
         const { data } = await axios.get<CheckFriendshipResponse>(`/friends/check/${userId}`)
         return data
       } catch (error) {
-        this.errorMsg = 'Not friends'
+        console.log('failed to check friendship status')
       }
       return { status: FriendshipStatus.None, data: null }
     },
@@ -228,6 +232,10 @@ const useUserStore = defineStore({
     },
     async checkBlocked(friendId: number): Promise<BlockedStatus> {
       try {
+        const isInLocal = this.blockedUsers.find((user) => user.blockedUserId === friendId)
+        if (isInLocal) {
+          return BlockedStatus.Blocked
+        }
         const { data } = await axios.get<BlockedStatus>(`/users/check-blocked/${friendId}`)
         return data
       } catch (e) {
@@ -237,9 +245,9 @@ const useUserStore = defineStore({
     },
     async blockUser(userId: number): Promise<'success' | 'error'> {
       try {
-        const { data } = await axios.post(`/users/block/${userId}`)
-        const blocked = data as BlockedUser
-        //to-do filter contact and remove the blocked user
+        const { data } = await axios.post<BlockedUser>(`/users/block/${userId}`)
+        this.blockedUsers.push(data)
+        await this.loadAllMyFriends()
         return 'success'
       } catch (error) {
         return 'error'
@@ -247,7 +255,9 @@ const useUserStore = defineStore({
     },
     async unblockUser(userId: number): Promise<'success' | 'error'> {
       try {
-        await axios.delete(`block/${userId}`)
+        await axios.delete(`/users/unblock/${userId}`)
+        await this.loadBlockedUsers()
+        await this.loadAllMyFriends()
         return 'success'
       } catch (e) {
         return 'error'
@@ -255,6 +265,39 @@ const useUserStore = defineStore({
     },
 
     /* User section */
+    async getProfile(userId: number): Promise<User | null> {
+      try {
+        const { data } = await axios.get<User>(`/users/profile/${userId}`)
+        return data
+      } catch (e) {
+        console.log(e)
+      }
+      return null
+    },
+    async getShortUserProfile(userId: number): Promise<ShortUserProfile | null> {
+      try {
+        if (userId === 0)
+          return {
+            id: 0,
+            profile: {
+              id: 0,
+              userId: 0,
+              name: 'AI',
+              lastname: 'Bot',
+              avatar: '/public/pong/characters/fortnite_style_ai_avatar.png',
+              status: Status.Online
+            },
+            username: 'AI',
+            email: 'ai',
+            updatedAt: new Date().toISOString()
+          }
+        const { data } = await axios.get<ShortUserProfile>(`/users/short-profile/${userId}`)
+        return data
+      } catch (e) {
+        console.log(e)
+      }
+      return null
+    },
     async getPaginatedUser(params: {
       currentPage: number
       perPage: number
@@ -295,7 +338,27 @@ const useUserStore = defineStore({
       }
       return []
     },
-
+    async searchUsers(params: {
+      searchTerm: string
+      currentPage: number
+      perPage: number
+    }): Promise<User[]> {
+      const { currentPage, perPage, searchTerm } = params
+      const skip = (currentPage - 1) * perPage
+      try {
+        const { data } = await axios.get<User[]>('users/search', {
+          params: {
+            query: searchTerm,
+            skip: skip ?? 0,
+            take: perPage ?? 100
+          }
+        })
+        return data
+      } catch (e) {
+        console.log(e)
+      }
+      return []
+    },
     /* Statistics */
     async getAppStatistics(): Promise<'success' | 'error'> {
       try {
@@ -306,11 +369,6 @@ const useUserStore = defineStore({
         console.log(e)
         return 'error'
       }
-    },
-
-    async loadReceivedRequests(): Promise<'success' | 'error'> {
-      this.receivedRequest = []
-      return 'success'
     }
   }
 })

@@ -3,11 +3,11 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import useAuthStore, { LoginStatus } from '@/stores/AuthStore.ts'
+import useAuthStore, { LoginStatus } from '@/stores/AuthStore'
 import Loader from '@/views/Auth/Loader.vue'
 
 export default defineComponent({
-  name: 'auth-state',
+  name: 'AuthState',
   components: { Loader },
   setup() {
     const authStore = useAuthStore()

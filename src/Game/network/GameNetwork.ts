@@ -72,7 +72,7 @@ export interface EmitEvents {
 export class GameNetwork {
   public socket: Socket<ListenEvents, EmitEvents> | undefined
   // roomId is the gameSessionId, or gameId. If 0 then there is no gameSessionId
-  public roomId: number | undefined
+  public roomId: number = 0
   private joinedGame = false
 
   constructor(public user: GameUser) {
@@ -84,7 +84,8 @@ export class GameNetwork {
   }
 
   get isOperational() {
-    return this.socket?.connected && this.joinedGame
+    if (!this.socket) return false
+    return this.socket.connected && this.joinedGame
   }
 
   connectToGame(roomId: number, userType: GameUserType) {
@@ -96,7 +97,7 @@ export class GameNetwork {
     } catch (e) {
       console.error(e)
     } finally {
-      this.socket.emit(GAME_EVENTS.JoinGame, { roomId, user: this.user, userType }, (res) => {
+      this.socket?.emit(GAME_EVENTS.JoinGame, { roomId, user: this.user, userType }, (res) => {
         const { worked, roomId } = res
         this.roomId = roomId
         this.joinedGame = worked
@@ -153,11 +154,6 @@ export class GameNetwork {
       callback(data.data)
     })
   }
-  // onGameStateChanged(callback: (state: GAME_STATE) => void) {
-  //   this.socket?.on(GAME_EVENTS.GameStateChanged, (data)=> {
-  //       callback(data.data);
-  //   });
-  // }
   onPlayersRetrieved(callback: (players: GameUser[]) => void) {
     this.socket?.on(GAME_EVENTS.PlayersRetrieved, (received) => {
       callback(received.data)
