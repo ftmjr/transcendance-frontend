@@ -1,3 +1,4 @@
+// src/Game/pong-scenes/EndGame.ts
 import type { PreloadSceneData } from '@/Game/pong-scenes/Preload'
 import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
 import type { GameMonitor } from '@/Game/network/GameMonitor'

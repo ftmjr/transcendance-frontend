@@ -1,3 +1,4 @@
+// src/Game/pong-scenes/Assets.ts
 import Phaser from 'phaser'
 import type { GameMonitor } from '@/Game/network/GameMonitor'
 import { AIPlayer } from '@/Game/players/AIPlayer'

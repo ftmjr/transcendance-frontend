@@ -1,3 +1,4 @@
+// src/stores/GameStore.ts
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
 import { GameHistory } from '@/interfaces/User'

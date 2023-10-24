@@ -75,8 +75,6 @@ export interface AppStatData {
 
 export interface UserStoreState {
   contacts: User[]
-  receivedRequest: FriendRequestWithSender[]
-  sentRequest: FriendRequestWithReceiver[]
   blockedUsers: BlockedUser[]
   stats: AppStatData
 }
@@ -113,8 +111,6 @@ const useUserStore = defineStore({
     }
     return {
       contacts: [],
-      receivedRequest: [],
-      sentRequest: [],
       blockedUsers: [],
       stats
     }
@@ -128,12 +124,6 @@ const useUserStore = defineStore({
     },
     getBlockedUsers(): BlockedUser[] {
       return this.blockedUsers
-    },
-    getReceivedRequests(): FriendRequestWithSender[] {
-      return this.receivedRequest
-    },
-    getSentRequests(): FriendRequestWithReceiver[] {
-      return this.sentRequest
     }
   },
   actions: {
@@ -156,7 +146,6 @@ const useUserStore = defineStore({
     async cancelFriendRequest(requestId: number): Promise<'success' | 'error'> {
       try {
         await axios.delete(`/friends/sent/${requestId}`)
-        await this.fetchSentRequests()
         return 'success'
       } catch (e) {
         return 'error'
@@ -197,14 +186,23 @@ const useUserStore = defineStore({
         return 'error'
       }
     },
-    async fetchSentRequests(): Promise<'success' | 'error'> {
+    async getSentRequests(): Promise<FriendRequestWithReceiver[]> {
       try {
-        const { data } = await axios.get('/friends/sent')
-        this.sentRequest = data as FriendRequestWithReceiver[]
-        return 'success'
+        const { data } = await axios.get<FriendRequestWithReceiver[]>('/friends/sent')
+        return data
       } catch (e) {
-        return 'error'
+        console.log('Failed to load sent request', e)
       }
+      return []
+    },
+    async getReceivedRequests(): Promise<FriendRequestWithSender[]> {
+      try {
+        const { data } = await axios.get<FriendRequestWithSender[]>('/friends/received')
+        return data
+      } catch (e) {
+        console.log('Failed to load received request', e)
+      }
+      return []
     },
     async checkFriendShip(userId: number): Promise<CheckFriendshipResponse> {
       try {

@@ -1,3 +1,4 @@
+// src/Game/network/GameMonitor.ts
 import type { GameNetwork, GameUser } from '@/Game/network/GameNetwork'
 import { GameUserType } from '@/Game/network/GameNetwork'
 

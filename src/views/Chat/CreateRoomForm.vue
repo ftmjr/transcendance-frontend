@@ -9,22 +9,12 @@
         size="small"
         @click="$emit('close')"
       >
-        <VIcon
-          size="18"
-          icon="tabler-x"
-          color="error"
-          class="text-medium-emphasis"
-        />
+        <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
       </VBtn>
     </div>
     <div>
-      <VForm
-        title="Créer une salle"
-        class="px-2"
-      >
-        <p class="text-center text-lg">
-          Créer votre salle
-        </p>
+      <VForm title="Créer une salle" class="px-2">
+        <p class="text-center text-lg">Créer votre salle</p>
         <VTextField
           v-model="roomName"
           label="Nom de la salle"
@@ -34,25 +24,11 @@
           class="mt-4"
         />
 
-        <VBtn
-          v-if="!loading"
-          color="primary"
-          class="mt-4"
-          @click="createRoom"
-        >
+        <VBtn v-if="!loading" color="primary" class="mt-4" @click="createRoom">
           Créer la salle
         </VBtn>
-        <VBtn
-          v-else
-          color="primary"
-          :disabled="true"
-          class="mt-4"
-        >
-          <VProgressCircular
-            indeterminate
-            :size="24"
-            color="primary"
-          />
+        <VBtn v-else color="primary" :disabled="true" class="mt-4">
+          <VProgressCircular indeterminate :size="24" color="primary" />
         </VBtn>
       </VForm>
     </div>

@@ -1,3 +1,4 @@
+// src/Game/players/PongBall.ts
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PongGameScene from '@/Game/pong-scenes/PongGame'
 import { PongSprite } from '@/Game/pong-scenes/Assets'

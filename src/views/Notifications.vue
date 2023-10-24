@@ -5,7 +5,7 @@
       <p class="text-sm mt-2 mb-0">
         Vous pouvez gérer les notifications de votre compte., y compris les notifications de jeu,
         les demandes d'amis, les événements de jeu et les messages privés.
-        <br>
+        <br />
         Vous avez
         <span class="font-weight-semibold text-md">
           {{ notificationStore.unreadNotificationsCount }} notifications non lues
@@ -16,46 +16,13 @@
       <VTable class="text-no-wrap rounded border bg-surface">
         <thead>
           <tr>
-            <th scope="col">
-              Notification
-            </th>
-            <th scope="col">
-              Action
-            </th>
+            <th scope="col">Notification</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="notification in notificationStore.allNotifications"
-            :key="notification.id"
-          >
+          <tr v-for="notification in notificationStore.allNotifications" :key="notification.id">
             <td class="text-center">
-              <div class="pt-2">
-                <Notification
-                  :notification="notification"
-                  @mark-as-read="markAsRead"
-                />
-              </div>
-            </td>
-            <td>
-              <VBtn
-                icon
-                small
-                variant="outlined"
-                @click="markAsRead(notification.id)"
-              >
-                <VIcon icon="tabler-mail-opened" />
-              </VBtn>
-              <VBtn
-                class="mx-2"
-                variant="elevated"
-                color="error"
-                icon
-                small
-                @click="deleteNotification(notification.id)"
-              >
-                <VIcon icon="tabler-trash" />
-              </VBtn>
+              <Notification :notification="notification" @mark-as-read="markAsRead" />
             </td>
           </tr>
         </tbody>

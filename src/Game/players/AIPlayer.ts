@@ -1,3 +1,4 @@
+// src/Game/players/AIPlayer.ts
 import type { Player } from '@/Game/pong-scenes/PongGame'
 import type PonGameScene from '@/Game/pong-scenes/PongGame'
 import type { GameMonitor, GameSender, PAD_DIRECTION } from '@/Game/network/GameMonitor'

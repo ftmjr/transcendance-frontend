@@ -1,3 +1,4 @@
+// src/Game/players/LocalPlayer.ts
 import type { GameSender, GameMonitor } from '@/Game/network/GameMonitor'
 import { PAD_DIRECTION } from '@/Game/network/GameMonitor'
 import type { Player } from '@/Game/pong-scenes/PongGame'
