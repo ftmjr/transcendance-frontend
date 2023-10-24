@@ -16,13 +16,7 @@
           </VTooltip>
           <VTooltip v-else bottom>
             <template #activator="{ props }">
-              <VBtn
-                variant="tonal"
-                color="pink"
-                :size="15"
-                :icon="true"
-                @click.stop="handleDelete"
-              >
+              <VBtn variant="tonal" color="pink" :size="15" :icon="true" @click.stop="handleDelete">
                 <VIcon color="pink" :size="10" v-bind="props"> tabler-x </VIcon>
               </VBtn>
             </template>

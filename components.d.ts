@@ -40,6 +40,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TopChatCard: typeof import('./src/components/chatRooms/TopChatCard.vue')['default']
+    TopsChatCard: typeof import('./src/components/chatRooms/TopsChatCard.vue')['default']
     UserProfileButton: typeof import('./src/components/navbar/UserProfileButton.vue')['default']
   }
 }

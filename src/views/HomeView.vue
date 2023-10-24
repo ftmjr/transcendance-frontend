@@ -17,7 +17,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import TopChatCard from '@/components/chatRooms/TopChatCard.vue'
+import TopChatCard from '@/components/chatRooms/TopsChatCard.vue'
 import PlayerSimpleStats from '@/components/profile/PlayerSimpleStats.vue'
 // import useGlobalStore from "@/stores/GlobalStore";
 // import InviteDialog from "@/components/chat/InviteDialog.vue";

@@ -20,6 +20,7 @@ export interface CreateRoom {
   name: string
   type: RoomType
   password?: string
+  avatar?: string
 }
 
 export type ChatRoomWithMembers = ChatRoom & {
@@ -140,8 +141,16 @@ const useRoomsStore = defineStore({
     setSearchTerm(term: string) {
       this.searchTerm = term
     },
-    async createRoom(info: CreateRoom) {
-      // to be implemented
+    async createRoom(info: CreateRoom): Promise<'success' | 'failed'> {
+      try {
+        const { data } = await axios.post<ChatRoomWithMembers>('/chat/create-room', info)
+        this.rooms.unshift(data)
+        await this.setCurrentRoom(data.id)
+        return 'success'
+      } catch (error) {
+        console.error(error)
+      }
+      return 'failed'
     },
 
     /*
@@ -202,6 +211,13 @@ const useRoomsStore = defineStore({
         console.error(error)
       }
     },
+    /*
+     * Set the current room to read
+     * @param roomId the id of the room to read
+     * @returns 'success' if success, string if error
+     * The current room is the room that the user is currently reading
+     * This will also load the members of the room
+     */
     async setCurrentRoom(roomId: number): Promise<'success' | string> {
       try {
         const members = await this.getRoomMembersData(roomId)

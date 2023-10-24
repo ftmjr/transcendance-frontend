@@ -1,5 +1,6 @@
 <template>
   <div class="flex align-center text-medium-emphasis my-1">
+    <!-- menu button when sm-->
     <VBtn
       variant="text"
       color="default"
@@ -10,20 +11,72 @@
     >
       <VIcon size="24" icon="tabler-menu-2" />
     </VBtn>
-    <template v-if="roomMembers">
-      <RoomContact v-if="room" :room="room" :profiles="roomMembers" />
+    <template v-if="room">
+      <RoomCard :room="room" />
+      <VChip v-if="room.password" label color="error" text-color="white" class="mx-2">
+        Salle protégée
+        <VIcon :size="16">tabler-lock</VIcon>
+      </VChip>
+      <VChip
+        v-if="userRole === 'OWNER'"
+        :label="true"
+        color="yellow"
+        text-color="white"
+        class="mx-2"
+      >
+        <VIcon :size="16">tabler-crown</VIcon>
+        PROPRIÉTAIRE
+      </VChip>
+      <VChip
+        v-else-if="userRole === 'ADMIN'"
+        :label="true"
+        color="blue"
+        text-color="white"
+        class="mx-2"
+      >
+        <VIcon :size="16">tabler-shield-check</VIcon>
+        ADMIN
+      </VChip>
+      <VChip
+        v-else-if="userRole === 'USER'"
+        :label="true"
+        color="gray"
+        text-color="white"
+        class="mx-2"
+      >
+        <VIcon :size="16">tabler-user</VIcon>
+        MEMBRE
+      </VChip>
+      <VChip
+        v-else-if="userRole === 'BAN'"
+        :label="true"
+        color="gray"
+        text-color="white"
+        class="mx-2"
+      >
+        <VIcon :size="16">tabler-user-x</VIcon>
+        BANNI
+      </VChip>
       <VSpacer />
-
-      <div class="sm:flex items-center hidden">
-        <p>Some Action button</p>
+      <div class="flex items-center gap-2">
+        <VBtn
+          v-if="roomStore.currentRoom"
+          variant="text"
+          color="default"
+          :disabled="userRole === 'BAN'"
+          icon
+          size="small"
+          @click="$emit('showAdminSidebar')"
+        >
+          <VIcon size="22" icon="tabler-settings" />
+        </VBtn>
       </div>
-
       <VBtn variant="text" color="default" icon size="small">
         <VIcon size="22" icon="tabler-dots-vertical" />
         <VMenu activator="parent">
           <VList>
-            <VListItem prepend-icon="tabler-pencil">
-              <VListItemTitle> Something </VListItemTitle>
+            <VListItem prepend-icon="tabler-trash">
+              <VListItemTitle> Quit, or something </VListItemTitle>
             </VListItem>
           </VList>
         </VMenu>
@@ -37,24 +90,34 @@
 import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import useRoomsStore, { ChatRoomWithMembers, MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
-import RoomContact from '@/components/chatRooms/RoomContact.vue'
+import { ChatMemberRole } from '@/utils/chatSocket'
+import RoomCard from '@/components/chatRooms/RoomCard.vue'
 
 export default defineComponent({
   name: 'ChatTopBar',
-  components: { RoomContact },
+  components: { RoomCard },
   props: {
     isLeftSidebarOpen: {
       type: Boolean,
-      required: true
+      required: true,
+      default: false
     },
     room: {
-      type: Object as PropType<ChatRoomWithMembers>
+      type: Object as PropType<ChatRoomWithMembers>,
+      required: true
     },
     roomMembers: {
-      type: Array as PropType<MemberRoomWithUserProfiles[]>
+      type: Array as PropType<MemberRoomWithUserProfiles[]>,
+      required: true,
+      default: () => []
+    },
+    userRole: {
+      type: String as PropType<ChatMemberRole>,
+      required: true,
+      default: ChatMemberRole.USER
     }
   },
-  emits: ['update:isLeftSidebarOpen', 'showUserProfile'],
+  emits: ['update:isLeftSidebarOpen', 'showAdminSidebar'],
   setup() {
     const authStore = useAuthStore()
     const roomStore = useRoomsStore()
@@ -74,7 +137,12 @@ export default defineComponent({
     }
   },
   methods: {
-    // some functions like to ban or a menu, any top bar thing
+    quitTheRoom() {
+      console.log('quit the room')
+    },
+    deleteTheRoom() {
+      console.log('delete the room')
+    }
   }
 })
 </script>

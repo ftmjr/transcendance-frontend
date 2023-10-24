@@ -15,16 +15,13 @@
 import { ChatRoomWithMembers } from '@/stores/RoomsStore'
 import { PropType } from 'vue'
 
-const props = defineProps({
+defineProps({
   room: {
     type: Object as PropType<ChatRoomWithMembers>,
     required: true
   }
 })
 
-const showRoom = () => {
-  console.log('trying to show room', props.room)
-}
 const shortName = (name: string) => {
   // max length of 20 chars for room name and 3 dots
   return name.length > 14 ? name.slice(0, 14) + '...' : name

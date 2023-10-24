@@ -3,8 +3,10 @@
     <ChatConversationTopBar
       :is-left-sidebar-open="isLeftSidebarOpen"
       :room="room"
-      :room-members="roomStore.getCurrentRoomMembers"
+      :room-members="roomMembers"
+      :user-role="userRole"
       @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
+      @show-admin-sidebar="$emit('showAdminSidebar')"
     />
     <PerfectScrollbar
       ref="MessagesLogScroller"
@@ -37,24 +39,30 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import useRoomsStore, { ChatRoomWithMembers } from '@/stores/RoomsStore'
+import useRoomsStore, { ChatRoomWithMembers, MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
 import ChatConversationTopBar from '@/components/chatRooms/ChatConversationTopBar.vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import useAuthStore from '@/stores/AuthStore'
+import { ChatMemberRole } from '@/utils/chatSocket'
 
 export default defineComponent({
   components: { ChatConversationTopBar, PerfectScrollbar },
   props: {
+    isLeftSidebarOpen: {
+      type: Boolean,
+      default: false
+    },
     room: {
       type: Object as PropType<ChatRoomWithMembers>,
       required: true
     },
-    isLeftSidebarOpen: {
-      type: Boolean,
-      default: false
+    roomMembers: {
+      type: Array as PropType<MemberRoomWithUserProfiles[]>,
+      required: true,
+      default: () => []
     }
   },
-  emits: ['update:isLeftSidebarOpen'],
+  emits: ['update:isLeftSidebarOpen', 'showAdminSidebar'],
   setup() {
     const authStore = useAuthStore()
     const roomStore = useRoomsStore()
@@ -71,38 +79,27 @@ export default defineComponent({
     }
   },
   computed: {
+    userRole(): ChatMemberRole {
+      const roomMembers = this.roomStore.getCurrentRoomMembers
+      const member = roomMembers.find((member) => member.member.id === this.authStore.getUser?.id)
+      return member?.role ?? ChatMemberRole.USER
+    },
     chatLogPS(): PerfectScrollbar {
       return this.$refs.MessagesLogScroller as PerfectScrollbar
     },
     canWrite(): boolean {
-      // @TODO check if user can write in this room
-      return false
+      return this.userRole !== ChatMemberRole.BAN
     }
   },
+  watch: {},
   methods: {
     // fetch messages
     async fetchMessages() {
-      // @TODO fetch messages
-      // fake messages to test
-      this.messages = [
-        'Hello',
-        'How are you ?',
-        "I'm fine and you ?",
-        "I'm fine too",
-        'What are you doing ?',
-        "I'm working on a new project",
-        'Oh nice, what is it about ?',
-        "It's a new social network",
-        'Oh nice, what is it called ?',
-        "It's called Socialize",
-        "Oh nice, I'll check it out",
-        'Ok, see you later'
-      ]
+      // @TODO fetch messages on this room
     },
     // send message
     async sendMessage() {
       // @TODO send chat
-      // this.roomStore.sendMessage(this.room.id, this.chatMessageContent)
     },
     scrollToBottomInChatLog() {
       const scrollEl = this.chatLogPS.$el
