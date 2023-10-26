@@ -8,6 +8,10 @@ module.exports = {
       padding: '2rem'
     },
     extend: {
+      maxWidth: {
+        '1/2': '50%',
+        '2/3': '60%',
+      },
       color: {
         darkBlue: '#010626',
         white: '#F2F3F4',

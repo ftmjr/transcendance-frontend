@@ -1,86 +1,62 @@
 <template>
-  <div class="h-full">
-    <MessageTopBar
-      :is-left-sidebar-open="isLeftSidebarOpen"
-      :contact="conversationWith"
-      :user-game-status="gameStatus"
-      @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
-    />
-    <VDivider class="mb-1" />
-    <PerfectScrollbar
-      ref="MessagesLogScroller"
-      tag="ul"
-      :options="{
-        wheelPropagation: false,
-        suppressScrollX: true
-      }"
-      class="h-4/6"
-    >
-      <div
-        v-for="(msgGrp, index) in msgGroups"
-        :key="msgGrp.senderId + String(index)"
-        class="chat-group flex items-center"
-        :class="[
-          {
-            'flex-row-reverse': msgGrp.senderId !== conversationWith.id,
-            'mb-8': msgGroups.length - 1 !== index
-          }
-        ]"
-      >
-        <div class="chat-avatar" :class="msgGrp.senderId !== conversationWith.id ? 'ms-4' : 'me-4'">
-          <VAvatar size="38">
-            <VImg
-              :src="
-                msgGrp.senderId === conversationWith.id
-                  ? conversationWith.profile.avatar
-                  : authStore.getProfile?.avatar
-              "
-            />
-          </VAvatar>
-        </div>
-        <div
-          class="chat-body d-inline-flex flex-column"
-          :class="msgGrp.senderId !== conversationWith.id ? 'align-end' : 'align-start'"
-        >
-          <p
-            v-for="(msgData, msgIndex) in msgGrp.messages"
-            :key="msgData.time"
-            class="chat-content text-sm py-3 px-4 elevation-1"
-            :class="[
-              msgGrp.senderId === conversationWith.id
-                ? 'bg-slate-700/30 rounded-lg chat-left'
-                : 'bg-slate-400/30 rounded-lg text-white chat-right',
-              msgGrp.messages.length - 1 !== msgIndex ? 'mb-2' : 'mb-1'
-            ]"
+  <div class="h-full w-full flex flex-col">
+    <div class="border-b border-gray-50 flex-0">
+      <MessageTopBar
+          :is-left-sidebar-open="isLeftSidebarOpen"
+          :contact="conversationWith"
+          :user-game-status="gameStatus"
+          @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
+        />
+    </div>
+    <div class="flex-1 w-full overflow-scroll hide-scroolbar">
+      <div class="h-full w-full flex flex-col gap-4">
+        <PerfectScrollbar
+            ref="MessagesLogScroller"
+            tag="ul"
+            :options="{
+              wheelPropagation: false,
+              suppressScrollX: true
+            }"
+            class="h-full"
           >
-            {{ msgData.message }}
+        <div v-for="(msgGrp, index) in msgGroups" class="p-2" 
+        :class="msgGrp.senderId !== conversationWith.id ? 'self-end text-right' : 'self-start'">
+          <p class="relative message inline-flex flex-col px-6 min-w-[75px] py-2 border  shadow-sm rounded-xl  drop-shadow-md after:content-[''] after:h-4 after:absolute after:top-full after:translate-x-full after:w-4  after:-z-10 after:-translate-y-1/4"
+            :class="msgGrp.senderId !== conversationWith.id ? 'text-left mr-0 ml-auto bg-[#1a1f3c] after:bg-[#1a1f3c]' : 'text-left bg-[#343851] after:bg-[#343851]'"
+          >
+            <span v-for="(msgData, msgIndex) in msgGrp.messages" :key="msgData.time">
+              {{ msgData.message }}
+            </span>
           </p>
-          <div :class="{ 'text-right': msgGrp.senderId !== conversationWith.id }">
-            <span class="text-xs me-1 text-disabled">{{
-              formatDate(msgGrp.messages[msgGrp.messages.length - 1].time, {
-                hour: 'numeric',
-                minute: 'numeric'
-              })
-            }}</span>
-          </div>
+          <span class="text-[.5rem] text-gray-50/90 font-thin block mt-4 px-4">
+            {{ formatDate(msgGrp.messages[msgGrp.messages.length - 1].time, {
+              hour: 'numeric',
+              minute: 'numeric'
+            }) }}
+          </span>
         </div>
+        <div class="h-8 shrink-0 grow-0 w-full"></div>
+         </PerfectScrollbar>
       </div>
-    </PerfectScrollbar>
-    <VDivider class="my-1" />
-    <VForm @submit.prevent="sendMessage">
-      <VTextField
-        v-model="mpContent"
-        variant="solo"
-        class="transparent-input-box"
-        placeholder="Ecrivez votre message..."
-        density="default"
-        autofocus
-      >
-        <template #append-inner>
-          <VBtn type="submit" @click.prevent="sendMessage"> Envoyer un MP </VBtn>
-        </template>
-      </VTextField>
-    </VForm>
+    </div>
+    <div class="flex-0 border shadow-lg drop-shadow-lg rounded-md">
+      <VForm @submit.prevent="sendMessage">
+        <VTextField
+          v-model="mpContent"
+          variant="solo"
+          class="transparent-input-box"
+          placeholder="Ecrivez votre message..."
+          density="default"
+          autofocus
+        >
+          <template #append-inner>
+            <VBtn type="submit" @click.prevent="sendMessage" class="rounded-full h-8 w-8 text-gray-50 bg-red-400">
+              <svg class="fill-current text-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M24 0l-6 22-8.129-7.239 7.802-8.234-10.458 7.227-7.215-1.754 24-12zm-15 16.668v7.332l3.258-4.431-3.258-2.901z"/></svg>
+            </VBtn>
+          </template>
+        </VTextField>
+      </VForm>
+    </div>
   </div>
 </template>
 
@@ -98,6 +74,8 @@ interface MessageGroup {
   senderId: number
   messages: Array<{ id: number; message: string; time: string }>
 }
+
+const groupMessagesByTime = () => {}
 export default defineComponent({
   components: {
     MessageTopBar,
@@ -208,6 +186,8 @@ export default defineComponent({
     },
     async sendMessage() {
       this.loading = true
+      if (!this.mpContent.trim())
+        return;
       this.messageStore.sendPrivateMessage(this.conversationWith.id, this.mpContent)
       this.mpContent = ''
       this.loading = false

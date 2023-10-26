@@ -19,12 +19,12 @@
       <VWindowItem value="profile">
         <VCard :loading="loading" color="transparent">
           <VCard v-if="profileData.profile">
-            <div class="bg-purple-500/30">
-              <v-card-title class="text-h6"> [SHORT BIO] </v-card-title>
-              <p v-if="profileData.profile.bio" class="text-center pb-2 font-mono">
+            <div class="bg-[#1a1f3c] p-2 md:p-6">
+              <h3 class="underline underline-offset-4">Description</h3>
+              <p v-if="profileData.profile.bio" class="text-left md:w-1/2 py-2 font-mono">
                 <i>{{ profileData.profile.bio }}</i>
               </p>
-              <p v-else class="text-center pb-2 font-mono text-sm">
+              <p v-else class="text-left pb-2 font-mono text-sm md:w-1/2 py-2">
                 <i>Aucune bio, pour l'instant</i>
               </p>
             </div>

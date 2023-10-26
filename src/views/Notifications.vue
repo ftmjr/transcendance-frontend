@@ -3,8 +3,7 @@
     <VCardItem>
       <VCardTitle>Notifications</VCardTitle>
       <p class="text-sm mt-2 mb-0">
-        Vous pouvez gérer les notifications de votre compte., y compris les notifications de jeu,
-        les demandes d'amis, les événements de jeu et les messages privés.
+        Voici une liste de ce qu'il se passe dans votre compte
         <br />
         Vous avez
         <span class="font-weight-semibold text-md">
