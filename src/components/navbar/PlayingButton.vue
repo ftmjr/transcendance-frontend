@@ -1,12 +1,7 @@
-<template>
-
-</template>
+<template></template>
 
 <script setup lang="ts">
-const gameStore = useGameStore();
-
+const gameStore = useGameStore()
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

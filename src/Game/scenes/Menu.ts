@@ -102,7 +102,7 @@ export default class Menu extends Scene {
   init(data: SceneInitData) {
     this.sceneData = data
     this.monitor = data.gameMonitor
-    this.monitor.cleanAllPhaserRoutines();
+    this.monitor.cleanAllPhaserRoutines()
   }
 
   create() {
@@ -135,8 +135,8 @@ export default class Menu extends Scene {
       this.printPlayerList(users)
     }
     this.monitor._phaserPlayerLeftRoutine = (player: GameUser) => {
-      this.gameEndedUiUpdate();
-      this.statusNetworkText.text = `${player.username} left`;
+      this.gameEndedUiUpdate()
+      this.statusNetworkText.text = `${player.username} left`
     }
     if (this.monitor.state === GAME_STATE.Play || this.monitor.state === GAME_STATE.Pause) {
       this.scene.start('PongScene', this.sceneData)
@@ -335,7 +335,7 @@ export default class Menu extends Scene {
   }
 
   async quitGame() {
-    await this.monitor.quitAndMoveToHistory();
+    await this.monitor.quitAndMoveToHistory()
   }
 
   showSettings() {
@@ -401,7 +401,7 @@ export default class Menu extends Scene {
         this.playerTwoText.setStyle({ color: '#ffffff' })
       }
     }
-    this.startButton.btnActiveStatus = false;
+    this.startButton.btnActiveStatus = false
   }
 
   showHome() {

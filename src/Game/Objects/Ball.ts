@@ -34,15 +34,15 @@ export class Ball {
       key
     )
     this.ball.setOrigin(0, 0)
-    this.ball.setCircle(BALL_RADIUS);
-    this.ball.setDisplaySize(BALL_DIAMETER, BALL_DIAMETER);
-    this.ball.setMass(1);
-    this.ball.setMaxVelocity(375, 375);
+    this.ball.setCircle(BALL_RADIUS)
+    this.ball.setDisplaySize(BALL_DIAMETER, BALL_DIAMETER)
+    this.ball.setMass(1)
+    this.ball.setMaxVelocity(375, 375)
     // offset for the ball to be in the middle of the physic body
     if (this.theme !== Theme.Classic) {
-      this.ball.setOffset(4, 4);
+      this.ball.setOffset(4, 4)
     } else {
-      this.ball.setOffset(12, 12); // sprite size is 64
+      this.ball.setOffset(12, 12) // sprite size is 64
     }
   }
 
@@ -72,8 +72,8 @@ export class Ball {
     }
   }
   update() {
-    if (this.theme !== Theme.Classic){
-      this.updateBallAnimation();
+    if (this.theme !== Theme.Classic) {
+      this.updateBallAnimation()
     }
   }
 }

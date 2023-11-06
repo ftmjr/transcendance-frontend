@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
 import useAuthStore from '@/stores/AuthStore'
 import { GameHistory } from '@/interfaces/User'
-import { Theme } from "@/Game/scenes/Boot";
+import { Theme } from '@/Game/scenes/Boot'
 
 export enum GameSessionType {
   Bot,

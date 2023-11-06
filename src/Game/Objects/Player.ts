@@ -93,7 +93,7 @@ export class Player {
   }
 
   sendPaddlePositionToServer(dir: PAD_DIRECTION) {
-    if (this.info.userId !== this.scene.currentUser.userId) return;
+    if (this.info.userId !== this.scene.currentUser.userId) return
     this.scene.monitor.sendPadMove({
       userId: this.info.userId,
       direction: dir,

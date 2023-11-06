@@ -21,14 +21,22 @@ export default class Preload extends Scene {
     this.load.pack('sport-pack', this.sportPackUrl)
     this.load.pack('arcade-pack', this.arcadePackUrl)
     this.load.pack('classic-pack', this.classicPackUrl)
-    this.load.bitmapFont('atari', '/public/pong/fonts/atari-classic.png', '/public/pong/fonts/atari-classic.xml');
-    this.load.bitmapFont('nokia', '/public/pong/fonts/nokia16.png', '/public/pong/fonts/nokia16.xml');
+    this.load.bitmapFont(
+      'atari',
+      '/public/pong/fonts/atari-classic.png',
+      '/public/pong/fonts/atari-classic.xml'
+    )
+    this.load.bitmapFont(
+      'nokia',
+      '/public/pong/fonts/nokia16.png',
+      '/public/pong/fonts/nokia16.xml'
+    )
   }
 
   init(data: SceneInitData) {
     this.sceneData = data
     this.monitor = data.gameMonitor
-    this.monitor.cleanAllPhaserRoutines();
+    this.monitor.cleanAllPhaserRoutines()
   }
 
   create() {

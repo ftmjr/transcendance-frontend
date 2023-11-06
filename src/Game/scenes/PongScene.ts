@@ -16,8 +16,8 @@ export default class PongScene extends Scene {
   private leftLine!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
   private rightLine!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
   private scoreImages!: { player1: ScoreBoard; player2: ScoreBoard }
-  private playerOneScoreText!: Phaser.GameObjects.BitmapText;
-  private playerTwoScoreText!: Phaser.GameObjects.BitmapText;
+  private playerOneScoreText!: Phaser.GameObjects.BitmapText
+  private playerTwoScoreText!: Phaser.GameObjects.BitmapText
   private scoreRoutineOn = false
   private soundConfig: Phaser.Types.Sound.SoundConfig = { mute: false, volume: 0.5 }
   public wallSong!: Phaser.Sound.BaseSound
@@ -31,11 +31,11 @@ export default class PongScene extends Scene {
     this.currentUser = data.currentUser
     this.theme = data.theme
     this.monitor = data.gameMonitor
-    this.monitor.cleanAllPhaserRoutines();
+    this.monitor.cleanAllPhaserRoutines()
   }
 
   create() {
-    this.physics.world.createDebugGraphic()
+    // this.physics.world.createDebugGraphic()
     this.physics.world.setBounds(0, 0, 1334, 750)
     // create inputs for keyboard and mouse
     this.cursorkeys = this.input.keyboard?.createCursorKeys()
@@ -68,7 +68,7 @@ export default class PongScene extends Scene {
     }
     this.monitor._phaserNewScoreRoutine = (scores, withEffect) => {
       this.updatedScoreBoard(scores)
-      if (withEffect) this.scoredRoutine();
+      if (withEffect) this.scoredRoutine()
     }
     this.monitor._phaserNewPlayerListRoutine = (users) => {}
     this.monitor._phaserNewViewerListRoutine = (users) => {}
@@ -96,27 +96,17 @@ export default class PongScene extends Scene {
   }
 
   createScores() {
-    const middle = this.scale.width / 2;
-    if (this.theme !== Theme.Soccer){
-      const bitmapKey = this.theme === Theme.Classic ? 'atari' : 'nokia';
-      this.playerOneScoreText =  this.add.bitmapText(
-          middle - 50,
-          70,
-          bitmapKey,
-          '0',
-      )
+    const middle = this.scale.width / 2
+    if (this.theme !== Theme.Soccer) {
+      const bitmapKey = this.theme === Theme.Classic ? 'atari' : 'nokia'
+      this.playerOneScoreText = this.add.bitmapText(middle - 50, 70, bitmapKey, '0')
       this.playerOneScoreText.setOrigin(0.5, 0.5)
-      this.playerTwoScoreText =  this.add.bitmapText(
-          middle + 50,
-          70,
-          bitmapKey,
-          '0',
-      )
+      this.playerTwoScoreText = this.add.bitmapText(middle + 50, 70, bitmapKey, '0')
       this.playerTwoScoreText.setOrigin(0.5, 0.5)
       // align at the center
-      return;
+      return
     }
-    const numberSpriteKey = 'numbers_score';
+    const numberSpriteKey = 'numbers_score'
     this.scoreImages = {
       player1: {
         digit1: this.add.image(middle - 120, 70, numberSpriteKey, '0'),
@@ -157,37 +147,36 @@ export default class PongScene extends Scene {
     }
   }
   private updatedScoreBoard(scores: { userId: number; score: number }[]) {
-    if (this.theme === Theme.Soccer){
+    if (this.theme === Theme.Soccer) {
       this.updateSoccerScoreBoard(scores)
-      return;
+      return
     }
-    this.playerOneScoreText.text = this.monitor.getPlayer1Score().toString();
-    this.playerTwoScoreText.text = this.monitor.getPlayer2Score().toString();
+    this.playerOneScoreText.text = this.monitor.getPlayer1Score().toString()
+    this.playerTwoScoreText.text = this.monitor.getPlayer2Score().toString()
   }
 
   private buildThemeLayer() {
-    const middle = this.scale.width / 2;
-    if (this.theme === Theme.Classic){
-      const dashLength = 20; // Length of each dash
-      const gapLength = 10;  // Length of the gap between dashes
-      const totalLength = 750; // Total length of the line
+    const middle = this.scale.width / 2
+    if (this.theme === Theme.Classic) {
+      const dashLength = 20 // Length of each dash
+      const gapLength = 10 // Length of the gap between dashes
+      const totalLength = 750 // Total length of the line
       const graphics = this.add.graphics({
         lineStyle: {
           width: 5,
           color: 0xffffff
         }
-      });
+      })
       // put graphics on another layer
       graphics.setDepth(-1)
-      const numberOfDashes = Math.floor(totalLength / (dashLength + gapLength));
+      const numberOfDashes = Math.floor(totalLength / (dashLength + gapLength))
       for (let i = 0; i < numberOfDashes; i++) {
-        const startY = i * (dashLength + gapLength);
-        const endY = startY + dashLength;
-        const line = new Phaser.Geom.Line(middle, startY, middle, endY);
-        graphics.strokeLineShape(line);
+        const startY = i * (dashLength + gapLength)
+        const endY = startY + dashLength
+        const line = new Phaser.Geom.Line(middle, startY, middle, endY)
+        graphics.strokeLineShape(line)
       }
-    }
-    else if (this.theme === Theme.Soccer){
+    } else if (this.theme === Theme.Soccer) {
       const soccer_court = this.add.image(667, 375, 'soccer_court')
       soccer_court.scaleX = 1.2853801967467613
       soccer_court.scaleY = 1.2427411843889709

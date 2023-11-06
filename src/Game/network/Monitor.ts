@@ -125,34 +125,35 @@ export default class Monitor {
     })
     this.gameNetwork.onObjectsStatePacket((state) => {
       const { paddles, ball, scores } = state
-      if (paddles){
+      if (paddles) {
         paddles.forEach((paddle) => {
           if (this._phaserPlayerMovedRoutine) this._phaserPlayerMovedRoutine(paddle)
         })
       }
-      if (ball){
+      if (ball) {
         if (this._phaserBallMovedRoutine) this._phaserBallMovedRoutine(ball)
       }
-      if (scores){
+      if (scores) {
         // check if same value with current score
-        if (this.scores.length === 2){
-          if (scores[0].score === this.scores[0].score && scores[1].score === this.scores[1].score) return;
+        if (this.scores.length === 2) {
+          if (scores[0].score === this.scores[0].score && scores[1].score === this.scores[1].score)
+            return
         }
-        this.scores = scores;
+        this.scores = scores
         if (this._phaserNewScoreRoutine) this._phaserNewScoreRoutine(scores, false)
       }
     })
   }
 
   cleanAllPhaserRoutines() {
-  this._phaserNewScoreRoutine = undefined;
-  this._phaserNewPlayerListRoutine = undefined;
-  this._phaserNewViewerListRoutine = undefined;
-  this._phaserBallServedRoutine = undefined
-  this._phaserBallMovedRoutine = undefined;
-  this._phaserPlayerMovedRoutine = undefined;
-  this._phaserGameMonitorStateChangedRoutine = undefined;
-  this._phaserPlayerLeftRoutine = undefined;
+    this._phaserNewScoreRoutine = undefined
+    this._phaserNewPlayerListRoutine = undefined
+    this._phaserNewViewerListRoutine = undefined
+    this._phaserBallServedRoutine = undefined
+    this._phaserBallMovedRoutine = undefined
+    this._phaserPlayerMovedRoutine = undefined
+    this._phaserGameMonitorStateChangedRoutine = undefined
+    this._phaserPlayerLeftRoutine = undefined
   }
 
   public isAgainstIA(): boolean {
@@ -220,11 +221,11 @@ export default class Monitor {
 
   public async quitGame() {
     this.sendGameState(GAME_STATE.Ended)
-    this.disconnectNetwork();
+    this.disconnectNetwork()
   }
   public async quitAndMoveToHistory() {
     this.sendGameState(GAME_STATE.Ended)
-    this.disconnectNetwork();
+    this.disconnectNetwork()
     this.moveToHistory()
   }
 }

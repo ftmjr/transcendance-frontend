@@ -44,9 +44,9 @@ import NavSearchBar from '@/components/navbar/NavSearchBar.vue'
 import UserProfileButton from '@/components/navbar/UserProfileButton.vue'
 import NotificationButton from '@/components/navbar/NotificationButton.vue'
 import useGameStore from '@/stores/GameStore'
-import useAuthStore from "@/stores/AuthStore";
-import useNotificationStore from "@/stores/NotificationStore";
-import useRoomsStore from "@/stores/RoomsStore";
+import useAuthStore from '@/stores/AuthStore'
+import useNotificationStore from '@/stores/NotificationStore'
+import useRoomsStore from '@/stores/RoomsStore'
 
 export default defineComponent({
   components: {
@@ -60,11 +60,11 @@ export default defineComponent({
     const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
     const { width: windowWidth } = useWindowSize()
     const { layoutAttrs, injectSkinClasses } = useSkins()
-    injectSkinClasses();
-    const authStore = useAuthStore();
-    const roomsStore = useRoomsStore();
-    const notificationStore = useNotificationStore();
-    const gameStore = useGameStore();
+    injectSkinClasses()
+    const authStore = useAuthStore()
+    const roomsStore = useRoomsStore()
+    const notificationStore = useNotificationStore()
+    const gameStore = useGameStore()
 
     // a beforeMount hook would be better
     onBeforeMount(() => {
@@ -75,7 +75,7 @@ export default defineComponent({
         if (!roomsStore.socketOperational) {
           roomsStore.init(authStore.getUser.id)
         }
-        gameStore.getAllMyGameSessions();
+        gameStore.getAllMyGameSessions()
       }
     })
     return {

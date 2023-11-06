@@ -5,7 +5,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { AUTO, Game, Scale } from 'phaser'
-import Boot from '@/Game/scenes/Boot'
+import Boot, { Theme } from '@/Game/scenes/Boot'
 import Preload from '@/Game/scenes/Preload'
 import Menu from '@/Game/scenes/Menu'
 import PongScene from '@/Game/scenes/PongScene'
@@ -22,6 +22,11 @@ export default defineComponent({
       type: Number,
       required: true,
       default: () => 0
+    },
+    theme: {
+      type: String as PropType<Theme>,
+      required: true,
+      default: () => Theme.Classic
     }
   },
   data() {
@@ -59,22 +64,22 @@ export default defineComponent({
           game.scene.add('Boot', Boot, true, {
             currentUser: this.player,
             gameMonitor,
-            theme: 'classic'
+            theme: this.theme
           })
           game.scene.add('Preload', Preload, false, {
             currentUser: this.player,
             gameMonitor,
-            theme: 'classic'
+            theme: this.theme
           })
           game.scene.add('Menu', Menu, false, {
             currentUser: this.player,
             gameMonitor,
-            theme: 'classic'
+            theme: this.theme
           })
           game.scene.add('PongScene', PongScene, false, {
             currentUser: this.player,
             gameMonitor,
-            theme: 'classic'
+            theme: this.theme
           })
         }
       }
@@ -82,13 +87,13 @@ export default defineComponent({
     game.scene.start('Boot', {
       currentUser: this.player,
       gameMonitor,
-      theme: 'classic'
+      theme: this.theme
     })
     this.gameMonitor = gameMonitor
     this.game = game
   },
   beforeUnmount() {
-    this.gameMonitor?.quitGame();
+    this.gameMonitor?.quitGame()
   },
   methods: {
     moveToHistory() {
