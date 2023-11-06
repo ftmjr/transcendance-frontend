@@ -1,0 +1,173 @@
+{
+    "section1": {
+        "files": [
+            {
+                "url": "/public/pong/ui/B1.png",
+                "type": "image",
+                "key": "B1"
+            },
+            {
+                "url": "/public/pong/ui/B11.png",
+                "type": "image",
+                "key": "B11"
+            },
+            {
+                "url": "/public/pong/ui/B12.png",
+                "type": "image",
+                "key": "B12"
+            },
+            {
+                "url": "/public/pong/ui/B13.png",
+                "type": "image",
+                "key": "B13"
+            },
+            {
+                "url": "/public/pong/ui/B15.png",
+                "type": "image",
+                "key": "B15"
+            },
+            {
+                "url": "/public/pong/ui/B16.png",
+                "type": "image",
+                "key": "B16"
+            },
+            {
+                "url": "/public/pong/ui/B3.png",
+                "type": "image",
+                "key": "B3"
+            },
+            {
+                "url": "/public/pong/ui/B4.png",
+                "type": "image",
+                "key": "B4"
+            },
+            {
+                "url": "/public/pong/ui/B5.png",
+                "type": "image",
+                "key": "B5"
+            },
+            {
+                "url": "/public/pong/ui/B7.png",
+                "type": "image",
+                "key": "B7"
+            },
+            {
+                "url": "/public/pong/ui/B8.png",
+                "type": "image",
+                "key": "B8"
+            },
+            {
+                "url": "/public/pong/ui/B9.png",
+                "type": "image",
+                "key": "B9"
+            },
+            {
+                "url": "/public/pong/ui/Background.png",
+                "type": "image",
+                "key": "Background"
+            },
+            {
+                "url": "/public/pong/ui/BarDown1.png",
+                "type": "image",
+                "key": "BarDownBlue"
+            },
+            {
+                "url": "/public/pong/ui/BarTop1.png",
+                "type": "image",
+                "key": "BarTopBlue"
+            },
+            {
+                "url": "/public/pong/ui/BgPanelBox2.png",
+                "type": "image",
+                "key": "BgPanelBox2"
+            },
+            {
+                "url": "/public/pong/ui/BgPanelBox4.png",
+                "type": "image",
+                "key": "BgInstructionBox"
+            },
+            {
+                "url": "/public/pong/ui/BlueLight.png",
+                "type": "image",
+                "key": "BlueLight"
+            },
+            {
+                "url": "/public/pong/ui/Btn_EmptyActive.png",
+                "type": "image",
+                "key": "Btn_EmptyActive"
+            },
+            {
+                "url": "/public/pong/ui/Btn_EmptyDeActive.png",
+                "type": "image",
+                "key": "Btn_EmptyDeActive"
+            },
+            {
+                "url": "/public/pong/ui/Btn_Home.png",
+                "type": "image",
+                "key": "Btn_Home"
+            },
+            {
+                "url": "/public/pong/ui/Btn_Home_Active.png",
+                "type": "image",
+                "key": "Btn_Home_Active"
+            },
+            {
+                "url": "/public/pong/ui/Btn_Option.png",
+                "type": "image",
+                "key": "Btn_Option"
+            },
+            {
+                "url": "/public/pong/ui/HeroLander.png",
+                "type": "image",
+                "key": "HeroLander"
+            },
+            {
+                "url": "/public/pong/ui/SideBar1.png",
+                "type": "image",
+                "key": "SideBarBlue"
+            },
+            {
+                "url": [
+                    "/public/pong/audio/impactPunch_medium_001.ogg"
+                ],
+                "type": "audio",
+                "key": "ballPaddleContact"
+            },
+            {
+                "url": [
+                    "/public/pong/audio/footstep_carpet_000.ogg"
+                ],
+                "type": "audio",
+                "key": "wallSound"
+            },
+            {
+                "url": [
+                    "/public/pong/audio/confirmation_001.ogg"
+                ],
+                "type": "audio",
+                "key": "scoreSound"
+            },
+            {
+                "url": [
+                    "/public/pong/audio/click_001.ogg"
+                ],
+                "type": "audio",
+                "key": "clickSound"
+            },
+            {
+                "url": [
+                    "/public/pong/audio/close_001.ogg"
+                ],
+                "type": "audio",
+                "key": "closeSound"
+            }
+        ]
+    },
+    "meta": {
+        "app": "Phaser Editor 2D - Asset Pack Editor",
+        "contentType": "phasereditor2d.pack.core.AssetContentType",
+        "url": "https://phasereditor2d.com",
+        "version": 2,
+        "showAllFilesInBlocks": false
+    }
+}

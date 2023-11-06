@@ -11,7 +11,10 @@
       :delimiter-icon="() => h(VIcon, { icon: 'fa-circle', size: '10' })"
       height="320"
     >
-      <VCarouselItem v-for="(room, index) in topRooms" :key="room.id">
+      <VCarouselItem
+        v-for="(room, index) in topRooms"
+        :key="room.id"
+      >
         <VCardText class="h-full">
           <VRow class="h-25">
             <VCol cols="12">
@@ -97,8 +100,16 @@ export default defineComponent({
       return publicRoom.slice(0, 3)
     }
   },
+  mounted() {
+    this.fetchPublicRooms();
+  },
   methods: {
     h,
+    async fetchPublicRooms(){
+      this.loading = true;
+      await this.roomsStore.fetchPublicRooms();
+      this.loading = false;
+    },
     isCurrentUserAMember(room: ChatRoomWithMembers) {
       return room.members.some((member) => member.id === this.authStore.getUser?.id)
     },

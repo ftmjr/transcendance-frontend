@@ -48,7 +48,10 @@
               >
                 VS
               </p>
-              <p v-else class="font-weight-light text-slate-200 text-sm">Contre l'ordinateur</p>
+              <p v-else class="font-weight-light text-slate-200 text-sm">
+                <span class="font-weight-bold">{{ userActions.iaGoals }} But(s)</span>
+                Contre l'ordinateur
+              </p>
             </div>
           </td>
         </tr>
@@ -67,11 +70,12 @@ import { GameEvent } from '@/interfaces/User'
 
 type EventIcons = {
   icon: 'ph:soccer-ball-fill' | 'tabler:trophy' | 'arcticons:quicklyquit'
-  color: 'success' | 'yellow' | 'error'
+  color: 'success' | 'yellow' | 'error' | 'gray'
 }
 interface ActionsBox {
   userId: number
   goals: number
+  iaGoals: number
   event: EventIcons[]
 }
 
@@ -173,6 +177,10 @@ export default defineComponent({
           actions.event.push({ icon: 'ph:soccer-ball-fill', color: 'success' })
           actions.goals++
           break
+        case GameEvent.IA_ACTION_PERFORMED:
+          actions.event.push({ icon: 'ph:soccer-ball-fill', color: 'gray' })
+          actions.iaGoals++
+          break
         case GameEvent.MATCH_WON:
           actions.event.push({ icon: 'tabler:trophy', color: 'yellow' })
           break
@@ -189,6 +197,7 @@ export default defineComponent({
         const actionsInfo = {
           userId: parseInt(userID, 10),
           goals: 0,
+          iaGoals: 0,
           event: []
         }
         histories.forEach((history) => {

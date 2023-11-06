@@ -1,15 +1,17 @@
 <template>
   <div class="h-full">
     <VCardText class="flex flex-col justify-center gap-4">
-      <h5 class="text-h5 text-center font-semibold mb-1">Salut, {{ authStore.getProfile.name }}</h5>
+      <h5 class="text-h5 text-center font-semibold mb-1">
+        Salut, {{ authStore.getProfile?.name }}
+      </h5>
       <VAvatar rounded size="120" class="mx-auto">
-        <VImg v-if="authStore.getProfile.avatar" :src="authStore.getProfile.avatar" />
+        <VImg v-if="authStore.getProfile?.avatar" :src="authStore.getProfile.avatar" />
         <VIcon v-else color="primary" icon="tabler-user" />
       </VAvatar>
       <p class="text-center font-light">
         Votre session est actuellement bloqué, pour des raisons de sécurité
       </p>
-      <VBtn variant="text" @click="unlock"> Debloquer </VBtn>
+      <VBtn variant="text" @click="unlock"> Débloquer </VBtn>
     </VCardText>
   </div>
 </template>
@@ -31,7 +33,7 @@ export default defineComponent({
       isLoading: false
     }
   },
-  mounted() {
+  beforeMount() {
     if (!this.authStore.isLocked) {
       this.$router.push({ name: 'dashboard' })
     }

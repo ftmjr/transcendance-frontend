@@ -19,13 +19,10 @@ import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import TopChatCard from '@/components/chatRooms/TopsChatCard.vue'
 import PlayerSimpleStats from '@/components/profile/PlayerSimpleStats.vue'
-// import useGlobalStore from "@/stores/GlobalStore";
-// import InviteDialog from "@/components/chat/InviteDialog.vue";
 
 export default defineComponent({
   components: { PlayerSimpleStats, TopChatCard },
   setup() {
-    // const globalStore = useGlobalStore()
     const authStore = useAuthStore()
     const coalition = authStore.getCoalition
     const colorClasses = [`bg-[${coalition.color}]`, 'bg-opacity-30']

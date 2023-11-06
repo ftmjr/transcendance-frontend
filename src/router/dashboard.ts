@@ -5,8 +5,8 @@ import DirectMessagesView from '@/views/Dm/DirectMessagesView.vue'
 import ChatWindowView from '@/views/Chat/ChatWindowView.vue'
 import Notifications from '@/views/Notifications.vue'
 import LeaderboardView from '@/views/LeaderboardView.vue'
-import GameView from '@/views/GameView.vue'
 import { RouteRecordRaw } from 'vue-router'
+import GameView from '@/views/GameView.vue'
 
 const dashboardRoutes: RouteRecordRaw = {
   path: '/',
@@ -26,7 +26,7 @@ const dashboardRoutes: RouteRecordRaw = {
       name: 'game',
       component: GameView,
       props: (route) => {
-        const waitingRoom = route.query.waitingRoom ? route.query.waitingRoom === 'true' : false
+        const waitingRoom = route.query.waitingRoom ? route.query.waitingRoom == 'true' : false
         const isPlayer = route.query.isPlayer ? route.query.isPlayer === 'true' : true
         const gameId = route.params.gameId ? parseInt(route.params.gameId.toString()) : undefined
         return {
@@ -37,7 +37,8 @@ const dashboardRoutes: RouteRecordRaw = {
       },
       meta: {
         requiresAuth: true,
-        title: 'Game Test'
+        layoutWrapperClasses: 'layout-content-height-fixed',
+        title: 'Pong'
       }
     },
     {
@@ -89,7 +90,7 @@ const dashboardRoutes: RouteRecordRaw = {
       component: LeaderboardView,
       meta: {
         requiresAuth: true,
-        title: 'Message'
+        title: 'LeaderBoard'
       }
     },
     usersRoutes
