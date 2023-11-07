@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { AUTO, Game, Scale } from 'phaser'
+import { WEBGL, Game, Scale } from 'phaser'
 import Boot, { Theme } from '@/Game/scenes/Boot'
 import Preload from '@/Game/scenes/Preload'
 import Menu from '@/Game/scenes/Menu'
@@ -39,7 +39,7 @@ export default defineComponent({
     const gameMonitor = new Monitor(this.roomId, this.player, this.moveToHistory)
     const gameContainer = this.$refs.player as HTMLElement
     const game = new Game({
-      type: AUTO,
+      type: WEBGL,
       scale: {
         mode: Scale.FIT,
         parent: gameContainer,
@@ -51,7 +51,7 @@ export default defineComponent({
           height: 750
         }
       },
-      backgroundColor: '#2f2f2f',
+      backgroundColor: 'rgba(101,107,218,0.76)',
       physics: {
         default: 'arcade',
         arcade: {

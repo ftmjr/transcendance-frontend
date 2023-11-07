@@ -2,17 +2,17 @@
     "section1": {
         "files": [
             {
-                "url": "/public/pong/ball-animations.json",
+                "url": "/pong/ball-animations.json",
                 "type": "animation",
                 "key": "soccer_ball"
             },
             {
-                "url": "/public/pong/paddles-animation.json",
+                "url": "/pong/paddles-animation.json",
                 "type": "animation",
                 "key": "paddles"
             },
             {
-                "url": "/public/pong/sport/ball_frames.png",
+                "url": "/pong/sport/ball_frames.png",
                 "frameConfig": {
                     "frameWidth": 48,
                     "frameHeight": 48,
@@ -25,27 +25,27 @@
                 "key": "soccer_ball"
             },
             {
-                "url": "/public/pong/sport/btn_pause.png",
+                "url": "/pong/sport/btn_pause.png",
                 "type": "image",
                 "key": "btn_pause"
             },
             {
-                "url": "/public/pong/sport/court_01.png",
+                "url": "/pong/sport/court_01.png",
                 "type": "image",
                 "key": "soccer_court"
             },
             {
-                "url": "/public/pong/sport/goal_posts_left.png",
+                "url": "/pong/sport/goal_posts_left.png",
                 "type": "image",
                 "key": "goal_posts_left"
             },
             {
-                "url": "/public/pong/sport/goal_posts_right.png",
+                "url": "/pong/sport/goal_posts_right.png",
                 "type": "image",
                 "key": "goal_posts_right"
             },
             {
-                "url": "/public/pong/sport/numbers_score.png",
+                "url": "/pong/sport/numbers_score.png",
                 "frameConfig": {
                     "frameWidth": 64,
                     "frameHeight": 64,
@@ -58,7 +58,7 @@
                 "key": "numbers_score"
             },
             {
-                "url": "/public/pong/sport/pud_left.png",
+                "url": "/pong/sport/pud_left.png",
                 "frameConfig": {
                     "frameWidth": 100,
                     "frameHeight": 200,
@@ -71,7 +71,7 @@
                 "key": "pad_left"
             },
             {
-                "url": "/public/pong/sport/pud_right.png",
+                "url": "/pong/sport/pud_right.png",
                 "frameConfig": {
                     "frameWidth": 100,
                     "frameHeight": 200,
@@ -84,22 +84,22 @@
                 "key": "pad_right"
             },
             {
-                "url": "/public/pong/sport/logo.png",
+                "url": "/pong/sport/logo.png",
                 "type": "image",
                 "key": "soccer_goal"
             },
             {
-                "url": "/public/pong/sport/text_goal.png",
+                "url": "/pong/sport/text_goal.png",
                 "type": "image",
                 "key": "text_goal"
             },
             {
-                "url": "/public/pong/sport/text_lose.png",
+                "url": "/pong/sport/text_lose.png",
                 "type": "image",
                 "key": "text_lose"
             },
             {
-                "url": "/public/pong/sport/text_win.png",
+                "url": "/pong/sport/text_win.png",
                 "type": "image",
                 "key": "text_win"
             }

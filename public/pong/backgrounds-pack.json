@@ -2,22 +2,22 @@
     "section1": {
         "files": [
             {
-                "url": "/public/pong/backgrounds/pink_street.png",
+                "url": "/pong/backgrounds/pink_street.png",
                 "type": "image",
                 "key": "pink_street"
             },
             {
-                "url": "/public/pong/backgrounds/school-logo-white.svg",
+                "url": "/pong/backgrounds/school-logo-white.svg",
                 "type": "image",
                 "key": "school-logo-white"
             },
             {
-                "url": "/public/pong/backgrounds/winter_train_hd.png",
+                "url": "/pong/backgrounds/winter_train_hd.png",
                 "type": "image",
                 "key": "winter_train_hd"
             },
             {
-                "url": "/public/pong/backgrounds/winter_trees_hd.png",
+                "url": "/pong/backgrounds/winter_trees_hd.png",
                 "type": "image",
                 "key": "winter_trees_hd"
             }

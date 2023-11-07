@@ -120,7 +120,8 @@ export default defineComponent({
       if (!this.gameStore.currentGameSession) {
         return
       }
-      await this.gameStore.leaveCurrentGameSession()
+      const userId = this.authStore?.getUser.id
+      await this.gameStore.leaveCurrentGameSession(userId)
     }
   }
 })

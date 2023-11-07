@@ -224,12 +224,12 @@ const useGameStore = defineStore({
         console.error(e)
       }
     },
-    async leaveCurrentGameSession() {
+    async leaveCurrentGameSession(userId: number) {
       if (this.joinedGameSession) {
         if (this.viewingAGame) {
           this.stopViewingGame()
         } else {
-          await this.gameEnded(this.joinedGameSession.gameId, this.joinedGameSession.hostId)
+          await this.gameEnded(this.joinedGameSession.gameId, userId)
         }
       }
     },

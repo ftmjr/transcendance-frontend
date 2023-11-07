@@ -37,7 +37,7 @@ export default class Boot extends Scene {
   }
 
   preload() {
-    this.load.pack('backgrounds-assets', '/public/pong/backgrounds-pack.json')
+    this.load.pack('backgrounds-assets', '/pong/backgrounds-pack.json')
   }
 
   create() {

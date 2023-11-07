@@ -282,7 +282,7 @@ const useUserStore = defineStore({
               userId: 0,
               name: 'AI',
               lastname: 'Bot',
-              avatar: '/public/pong/ia_avatar.jpg',
+              avatar: '/pong/ia_avatar.jpg',
               status: Status.Online
             },
             username: 'AI',

@@ -191,6 +191,6 @@ watch(isDialogVisible, (newVal) => {
   background-size: cover;
 }
 .soccer-theme-bg {
-  background-image: url('/public/pong/backgrounds/ground_grass.png');
+  background-image: url('/pong/backgrounds/ground_grass.png');
 }
 </style>

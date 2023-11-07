@@ -1,50 +1,8 @@
 import { GameObjects, Scene } from 'phaser'
 import { SceneInitData, Theme } from '@/Game/scenes/Boot'
-import Button from '@/Game/Objects/Button'
+import Button, { HomeButton } from '@/Game/Objects/Button'
 import Monitor, { GAME_STATE } from '@/Game/network/Monitor'
-import { GameUser } from '@/Game/network/GameNetwork'
-
-class HomeBtn extends GameObjects.Image {
-  private readonly namedKeys = {
-    homeInactive: 'Btn_Home',
-    homeActive: 'Btn_Home_Active'
-  }
-  private isHomePage = true
-  constructor(
-    public scene: Menu,
-    x: number,
-    y: number,
-    public onClickCallBack: () => void
-  ) {
-    super(scene, x, y, 'Btn_Home_Active')
-    this.setInteractive(
-      new Phaser.Geom.Rectangle(25, 10, 95.3076719479974, 91.4272822913519),
-      Phaser.Geom.Rectangle.Contains
-    )
-    this.on('pointerdown', () => {
-      this.onClickCallBack()
-    })
-    this.on('pointerover', () => {
-      const inverseKey = this.isHomePage ? this.namedKeys.homeInactive : this.namedKeys.homeActive
-      this.flipX = true
-      this.setTexture(inverseKey)
-    })
-    this.on('pointerout', () => {
-      const inverseKey = this.isHomePage ? this.namedKeys.homeActive : this.namedKeys.homeInactive
-      this.flipX = false
-      this.setTexture(inverseKey)
-    })
-  }
-
-  get isHomePageStatus(): boolean {
-    return this.isHomePage
-  }
-  set isHomePageStatus(status: boolean) {
-    this.isHomePage = status
-    const key = status ? this.namedKeys.homeActive : this.namedKeys.homeInactive
-    this.setTexture(key)
-  }
-}
+import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
 
 enum MenuSection {
   Home,
@@ -62,8 +20,7 @@ class MenuSectionBox extends GameObjects.Container {
     position: { x: number; y: number }
   ) {
     super(scene, position.x, position.y)
-    this.setVisible(false)
-    this.setActive(false)
+    this.setVisible(false).setActive(false)
   }
 
   get isVisible() {
@@ -71,25 +28,32 @@ class MenuSectionBox extends GameObjects.Container {
   }
   set isVisible(status: boolean) {
     this.visibleSection = status
-    this.setVisible(status)
-    this.setActive(status)
+    this.setVisible(status).setActive(status)
+  }
+
+  updateSection(currentSection: MenuSection) {
+    this.isVisible = this.sectionType === currentSection
   }
 }
 
 export default class Menu extends Scene {
-  sceneData!: SceneInitData
-  private panelBox!: GameObjects.Container
-  private startButton!: Button
-  private infoButton!: Button
-  private quitButton!: Button
-  private boardText!: GameObjects.Text
-  private btnHome!: HomeBtn
   private menuSection: MenuSection = MenuSection.Home
+  private currentUser!: GameUser & { userType: GameUserType }
+  private theme = Theme.Classic
+  public monitor!: Monitor
+
+  //home button
+  private homeBtn!: HomeButton // Allow user to come back to home
+
+  // panel section elements
+  private boardText!: GameObjects.Text
+  private startButton!: Button // to start, if game ended should be disabled
+
+  // home box section
   private sections: MenuSectionBox[] = []
   private playerOneText!: GameObjects.Text
   private playerTwoText!: GameObjects.Text
   private statusNetworkText!: GameObjects.Text
-  private monitor!: Monitor
 
   constructor() {
     super({
@@ -100,64 +64,45 @@ export default class Menu extends Scene {
   preload() {}
 
   init(data: SceneInitData) {
-    this.sceneData = data
     this.monitor = data.gameMonitor
     this.monitor.cleanAllPhaserRoutines()
+    this.currentUser = data.currentUser
+    this.theme = data.theme
   }
 
   create() {
     this.createBackgroundLayer()
-    this.btnHome = new HomeBtn(this, 150, 640, () => {
-      if (this.menuSection !== MenuSection.Home) {
-        this.showHome()
-      } else {
-      }
-    })
-    this.add.existing(this.btnHome)
+    this.createHomeBtn()
     this.createPanelBox()
     this.createHomeBox()
     this.createInstructionsBox()
     this.updateSection()
-    this.printPlayerList(this.monitor.players)
-    this.printNetworkText(this.monitor.state)
-    this.monitor._phaserGameMonitorStateChangedRoutine = (state: GAME_STATE) => {
-      this.printNetworkText(state)
-      switch (state) {
-        case GAME_STATE.Play:
-          this.scene.start('PongScene', this.sceneData)
-          break
-        case GAME_STATE.Ended:
-          this.gameEndedUiUpdate()
-          break
-      }
-    }
-    this.monitor._phaserNewPlayerListRoutine = (users: GameUser[]) => {
-      this.printPlayerList(users)
-    }
-    this.monitor._phaserPlayerLeftRoutine = (player: GameUser) => {
-      this.gameEndedUiUpdate()
-      this.statusNetworkText.text = `${player.username} left`
-    }
-    if (this.monitor.state === GAME_STATE.Play || this.monitor.state === GAME_STATE.Pause) {
-      this.scene.start('PongScene', this.sceneData)
-    }
-    if (this.monitor.state === GAME_STATE.Ended) {
-      this.gameEndedUiUpdate()
+    this.setupEventListeners()
+    this.playerListUpdate(this.monitor.players)
+    this.handleGameStateChange(this.monitor.state)
+    switch (this.monitor.state) {
+      case GAME_STATE.Play:
+      case GAME_STATE.Play:
+        this.scene.start('PongScene', {
+          currentUser: this.currentUser,
+          gameMonitor: this.monitor,
+          theme: this.theme
+        })
+        break
+      case GAME_STATE.Ended:
+        this.gameEndedUiUpdate()
+        break
     }
   }
 
-  update(time: number, delta: number) {
-    // activate the correct section and deactivate the others
-  }
-  updateSection() {
-    this.sections.forEach((section) => {
-      section.isVisible = section.sectionType === this.menuSection
+  createHomeBtn() {
+    const homeBtn = new HomeButton(this, 150, 640, () => {
+      this.menuSection = MenuSection.Home
+      homeBtn.isHomePage = true
+      this.updateSection()
     })
-    if (this.menuSection !== MenuSection.Home) {
-      this.panelBox.setVisible(false)
-    } else {
-      this.panelBox.setVisible(true)
-    }
+    this.add.existing(homeBtn)
+    this.homeBtn = homeBtn
   }
 
   // creation of the background layer
@@ -169,7 +114,7 @@ export default class Menu extends Scene {
       barDown: 'BarDownBlue',
       sideBar: 'SideBarBlue'
     }
-    switch (this.sceneData.theme) {
+    switch (this.theme) {
       case Theme.Soccer:
         keys.barTop = 'BarTopBrown'
         keys.barDown = 'BarDownBrown'
@@ -197,31 +142,33 @@ export default class Menu extends Scene {
     layer.add(barTop)
     layer.add(barDown)
     layer.add(sideBar)
+    layer.setDepth(-1)
   }
 
   createPanelBox() {
-    const panelBox = this.add.container(776, 108)
+    const currentUserType = this.currentUser.userType
+    const panelBox = new MenuSectionBox(MenuSection.Home, this, { x: 776, y: 108 })
     const bgPanelBox = this.add.image(0, 0, 'BgPanelBox2')
     bgPanelBox.setOrigin(0, 0)
     panelBox.add(bgPanelBox)
     const boardText = this.add.text(180, 24, '', {})
     boardText.setOrigin(0.5, 0.5)
-    boardText.text = this.monitor.isAgainstIA() ? 'IA fight' : 'Challenge'
+    boardText.text = 'PONG'
     boardText.setStyle({ align: 'center', fontFamily: 'Mono', fontSize: '18px', fontStyle: 'bold' })
     panelBox.add(boardText)
     this.boardText = boardText
-    const startBtn = new Button(
+    // start Btn
+    this.startButton = new Button(
       this,
       { x: 180, y: 150 },
       { x: -110, y: -40, width: 221, height: 80 },
       'B5',
-      'START GAME',
+      currentUserType === GameUserType.Player ? 'START GAME' : 'WATCH',
       () => {
-        this.startGame()
+        this.monitor.sendGameState(GAME_STATE.Ready)
       }
     )
-    panelBox.add(startBtn)
-    this.startButton = startBtn
+    panelBox.add(this.startButton)
     const infoBtn = new Button(
       this,
       { x: 180, y: 250 },
@@ -229,11 +176,12 @@ export default class Menu extends Scene {
       'B15',
       'INSTRUCTIONS',
       () => {
-        this.showInstructions()
+        this.menuSection = MenuSection.Instructions
+        this.homeBtn.isHomePage = false
+        this.updateSection()
       }
     )
     panelBox.add(infoBtn)
-    this.infoButton = infoBtn
     const quitBtn = new Button(
       this,
       { x: 180, y: 350 },
@@ -241,12 +189,12 @@ export default class Menu extends Scene {
       'B15',
       'QUIT',
       () => {
-        this.quitGame()
+        this.monitor.quitAndMoveToHistory()
       }
     )
     panelBox.add(quitBtn)
-    this.quitButton = quitBtn
-    this.panelBox = panelBox
+    this.add.existing(panelBox)
+    this.sections.push(panelBox)
   }
 
   createHomeBox() {
@@ -259,12 +207,12 @@ export default class Menu extends Scene {
     homeBox.add(blueLight)
     this.playerOneText = this.add.text(0, -250, '', {})
     this.playerOneText.setOrigin(0.5, 0.5)
-    this.playerOneText.text = 'Player 1'
+    this.playerOneText.text = ''
     this.playerOneText.setStyle({ align: 'center', fontFamily: 'Arial', fontSize: '18px' })
     homeBox.add(this.playerOneText)
     this.statusNetworkText = this.add.text(-37, 70, '', {})
     this.statusNetworkText.setOrigin(0.5, 0.5)
-    this.statusNetworkText.text = 'Waiting for network'
+    this.statusNetworkText.text = 'Network'
     this.statusNetworkText.setStyle({
       align: 'center',
       color: '#6fb4f2ff',
@@ -274,7 +222,7 @@ export default class Menu extends Scene {
     homeBox.add(this.statusNetworkText)
     this.playerTwoText = this.add.text(1, -188, '', {})
     this.playerTwoText.setOrigin(0.5, 0.5)
-    this.playerTwoText.text = 'Player 2'
+    this.playerTwoText.text = ''
     this.playerTwoText.setStyle({ align: 'center', fontFamily: 'Arial', fontSize: '18px' })
     homeBox.add(this.playerTwoText)
     this.add.existing(homeBox)
@@ -318,95 +266,108 @@ export default class Menu extends Scene {
     this.sections.push(instructionsBox)
   }
 
-  createSettingsBox() {
-    // const settingsBox = new MenuSectionBox(
-    //   MenuSection.Settings,
-    //   this,
-    //   { x: 667, y: 375 }
-    // );
-    // // add bg image
-    // const bgSettings = this.add.image(0, 0, "BgInstructionBox");
-    // this.add.existing(settingsBox);
-    // this.sections.push(settingsBox);
+  update(time: number, delta: number) {
+    // activate the correct section and deactivate the others
+  }
+  private setupEventListeners(): void {
+    this.monitor._phaserGameMonitorStateChangedRoutine = (state) => {
+      this.handleGameStateChange(state)
+      if (state === GAME_STATE.Ended) {
+        this.gameEndedUiUpdate()
+      } else if (state === GAME_STATE.Play || state === GAME_STATE.Pause) {
+        this.scene.start('PongScene', {
+          currentUser: this.currentUser,
+          gameMonitor: this.monitor,
+          theme: this.theme
+        })
+      }
+    }
+    this.monitor._phaserNewPlayerListRoutine = (players) => {
+      this.playerListUpdate(players)
+    }
+    this.monitor._phaserPlayerLeftRoutine = (player) => {
+      this.playerLeftUpdate(player)
+    }
+  }
+  updateSection() {
+    this.sections.forEach((section) => {
+      section.updateSection(this.menuSection)
+    })
   }
 
-  startGame() {
-    this.monitor.sendGameState(GAME_STATE.Ready)
-  }
-
-  async quitGame() {
-    await this.monitor.quitAndMoveToHistory()
-  }
-
-  showSettings() {
-    this.btnHome.isHomePageStatus = false
-    this.menuSection = MenuSection.Settings
-    this.updateSection()
-  }
-
-  showInstructions() {
-    this.btnHome.isHomePageStatus = false
-    this.menuSection = MenuSection.Instructions
-    this.updateSection()
-  }
-
-  printPlayerList(playerList: GameUser[]) {
+  playerListUpdate(playerList: GameUser[]) {
     if (playerList[0]) {
       this.playerOneText.text = playerList[0].username
+      this.playerOneText.setVisible(true)
     }
     if (playerList[1]) {
       this.playerTwoText.text = playerList[1].username
+      this.playerTwoText.setVisible(true)
+    } else {
+      this.playerTwoText.setVisible(false)
+    }
+    if (playerList.length <= 1) {
+      this.startButton.setVisible(false)
+      this.statusNetworkText.text = 'No opponent'
+    } else {
+      this.startButton.setVisible(true)
     }
   }
 
-  printNetworkText(state: GAME_STATE) {
+  playerLeftUpdate(player: GameUser) {
+    this.statusNetworkText.text = `${player.username} left`
+  }
+
+  handleGameStateChange(state: GAME_STATE) {
     switch (state) {
       case GAME_STATE.Waiting:
-        this.statusNetworkText.text = 'Game Init mode'
+        this.statusNetworkText.text = 'Init'
+        this.boardText.text = 'PONG'
         break
       case GAME_STATE.Menu:
-        this.statusNetworkText.text = 'Waiting opponent'
+        this.boardText.text = 'Pong Menu'
+        this.statusNetworkText.text = 'Menu'
         break
       case GAME_STATE.Ready:
-        this.statusNetworkText.text = 'Ready to play'
+        this.boardText.text = 'Ready'
+        this.startButton.setVisible(true).btnActiveStatus = false
+        this.statusNetworkText.text = 'Waiting opponent'
         break
       case GAME_STATE.Play:
         this.statusNetworkText.text = 'Playing'
+        this.boardText.text = `Let's Go`
+        this.startButton.setVisible(true).btnActiveStatus = true
         break
       case GAME_STATE.Ended:
         this.statusNetworkText.text = 'Game ended'
+        this.boardText.text = 'Game ended'
+        this.startButton.setVisible(false).btnActiveStatus = false
         break
     }
   }
 
   gameEndedUiUpdate() {
     this.boardText.text = 'Game ended'
-    if (this.monitor.scores) {
-      // print score of the players
-      const player1Score = this.monitor.getPlayer1Score()
-      const player2Score = this.monitor.getPlayer2Score()
-      if (player1Score && player2Score) {
-        this.playerOneText.text = `${this.monitor.players[0].username} : ${player1Score}`
-        this.playerTwoText.text = `${this.monitor.players[1].username} : ${player2Score}`
-      }
-      // color them according the winner
-      if (player1Score > player2Score) {
-        this.playerOneText.setStyle({ color: '#00ff00' })
-        this.playerTwoText.setStyle({ color: '#ff0000' })
-      } else if (player1Score < player2Score) {
-        this.playerOneText.setStyle({ color: '#ff0000' })
-        this.playerTwoText.setStyle({ color: '#00ff00' })
-      } else {
-        this.playerOneText.setStyle({ color: '#ffffff' })
-        this.playerTwoText.setStyle({ color: '#ffffff' })
-      }
-    }
+    this.statusNetworkText.text = 'Game ended'
     this.startButton.btnActiveStatus = false
-  }
-
-  showHome() {
-    this.btnHome.isHomePageStatus = true
-    this.menuSection = MenuSection.Home
-    this.updateSection()
+    const player1Score = this.monitor.getPlayer1Score()
+    const player2Score = this.monitor.getPlayer2Score()
+    if (player1Score && this.monitor.players[0]) {
+      this.playerOneText.text = `${this.monitor.players[0].username} : ${player1Score}`
+    }
+    if (player2Score && this.monitor.players[1]) {
+      this.playerTwoText.text = `${this.monitor.players[1].username} : ${player2Score}`
+    }
+    // color them according the winner
+    if (player1Score > player2Score) {
+      this.playerOneText.setStyle({ color: '#00ff00' })
+      this.playerTwoText.setStyle({ color: '#ff0000' })
+    } else if (player1Score < player2Score) {
+      this.playerOneText.setStyle({ color: '#ff0000' })
+      this.playerTwoText.setStyle({ color: '#00ff00' })
+    } else {
+      this.playerOneText.setStyle({ color: '#ffffff' })
+      this.playerTwoText.setStyle({ color: '#ffffff' })
+    }
   }
 }

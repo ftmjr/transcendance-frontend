@@ -213,6 +213,11 @@ export default class Monitor {
   }
 
   public sendGameState(state: GAME_STATE) {
+    if (state === GAME_STATE.Ready && this.state < GAME_STATE.Ready) {
+      this.state = GAME_STATE.Ready
+      if (this._phaserGameMonitorStateChangedRoutine)
+        this._phaserGameMonitorStateChangedRoutine(state)
+    }
     this.gameNetwork.sendGameState(state)
   }
   public pauseGame() {
@@ -224,7 +229,9 @@ export default class Monitor {
     this.disconnectNetwork()
   }
   public async quitAndMoveToHistory() {
-    this.sendGameState(GAME_STATE.Ended)
+    if (this.state !== GAME_STATE.Ended) {
+      this.sendGameState(GAME_STATE.Ended)
+    }
     this.disconnectNetwork()
     this.moveToHistory()
   }

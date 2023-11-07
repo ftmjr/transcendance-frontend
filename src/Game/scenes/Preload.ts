@@ -4,10 +4,10 @@ import Monitor, { GAME_STATE } from '@/Game/network/Monitor'
 
 export default class Preload extends Scene {
   sceneData!: SceneInitData
-  private readonly uiPackUrl = '/public/pong/ui-pack.json'
-  private readonly sportPackUrl = '/public/pong/sport-pack.json'
-  private readonly arcadePackUrl = '/public/pong/arcade-pack.json'
-  private readonly classicPackUrl = '/public/pong/classic-pack.json'
+  private readonly uiPackUrl = '/pong/ui-pack.json'
+  private readonly sportPackUrl = '/pong/sport-pack.json'
+  private readonly arcadePackUrl = '/pong/arcade-pack.json'
+  private readonly classicPackUrl = '/pong/classic-pack.json'
   private progressBar!: Phaser.GameObjects.Rectangle
   private monitor!: Monitor
 
@@ -21,16 +21,8 @@ export default class Preload extends Scene {
     this.load.pack('sport-pack', this.sportPackUrl)
     this.load.pack('arcade-pack', this.arcadePackUrl)
     this.load.pack('classic-pack', this.classicPackUrl)
-    this.load.bitmapFont(
-      'atari',
-      '/public/pong/fonts/atari-classic.png',
-      '/public/pong/fonts/atari-classic.xml'
-    )
-    this.load.bitmapFont(
-      'nokia',
-      '/public/pong/fonts/nokia16.png',
-      '/public/pong/fonts/nokia16.xml'
-    )
+    this.load.bitmapFont('atari', '/pong/fonts/atari-classic.png', '/pong/fonts/atari-classic.xml')
+    this.load.bitmapFont('nokia', '/pong/fonts/nokia16.png', '/pong/fonts/nokia16.xml')
   }
 
   init(data: SceneInitData) {

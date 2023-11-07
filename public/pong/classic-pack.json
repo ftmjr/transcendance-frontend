@@ -4,17 +4,17 @@
             {
                 "key": "ball",
                 "type": "image",
-                "url": "/public/pong/classic/ball.png"
+                "url": "/pong/classic/ball.png"
             },
             {
                 "key": "paddle",
                 "type": "image",
-                "url": "/public/pong/classic/paddle.png"
+                "url": "/pong/classic/paddle.png"
             },
             {
                 "key": "center_round",
                 "type": "image",
-                "url": "/public/pong/classic/center_round.png"
+                "url": "/pong/classic/center_round.png"
             }
         ]
     },
