@@ -57,11 +57,13 @@ export default class Button extends GameObjects.Container {
   }
 
   private handlePointerOver(): void {
+    if (!this._btnActive) return
     this.btnBg.setTint(0x888888)
     this.btnBg.angle -= 2
   }
 
   private handlePointerOut(): void {
+    if (!this._btnActive) return
     this.btnBg.clearTint()
     this.btnBg.angle += 2
   }

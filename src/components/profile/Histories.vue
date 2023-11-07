@@ -24,14 +24,16 @@
             <VChip v-if="getIsUserWon(history)" label color="success"> Victoire </VChip>
             <VChip v-else label color="error"> Défaite / Abandon </VChip>
           </td>
-          <td>
+          <td class="flex gap-2">
             <div
               v-for="(userActions, i) in getActions(history)"
               :key="userActions.userId"
               class="flex items-center gap-2"
             >
               <avatar-badge :user-id="userActions.userId ?? 0" :size="24" />
-              {{ userActions.goals }} But(s)
+              <span class="font-weight-bold text-slate-200 text-sm"
+                >{{ userActions.goals }} But(s)</span
+              >
               <div class="v-avatar-group">
                 <VAvatar
                   v-for="(eventInfo, index) in userActions.event"
@@ -48,9 +50,12 @@
               >
                 VS
               </p>
-              <p v-else class="font-weight-light text-slate-200 text-sm">
+              <p
+                v-else-if="getGameType(history) === GameSessionType.Bot"
+                class="font-weight-light text-slate-200 text-sm"
+              >
+                IA
                 <span class="font-weight-bold">{{ userActions.iaGoals }} But(s)</span>
-                Contre l'ordinateur
               </p>
             </div>
           </td>

@@ -125,41 +125,6 @@
                 "url": "/pong/ui/SideBar1.png",
                 "type": "image",
                 "key": "SideBarBlue"
-            },
-            {
-                "url": [
-                    "/pong/audio/impactPunch_medium_001.ogg"
-                ],
-                "type": "audio",
-                "key": "ballPaddleContact"
-            },
-            {
-                "url": [
-                    "/pong/audio/footstep_carpet_000.ogg"
-                ],
-                "type": "audio",
-                "key": "wallSound"
-            },
-            {
-                "url": [
-                    "/pong/audio/confirmation_001.ogg"
-                ],
-                "type": "audio",
-                "key": "scoreSound"
-            },
-            {
-                "url": [
-                    "/pong/audio/click_001.ogg"
-                ],
-                "type": "audio",
-                "key": "clickSound"
-            },
-            {
-                "url": [
-                    "/pong/audio/close_001.ogg"
-                ],
-                "type": "audio",
-                "key": "closeSound"
             }
         ]
     },

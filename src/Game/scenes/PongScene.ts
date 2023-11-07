@@ -20,9 +20,6 @@ export default class PongScene extends Scene {
   private playerTwoScoreText!: Phaser.GameObjects.BitmapText
   private scoreRoutineOn = false
   private soundConfig: Phaser.Types.Sound.SoundConfig = { mute: false, volume: 0.5 }
-  public wallSong!: Phaser.Sound.BaseSound
-  public paddleSong!: Phaser.Sound.BaseSound
-  public scoreSong!: Phaser.Sound.BaseSound
   constructor() {
     super('PongScene')
   }
@@ -43,9 +40,6 @@ export default class PongScene extends Scene {
     this.ball = new Ball(this, this.theme, { x: 667, y: 375 })
     this.createScores()
     this.buildThemeLayer()
-    this.wallSong = this.sound.add('wallSound')
-    this.paddleSong = this.sound.add('ballPaddleContact')
-    this.scoreSong = this.sound.add('scoreSound')
     this.buildCollisionsEffects()
     this.monitor._phaserBallMovedRoutine = (data) => {
       this.ball.newPosition(data.position, data.speed)
@@ -173,7 +167,7 @@ export default class PongScene extends Scene {
       for (let i = 0; i < numberOfDashes; i++) {
         const startY = i * (dashLength + gapLength)
         const endY = startY + dashLength
-        const line = new Phaser.Geom.Line(middle, startY, middle, endY)
+        const line = new Phaser.Geom.Line(middle - 2.5, startY, middle - 2.5, endY)
         graphics.strokeLineShape(line)
       }
     } else if (this.theme === Theme.Soccer) {
@@ -194,11 +188,11 @@ export default class PongScene extends Scene {
     this.scoreRoutineOn = true
     const goal = this.add.image(667, 375, 'text_goal')
     goal.setDepth(2)
-    this.scoreSong.play(this.soundConfig)
     this.time.delayedCall(500, () => {
       goal.destroy()
       this.scoreRoutineOn = false
     })
+    this.ball.newPosition({ x: 667, y: 375 }, { x: 0, y: 0 })
   }
 
   update() {

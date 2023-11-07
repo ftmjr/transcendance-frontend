@@ -77,22 +77,18 @@ export default class Menu extends Scene {
     this.createHomeBox()
     this.createInstructionsBox()
     this.updateSection()
-    this.setupEventListeners()
-    this.playerListUpdate(this.monitor.players)
     this.handleGameStateChange(this.monitor.state)
+    this.playerListUpdate(this.monitor.players)
     switch (this.monitor.state) {
       case GAME_STATE.Play:
       case GAME_STATE.Play:
-        this.scene.start('PongScene', {
-          currentUser: this.currentUser,
-          gameMonitor: this.monitor,
-          theme: this.theme
-        })
+        this.moveToPlayingScene()
         break
       case GAME_STATE.Ended:
         this.gameEndedUiUpdate()
         break
     }
+    this.setupEventListeners()
   }
 
   createHomeBtn() {
@@ -272,14 +268,8 @@ export default class Menu extends Scene {
   private setupEventListeners(): void {
     this.monitor._phaserGameMonitorStateChangedRoutine = (state) => {
       this.handleGameStateChange(state)
-      if (state === GAME_STATE.Ended) {
-        this.gameEndedUiUpdate()
-      } else if (state === GAME_STATE.Play || state === GAME_STATE.Pause) {
-        this.scene.start('PongScene', {
-          currentUser: this.currentUser,
-          gameMonitor: this.monitor,
-          theme: this.theme
-        })
+      if (state === GAME_STATE.Play || state === GAME_STATE.Pause) {
+        this.moveToPlayingScene()
       }
     }
     this.monitor._phaserNewPlayerListRoutine = (players) => {
@@ -296,26 +286,23 @@ export default class Menu extends Scene {
   }
 
   playerListUpdate(playerList: GameUser[]) {
-    if (playerList[0]) {
-      this.playerOneText.text = playerList[0].username
-      this.playerOneText.setVisible(true)
-    }
-    if (playerList[1]) {
-      this.playerTwoText.text = playerList[1].username
-      this.playerTwoText.setVisible(true)
+    const player1 = playerList[0]
+    const player2 = playerList[1]
+    if (player1) {
+      this.playerOneText.text = `${player1.username}`
     } else {
-      this.playerTwoText.setVisible(false)
+      this.playerOneText.text = ''
     }
-    if (playerList.length <= 1) {
+    if (player2) {
+      this.playerTwoText.text = `${player2.username}`
+    } else {
+      this.playerTwoText.text = ''
+    }
+    if (player1 && player2) {
+      this.startButton.setVisible(true).btnActiveStatus = true
+    } else {
       this.startButton.setVisible(false)
-      this.statusNetworkText.text = 'No opponent'
-    } else {
-      this.startButton.setVisible(true)
     }
-  }
-
-  playerLeftUpdate(player: GameUser) {
-    this.statusNetworkText.text = `${player.username} left`
   }
 
   handleGameStateChange(state: GAME_STATE) {
@@ -323,8 +310,10 @@ export default class Menu extends Scene {
       case GAME_STATE.Waiting:
         this.statusNetworkText.text = 'Init'
         this.boardText.text = 'PONG'
+        this.startButton.setVisible(true).btnActiveStatus = true
         break
       case GAME_STATE.Menu:
+        this.startButton.setVisible(true).btnActiveStatus = true
         this.boardText.text = 'Pong Menu'
         this.statusNetworkText.text = 'Menu'
         break
@@ -336,19 +325,32 @@ export default class Menu extends Scene {
       case GAME_STATE.Play:
         this.statusNetworkText.text = 'Playing'
         this.boardText.text = `Let's Go`
-        this.startButton.setVisible(true).btnActiveStatus = true
+        this.startButton.setVisible(true).btnActiveStatus = false
+        this.moveToPlayingScene()
         break
       case GAME_STATE.Ended:
         this.statusNetworkText.text = 'Game ended'
         this.boardText.text = 'Game ended'
         this.startButton.setVisible(false).btnActiveStatus = false
+        this.gameEndedUiUpdate()
         break
     }
   }
 
+  playerLeftUpdate(player: GameUser) {
+    this.statusNetworkText.text = `${player.username} left`
+  }
+
+  private moveToPlayingScene() {
+    this.monitor.cleanAllPhaserRoutines()
+    this.scene.start('PongScene', {
+      currentUser: this.currentUser,
+      gameMonitor: this.monitor,
+      theme: this.theme
+    })
+  }
+
   gameEndedUiUpdate() {
-    this.boardText.text = 'Game ended'
-    this.statusNetworkText.text = 'Game ended'
     this.startButton.btnActiveStatus = false
     const player1Score = this.monitor.getPlayer1Score()
     const player2Score = this.monitor.getPlayer2Score()
@@ -357,6 +359,9 @@ export default class Menu extends Scene {
     }
     if (player2Score && this.monitor.players[1]) {
       this.playerTwoText.text = `${this.monitor.players[1].username} : ${player2Score}`
+    }
+    if (this.monitor.players.length <= 1) {
+      this.playerTwoText.text = 'No opponent'
     }
     // color them according the winner
     if (player1Score > player2Score) {
