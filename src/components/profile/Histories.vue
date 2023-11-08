@@ -31,7 +31,9 @@
               class="flex items-center gap-2"
             >
               <avatar-badge :user-id="userActions.userId ?? 0" :size="24" />
-              <span class="font-weight-bold text-slate-200 text-sm">{{ userActions.goals }} But(s)</span>
+              <span class="font-weight-bold text-slate-200 text-sm"
+                >{{ userActions.goals }} But(s)</span
+              >
               <div class="v-avatar-group">
                 <VAvatar
                   v-for="(eventInfo, index) in userActions.event"

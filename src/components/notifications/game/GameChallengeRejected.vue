@@ -5,9 +5,7 @@
       notification.status === 'READ' ? 'bg-[#343851]/30' : 'bg-green-600/30'
     ]"
   >
-    <div v-if="isShort">
-
-    </div>
+    <div v-if="isShort"></div>
     <div v-else></div>
   </div>
 </template>
@@ -16,17 +14,14 @@
 import { PropType } from 'vue'
 import { Notification } from '@/utils/notificationSocket'
 
-// Game invitation type
+// Game challenge Rejected
 // {
-//   userId: number, // current user
+//   user: { connect: { id: userId } },
 //   type: NotificationType.GAME_INVITE,
-//   title: 'Game Invite',
+//   title: 'Game Invite Rejected',
 //   message: message,
 //   referenceId: gameId,
-//   expiresAt: new Date(Date.now() + 1000 * 60 * 5), // 5 minutes
 // }
-// invitation to a game need to more than just mark as read on click
-// gamestore
 
 defineProps({
   notification: {
@@ -38,8 +33,6 @@ defineProps({
     default: false
   }
 })
-
-
 </script>
 
 <style scoped></style>

@@ -19,6 +19,8 @@ import GameChallengeAccepted from '@/components/notifications/game/GameChallenge
 import GameInvitation from '@/components/notifications/game/GameInvitation.vue'
 import GamePaused from '@/components/notifications/game/GamePaused.vue'
 import GameResumed from '@/components/notifications/game/GameResumed.vue'
+import GameChallengeRejected from '@/components/notifications/game/GameChallengeRejected.vue'
+import JoinedGame from '@/components/notifications/game/JoinedGame.vue'
 
 export default defineComponent({
   components: {
@@ -47,37 +49,41 @@ export default defineComponent({
     component() {
       switch (this.notification.type) {
         case NotificationType.FRIEND_REQUEST:
-          return this.getComponentForFriends()
+          return this.getComponentForFriends();
         case NotificationType.GAME_EVENT:
-          return this.getComponentForGameEvent()
+          return this.getComponentForGameEvent();
         case NotificationType.GAME_INVITE:
-          return this.getComponentForGameInvitation()
+          return this.getComponentForGameInvitation();
         case NotificationType.PRIVATE_MESSAGE:
-          return this.getComponentForChat()
+          return this.getComponentForChat();
         default:
-          return null
+          return null;
       }
     }
   },
   methods: {
     getComponentForFriends() {
       switch (this.notification.title) {
-        case 'Friend Request Accepted':
+        case `Demande d'ami acceptée`:
           return FriendRequestAccepted
-        case 'Friend Request Rejected':
+        case `Demande d'ami refusée`:
           return FriendRequestRejected
-        case 'Friend Request':
-        default:
+        case `Demande d'amitié`:
           return FriendRequest
+        default:
+          return null;
       }
     },
     getComponentForGameInvitation() {
       switch (this.notification.title) {
         case 'Game Challenge Accepted':
           return GameChallengeAccepted
-        case 'Game Challenge':
-        default:
+        case 'Game Invite Rejected':
+          return GameChallengeRejected
+        case 'Game Invite':
           return GameInvitation
+        default:
+          return null
       }
     },
     getComponentForGameEvent() {
@@ -85,17 +91,21 @@ export default defineComponent({
         case 'Game Resumed':
           return GameResumed
         case 'Game Paused':
-        default:
           return GamePaused
+        case 'Joined Game':
+          return JoinedGame
+        default:
+          return null
       }
     },
     getComponentForChat() {
       switch (this.notification.title) {
         case 'Room Administrator':
           return RoomAdministrator
-        case 'Added to Room':
-        default:
+        case 'Added to Chat':
           return AddedToRoom
+        default:
+          return null
       }
     }
   }

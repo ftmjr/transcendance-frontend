@@ -8,7 +8,9 @@
     <div v-if="isShort">
 
     </div>
-    <div v-else></div>
+    <div v-else>
+
+    </div>
   </div>
 </template>
 
@@ -18,17 +20,15 @@ import { Notification } from '@/utils/notificationSocket'
 
 // Game invitation type
 // {
-//   userId: number, // current user
-//   type: NotificationType.GAME_INVITE,
-//   title: 'Game Invite',
-//   message: message,
-//   referenceId: gameId,
-//   expiresAt: new Date(Date.now() + 1000 * 60 * 5), // 5 minutes
+// userId: number, // current user
+// type: NotificationType.GAME_EVENT,
+// title: 'Joined Game',
+// message: message, // like `<a href="/users/show/${user.id}">${user.username}</a> a été ajouté à la partie`
+// referenceId: gameId,
 // }
-// invitation to a game need to more than just mark as read on click
-// gamestore
+// nothing to do only make notification read
 
-defineProps({
+const { notification } = defineProps({
   notification: {
     type: Object as PropType<Notification>,
     required: true
@@ -38,8 +38,6 @@ defineProps({
     default: false
   }
 })
-
-
 </script>
 
 <style scoped></style>

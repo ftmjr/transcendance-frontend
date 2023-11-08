@@ -1,5 +1,17 @@
 <template>
-  <div>Game Resumed</div>
+  <div
+    :class="[
+      'flex justify-between items-start gap-1 py-3 px-3 rounded-md gap-4',
+      notification.status === 'READ' ? 'bg-[#343851]/30' : 'bg-green-600/30'
+    ]"
+  >
+    <div v-if="isShort">
+
+    </div>
+    <div v-else>
+
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">

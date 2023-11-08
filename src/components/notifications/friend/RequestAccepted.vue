@@ -7,7 +7,16 @@ import { PropType } from 'vue'
 import { Notification } from '@/utils/notificationSocket'
 import useNotificationStore from '@/stores/NotificationStore'
 
-const { notification, isShort} = defineProps({
+// Friend request Accepted
+// {
+//  userId: number, // user receiving the notification
+//  type: NotificationType.FRIEND_REQUEST,
+//  title: `Demande d'ami acceptée`,
+//  message: message,
+//  referenceId: friendId,
+// }
+
+const { notification } = defineProps({
   notification: {
     type: Object as PropType<Notification>,
     required: true
@@ -20,13 +29,11 @@ const { notification, isShort} = defineProps({
 
 const notificationStore = useNotificationStore()
 
-const handleDelete = (e: Event) => {
-  e.preventDefault()
+const handleDelete = () => {
   notificationStore.deleteNotification(notification.id)
 }
 
-const handleRead = (e: Event) => {
-  e.preventDefault();
+const handleRead = () => {
   notificationStore.markNotificationAsRead(notification.id)
 }
 </script>
