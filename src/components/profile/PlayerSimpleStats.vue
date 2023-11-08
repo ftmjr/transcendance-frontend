@@ -1,7 +1,7 @@
 <template>
   <v-card color="transparent">
-    <div :class="colorClass">
-      <v-card-title class="text-h6"> [STATS] </v-card-title>
+    <div :class="[colorClass, 'p-6']">
+      <h3 class="underline underline-offset-4">Statistiques</h3>
       <v-card-text>
         <v-row>
           <v-col cols="3" class="text-center">
