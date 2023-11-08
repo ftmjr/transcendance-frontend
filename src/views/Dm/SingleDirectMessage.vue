@@ -6,7 +6,7 @@
           :contact="conversationWith"
           :user-game-status="gameStatus"
           @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
-        />
+      />
     </div>
     <div class="flex-1 w-full overflow-scroll hide-scroolbar">
       <div class="h-full w-full flex flex-col gap-4">
@@ -19,7 +19,7 @@
             }"
             class="h-full"
           >
-        <div v-for="(msgGrp, index) in msgGroups" class="p-2" 
+        <div v-for="(msgGrp, index) in msgGroups" class="p-2"
         :class="msgGrp.senderId !== conversationWith.id ? 'self-end text-right' : 'self-start'">
           <p class="relative message inline-flex flex-col px-6 min-w-[75px] py-2 border  shadow-sm rounded-xl  drop-shadow-md after:content-[''] after:h-4 after:absolute after:top-full after:translate-x-full after:w-4  after:-z-10 after:-translate-y-1/4"
             :class="msgGrp.senderId !== conversationWith.id ? 'text-left mr-0 ml-auto bg-[#1a1f3c] after:bg-[#1a1f3c]' : 'text-left bg-[#343851] after:bg-[#343851]'"
@@ -68,14 +68,13 @@ import MessageTopBar from '@/components/messages/MessageTopBar.vue'
 import useAuthStore from '@/stores/AuthStore'
 import { formatDate } from '@/vuetify/@core/utils/formatters'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import useGameStore from '@/stores/GameStore'
+import useGameStore, { GameSession } from "@/stores/GameStore";
 
 interface MessageGroup {
   senderId: number
   messages: Array<{ id: number; message: string; time: string }>
 }
 
-const groupMessagesByTime = () => {}
 export default defineComponent({
   components: {
     MessageTopBar,
@@ -111,7 +110,7 @@ export default defineComponent({
       gameStatus: {
         status: 'free',
         gameSession: undefined
-      }
+      } as { status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }
     }
   },
   computed: {
@@ -186,8 +185,7 @@ export default defineComponent({
     },
     async sendMessage() {
       this.loading = true
-      if (!this.mpContent.trim())
-        return;
+      if (!this.mpContent.trim()) return;
       this.messageStore.sendPrivateMessage(this.conversationWith.id, this.mpContent)
       this.mpContent = ''
       this.loading = false
