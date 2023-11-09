@@ -1,13 +1,27 @@
 <template>
   <div>
     <div class="text-end mt-2">
-      <VBtn v-if="$vuetify.display.smAndDown" variant="text" size="small" @click="$emit('close')">
-        <VIcon :size="18" color="error" class="text-medium-emphasis"> tabler-x </VIcon>
+      <VBtn
+        v-if="$vuetify.display.smAndDown"
+        variant="text"
+        size="small"
+        @click="$emit('close')"
+      >
+        <VIcon
+          :size="18"
+          color="error"
+          class="text-medium-emphasis"
+        >
+          tabler-x
+        </VIcon>
       </VBtn>
     </div>
     <div>
       <div>
-        <div v-for="member in roomStore.getCurrentRoomMembers" :key="member.member.id">
+        <div
+          v-for="member in roomStore.getCurrentRoomMembers"
+          :key="member.member.id"
+        >
           {{ member.member.username }} - {{ member.role }}
         </div>
       </div>

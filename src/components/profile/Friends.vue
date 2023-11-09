@@ -1,13 +1,34 @@
 <template>
-  <VCard :loading="loading" color="transparent">
-    <VCardTitle class="text-center text-lg font-weight-bold my-4"> Mes Amis </VCardTitle>
+  <VCard
+    :loading="loading"
+    color="transparent"
+  >
+    <VCardTitle class="text-center text-lg font-weight-bold my-4">
+      Mes Amis
+    </VCardTitle>
     <VRow>
-      <VCol v-for="(friend, index) in userStore.contacts" :key="friend.id" cols="12" md="6">
+      <VCol
+        v-for="(friend, index) in userStore.contacts"
+        :key="friend.id"
+        cols="12"
+        md="6"
+      >
         <div class="bg-slate-700/30 rounded-lg mx-1 mt-8">
           <div class="flex items-center justify-center">
-            <VAvatar rounded size="120" class="user-profile-avatar">
-              <VImg v-if="friend.profile.avatar" :src="friend.profile.avatar" />
-              <VIcon v-else color="primary" icon="tabler-user" />
+            <VAvatar
+              rounded
+              size="120"
+              class="user-profile-avatar"
+            >
+              <VImg
+                v-if="friend.profile.avatar"
+                :src="friend.profile.avatar"
+              />
+              <VIcon
+                v-else
+                color="primary"
+                icon="tabler-user"
+              />
             </VAvatar>
           </div>
           <div class="relative -top-12">
@@ -49,7 +70,9 @@
                     }
                   }"
                 >
-                  <VIcon left> mdi-account </VIcon>
+                  <VIcon left>
+                    mdi-account
+                  </VIcon>
                   Voir le Profile
                 </VBtn>
                 <VBtn
@@ -58,7 +81,9 @@
                   variant="tonal"
                   :to="{ name: 'dm', params: { friendId: friend.id } }"
                 >
-                  <VIcon left> mdi-chat </VIcon>
+                  <VIcon left>
+                    mdi-chat
+                  </VIcon>
                   Envoyer un DM
                 </VBtn>
               </VBtnGroup>

@@ -5,12 +5,8 @@
       notification.status === 'READ' ? 'bg-[#343851]/30' : 'bg-green-600/30'
     ]"
   >
-    <div v-if="isShort">
-
-    </div>
-    <div v-else>
-
-    </div>
+    <div v-if="isShort" />
+    <div v-else />
   </div>
 </template>
 
@@ -28,10 +24,9 @@ defineProps({
     default: false
   }
 })
-const handleRead = (e: Event) => {
-  e.preventDefault();
-
-}
+// const handleRead = (e: Event) => {
+//   e.preventDefault();
+// }
 </script>
 
 <style scoped></style>

@@ -1,7 +1,6 @@
-import { Physics } from 'phaser'
 import { GameUser } from '@/Game/network/GameNetwork'
 import PongScene from '@/Game/scenes/PongScene'
-import { PadMovedData, PAD_DIRECTION, PaddleEngineData } from '@/Game/network/Monitor'
+import { PAD_DIRECTION, PaddleEngineData } from '@/Game/network/Monitor'
 import { Theme } from '@/Game/scenes/Boot'
 
 export enum PlayerType {

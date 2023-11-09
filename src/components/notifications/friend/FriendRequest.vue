@@ -1,5 +1,8 @@
 <template>
-  <div class="border-green-400/30 block cursor-pointer" @click="handleRead">
+  <div
+    class="border-green-400/30 block cursor-pointer"
+    @click="handleRead"
+  >
     <div
       v-if="isShort"
       :class="[
@@ -10,20 +13,48 @@
       <AvatarBadge :user-id="notification.referenceId" />
       <div class="flex justify-between">
         <div class="flex flex-col gap-2">
-          <p class="text-left text-sm fomt-semiBold">{{ notification.title }}</p>
-          <p class="text-xs text-gray-500 text-left">{{ notification.message }}</p>
+          <p class="text-left text-sm fomt-semiBold">
+            {{ notification.title }}
+          </p>
+          <p class="text-xs text-gray-500 text-left">
+            {{ notification.message }}
+          </p>
         </div>
         <div class="flex flex-column justify-between items-center">
-          <VTooltip v-if="notification.status === 'UNREAD'" bottom>
+          <VTooltip
+            v-if="notification.status === 'UNREAD'"
+            bottom
+          >
             <template #activator="{ props }">
-              <VIcon color="pink" small v-bind="props"> ph-dot-duotone </VIcon>
+              <VIcon
+                color="pink"
+                small
+                v-bind="props"
+              >
+                ph-dot-duotone
+              </VIcon>
             </template>
             <span>Non lue</span>
           </VTooltip>
-          <VTooltip v-else bottom>
+          <VTooltip
+            v-else
+            bottom
+          >
             <template #activator="{ props }">
-              <VBtn variant="tonal" color="pink" :size="15" :icon="true" @click.stop="handleDelete">
-                <VIcon color="pink" :size="10" v-bind="props"> tabler-x </VIcon>
+              <VBtn
+                variant="tonal"
+                color="pink"
+                :size="15"
+                :icon="true"
+                @click.stop="handleDelete"
+              >
+                <VIcon
+                  color="pink"
+                  :size="10"
+                  v-bind="props"
+                >
+                  tabler-x
+                </VIcon>
               </VBtn>
             </template>
             <span>Supprimer</span>
@@ -31,24 +62,55 @@
         </div>
       </div>
     </div>
-    <div v-else class="flex flex-rows gap-8">
+    <div
+      v-else
+      class="flex flex-rows gap-8"
+    >
       <AvatarBadge :user-id="notification.referenceId" />
       <div class="flex justify-between flex-1">
         <div class="flex flex-col gap-2">
-          <p class="text-left text-sm fomt-semiBold">{{ notification.title }}</p>
-          <p class="text-xs text-gray-500 text-left">{{ notification.message }}</p>
+          <p class="text-left text-sm fomt-semiBold">
+            {{ notification.title }}
+          </p>
+          <p class="text-xs text-gray-500 text-left">
+            {{ notification.message }}
+          </p>
         </div>
         <div class="flex flex-column justify-between items-center">
-          <VTooltip v-if="notification.status === 'UNREAD'" bottom>
+          <VTooltip
+            v-if="notification.status === 'UNREAD'"
+            bottom
+          >
             <template #activator="{ props }">
-              <VIcon color="pink" small v-bind="props"> ph-dot-duotone </VIcon>
+              <VIcon
+                color="pink"
+                small
+                v-bind="props"
+              >
+                ph-dot-duotone
+              </VIcon>
             </template>
             <span>Non lue</span>
           </VTooltip>
-          <VTooltip v-else bottom>
+          <VTooltip
+            v-else
+            bottom
+          >
             <template #activator="{ props }">
-              <VBtn variant="tonal" color="pink" :size="15" :icon="true" @click.stop="handleDelete">
-                <VIcon color="pink" :size="10" v-bind="props"> tabler-x </VIcon>
+              <VBtn
+                variant="tonal"
+                color="pink"
+                :size="15"
+                :icon="true"
+                @click.stop="handleDelete"
+              >
+                <VIcon
+                  color="pink"
+                  :size="10"
+                  v-bind="props"
+                >
+                  tabler-x
+                </VIcon>
               </VBtn>
             </template>
             <span>Supprimer</span>

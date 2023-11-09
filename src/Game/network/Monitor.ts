@@ -1,6 +1,4 @@
 import { GameNetwork, GameUser, GameUserType } from '@/Game/network/GameNetwork'
-import useGameStore from '@/stores/GameStore'
-import { useRouter } from 'vue-router'
 
 export enum PAD_DIRECTION {
   up,

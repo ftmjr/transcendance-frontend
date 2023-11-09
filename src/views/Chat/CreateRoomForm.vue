@@ -1,13 +1,31 @@
 <template>
   <div>
     <div class="text-end mt-2">
-      <VBtn variant="text" color="default" icon size="small" @click="$emit('close')">
-        <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
+      <VBtn
+        variant="text"
+        color="default"
+        icon
+        size="small"
+        @click="$emit('close')"
+      >
+        <VIcon
+          size="18"
+          icon="tabler-x"
+          color="error"
+          class="text-medium-emphasis"
+        />
       </VBtn>
     </div>
     <div>
-      <VForm v-model="form" title="Créer une salle" class="px-2" @submit.prevent="createRoom">
-        <p class="text-center text-lg text-primary">Créer votre salle</p>
+      <VForm
+        v-model="form"
+        title="Créer une salle"
+        class="px-2"
+        @submit.prevent="createRoom"
+      >
+        <p class="text-center text-lg text-primary">
+          Créer votre salle
+        </p>
         <VTextField
           v-model="roomName"
           label="Nom de la salle"

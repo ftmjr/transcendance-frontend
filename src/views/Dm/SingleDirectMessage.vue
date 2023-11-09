@@ -21,6 +21,7 @@
         >
           <div
             v-for="(msgGrp, index) in msgGroups"
+            :key="`${msgGrp.senderId} - ${index}`"
             class="p-2"
             :class="msgGrp.senderId !== conversationWith.id ? 'self-end text-right' : 'self-start'"
           >
@@ -32,7 +33,10 @@
                   : 'text-left bg-[#343851] after:bg-[#343851]'
               "
             >
-              <span v-for="(msgData, msgIndex) in msgGrp.messages" :key="msgData.time">
+              <span
+                v-for="msgData in msgGrp.messages"
+                :key="msgData.time"
+              >
                 {{ msgData.message }}
               </span>
             </p>
@@ -45,7 +49,7 @@
               }}
             </span>
           </div>
-          <div class="h-8 shrink-0 grow-0 w-full"></div>
+          <div class="h-8 shrink-0 grow-0 w-full" />
         </PerfectScrollbar>
       </div>
     </div>
@@ -62,8 +66,8 @@
           <template #append-inner>
             <VBtn
               type="submit"
-              @click.prevent="sendMessage"
               class="rounded-full h-8 w-8 text-gray-50 bg-red-400"
+              @click.prevent="sendMessage"
             >
               <svg
                 class="fill-current text-current h-4 w-4"

@@ -1,32 +1,61 @@
 <template>
   <v-card color="transparent">
     <div :class="[colorClass, 'p-6']">
-      <h3 class="underline underline-offset-4">Statistiques</h3>
+      <h3 class="underline underline-offset-4">
+        Statistiques
+      </h3>
       <v-card-text>
         <v-row>
-          <v-col cols="3" class="text-center">
-            <VAvatar icon="icon-park-twotone:game-three" color="primary" variant="tonal" />
+          <v-col
+            cols="3"
+            class="text-center"
+          >
+            <VAvatar
+              icon="icon-park-twotone:game-three"
+              color="primary"
+              variant="tonal"
+            />
             <p>Parties Jouée(s)</p>
             <p class="font-weight-bold">
               {{ numberOfGames }}
             </p>
           </v-col>
-          <v-col cols="3" class="text-center">
-            <VAvatar icon="tabler-trophy" color="yellow" />
+          <v-col
+            cols="3"
+            class="text-center"
+          >
+            <VAvatar
+              icon="tabler-trophy"
+              color="yellow"
+            />
             <p>Victoire</p>
             <p class="font-weight-bold">
               {{ numberOfWins }}
             </p>
           </v-col>
-          <v-col cols="3" class="text-center">
-            <VAvatar icon="ph:soccer-ball-fill" color="blue" variant="tonal" />
+          <v-col
+            cols="3"
+            class="text-center"
+          >
+            <VAvatar
+              icon="ph:soccer-ball-fill"
+              color="blue"
+              variant="tonal"
+            />
             <p>Buts</p>
             <p class="font-weight-bold">
               {{ numberOfGoals }}
             </p>
           </v-col>
-          <v-col cols="3" class="text-center">
-            <VAvatar icon="tabler-shield-x" color="red" variant="tonal" />
+          <v-col
+            cols="3"
+            class="text-center"
+          >
+            <VAvatar
+              icon="tabler-shield-x"
+              color="red"
+              variant="tonal"
+            />
             <p>Défaite(s)</p>
             <p class="font-weight-bold">
               {{ numberOfLostGames }}
