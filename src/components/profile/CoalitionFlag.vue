@@ -13,26 +13,14 @@
       class="absolute h-16 w-16"
     >
       <g id="banner-content">
-        <g
-          id="UI-Intranet-banner-content"
-          transform="translate(-96.000000, -60.000000)"
-        >
-          <g
-            id="banner-content-g-1"
-            transform="translate(96.000000, 60.000000)"
-          >
-            <polygon
-              id="banner-content-polygon-1"
-              points="0,0 0,80.5 34.3,104 68,80.5 68,0"
-            />
+        <g id="UI-Intranet-banner-content" transform="translate(-96.000000, -60.000000)">
+          <g id="banner-content-g-1" transform="translate(96.000000, 60.000000)">
+            <polygon id="banner-content-polygon-1" points="0,0 0,80.5 34.3,104 68,80.5 68,0" />
           </g>
         </g>
       </g>
     </svg>
-    <img
-      :src="image"
-      class="absolute w-8 h-8 fill-white"
-    >
+    <img :src="image" class="absolute w-8 h-8 fill-white" />
   </div>
 </template>
 

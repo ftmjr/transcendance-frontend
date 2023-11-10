@@ -1,8 +1,5 @@
 <template>
-  <li
-    class="cursor-pointer"
-    :class="{ 'chat-contact-active': isActive }"
-  >
+  <li class="cursor-pointer" :class="{ 'chat-contact-active': isActive }">
     <div class="flex items-center contact">
       <VBadge
         v-if="contact.profile?.status"

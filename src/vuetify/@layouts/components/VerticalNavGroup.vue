@@ -141,10 +141,7 @@ watch(isVerticalNavMini(windowWidth, isVerticalNavHovered), (val) => {
       }
     ]"
   >
-    <div
-      class="nav-group-label"
-      @click="isGroupOpen = !isGroupOpen"
-    >
+    <div class="nav-group-label" @click="isGroupOpen = !isGroupOpen">
       <Component
         :is="config.app.iconRenderer || 'div'"
         v-bind="item.icon || config.verticalNav.defaultNavItemIconProps"
@@ -184,10 +181,7 @@ watch(isVerticalNavMini(windowWidth, isVerticalNavHovered), (val) => {
       </TransitionGroup>
     </div>
     <TransitionExpand>
-      <ul
-        v-show="isGroupOpen"
-        class="nav-group-children"
-      >
+      <ul v-show="isGroupOpen" class="nav-group-children">
         <Component
           :is="'children' in child ? 'VerticalNavGroup' : VerticalNavLink"
           v-for="child in item.children"

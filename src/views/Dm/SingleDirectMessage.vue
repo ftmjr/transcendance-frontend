@@ -33,10 +33,7 @@
                   : 'text-left bg-[#343851] after:bg-[#343851]'
               "
             >
-              <span
-                v-for="msgData in msgGrp.messages"
-                :key="msgData.time"
-              >
+              <span v-for="msgData in msgGrp.messages" :key="msgData.time">
                 {{ msgData.message }}
               </span>
             </p>

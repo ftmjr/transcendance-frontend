@@ -89,7 +89,7 @@ export interface ProfileData {
 }
 export interface AuthState {
   token: string | null
-  user: User | null
+  user: (User & { profile: Profile }) | null
   error: {
     state: boolean
     message: string
@@ -106,5 +106,5 @@ export interface RegisterBody {
 
 export interface ILoginData {
   accessToken: string
-  user: User
+  user: User & { profile: Profile }
 }
