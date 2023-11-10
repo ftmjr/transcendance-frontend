@@ -49,15 +49,15 @@ export default defineComponent({
     component() {
       switch (this.notification.type) {
         case NotificationType.FRIEND_REQUEST:
-          return this.getComponentForFriends();
+          return this.getComponentForFriends()
         case NotificationType.GAME_EVENT:
-          return this.getComponentForGameEvent();
+          return this.getComponentForGameEvent()
         case NotificationType.GAME_INVITE:
-          return this.getComponentForGameInvitation();
+          return this.getComponentForGameInvitation()
         case NotificationType.PRIVATE_MESSAGE:
-          return this.getComponentForChat();
+          return this.getComponentForChat()
         default:
-          return null;
+          return null
       }
     }
   },
@@ -71,7 +71,7 @@ export default defineComponent({
         case `Demande d'amitié`:
           return FriendRequest
         default:
-          return null;
+          return null
       }
     },
     getComponentForGameInvitation() {

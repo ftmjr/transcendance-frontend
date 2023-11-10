@@ -40,7 +40,9 @@ const useAuthStore = defineStore({
   id: 'auth',
   state: (): AuthState => {
     const token = localStorage.getItem('__token__') || null
-    const user = JSON.parse(localStorage.getItem('__user__') ?? 'null') as User | null
+    const user = JSON.parse(localStorage.getItem('__user__') ?? 'null') as
+      | (User & { profile: Profile })
+      | null
     return {
       token,
       user,
@@ -97,7 +99,7 @@ const useAuthStore = defineStore({
     isLocked(): boolean {
       return this.status === LoginStatus.LOCKED
     },
-    getUser(): User | null {
+    getUser(): (User & { profile: Profile }) | null {
       return this.user
     },
     getProfile(): Profile | null {
@@ -112,7 +114,7 @@ const useAuthStore = defineStore({
     }
   },
   actions: {
-    setUser(user: User) {
+    setUser(user: User & { profile: Profile }) {
       this.user = user
       localStorage.setItem('__user__', JSON.stringify(user))
     },
@@ -131,12 +133,12 @@ const useAuthStore = defineStore({
     async login(credentials: { username: string; password: string }): Promise<boolean> {
       this.error = { state: false, message: '' }
       try {
-        const { data } = await axios.post('auth/login', credentials, {
+        const { data } = await axios.post<ILoginData>('auth/login', credentials, {
           headers: {
             'Content-Type': 'application/json'
           }
         })
-        const { accessToken, user } = data as ILoginData
+        const { accessToken, user } = data
         this.setUser(user)
         this.setToken(accessToken)
         return true
@@ -304,7 +306,7 @@ const useAuthStore = defineStore({
     async updateUsername(username: string) {
       this.error = { state: false, message: '' }
       try {
-        const { data } = await axios.post<User>('users/username/' + username)
+        const { data } = await axios.post<User & { profile: Profile }>('users/username/' + username)
         if (this.user) {
           this.setUser({ ...this.user, username: data.username })
         } else {

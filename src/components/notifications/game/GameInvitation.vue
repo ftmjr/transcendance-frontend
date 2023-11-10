@@ -36,8 +36,6 @@ defineProps({
     default: false
   }
 })
-
-
 </script>
 
 <style scoped></style>

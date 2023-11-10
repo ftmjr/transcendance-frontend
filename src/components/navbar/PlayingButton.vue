@@ -14,8 +14,8 @@
 </template>
 
 <script setup lang="ts">
-import useGameStore from "@/stores/GameStore";
-const gameStore = useGameStore();
+import useGameStore from '@/stores/GameStore'
+const gameStore = useGameStore()
 </script>
 
 <style scoped></style>

@@ -92,9 +92,10 @@ export interface userOrderBy {
   updatedAt?: SortOrder
 }
 
-export type ShortUserProfile = Pick<User, 'id' | 'profile' | 'username' | 'email' | 'updatedAt'> & {
-  profile: Profile
-}
+export type ShortUserProfile = Pick<
+  User & { profile: Profile },
+  'id' | 'profile' | 'username' | 'email' | 'updatedAt'
+>
 
 const useUserStore = defineStore({
   id: 'userStore',

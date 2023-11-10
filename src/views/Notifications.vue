@@ -4,7 +4,7 @@
       <VCardTitle>Notifications</VCardTitle>
       <p class="text-sm mt-2 mb-0">
         Voici une liste de ce qu'il se passe dans votre compte
-        <br>
+        <br />
         Vous avez
         <span class="font-weight-semibold text-md">
           {{ notificationStore.unreadNotificationsCount }} notifications non lues
@@ -15,21 +15,13 @@
       <VTable class="text-no-wrap rounded border bg-surface">
         <thead>
           <tr>
-            <th scope="col">
-              Notification
-            </th>
+            <th scope="col">Notification</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="notification in notificationStore.allNotifications"
-            :key="notification.id"
-          >
+          <tr v-for="notification in notificationStore.allNotifications" :key="notification.id">
             <td class="text-center">
-              <Notification
-                :notification="notification"
-                @mark-as-read="markAsRead"
-              />
+              <Notification :notification="notification" @mark-as-read="markAsRead" />
             </td>
           </tr>
         </tbody>

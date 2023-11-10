@@ -1,15 +1,7 @@
 <template>
-  <VCard
-    color="#952175"
-    :loading="loading"
-  >
+  <VCard color="#952175" :loading="loading">
     <template #loader="{ isActive }">
-      <v-progress-linear
-        :active="isActive"
-        color="blue"
-        height="20"
-        :indeterminate="true"
-      />
+      <v-progress-linear :active="isActive" color="blue" height="20" :indeterminate="true" />
     </template>
     <VCarousel
       cycle
@@ -19,104 +11,56 @@
       :delimiter-icon="() => h(VIcon, { icon: 'fa-circle', size: '10' })"
       height="320"
     >
-      <VCarouselItem
-        v-for="(room, index) in topRooms"
-        :key="room.id"
-      >
+      <VCarouselItem v-for="(room, index) in topRooms" :key="room.id">
         <VCardText class="h-full">
           <VRow class="h-25">
             <VCol cols="12">
-              <h6 class="font-weight-semibold text-white">
-                Les Top Chat - {{ index + 1 }}
-              </h6>
+              <h6 class="font-weight-semibold text-white">Les Top Chat - {{ index + 1 }}</h6>
             </VCol>
-            <VCol
-              cols="12"
-              sm="6"
-              order="2"
-              order-sm="1"
-            >
+            <VCol cols="12" sm="6" order="2" order-sm="1">
               <VRow>
-                <VCol
-                  cols="12"
-                  class="pb-0"
-                >
+                <VCol cols="12" class="pb-0">
                   <p class="text-xl font-weight-semibold">
                     {{ room.name }}
                   </p>
                 </VCol>
-                <VCol
-                  cols="6"
-                  class="text-no-wrap"
-                >
-                  <VChip
-                    label
-                    class="me-2"
-                  >
+                <VCol cols="6" class="text-no-wrap">
+                  <VChip label class="me-2">
                     {{ room.members.length }}
                   </VChip>
                   <span>Membres(s)</span>
                 </VCol>
-                <VCol
-                  cols="6"
-                  class="text-no-wrap"
-                >
-                  <VChip
-                    label
-                    class="me-2"
-                  >
+                <VCol cols="6" class="text-no-wrap">
+                  <VChip label class="me-2">
                     {{ room.type }}
                   </VChip>
                 </VCol>
-                <VCol
-                  cols="12"
-                  class="pt-2 items-center justify-center"
-                >
+                <VCol cols="12" class="pt-2 items-center justify-center">
                   <VBtn
                     v-if="!isCurrentUserAMember(room)"
                     color="white"
                     class="text-no-wrap"
                     @click="joinRoom(room.id)"
                   >
-                    <VIcon left>
-                      mdi-account-plus
-                    </VIcon>
+                    <VIcon left> mdi-account-plus </VIcon>
                     <span>Rejoindre</span>
                   </VBtn>
-                  <VBtn
-                    v-else
-                    color="white"
-                    @click="goToChatRoom(room.id)"
-                  >
-                    <VIcon left>
-                      tabler-eye
-                    </VIcon>
+                  <VBtn v-else color="white" @click="goToChatRoom(room.id)">
+                    <VIcon left> tabler-eye </VIcon>
                     <span>Voir</span>
                   </VBtn>
                 </VCol>
               </VRow>
             </VCol>
-            <VCol
-              cols="12"
-              sm="6"
-              order="1"
-              order-sm="2"
-            >
-              <img
-                v-if="room.avatar"
-                :src="room.avatar"
-                class="rounded object-cover"
-              >
+            <VCol cols="12" sm="6" order="1" order-sm="2">
+              <img v-if="room.avatar" :src="room.avatar" class="rounded object-cover" />
             </VCol>
           </VRow>
         </VCardText>
       </VCarouselItem>
     </VCarousel>
   </VCard>
-  <NotificationPopUp
-    v-model:visible="popUpVisible"
-    :snackbar-msg="popUpMessage"
-  />
+  <NotificationPopUp v-model:visible="popUpVisible" :snackbar-msg="popUpMessage" />
 </template>
 
 <script lang="ts">

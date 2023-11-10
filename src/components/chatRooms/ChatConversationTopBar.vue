@@ -9,24 +9,13 @@
       class="d-md-none me-3"
       @click="isLeftSidebarOpenLocal = true"
     >
-      <VIcon
-        size="24"
-        icon="tabler-menu-2"
-      />
+      <VIcon size="24" icon="tabler-menu-2" />
     </VBtn>
     <template v-if="room">
-      <RoomCard :room="room" />
-      <VChip
-        v-if="room.password"
-        label
-        color="error"
-        text-color="white"
-        class="mx-2"
-      >
+      <RoomCard :room="room" :top-bar="true" />
+      <VChip v-if="room.password" label color="error" text-color="white" class="mx-2">
         Salle protégée
-        <VIcon :size="16">
-          tabler-lock
-        </VIcon>
+        <VIcon :size="16"> tabler-lock </VIcon>
       </VChip>
       <VChip
         v-if="userRole === 'OWNER'"
@@ -35,9 +24,7 @@
         text-color="white"
         class="mx-2"
       >
-        <VIcon :size="16">
-          tabler-crown
-        </VIcon>
+        <VIcon :size="16"> tabler-crown </VIcon>
         PROPRIÉTAIRE
       </VChip>
       <VChip
@@ -47,9 +34,7 @@
         text-color="white"
         class="mx-2"
       >
-        <VIcon :size="16">
-          tabler-shield-check
-        </VIcon>
+        <VIcon :size="16"> tabler-shield-check </VIcon>
         ADMIN
       </VChip>
       <VChip
@@ -59,9 +44,7 @@
         text-color="white"
         class="mx-2"
       >
-        <VIcon :size="16">
-          tabler-user
-        </VIcon>
+        <VIcon :size="16"> tabler-user </VIcon>
         MEMBRE
       </VChip>
       <VChip
@@ -71,9 +54,7 @@
         text-color="white"
         class="mx-2"
       >
-        <VIcon :size="16">
-          tabler-user-x
-        </VIcon>
+        <VIcon :size="16"> tabler-user-x </VIcon>
         BANNI
       </VChip>
       <VSpacer />
@@ -87,22 +68,11 @@
           size="small"
           @click="$emit('showAdminSidebar')"
         >
-          <VIcon
-            size="22"
-            icon="tabler-settings"
-          />
+          <VIcon size="22" icon="tabler-settings" />
         </VBtn>
       </div>
-      <VBtn
-        variant="text"
-        color="default"
-        icon
-        size="small"
-      >
-        <VIcon
-          size="22"
-          icon="tabler-dots-vertical"
-        />
+      <VBtn variant="text" color="default" icon size="small">
+        <VIcon size="22" icon="tabler-dots-vertical" />
         <VMenu activator="parent">
           <VList>
             <VListItem prepend-icon="tabler-trash">
