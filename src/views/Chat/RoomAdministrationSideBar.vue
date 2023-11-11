@@ -18,7 +18,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="member in admins" :key="member.member.id">
+            <tr v-for="member in roomStore.getCurrentRoomMembers" :key="member.member.id">
               <td>
                 <AvatarBadge
                   :user-id="member.member.id"
@@ -27,10 +27,6 @@
                 />
               </td>
               <td class="flex justify-end align-center">
-<<<<<<< HEAD
-                <VBtn variant="text" size="small" @click="$emit('showUserProfile')">
-                  <VIcon :size="18" color="error"> tabler-trash </VIcon>
-=======
                 <VBtn
                   variant="text"
                   size="small"
@@ -42,7 +38,6 @@
                   >
                     tabler-trash
                   </VIcon>
->>>>>>> origin/feature/chat-and-game
                 </VBtn>
               </td>
             </tr>
@@ -57,11 +52,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-<<<<<<< HEAD
-import useRoomsStore, { MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
-=======
 import useRoomsStore, { MemberRoomWithUserProfiles } from "@/stores/RoomsStore";
->>>>>>> origin/feature/chat-and-game
 import useAuthStore from '@/stores/AuthStore'
 import { ChatMemberRole } from '@/utils/chatSocket'
 
@@ -91,23 +82,11 @@ export default defineComponent({
       return member?.role ?? ChatMemberRole.USER
     },
     admins(): MemberRoomWithUserProfiles[] {
-<<<<<<< HEAD
-      return this.roomStore.getCurrentRoomMembers.filter(
-        (member) => member.role === ChatMemberRole.ADMIN
-      )
-    },
-    bans(): MemberRoomWithUserProfiles[] {
-      return this.roomStore.getCurrentRoomMembers.filter(
-        (member) => member.role === ChatMemberRole.BAN
-      )
-    }
-=======
       return this.roomStore.getCurrentRoomMembers.filter((member) => member.role === ChatMemberRole.ADMIN)
     },
     bans(): MemberRoomWithUserProfiles[] {
       return this.roomStore.getCurrentRoomMembers.filter((member) => member.role === ChatMemberRole.BAN)
     },
->>>>>>> origin/feature/chat-and-game
   }
 })
 </script>
