@@ -26,13 +26,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import { VOtpInput } from 'vuetify/labs/VOtpInput'
 
 export default defineComponent({
   name: 'TwoFactors',
-  components: {
-    VOtpInput
-  },
   setup() {
     const authStore = useAuthStore()
     return { authStore }

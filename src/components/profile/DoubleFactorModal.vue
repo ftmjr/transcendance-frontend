@@ -33,13 +33,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import { VOtpInput } from 'vuetify/labs/VOtpInput'
 
 export default defineComponent({
   name: 'DoubleFactorModal',
-  components: {
-    VOtpInput
-  },
   props: {
     isDialogVisible: {
       type: Boolean,
@@ -60,7 +56,7 @@ export default defineComponent({
   },
   computed: {
     isVerified() {
-      return this.authStore.user.twoFactorEnabled
+      return this.authStore.getUser()?.twoFactorEnabled
     }
   },
   watch: {
