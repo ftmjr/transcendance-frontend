@@ -18,7 +18,7 @@ export default class Boot extends Scene {
 
   constructor() {
     super({
-      key: 'boot'
+      key: 'Boot'
     })
   }
 

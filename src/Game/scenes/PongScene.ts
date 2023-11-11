@@ -21,14 +21,14 @@ export default class PongScene extends Scene {
   private scoreRoutineOn = false
   private soundConfig: Phaser.Types.Sound.SoundConfig = { mute: false, volume: 0.5 }
   constructor() {
-    super('PongScene')
+    super('PongGame')
   }
 
   init(data: SceneInitData) {
     this.currentUser = data.currentUser
     this.theme = data.theme
     this.monitor = data.gameMonitor
-    this.monitor.cleanAllPhaserRoutines()
+    this.monitor.cleanAllPhaserRoutines();
   }
 
   create() {

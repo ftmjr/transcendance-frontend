@@ -22,7 +22,6 @@ export default class Button extends GameObjects.Container {
     this.textLabel.setOrigin(0.5, 0.5)
     this.add(this.textLabel)
     this.setupInteractivity()
-    scene.add.existing(this)
   }
 
   private getDefaultTextStyle(): Phaser.Types.GameObjects.Text.TextStyle {
@@ -103,7 +102,7 @@ export class HomeButton extends GameObjects.Image {
   private _btnActive: boolean = true
   public isHomePage = true
   constructor(
-    public scene: Menu,
+    scene: Menu,
     x: number,
     y: number,
     public _onClick: () => void

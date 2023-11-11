@@ -11,36 +11,13 @@ enum MenuSection {
   Credits
 }
 
-class MenuSectionBox extends GameObjects.Container {
-  private visibleSection: boolean = false
-
-  constructor(
-    public sectionType: MenuSection,
-    public scene: Menu,
-    position: { x: number; y: number }
-  ) {
-    super(scene, position.x, position.y)
-    this.setVisible(false).setActive(false)
-  }
-
-  get isVisible() {
-    return this.visibleSection
-  }
-  set isVisible(status: boolean) {
-    this.visibleSection = status
-    this.setVisible(status).setActive(status)
-  }
-
-  updateSection(currentSection: MenuSection) {
-    this.isVisible = this.sectionType === currentSection
-  }
-}
-
 export default class Menu extends Scene {
+  sceneData!: SceneInitData
   private menuSection: MenuSection = MenuSection.Home
   private currentUser!: GameUser & { userType: GameUserType }
   private theme = Theme.Classic
   public monitor!: Monitor
+  private switchingScene = false
 
   //home button
   private homeBtn!: HomeButton // Allow user to come back to home
@@ -56,21 +33,21 @@ export default class Menu extends Scene {
   private statusNetworkText!: GameObjects.Text
 
   constructor() {
-    super({
-      key: 'Menu'
-    })
+    super('Menu')
   }
 
   preload() {}
 
   init(data: SceneInitData) {
-    this.monitor = data.gameMonitor
+    this.sceneData = data
+    this.monitor = data.gameMonitor;
     this.monitor.cleanAllPhaserRoutines()
-    this.currentUser = data.currentUser
-    this.theme = data.theme
+    this.currentUser = data.currentUser;
+    this.theme = data.theme;
   }
 
   create() {
+    this.switchingScene = false;
     this.createBackgroundLayer()
     this.createHomeBtn()
     this.createPanelBox()
@@ -81,14 +58,14 @@ export default class Menu extends Scene {
     this.playerListUpdate(this.monitor.players)
     switch (this.monitor.state) {
       case GAME_STATE.Play:
-      case GAME_STATE.Play:
-        this.moveToPlayingScene()
+      case GAME_STATE.Pause:
+        this.moveToPongScene();
         break
       case GAME_STATE.Ended:
-        this.gameEndedUiUpdate()
+        this.gameEndedUiUpdate();
         break
     }
-    this.setupEventListeners()
+    this.setupMonitorEventListeners()
   }
 
   createHomeBtn() {
@@ -265,11 +242,11 @@ export default class Menu extends Scene {
   update(time: number, delta: number) {
     // activate the correct section and deactivate the others
   }
-  private setupEventListeners(): void {
+  setupMonitorEventListeners(): void {
     this.monitor._phaserGameMonitorStateChangedRoutine = (state) => {
       this.handleGameStateChange(state)
       if (state === GAME_STATE.Play || state === GAME_STATE.Pause) {
-        this.moveToPlayingScene()
+        this.moveToPongScene();
       }
     }
     this.monitor._phaserNewPlayerListRoutine = (players) => {
@@ -326,7 +303,7 @@ export default class Menu extends Scene {
         this.statusNetworkText.text = 'Playing'
         this.boardText.text = `Let's Go`
         this.startButton.setVisible(true).btnActiveStatus = false
-        this.moveToPlayingScene()
+        this.moveToPongScene()
         break
       case GAME_STATE.Ended:
         this.statusNetworkText.text = 'Game ended'
@@ -341,13 +318,11 @@ export default class Menu extends Scene {
     this.statusNetworkText.text = `${player.username} left`
   }
 
-  private moveToPlayingScene() {
-    this.monitor.cleanAllPhaserRoutines()
-    this.scene.start('PongScene', {
-      currentUser: this.currentUser,
-      gameMonitor: this.monitor,
-      theme: this.theme
-    })
+  moveToPongScene() {
+    if (this.switchingScene) return;
+    this.switchingScene = true;
+    this.monitor.cleanAllPhaserRoutines();
+    this.scene.start('PongGame', this.sceneData);
   }
 
   gameEndedUiUpdate() {
@@ -376,3 +351,29 @@ export default class Menu extends Scene {
     }
   }
 }
+
+class MenuSectionBox extends GameObjects.Container {
+  private visibleSection: boolean = false
+
+  constructor(
+    public sectionType: MenuSection,
+    scene: Menu,
+    position: { x: number; y: number }
+  ) {
+    super(scene, position.x, position.y)
+    this.setVisible(false).setActive(false)
+  }
+
+  get isVisible() {
+    return this.visibleSection
+  }
+  set isVisible(status: boolean) {
+    this.visibleSection = status
+    this.setVisible(status).setActive(status)
+  }
+
+  updateSection(currentSection: MenuSection) {
+    this.isVisible = this.sectionType === currentSection
+  }
+}
+

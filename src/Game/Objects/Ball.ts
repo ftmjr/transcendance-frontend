@@ -10,7 +10,7 @@ export class Ball {
   private readonly ball: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
 
   constructor(
-    private scene: PongScene,
+    public scene: PongScene,
     private theme: Theme,
     private startPosition: { x: number; y: number }
   ) {

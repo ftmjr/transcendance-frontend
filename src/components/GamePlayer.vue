@@ -32,12 +32,16 @@ export default defineComponent({
   data() {
     return {
       gameMonitor: null as unknown as Monitor,
-      game: null as unknown as Game
     }
   },
   mounted() {
     const gameMonitor = new Monitor(this.roomId, this.player, this.moveToHistory)
     const gameContainer = this.$refs.player as HTMLElement
+    const dataInit = {
+      currentUser: this.player,
+      gameMonitor,
+      theme: this.theme
+    }
     const game = new Game({
       type: WEBGL,
       scale: {
@@ -59,38 +63,11 @@ export default defineComponent({
           gravity: { x: 0, y: 0 }
         }
       },
-      scene: {
-        create: () => {
-          game.scene.add('Boot', Boot, true, {
-            currentUser: this.player,
-            gameMonitor,
-            theme: this.theme
-          })
-          game.scene.add('Preload', Preload, false, {
-            currentUser: this.player,
-            gameMonitor,
-            theme: this.theme
-          })
-          game.scene.add('Menu', Menu, false, {
-            currentUser: this.player,
-            gameMonitor,
-            theme: this.theme
-          })
-          game.scene.add('PongScene', PongScene, false, {
-            currentUser: this.player,
-            gameMonitor,
-            theme: this.theme
-          })
-        }
-      }
     })
-    game.scene.start('Boot', {
-      currentUser: this.player,
-      gameMonitor,
-      theme: this.theme
-    })
-    this.gameMonitor = gameMonitor
-    this.game = game
+    game.scene.add('PongGame', PongScene, false, dataInit);
+    game.scene.add('Menu', Menu, false, dataInit);
+    game.scene.add('Preload', Preload, false, dataInit);
+    game.scene.add('Boot', Boot, true, dataInit);
   },
   beforeUnmount() {
     this.gameMonitor?.quitGame()

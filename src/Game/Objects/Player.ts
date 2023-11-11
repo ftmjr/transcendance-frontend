@@ -17,7 +17,7 @@ export class Player {
   public paddle: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
 
   constructor(
-    private scene: PongScene,
+    public scene: PongScene,
     private type: PlayerType,
     startPosition: { x: number; y: number },
     private isHost: boolean,
