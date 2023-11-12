@@ -29,11 +29,7 @@
               </span>
             </template>
           </v-tooltip>
-          <StatusBadge
-            v-if="id !== 0"
-            :value="info.status"
-            :user-id="id"
-          />
+          <StatusBadge v-if="id !== 0" :value="info.status" :user-id="id" />
         </div>
       </div>
       <div>
@@ -49,7 +45,7 @@ import useAuthStore from '@/stores/AuthStore'
 import useUserStore from '@/stores/UserStore'
 import FriendRequestBox from '@/components/profile/FriendRequestBox.vue'
 import CoalitionFlag from '@/components/profile/CoalitionFlag.vue'
-import StatusBadge from "@/components/profile/StatusBadge.vue";
+import StatusBadge from '@/components/profile/StatusBadge.vue'
 
 export default defineComponent({
   components: {

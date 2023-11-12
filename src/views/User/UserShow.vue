@@ -59,7 +59,7 @@ import Histories from '@/components/profile/Histories.vue'
 import UserProfileHeader from '@/components/profile/ProfileHeader.vue'
 import Friends from '@/components/profile/Friends.vue'
 import PlayerSimpleStats from '@/components/profile/PlayerSimpleStats.vue'
-import { Status } from "@/interfaces/User";
+import { Status } from '@/interfaces/User'
 
 type Tab = 'profile' | 'awards' | 'history' | 'friends'
 type TabItem = { title: string; icon: string; tab: Tab }
@@ -118,7 +118,7 @@ export default defineComponent({
           fullName: 'Hidden',
           username: 'no-username',
           joiningDate: Date.now(),
-          status: Status.Offline,
+          status: Status.Offline
         },
         bio: '',
         email: '',
@@ -163,8 +163,8 @@ export default defineComponent({
       this.loading = true
       this.errorMsg = ''
       try {
-        const { data } = await axios.get<User & { profile: Profile }>(`/users/profile/${userId}`);
-        if (data){
+        const { data } = await axios.get<User & { profile: Profile }>(`/users/profile/${userId}`)
+        if (data) {
           this.profileData = {
             id: data.id,
             header: {
@@ -181,9 +181,7 @@ export default defineComponent({
           }
         }
         this.gameHistories = data.gameHistories ?? []
-      } catch (error) {
-
-      }
+      } catch (error) {}
       this.loading = false
     }
   }

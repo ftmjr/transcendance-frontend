@@ -52,7 +52,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import useUserStore from "@/stores/UserStore";
+import useUserStore from '@/stores/UserStore'
 import type { User } from '@/interfaces/User'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
@@ -82,8 +82,8 @@ export default defineComponent({
   },
   emits: ['update:isLeftSidebarOpen'],
   setup() {
-    const authStore = useAuthStore();
-    const usersStore = useUserStore();
+    const authStore = useAuthStore()
+    const usersStore = useUserStore()
     return {
       authStore,
       usersStore
@@ -101,11 +101,11 @@ export default defineComponent({
   },
   methods: {
     async blockContact() {
-      if (!this.contact) return;
-      await this.usersStore.blockUser(this.contact.id);
+      if (!this.contact) return
+      await this.usersStore.blockUser(this.contact.id)
     },
     async showProfile() {
-      if (!this.contact) return;
+      if (!this.contact) return
       this.$router.push({
         name: 'user-profile',
         params: { userId: this.contact.id }

@@ -59,11 +59,18 @@ export default class Monitor {
   public _phaserNewViewerListRoutine: ((users: GameUser[]) => void) | undefined
   public _phaserBallServedRoutine: ((data: BallData) => void) | undefined
   public _phaserBallMovedRoutine:
-    | ((data: { position: { x: number; y: number }; speed: { x: number; y: number } }) => void)
+    | ((
+        data: { position: { x: number; y: number }; speed: { x: number; y: number } },
+        latency: number
+      ) => void)
     | undefined
-  public _phaserPlayerMovedRoutine: ((data: PaddleEngineData) => void) | undefined
+  public _phaserPlayerMovedRoutine: ((data: PaddleEngineData, latency: number) => void) | undefined
   public _phaserGameMonitorStateChangedRoutine: ((state: GAME_STATE) => void) | undefined
   public _phaserPlayerLeftRoutine: ((player: GameUser) => void) | undefined
+
+  // latency
+  private timestampHistory: number[] = [] // Store last 20 timestamps
+  public averageLatency: number = 0 // Public value for latency
 
   constructor(
     private readonly roomId: number,
@@ -116,20 +123,22 @@ export default class Monitor {
       if (this._phaserNewViewerListRoutine) this._phaserNewViewerListRoutine(this.viewers)
     })
     this.gameNetwork.onBallMoved((data) => {
-      if (this._phaserBallMovedRoutine) this._phaserBallMovedRoutine(data)
+      if (this._phaserBallMovedRoutine) this._phaserBallMovedRoutine(data, this.averageLatency)
     })
     this.gameNetwork.onPadMoved((data) => {
-      if (this._phaserPlayerMovedRoutine) this._phaserPlayerMovedRoutine(data)
+      if (this._phaserPlayerMovedRoutine) this._phaserPlayerMovedRoutine(data, this.averageLatency)
     })
     this.gameNetwork.onObjectsStatePacket((state) => {
-      const { paddles, ball, scores } = state
+      const { paddles, ball, scores, timestamp } = state
+      this.updateTimestampHistory(timestamp)
       if (paddles) {
         paddles.forEach((paddle) => {
-          if (this._phaserPlayerMovedRoutine) this._phaserPlayerMovedRoutine(paddle)
+          if (this._phaserPlayerMovedRoutine)
+            this._phaserPlayerMovedRoutine(paddle, this.averageLatency)
         })
       }
       if (ball) {
-        if (this._phaserBallMovedRoutine) this._phaserBallMovedRoutine(ball)
+        if (this._phaserBallMovedRoutine) this._phaserBallMovedRoutine(ball, this.averageLatency)
       }
       if (scores) {
         // check if same value with current score
@@ -232,5 +241,19 @@ export default class Monitor {
     }
     this.disconnectNetwork()
     this.moveToHistory()
+  }
+
+  private updateTimestampHistory(serverTimestamp: number) {
+    const clientTimestamp = Date.now()
+    this.timestampHistory.push(clientTimestamp - serverTimestamp)
+    // Keep only the last 20 timestamps
+    if (this.timestampHistory.length > 20) {
+      this.timestampHistory.shift()
+    }
+    this.calculateAverageLatency()
+  }
+  private calculateAverageLatency() {
+    const sumLatency = this.timestampHistory.reduce((a, b) => a + b, 0)
+    this.averageLatency = sumLatency / this.timestampHistory.length
   }
 }
