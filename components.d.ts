@@ -37,6 +37,7 @@ declare module 'vue' {
     PlayerSimpleStats: typeof import('./src/components/profile/PlayerSimpleStats.vue')['default']
     PlayingButton: typeof import('./src/components/navbar/PlayingButton.vue')['default']
     PongGamePlayer: typeof import('./src/components/PongGamePlayer.vue')['default']
+    ProfileHeader: typeof import('./src/components/profile/ProfileHeader.vue')['default']
     RequestAccepted: typeof import('./src/components/notifications/friend/RequestAccepted.vue')['default']
     RequestRejected: typeof import('./src/components/notifications/friend/RequestRejected.vue')['default']
     RoomAdministrator: typeof import('./src/components/notifications/chat/RoomAdministrator.vue')['default']
