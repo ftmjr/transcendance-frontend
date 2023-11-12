@@ -245,8 +245,8 @@ const useUserStore = defineStore({
     async blockUser(userId: number): Promise<'success' | 'error'> {
       try {
         const { data } = await axios.post<BlockedUser>(`/users/block/${userId}`)
-        this.blockedUsers.push(data);
-        await this.loadAllMyFriends();
+        this.blockedUsers.push(data)
+        await this.loadAllMyFriends()
         return 'success'
       } catch (error) {
         return 'error'
@@ -254,9 +254,9 @@ const useUserStore = defineStore({
     },
     async unblockUser(userId: number): Promise<'success' | 'error'> {
       try {
-        await axios.delete(`/users/unblock/${userId}`);
-        await this.loadBlockedUsers();
-        await this.loadAllMyFriends();
+        await axios.delete(`/users/unblock/${userId}`)
+        await this.loadBlockedUsers()
+        await this.loadAllMyFriends()
         return 'success'
       } catch (e) {
         return 'error'

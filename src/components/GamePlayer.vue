@@ -31,7 +31,7 @@ export default defineComponent({
   },
   data() {
     return {
-      gameMonitor: null as unknown as Monitor,
+      gameMonitor: null as unknown as Monitor
     }
   },
   mounted() {
@@ -62,12 +62,12 @@ export default defineComponent({
           debug: false,
           gravity: { x: 0, y: 0 }
         }
-      },
+      }
     })
-    game.scene.add('PongGame', PongScene, false, dataInit);
-    game.scene.add('Menu', Menu, false, dataInit);
-    game.scene.add('Preload', Preload, false, dataInit);
-    game.scene.add('Boot', Boot, true, dataInit);
+    game.scene.add('PongGame', PongScene, false, dataInit)
+    game.scene.add('Menu', Menu, false, dataInit)
+    game.scene.add('Preload', Preload, false, dataInit)
+    game.scene.add('Boot', Boot, true, dataInit)
   },
   beforeUnmount() {
     this.gameMonitor?.quitGame()

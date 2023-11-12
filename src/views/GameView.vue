@@ -25,7 +25,7 @@ import { defineAsyncComponent, defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import useGameStore from '@/stores/GameStore'
 import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
-import { Theme } from "@/Game/scenes/Boot";
+import { Theme } from '@/Game/scenes/Boot'
 
 export default defineComponent({
   name: 'GameUpgrade',
@@ -61,7 +61,7 @@ export default defineComponent({
       info: null as unknown as string,
       showInfo: false,
       showIsInQueList: true,
-      theme: Theme.Classic,
+      theme: Theme.Classic
     }
   },
   computed: {
@@ -72,7 +72,7 @@ export default defineComponent({
         avatar: this.authStore.getProfile?.avatar ?? '',
         userType: this.gameStore.isWatching ? GameUserType.Viewer : GameUserType.Player
       }
-    },
+    }
   },
   beforeMount() {
     if (this.gameStore.currentGameSession) {

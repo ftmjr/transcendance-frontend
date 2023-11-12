@@ -40,14 +40,14 @@ export default class Menu extends Scene {
 
   init(data: SceneInitData) {
     this.sceneData = data
-    this.monitor = data.gameMonitor;
+    this.monitor = data.gameMonitor
     this.monitor.cleanAllPhaserRoutines()
-    this.currentUser = data.currentUser;
-    this.theme = data.theme;
+    this.currentUser = data.currentUser
+    this.theme = data.theme
   }
 
   create() {
-    this.switchingScene = false;
+    this.switchingScene = false
     this.createBackgroundLayer()
     this.createHomeBtn()
     this.createPanelBox()
@@ -59,10 +59,10 @@ export default class Menu extends Scene {
     switch (this.monitor.state) {
       case GAME_STATE.Play:
       case GAME_STATE.Pause:
-        this.moveToPongScene();
+        this.moveToPongScene()
         break
       case GAME_STATE.Ended:
-        this.gameEndedUiUpdate();
+        this.gameEndedUiUpdate()
         break
     }
     this.setupMonitorEventListeners()
@@ -246,7 +246,7 @@ export default class Menu extends Scene {
     this.monitor._phaserGameMonitorStateChangedRoutine = (state) => {
       this.handleGameStateChange(state)
       if (state === GAME_STATE.Play || state === GAME_STATE.Pause) {
-        this.moveToPongScene();
+        this.moveToPongScene()
       }
     }
     this.monitor._phaserNewPlayerListRoutine = (players) => {
@@ -319,10 +319,10 @@ export default class Menu extends Scene {
   }
 
   moveToPongScene() {
-    if (this.switchingScene) return;
-    this.switchingScene = true;
-    this.monitor.cleanAllPhaserRoutines();
-    this.scene.start('PongGame', this.sceneData);
+    if (this.switchingScene) return
+    this.switchingScene = true
+    this.monitor.cleanAllPhaserRoutines()
+    this.scene.start('PongGame', this.sceneData)
   }
 
   gameEndedUiUpdate() {
@@ -376,4 +376,3 @@ class MenuSectionBox extends GameObjects.Container {
     this.isVisible = this.sectionType === currentSection
   }
 }
-

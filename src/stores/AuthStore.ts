@@ -111,6 +111,9 @@ const useAuthStore = defineStore({
     getCoalition(): Coalition {
       // @ts-expect-error : resolveCoalition, an action
       return this.resolveCoalition(this.getProfile)
+    },
+    getError(): { state: boolean; message: string } {
+      return this.error
     }
   },
   actions: {

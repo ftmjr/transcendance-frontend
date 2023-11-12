@@ -27,17 +27,8 @@
                 />
               </td>
               <td class="flex justify-end align-center">
-                <VBtn
-                  variant="text"
-                  size="small"
-                  @click="$emit('showUserProfile')"
-                >
-                  <VIcon
-                    :size="18"
-                    color="error"
-                  >
-                    tabler-trash
-                  </VIcon>
+                <VBtn variant="text" size="small" @click="$emit('showUserProfile')">
+                  <VIcon :size="18" color="error"> tabler-trash </VIcon>
                 </VBtn>
               </td>
             </tr>
@@ -52,7 +43,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import useRoomsStore, { MemberRoomWithUserProfiles } from "@/stores/RoomsStore";
+import useRoomsStore, { MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
 import useAuthStore from '@/stores/AuthStore'
 import { ChatMemberRole } from '@/utils/chatSocket'
 
@@ -82,11 +73,15 @@ export default defineComponent({
       return member?.role ?? ChatMemberRole.USER
     },
     admins(): MemberRoomWithUserProfiles[] {
-      return this.roomStore.getCurrentRoomMembers.filter((member) => member.role === ChatMemberRole.ADMIN)
+      return this.roomStore.getCurrentRoomMembers.filter(
+        (member) => member.role === ChatMemberRole.ADMIN
+      )
     },
     bans(): MemberRoomWithUserProfiles[] {
-      return this.roomStore.getCurrentRoomMembers.filter((member) => member.role === ChatMemberRole.BAN)
-    },
+      return this.roomStore.getCurrentRoomMembers.filter(
+        (member) => member.role === ChatMemberRole.BAN
+      )
+    }
   }
 })
 </script>

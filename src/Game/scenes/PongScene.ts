@@ -28,7 +28,7 @@ export default class PongScene extends Scene {
     this.currentUser = data.currentUser
     this.theme = data.theme
     this.monitor = data.gameMonitor
-    this.monitor.cleanAllPhaserRoutines();
+    this.monitor.cleanAllPhaserRoutines()
   }
 
   create() {

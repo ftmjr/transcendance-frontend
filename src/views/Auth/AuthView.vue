@@ -39,8 +39,8 @@
                   passwordFieldsVisibility.password = !passwordFieldsVisibility.password
                 "
               />
-              <VAlert v-if="authError.state" variant="tonal" color="error" class="mt-4">
-                {{ authError.message }}
+              <VAlert v-if="authStore.getError.state" variant="tonal" color="error" class="mt-4">
+                {{ authStore.getError.message }}
               </VAlert>
               <VBtn type="submit" block class="mt-4 mb-8"> Se Connecter </VBtn>
             </VCol>
@@ -79,7 +79,6 @@
             <VCol cols="12" md="6">
               <VTextField
                 v-model="signUpFields.firstName"
-                class="transparent-input-box"
                 :rules="[rules.required, rules.min]"
                 label="Prenom"
               />
@@ -87,7 +86,6 @@
             <VCol cols="12" md="6">
               <VTextField
                 v-model="signUpFields.lastName"
-                class="transparent-input-box"
                 :rules="[rules.required, rules.min]"
                 label="Nom de famille"
               />
@@ -96,7 +94,6 @@
             <VCol cols="12">
               <VTextField
                 v-model="signUpFields.username"
-                class="transparent-input-box"
                 :rules="[rules.required, rules.min]"
                 label="Pseudo"
               />
@@ -104,7 +101,6 @@
             <VCol cols="12">
               <v-text-field
                 v-model="signUpFields.email"
-                class="transparent-input-box"
                 :rules="[rules.required, rules.email]"
                 label="Email"
               />
@@ -112,7 +108,6 @@
             <VCol cols="12">
               <VTextField
                 v-model="signUpFields.password"
-                class="transparent-input-box"
                 :rules="[rules.required, rules.minPass, rules.upperCase]"
                 :type="passwordFieldsVisibility.newPassword ? 'text' : 'password'"
                 :append-inner-icon="
@@ -127,7 +122,6 @@
             <VCol cols="12">
               <VTextField
                 v-model="signUpFields.passwordConfirmation"
-                class="transparent-input-box"
                 :rules="[rules.required, rules.minPass, rules.upperCase, rules.match]"
                 :type="passwordFieldsVisibility.confirmPassword ? 'text' : 'password'"
                 :append-inner-icon="
@@ -141,8 +135,8 @@
               />
             </VCol>
             <VCol cols="12">
-              <VAlert v-if="authError.state" variant="tonal" color="error" class="mt-4">
-                {{ authError.message }}
+              <VAlert v-if="authStore.getError.state" variant="tonal" color="error" class="mt-4">
+                {{ authStore.getError.message }}
               </VAlert>
               <VBtn type="submit" block class="mt-4 mb-8" :disabled="!validSignUpForm">
                 Créer le compte <VIcon icon="tabler-edit" />
@@ -201,26 +195,21 @@ export default defineComponent({
       },
       validSignUpForm: false,
       rules: {
-        email: (value) => {
+        email: (value: string) => {
           const pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
           return pattern.test(value) || 'Adresse email invalide'
         },
-        required: (value) => !!value || 'Ce champ est requis',
-        minPass: (v) => v.length >= 6 || 'Minimum 6 caractères',
-        min: (v) => v.length >= 3 || 'Minimum 3 caractères',
+        required: (v: string) => !!v || 'Ce champ est requis',
+        minPass: (v: string) => v.length >= 6 || 'Minimum 6 caractères',
+        min: (v: string) => v.length >= 3 || 'Minimum 3 caractères',
         match: () => {
           return (
             this.signUpFields.password === this.signUpFields.passwordConfirmation ||
             'Les mots de passe ne correspondent pas'
           )
         },
-        upperCase: (v) => /[A-Z]/.test(v) || 'Doit contenir au moins une lettre majuscule'
+        upperCase: (v: string) => /[A-Z]/.test(v) || 'Doit contenir au moins une lettre majuscule'
       }
-    }
-  },
-  computed: {
-    authError(): { state: boolean; message: string } {
-      return this.authStore.error
     }
   },
   mounted() {
