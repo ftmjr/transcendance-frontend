@@ -38,7 +38,7 @@
               :key="userActions.userId"
               class="flex items-center gap-2"
             >
-              <avatar-badge :user-id="userActions.userId ?? 0" :size="24" />
+              <avatar-badge :user-id="userActions.userId ?? 0" :size="32" />
               <span class="font-weight-bold text-slate-200 text-sm"
                 >{{ userActions.goals }} But(s)</span
               >
@@ -47,7 +47,7 @@
                   v-for="(eventInfo, index) in userActions.event"
                   :key="index"
                   :size="eventInfo.color === 'yellow' ? 32 : 24"
-                  :variant="eventInfo.color === 'yellow' ? 'elevated' : 'tonal'"
+                  :variant="(eventInfo.color === 'yellow' || eventInfo.color === 'orange') ? 'elevated' : 'tonal'"
                   :color="eventInfo.color"
                   :icon="eventInfo.icon"
                 />
