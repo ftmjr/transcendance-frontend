@@ -107,7 +107,7 @@ const handleRead = (e: Event) => {
   notificationStore.markNotificationAsRead(notification.id)
   router.push({
     name: 'user-profile',
-    params: { id: notification.referenceId }
+    params: { userId: notification.referenceId }
   })
 }
 </script>

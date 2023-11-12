@@ -56,9 +56,10 @@ import useAuthStore from '@/stores/AuthStore'
 import type { ProfileData, User, GameHistory, Profile } from '@/interfaces/User'
 import axios from '@/utils/axios'
 import Histories from '@/components/profile/Histories.vue'
-import UserProfileHeader from '@/components/profile/Header.vue'
+import UserProfileHeader from '@/components/profile/ProfileHeader.vue'
 import Friends from '@/components/profile/Friends.vue'
 import PlayerSimpleStats from '@/components/profile/PlayerSimpleStats.vue'
+import { Status } from "@/interfaces/User";
 
 type Tab = 'profile' | 'awards' | 'history' | 'friends'
 type TabItem = { title: string; icon: string; tab: Tab }
@@ -114,9 +115,10 @@ export default defineComponent({
         header: {
           coalition: emptyCoalition,
           avatar: '',
-          fullName: '',
+          fullName: 'Hidden',
           username: 'no-username',
-          joiningDate: Date.now()
+          joiningDate: Date.now(),
+          status: Status.Offline,
         },
         bio: '',
         email: '',
@@ -161,25 +163,26 @@ export default defineComponent({
       this.loading = true
       this.errorMsg = ''
       try {
-        const { data } = await axios.get<User & { profile: Profile }>(`/users/profile/${userId}`)
-        this.profileData = {
-          id: data.id,
-          header: {
-            coalition: this.authStore.resolveCoalition(data.profile),
-            avatar: data.profile.avatar,
-            fullName: `${data.profile.name} ${data.profile.lastname}`,
-            username: data.username,
-            joiningDate: data.createdAt,
-            isCurrentUser: userId === this.authStore.getUser?.id
-          },
-          profile: data.profile,
-          email: data.email,
-          bio: data.profile?.bio ?? '',
-          status: data.profile.status
+        const { data } = await axios.get<User & { profile: Profile }>(`/users/profile/${userId}`);
+        if (data){
+          this.profileData = {
+            id: data.id,
+            header: {
+              coalition: this.authStore.resolveCoalition(data.profile),
+              avatar: data.profile.avatar,
+              fullName: `${data.profile.name} ${data.profile.lastname}`,
+              username: data.username,
+              joiningDate: data.createdAt,
+              isCurrentUser: userId === this.authStore.getUser?.id,
+              status: data.profile.status
+            },
+            profile: data.profile,
+            email: data.email
+          }
         }
         this.gameHistories = data.gameHistories ?? []
       } catch (error) {
-        this.errorMsg = 'Failed to load profile'
+
       }
       this.loading = false
     }

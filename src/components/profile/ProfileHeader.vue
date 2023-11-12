@@ -7,7 +7,7 @@
           <VImg v-if="info.avatar" :src="info.avatar" />
           <VIcon v-else color="primary" icon="tabler-user" />
         </VAvatar>
-        <CoalitionFlag :color="info.coalition.color" :image="info.coalition.image_url" />
+        <CoalitionFlag :color="info.coalition?.color" :image="info.coalition?.image_url" />
       </div>
       <div class="w-full">
         <h6 class="sm:text-center md:text-left text-h6 font-weight-semibold">
@@ -15,7 +15,7 @@
         </h6>
         <div class="flex justify-center md:flex-col gap-2 flex-grow-1">
           <span class="flex">
-            <VIcon size="20" icon="game-icons:space-suit" :color="info.coalition.color" />
+            <VIcon size="20" icon="game-icons:space-suit" :color="info.coalition?.color" />
             <span class="text-lg font-weight-semibold text-primary">{{ info?.username }}</span>
           </span>
           <v-tooltip
@@ -29,6 +29,11 @@
               </span>
             </template>
           </v-tooltip>
+          <StatusBadge
+            v-if="id !== 0"
+            :value="info.status"
+            :user-id="id"
+          />
         </div>
       </div>
       <div>
@@ -44,9 +49,11 @@ import useAuthStore from '@/stores/AuthStore'
 import useUserStore from '@/stores/UserStore'
 import FriendRequestBox from '@/components/profile/FriendRequestBox.vue'
 import CoalitionFlag from '@/components/profile/CoalitionFlag.vue'
+import StatusBadge from "@/components/profile/StatusBadge.vue";
 
 export default defineComponent({
   components: {
+    StatusBadge,
     CoalitionFlag,
     FriendRequestBox
   },
@@ -68,7 +75,7 @@ export default defineComponent({
   computed: {},
   beforeMount() {},
   methods: {
-    showDateFormated(date): string {
+    showDateFormated(date: string | Date): string {
       return new Date(date).toLocaleDateString('fr-CA', {
         year: 'numeric',
         month: 'long',

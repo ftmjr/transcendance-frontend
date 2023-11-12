@@ -24,25 +24,22 @@
 
       <div class="flex items-center">
         <GameStatusBadge
+          v-if="contact.profile"
           :status="contact.profile.status"
           :user-id="contact.id"
           :user-game-status="userGameStatus"
         />
       </div>
 
-      <VBtn variant="text" color="default" icon size="small">
+      <VBtn v-if="contact" variant="text" color="default" icon size="small">
         <VIcon size="22" icon="tabler-dots-vertical" />
         <VMenu activator="parent">
           <VList>
-            <VListItem prepend-icon="tabler-eye">
-              <VBtn @click="showProfile">
-                <VListItemTitle> Voir le profil</VListItemTitle>
-              </VBtn>
+            <VListItem prepend-icon="tabler-eye" @click="showProfile">
+              <VListItemTitle> Voir le profil</VListItemTitle>
             </VListItem>
-            <VListItem prepend-icon="tabler-ban">
-              <VBtn @click="blockContact">
-                <VListItemTitle>Bloquer</VListItemTitle>
-              </VBtn>
+            <VListItem prepend-icon="tabler-ban" @click="blockContact">
+              <VListItemTitle>Bloquer</VListItemTitle>
             </VListItem>
           </VList>
         </VMenu>
@@ -55,6 +52,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
+import useUserStore from "@/stores/UserStore";
 import type { User } from '@/interfaces/User'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
@@ -84,9 +82,11 @@ export default defineComponent({
   },
   emits: ['update:isLeftSidebarOpen'],
   setup() {
-    const authStore = useAuthStore()
+    const authStore = useAuthStore();
+    const usersStore = useUserStore();
     return {
-      authStore
+      authStore,
+      usersStore
     }
   },
   computed: {
@@ -100,8 +100,17 @@ export default defineComponent({
     }
   },
   methods: {
-    async blockContact() {},
-    async showProfile() {}
+    async blockContact() {
+      if (!this.contact) return;
+      await this.usersStore.blockUser(this.contact.id);
+    },
+    async showProfile() {
+      if (!this.contact) return;
+      this.$router.push({
+        name: 'user-profile',
+        params: { userId: this.contact.id }
+      })
+    }
   }
 })
 </script>

@@ -191,7 +191,7 @@ const useMessageStore = defineStore({
     },
     sendPrivateMessage(friendId: number, content: string) {
       if (!this.socketManager || !this.socketManager.operational) return
-      this.socketManager.sendPrivateMessage(friendId, content)
+      this.socketManager.sendPrivateMessage(friendId, content);
     },
     async handleReceivedMessage(message: PrivateMessage) {
       const userId =

@@ -80,6 +80,7 @@ export interface ProfileHeaderData {
   username: string
   joiningDate: string
   isCurrentUser: boolean
+  status: Status
 }
 export interface ProfileData {
   id: number
