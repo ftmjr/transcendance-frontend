@@ -56,7 +56,7 @@ export default defineComponent({
   },
   computed: {
     isVerified() {
-      return this.authStore.getUser()?.twoFactorEnabled
+      return this.authStore.getUser?.twoFactorEnabled
     }
   },
   watch: {

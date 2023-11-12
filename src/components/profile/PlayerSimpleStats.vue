@@ -68,7 +68,7 @@ export default defineComponent({
   },
   data() {
     return {
-      gameHistories: [],
+      gameHistories: [] as GameHistory[],
       loading: false
     }
   },
@@ -87,9 +87,6 @@ export default defineComponent({
         {} as Record<number, GameHistory[]>
       )
     },
-    numberOfGames(): number {
-      return Object.keys(this.gameActions).length
-    },
     numberOfWins(): number {
       return this.gameHistories.filter((gameHistory) => {
         return gameHistory.event === GameEvent.MATCH_WON
@@ -104,7 +101,10 @@ export default defineComponent({
       return this.gameHistories.filter((gameHistory) => {
         return gameHistory.event === GameEvent.MATCH_LOST
       }).length
-    }
+    },
+    numberOfGames(): number {
+      return this.numberOfWins + this.numberOfLostGames;
+    },
   },
   beforeMount() {
     if (!this.histories || this.histories.length === 0) {

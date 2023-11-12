@@ -4,6 +4,7 @@ import { Status } from '@/interfaces/User'
 import axios from '@/utils/axios'
 import { isAxiosError } from 'axios'
 import { ReceivedStatusUpdate, StatusSocket } from '@/utils/statusSocket'
+import { GameSession } from "@/stores/GameStore";
 
 export enum FriendshipStatus {
   Friends = 'friends',
@@ -60,7 +61,8 @@ export interface BlockedUser {
 }
 
 export interface UserWithScore extends User {
-  score: number
+  score: number,
+  gameStatus: { status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }
 }
 
 export interface AppStatData {

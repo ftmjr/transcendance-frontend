@@ -158,19 +158,22 @@ export default defineComponent({
       })
     },
     async cancelFriendRequest() {
-      await this.userStore.cancelFriendRequest(this.friendId)
+      if (!this.state?.data?.id) return;
+      await this.userStore.cancelFriendRequest(this.state.data.id)
       this.$nextTick(() => {
         this.fetchFriendShipState() // re-fetch friendship state
       })
     },
     async acceptFriendRequest() {
-      await this.userStore.approveFriendRequest(this.friendId)
+      if (!this.state?.data?.id) return;
+      await this.userStore.approveFriendRequest(this.state.data.id)
       this.$nextTick(() => {
         this.fetchFriendShipState() // re-fetch friendship state
       })
     },
     async declineFriendRequest() {
-      await this.userStore.rejectFriendRequest(this.friendId)
+      if (!this.state?.data?.id) return;
+      await this.userStore.rejectFriendRequest(this.state.data.id);
       this.$nextTick(() => {
         this.fetchFriendShipState() // re-fetch friendship state
       })

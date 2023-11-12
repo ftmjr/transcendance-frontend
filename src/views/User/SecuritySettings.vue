@@ -211,7 +211,7 @@ export default defineComponent({
         confirmPassword: ''
       },
       rules: {
-        required: (value) => !!value || 'Ce champ est requis',
+        required: (value: number) => !!value || 'Ce champ est requis',
         min: (v) => v.length >= 6 || 'Minimum 6 caractères',
         match: () => {
           return (

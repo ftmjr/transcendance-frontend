@@ -2,7 +2,7 @@
   <v-card title="Historique" :loading="loading">
     <v-card-text>
       <p class="font-weight-semibold">Total Won : {{ getCountByEvent('MATCH_WON') }}</p>
-      <p class="font-weight-semibold">Total Lost or Left : {{ getCountByEvent('MATCH_LOST') }}</p>
+      <p class="font-weight-semibold">Total Lost : {{ getCountByEvent('MATCH_LOST') }}</p>
       <p class="font-weight-semibold">Total Score : {{ getCountByEvent('ACTION_PERFORMED') }}</p>
     </v-card-text>
     <VTable>
@@ -22,7 +22,15 @@
           <td>{{ getDate(history) }}</td>
           <td>
             <VChip v-if="getIsUserWon(history)" label color="success"> Victoire </VChip>
-            <VChip v-else label color="error"> Défaite / Abandon </VChip>
+            <VChip v-else-if="getLostType(history) === 'perdu'" label color="error">
+              Défaite
+            </VChip>
+            <VChip v-else-if="getLostType(history) === 'abandon'" label color="orange">
+              Abandon
+            </VChip>
+            <VChip v-else-if="getLostType(history) === 'none'" label color="gray">
+              Déconnexion / Non confrontation</VChip
+            >
           </td>
           <td class="flex gap-2">
             <div
@@ -74,8 +82,12 @@ import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import { GameEvent } from '@/interfaces/User'
 
 type EventIcons = {
-  icon: 'ph:soccer-ball-fill' | 'tabler:trophy' | 'arcticons:quicklyquit'
-  color: 'success' | 'yellow' | 'error' | 'gray'
+  icon:
+    | 'ph:soccer-ball-fill'
+    | 'tabler:trophy'
+    | 'arcticons:quicklyquit'
+    | 'game-icons:corner-explosion'
+  color: 'success' | 'yellow' | 'error' | 'gray' | 'orange'
 }
 interface ActionsBox {
   userId: number
@@ -176,6 +188,18 @@ export default defineComponent({
       const winner = gameHistory.winnerId
       return winner === this.userId
     },
+    getLostType(gameHistory: CompleteGameHistory): 'perdu' | 'abandon' | 'none' {
+      const histories = gameHistory.histories[this.userId]
+      const lostEvent = histories.find((history) => history.event === GameEvent.MATCH_LOST)
+      if (lostEvent) {
+        return 'perdu';
+      }
+      const startedTheGame = histories.find((history) => history.event === GameEvent.GAME_STARTED)
+      if (startedTheGame) {
+        return 'abandon'
+      }
+      return 'none'
+    },
     pushGameEvents(event: GameEvent, actions: ActionsBox) {
       switch (event) {
         case GameEvent.ACTION_PERFORMED:
@@ -188,6 +212,9 @@ export default defineComponent({
           break
         case GameEvent.MATCH_WON:
           actions.event.push({ icon: 'tabler:trophy', color: 'yellow' })
+          break
+        case GameEvent.MATCH_LOST:
+          actions.event.push({ icon: 'game-icons:corner-explosion', color: 'orange' })
           break
         case GameEvent.PLAYER_LEFT:
           actions.event.push({ icon: 'arcticons:quicklyquit', color: 'error' })
@@ -212,7 +239,7 @@ export default defineComponent({
       }
       return Array.from(actions.values())
     },
-    getCountByEvent(event) {
+    getCountByEvent(event: GameEvent) {
       let count = 0
       this.histories.forEach((gameHistory) => {
         const histories = Object.values(gameHistory.histories)
