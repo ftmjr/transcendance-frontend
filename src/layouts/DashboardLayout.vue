@@ -1,5 +1,8 @@
 <template>
-  <VerticalNavLayout :nav-items="navItems" v-bind="layoutAttrs">
+  <VerticalNavLayout
+    :nav-items="navItems"
+    v-bind="layoutAttrs"
+  >
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="flex h-100 justify-between items-center">
         <VBtn
@@ -11,7 +14,10 @@
           size="small"
           @click="toggleVerticalOverlayNavActive(true)"
         >
-          <VIcon icon="tabler-menu-2" size="24" />
+          <VIcon
+            icon="tabler-menu-2"
+            size="24"
+          />
         </VBtn>
         <NavSearchBar class="ms-lg-n3" />
         <VSpacer />
@@ -21,7 +27,10 @@
     </template>
 
     <RouterView v-slot="{ Component }">
-      <Transition :name="appRouteTransition" mode="out-in">
+      <Transition
+        :name="appRouteTransition"
+        mode="out-in"
+      >
         <Component :is="Component" />
       </Transition>
     </RouterView>

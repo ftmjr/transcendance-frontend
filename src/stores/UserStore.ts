@@ -3,6 +3,7 @@ import type { Profile, User } from '@/interfaces/User'
 import { Status } from '@/interfaces/User'
 import axios from '@/utils/axios'
 import { isAxiosError } from 'axios'
+import { ReceivedStatusUpdate, StatusSocket } from "@/utils/statusSocket";
 
 export enum FriendshipStatus {
   Friends = 'friends',
@@ -74,9 +75,11 @@ export interface AppStatData {
 }
 
 export interface UserStoreState {
-  contacts: User[]
-  blockedUsers: BlockedUser[]
-  stats: AppStatData
+  contacts: User[];
+  blockedUsers: BlockedUser[];
+  stats: AppStatData;
+  statusSocketManager: StatusSocket | null;
+  usersStatus: Map<number, Status>;
 }
 
 type SortOrder = 'asc' | 'desc'
@@ -113,7 +116,9 @@ const useUserStore = defineStore({
     return {
       contacts: [],
       blockedUsers: [],
-      stats
+      stats,
+      statusSocketManager: null,
+      usersStatus: new Map<number, Status>()
     }
   },
   getters: {
@@ -367,6 +372,45 @@ const useUserStore = defineStore({
       } catch (e) {
         console.log(e)
         return 'error'
+      }
+    },
+
+    /* Status*/
+    initStatusSocket(userId: number) {
+      this.statusSocketManager = new StatusSocket(
+        userId,
+        (data: ReceivedStatusUpdate) => {
+          this.usersStatus.set(data.userId, data.status);
+        }
+      );
+    },
+    disconnectStatusSocket() {
+      if (this.statusSocketManager) {
+        this.statusSocketManager.disconnect()
+      }
+    },
+    async getStatus(userId: number): Promise<Status> {
+      // check if the user is in the map
+      const status = this.usersStatus.get(userId)
+      if (status) {
+        return status
+      }
+      // if not, fetch the status from the server
+      try {
+        const shortProfile =  await this.getShortUserProfile(userId);
+        if (!shortProfile) {
+          return Status.Offline
+        }
+        this.usersStatus.set(userId, shortProfile.profile.status);
+        return shortProfile.profile.status;
+      } catch (e) {
+        console.log(e)
+      }
+      return Status.Offline
+    },
+    async updateMyStatus(status: Status){
+      if (this.statusSocketManager) {
+        this.statusSocketManager.updateMyStatus(status)
       }
     }
   }

@@ -1,7 +1,20 @@
 <template>
-  <div v-if="userProfile" class="flex items-center gap-2">
-    <VBadge dot location="bottom right" offset-x="3" offset-y="3" :color="color" :bordered="true">
-      <VAvatar :size="size" @click="$emit('showUserProfile')">
+  <div
+    v-if="userProfile"
+    class="flex items-center gap-2"
+  >
+    <VBadge
+      dot
+      location="bottom right"
+      offset-x="3"
+      offset-y="3"
+      :color="color"
+      :bordered="true"
+    >
+      <VAvatar
+        :size="size"
+        @click="$emit('showUserProfile')"
+      >
         <VImg
           v-if="userProfile.profile.avatar"
           :src="userProfile.profile.avatar"
@@ -10,7 +23,10 @@
         <span v-else>{{ avatarText(userProfile.username) }}</span>
       </VAvatar>
     </VBadge>
-    <div v-if="showName" class="text-center">
+    <div
+      v-if="showName"
+      class="text-center"
+    >
       <span class="text-sm">{{ userProfile.profile.name }} {{ userProfile.profile.lastname }}</span>
     </div>
   </div>
@@ -25,7 +41,11 @@
       :bordered="true"
       class="animate-pulse"
     >
-      <VAvatar :size="size" icon="tabler-loader" @click="$emit('showUserProfile')" />
+      <VAvatar
+        :size="size"
+        icon="tabler-loader"
+        @click="$emit('showUserProfile')"
+      />
     </VBadge>
   </div>
 </template>

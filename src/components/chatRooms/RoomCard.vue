@@ -8,10 +8,20 @@
     "
   >
     <p class="flex gap-2 items-center">
-      <VAvatar v-if="room.avatar" :size="42" :image="room.avatar" />
+      <VAvatar
+        v-if="room.avatar"
+        :size="42"
+        :image="room.avatar"
+      />
       <span class="font-weight-semibold text-high-emphasis"> {{ shortName(room.name) }} </span>
       <span class="text-disabled"> • {{ room.members.length }} Membre(s) </span>
-      <VIcon v-if="room.password" :size="16" class="text-red-600"> tabler-lock </VIcon>
+      <VIcon
+        v-if="room.password"
+        :size="16"
+        class="text-red-600"
+      >
+        tabler-lock
+      </VIcon>
     </p>
   </div>
 </template>

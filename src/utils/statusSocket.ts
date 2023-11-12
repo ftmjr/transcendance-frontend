@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client'
 import { Status } from '@/interfaces/User'
 
-interface ReceivedStatusUpdate {
+export interface ReceivedStatusUpdate {
   userId: number
   status: Status
 }
@@ -14,7 +14,7 @@ interface EmitEvents {
   updateStatus: (status: Status) => void
 }
 
-export class AuthSocket {
+export class StatusSocket {
   private socket: Socket<ListenEvents, EmitEvents> | undefined
   public operational: boolean = false
 

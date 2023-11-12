@@ -16,7 +16,10 @@ const shallRenderIcon = isVerticalNavMini(windowWidth)
 <template>
   <li class="nav-section-title">
     <div class="title-wrapper">
-      <Transition name="vertical-nav-section-title" mode="out-in">
+      <Transition
+        name="vertical-nav-section-title"
+        mode="out-in"
+      >
         <!-- eslint-disable vue/no-v-text-v-html-on-component -->
         <Component
           :is="

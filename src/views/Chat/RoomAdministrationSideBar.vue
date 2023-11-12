@@ -1,24 +1,47 @@
 <template>
   <div>
     <div class="text-end mt-2">
-      <VBtn v-if="$vuetify.display.smAndDown" variant="text" size="small" @click="$emit('close')">
-        <VIcon :size="18" color="error" class="text-medium-emphasis"> tabler-x </VIcon>
+      <VBtn
+        v-if="$vuetify.display.smAndDown"
+        variant="text"
+        size="small"
+        @click="$emit('close')"
+      >
+        <VIcon
+          :size="18"
+          color="error"
+          class="text-medium-emphasis"
+        >
+          tabler-x
+        </VIcon>
       </VBtn>
     </div>
     <div v-if="roomStore.getCurrentRoomMembers.length">
-      <h6 class="h3 text-lg text-center">Reglages</h6>
+      <h6 class="h3 text-lg text-center">
+        Reglages
+      </h6>
       <VCard title="Admins">
         <VTable>
           <thead>
             <tr>
-              <th scope="col">Utilisateur</th>
-              <th scope="col" class="flex justify-end align-center">
-                <VIcon :size="18">tabler-dots-vertical</VIcon>
+              <th scope="col">
+                Utilisateur
+              </th>
+              <th
+                scope="col"
+                class="flex justify-end align-center"
+              >
+                <VIcon :size="18">
+                  tabler-dots-vertical
+                </VIcon>
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="member in roomStore.getCurrentRoomMembers" :key="member.member.id">
+            <tr
+              v-for="member in roomStore.getCurrentRoomMembers"
+              :key="member.member.id"
+            >
               <td>
                 <AvatarBadge
                   :user-id="member.member.id"
@@ -27,16 +50,25 @@
                 />
               </td>
               <td class="flex justify-end align-center">
-                <VBtn variant="text" size="small" @click="$emit('showUserProfile')">
-                  <VIcon :size="18" color="error"> tabler-trash </VIcon>
+                <VBtn
+                  variant="text"
+                  size="small"
+                  @click="$emit('showUserProfile')"
+                >
+                  <VIcon
+                    :size="18"
+                    color="error"
+                  >
+                    tabler-trash
+                  </VIcon>
                 </VBtn>
               </td>
             </tr>
           </tbody>
         </VTable>
       </VCard>
-      <VCard title="Muted"></VCard>
-      <VCard title="Bans"></VCard>
+      <VCard title="Muted" />
+      <VCard title="Bans" />
     </div>
   </div>
 </template>
