@@ -41,7 +41,7 @@ export interface Profile {
   userId: number
   name: string
   lastname: string
-  avatar?: string
+  avatar: string
   bio?: string
   oauth?: {
     accessToken: string

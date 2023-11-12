@@ -1,8 +1,5 @@
 <template>
-  <VerticalNavLayout
-    :nav-items="navItems"
-    v-bind="layoutAttrs"
-  >
+  <VerticalNavLayout :nav-items="navItems" v-bind="layoutAttrs">
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="flex h-100 justify-between items-center">
         <VBtn
@@ -14,10 +11,7 @@
           size="small"
           @click="toggleVerticalOverlayNavActive(true)"
         >
-          <VIcon
-            icon="tabler-menu-2"
-            size="24"
-          />
+          <VIcon icon="tabler-menu-2" size="24" />
         </VBtn>
         <NavSearchBar class="ms-lg-n3" />
         <VSpacer />
@@ -27,10 +21,7 @@
     </template>
 
     <RouterView v-slot="{ Component }">
-      <Transition
-        :name="appRouteTransition"
-        mode="out-in"
-      >
+      <Transition :name="appRouteTransition" mode="out-in">
         <Component :is="Component" />
       </Transition>
     </RouterView>
@@ -42,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount } from 'vue'
+import { defineComponent, onBeforeMount, onBeforeUnmount } from 'vue'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
 import { VerticalNavLayout } from '@layouts'
@@ -56,6 +47,7 @@ import useGameStore from '@/stores/GameStore'
 import useAuthStore from '@/stores/AuthStore'
 import useNotificationStore from '@/stores/NotificationStore'
 import useRoomsStore from '@/stores/RoomsStore'
+import useUserStore from '@/stores/UserStore'
 
 export default defineComponent({
   components: {
@@ -74,6 +66,7 @@ export default defineComponent({
     const roomsStore = useRoomsStore()
     const notificationStore = useNotificationStore()
     const gameStore = useGameStore()
+    const usersStore = useUserStore()
 
     // a beforeMount hook would be better
     onBeforeMount(() => {
@@ -84,7 +77,15 @@ export default defineComponent({
         if (!roomsStore.socketOperational) {
           roomsStore.init(authStore.getUser.id)
         }
+        if (!usersStore.socketOperational) {
+          usersStore.initStatusSocket(authStore.getUser.id)
+        }
         gameStore.getAllMyGameSessions()
+      }
+    })
+    onBeforeUnmount(() => {
+      if (!authStore.isLoggedIn) {
+        usersStore.disconnectStatusSocket()
       }
     })
     return {

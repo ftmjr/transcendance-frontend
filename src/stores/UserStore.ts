@@ -3,7 +3,7 @@ import type { Profile, User } from '@/interfaces/User'
 import { Status } from '@/interfaces/User'
 import axios from '@/utils/axios'
 import { isAxiosError } from 'axios'
-import { ReceivedStatusUpdate, StatusSocket } from "@/utils/statusSocket";
+import { ReceivedStatusUpdate, StatusSocket } from '@/utils/statusSocket'
 
 export enum FriendshipStatus {
   Friends = 'friends',
@@ -75,11 +75,11 @@ export interface AppStatData {
 }
 
 export interface UserStoreState {
-  contacts: User[];
-  blockedUsers: BlockedUser[];
-  stats: AppStatData;
-  statusSocketManager: StatusSocket | null;
-  usersStatus: Map<number, Status>;
+  contacts: User[]
+  blockedUsers: BlockedUser[]
+  stats: AppStatData
+  statusSocketManager: StatusSocket | null
+  usersStatus: Map<number, Status>
 }
 
 type SortOrder = 'asc' | 'desc'
@@ -130,6 +130,12 @@ const useUserStore = defineStore({
     },
     getBlockedUsers(): BlockedUser[] {
       return this.blockedUsers
+    },
+    socketOperational(): boolean {
+      return this.statusSocketManager?.operational ?? false
+    },
+    getUsersStatus(): Map<number, Status> {
+      return this.usersStatus
     }
   },
   actions: {
@@ -279,23 +285,27 @@ const useUserStore = defineStore({
       return null
     },
     async getShortUserProfile(userId: number): Promise<ShortUserProfile | null> {
+      const defaultProfile: ShortUserProfile = {
+        id: 0,
+        profile: {
+          id: 0,
+          userId: 0,
+          name: 'AI',
+          lastname: 'Bot',
+          avatar: '/pong/ia_avatar.jpg',
+          status: Status.Online
+        },
+        username: 'AI',
+        email: 'ai',
+        updatedAt: new Date().toISOString()
+      }
       try {
-        if (userId === 0)
-          return {
-            id: 0,
-            profile: {
-              id: 0,
-              userId: 0,
-              name: 'AI',
-              lastname: 'Bot',
-              avatar: '/pong/ia_avatar.jpg',
-              status: Status.Online
-            },
-            username: 'AI',
-            email: 'ai',
-            updatedAt: new Date().toISOString()
-          }
+        if (userId === 0) {
+          this.usersStatus.set(0, Status.Online)
+          return defaultProfile
+        }
         const { data } = await axios.get<ShortUserProfile>(`/users/short-profile/${userId}`)
+        this.usersStatus.set(userId, data.profile.status)
         return data
       } catch (e) {
         console.log(e)
@@ -377,12 +387,9 @@ const useUserStore = defineStore({
 
     /* Status*/
     initStatusSocket(userId: number) {
-      this.statusSocketManager = new StatusSocket(
-        userId,
-        (data: ReceivedStatusUpdate) => {
-          this.usersStatus.set(data.userId, data.status);
-        }
-      );
+      this.statusSocketManager = new StatusSocket(userId, (data: ReceivedStatusUpdate) => {
+        this.usersStatus.set(data.userId, data.status)
+      })
     },
     disconnectStatusSocket() {
       if (this.statusSocketManager) {
@@ -397,18 +404,18 @@ const useUserStore = defineStore({
       }
       // if not, fetch the status from the server
       try {
-        const shortProfile =  await this.getShortUserProfile(userId);
+        const shortProfile = await this.getShortUserProfile(userId)
         if (!shortProfile) {
           return Status.Offline
         }
-        this.usersStatus.set(userId, shortProfile.profile.status);
-        return shortProfile.profile.status;
+        this.usersStatus.set(userId, shortProfile.profile.status)
+        return shortProfile.profile.status
       } catch (e) {
         console.log(e)
       }
       return Status.Offline
     },
-    async updateMyStatus(status: Status){
+    async updateMyStatus(status: Status) {
       if (this.statusSocketManager) {
         this.statusSocketManager.updateMyStatus(status)
       }
