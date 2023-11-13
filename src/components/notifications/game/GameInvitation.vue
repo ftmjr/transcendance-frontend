@@ -92,10 +92,17 @@ const handleRead = (e: Event) => {
   notificationStore.markNotificationAsRead(notification.id)
 }
 
-const hanleJoinGame = (e: Event) => {
+const hanleJoinGame = async (e: Event) => {
   e.preventDefault()
-  gameStore.acceptGameInvitation(notification.referenceId)
   handleRead(e);
+  const r = await gameStore.acceptGameInvitation(notification.referenceId)
+  if (r === 'preparing') {
+    router.push({
+      name: 'game',
+      params: { gameId: notification.referenceId },
+      // query: { isPlayer: 'true' }
+    });
+  }
 }
 
 const handleReject = (e: Event) => {
@@ -106,7 +113,7 @@ const handleReject = (e: Event) => {
 
 const isExpired = (() => {
   const now = new Date().getTime();
-  const expiresAt = parseInt(notification.expiresAt)
+  const expiresAt = new Date(notification.expiresAt).getTime();
   return now >= expiresAt;
 })()
 

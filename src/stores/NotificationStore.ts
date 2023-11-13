@@ -9,6 +9,18 @@ export interface NotificationState {
 }
 
 const samples = [
+    {
+    type: NotificationType.GAME_INVITE,
+    id: 45,
+    userId: 9,
+    message: 'Votre invitation a ete accepte',
+    status: NotificationStatus.READ,
+    title: 'Game Challenge Accepted',
+    referenceId: 9,
+    createdAt: 1699842634715,
+    updatedAt: 1699842634715,
+    expiresAt: 1699842634715
+  },
   {
     type: NotificationType.GAME_INVITE,
     id: 45454,
@@ -40,6 +52,18 @@ const samples = [
     message: 'Veut jouer une partie avec vous',
     status: NotificationStatus.READ,
     title: 'Game Invite',
+    referenceId: 9,
+    createdAt: 1699842634715,
+    updatedAt: 1699842634715,
+    expiresAt: 1699920000000
+  },
+  {
+    type: NotificationType.GAME_INVITE,
+    id: 45,
+    userId: 9,
+    message: 'Votre invitation a ete accepte',
+    status: NotificationStatus.UNREAD,
+    title: 'Game Challenge Accepted',
     referenceId: 9,
     createdAt: 1699842634715,
     updatedAt: 1699842634715,
