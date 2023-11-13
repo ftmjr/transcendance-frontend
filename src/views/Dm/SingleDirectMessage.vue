@@ -50,19 +50,20 @@
       </div>
     </div>
     <div class="flex-0 border shadow-lg drop-shadow-lg rounded-md">
-      <VForm @submit.prevent="sendMessage">
+      <VForm @submit.prevent="sendDirectMessage" >
         <VTextField
+          :disabled="this.isMuted"
           v-model="mpContent"
           variant="solo"
           class="transparent-input-box"
-          placeholder="Ecrivez votre message..."
+          placeholder="Écrivez votre message privé..."
           density="default"
           autofocus
         >
           <template #append-inner>
             <VBtn
               type="submit"
-              @click.prevent="sendMessage"
+              @click.prevent="sendDirectMessage"
               class="rounded-full h-8 w-8 text-gray-50 bg-red-400"
             >
               <svg
@@ -83,6 +84,11 @@
 </template>
 
 <script lang="ts">
+import useUserStore, {
+  BlockedStatus,
+  CheckFriendshipResponse,
+  FriendshipStatus
+} from '@/stores/UserStore'
 import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
 import { PropType, defineComponent } from 'vue'
 import { User } from '@/interfaces/User'
@@ -117,14 +123,18 @@ export default defineComponent({
     const authStore = useAuthStore()
     const messageStore = useMessageStore()
     const gameStore = useGameStore()
+    const userStore = useUserStore()
     return {
       messageStore,
       authStore,
-      gameStore
+      gameStore,
+      userStore
     }
   },
   data() {
     return {
+      blockStatus: BlockedStatus.None,
+      isMuted: false,
       loading: false,
       take: 400,
       skip: 0,
@@ -181,8 +191,9 @@ export default defineComponent({
   watch: {
     conversationWith: {
       handler() {
-        this.loadPrivateMessages()
-        this.fetchGameStatus()
+        this.loadPrivateMessages();
+        this.checkIsBlocked();
+        this.fetchGameStatus();
       },
       deep: true,
       immediate: true
@@ -192,6 +203,17 @@ export default defineComponent({
     refreshContact() {
       this.$emit('refreshContact')
       this.fetchGameStatus()
+    },
+    async checkIsBlocked() {
+      this.loading = true
+      console.log("this.conversationWith.is =", this.conversationWith.id)
+      this.blockStatus = await this.userStore.checkBlocked(this.conversationWith.id);
+      console.log(this.blockStatus)
+      if (this.blockStatus === 'none')
+        this.isMuted = false
+      else 
+        this.isMuted = true
+      this.loading = false
     },
     async loadPrivateMessages() {
       this.loading = true
@@ -205,10 +227,10 @@ export default defineComponent({
         this.scrollToBottomInChatLog()
       })
     },
-    async sendMessage() {
+    async sendDirectMessage() {
       if (this.loading) return
-      this.loading = true
       if (!this.mpContent.trim()) return
+      this.loading = true
       this.messageStore.sendPrivateMessage(this.conversationWith.id, this.mpContent.trim())
       this.mpContent = ''
       this.loading = false
