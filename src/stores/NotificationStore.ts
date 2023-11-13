@@ -15,7 +15,7 @@ const samples = [
     userId: 9,
     message: 'Veut jouer une partie avec vous',
     status: NotificationStatus.UNREAD,
-    title: 'Invitation à un jeu',
+    title: 'Game Invite',
     referenceId: 13,
     createdAt: '',
     updatedAt: '',

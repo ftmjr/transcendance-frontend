@@ -25,10 +25,10 @@
         >
           {{ notification.message }}
         </p>
-      </div>
-      <div>
-        <button class="p-4 rounded-md border border-gray-50/10">Jouer</button>
-        <button class="p-4 rounded-md border border-gray-50/10">Refuser</button>
+        <div class="flex gap-2 mt-4">
+          <button class="px-8 py-2 rounded-md border border-gray-50/10 text-xs bg-green-700/50 hover:bg-green-700/60 text-gary-500">Jouer</button>
+          <button class="px-4 py-2 rounded-md border border-gray-50/10 text-xs bg-red-700/50 hover:bg-red-700/60 text-gary-500">Refuser</button>
+        </div>
       </div>
       <div
         v-if="notification.status !== 'READ'"
