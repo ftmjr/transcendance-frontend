@@ -74,18 +74,15 @@ export default defineComponent({
   },
   computed: {
     gameActions(): Record<number, GameHistory[]> {
-      return this.gameHistories.reduce(
-        (acc, curr) => {
-          const gameActions = acc[curr.gameId]
-          if (gameActions) {
-            gameActions.push(curr)
-          } else {
-            acc[curr.gameId] = [curr]
-          }
-          return acc
-        },
-        {} as Record<number, GameHistory[]>
-      )
+      return this.gameHistories.reduce((acc, curr) => {
+        const gameActions = acc[curr.gameId]
+        if (gameActions) {
+          gameActions.push(curr)
+        } else {
+          acc[curr.gameId] = [curr]
+        }
+        return acc
+      }, {} as Record<number, GameHistory[]>)
     },
     numberOfWins(): number {
       return this.gameHistories.filter((gameHistory) => {
@@ -103,8 +100,8 @@ export default defineComponent({
       }).length
     },
     numberOfGames(): number {
-      return this.numberOfWins + this.numberOfLostGames;
-    },
+      return this.numberOfWins + this.numberOfLostGames
+    }
   },
   beforeMount() {
     if (!this.histories || this.histories.length === 0) {

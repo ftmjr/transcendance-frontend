@@ -5,8 +5,8 @@
       notification.status === 'READ' ? 'bg-[#343851]/30' : 'bg-green-600/30'
     ]"
   >
-    <div v-if="isShort" />
-    <div v-else />
+    <button v-if="isShort" class="">Votre invitation a ete accepte</button>
+    <button v-else class=""></button>
   </div>
 </template>
 

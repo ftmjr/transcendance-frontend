@@ -1,70 +1,37 @@
 <template>
-  <div class="border-green-400/30 block cursor-pointer" @click="handleRead">
-    <div
-      v-if="isShort"
-      :class="[
-        'flex justify-between items-start gap-1 py-3 px-3 rounded-md gap-4',
-        notification.status === 'READ' ? 'bg-[#343851]/30' : 'bg-green-600/30'
-      ]"
-    >
-      <AvatarBadge :user-id="notification.referenceId" />
-      <div class="flex justify-between">
-        <div class="flex flex-col gap-2">
-          <p class="text-left text-sm fomt-semiBold">
-            {{ notification.title }}
-          </p>
-          <p class="text-xs text-gray-500 text-left">
-            {{ notification.message }}
-          </p>
-        </div>
-        <div class="flex flex-column justify-between items-center">
-          <VTooltip v-if="notification.status === 'UNREAD'" bottom>
-            <template #activator="{ props }">
-              <VIcon color="pink" small v-bind="props"> ph-dot-duotone </VIcon>
-            </template>
-            <span>Non lue</span>
-          </VTooltip>
-          <VTooltip v-else bottom>
-            <template #activator="{ props }">
-              <VBtn variant="tonal" color="pink" :size="15" :icon="true" @click.stop="handleDelete">
-                <VIcon color="pink" :size="10" v-bind="props"> tabler-x </VIcon>
-              </VBtn>
-            </template>
-            <span>Supprimer</span>
-          </VTooltip>
-        </div>
+  <button
+    :disabled="notification.status === 'READ'"
+    class="relative block w-full p-4 hover:bg-[#01051e] cursor-pointer"
+    @click="handleRead"
+  >
+    <div class="flex gap-4 w-full relative">
+      <div :class="[notification.status === 'READ' ? 'opacity-50' : 'opacity-100']">
+        <avatar-badge :user-id="notification.referenceId"></avatar-badge>
       </div>
-    </div>
-    <div v-else class="flex flex-rows gap-8">
-      <AvatarBadge :user-id="notification.referenceId" />
-      <div class="flex justify-between flex-1">
-        <div class="flex flex-col gap-2">
-          <p class="text-left text-sm fomt-semiBold">
-            {{ notification.title }}
-          </p>
-          <p class="text-xs text-gray-500 text-left">
-            {{ notification.message }}
-          </p>
-        </div>
-        <div class="flex flex-column justify-between items-center">
-          <VTooltip v-if="notification.status === 'UNREAD'" bottom>
-            <template #activator="{ props }">
-              <VIcon color="pink" small v-bind="props"> ph-dot-duotone </VIcon>
-            </template>
-            <span>Non lue</span>
-          </VTooltip>
-          <VTooltip v-else bottom>
-            <template #activator="{ props }">
-              <VBtn variant="tonal" color="pink" :size="15" :icon="true" @click.stop="handleDelete">
-                <VIcon color="pink" :size="10" v-bind="props"> tabler-x </VIcon>
-              </VBtn>
-            </template>
-            <span>Supprimer</span>
-          </VTooltip>
-        </div>
+      <div class="flex-1 flex-col pr-4">
+        <p
+          :class="[
+            'text-left text-sm fomt-semiBold',
+            notification.status === 'READ' ? 'text-gray-700/50' : ''
+          ]"
+        >
+          {{ notification.title }}
+        </p>
+        <p
+          :class="[
+            'text-left text-xs',
+            notification.status === 'READ' ? 'text-gray-700/50' : 'text-gray-500/50'
+          ]"
+        >
+          {{ notification.message }}
+        </p>
       </div>
+      <div
+        v-if="notification.status !== 'READ'"
+        class="absolute h-2 w-2 right-0 top-1/2 -translate-y-1/2 rounded-full bg-green-400/50 z-50"
+      ></div>
     </div>
-  </div>
+  </button>
 </template>
 
 <script setup lang="ts">

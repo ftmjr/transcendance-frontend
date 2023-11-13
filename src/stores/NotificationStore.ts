@@ -1,11 +1,27 @@
 import { defineStore } from 'pinia'
 import { Notification, NotificationSocket } from '@/utils/notificationSocket'
 import axios from '@/utils/axios'
+import { NotificationType, NotificationStatus } from '@/utils/notificationSocket'
 
 export interface NotificationState {
   notifications: Notification[]
   socketManager: NotificationSocket | null
 }
+
+const samples = [
+  {
+    type: NotificationType.GAME_INVITE,
+    id: 45454,
+    userId: 9,
+    message: 'Veut jouer une partie avec vous',
+    status: NotificationStatus.UNREAD,
+    title: 'Invitation à un jeu',
+    referenceId: 13,
+    createdAt: '',
+    updatedAt: '',
+    expiresAt: ''
+  }
+]
 
 const useNotificationStore = defineStore({
   id: 'notification',
@@ -45,7 +61,7 @@ const useNotificationStore = defineStore({
     async getNotifications() {
       try {
         const { data } = await axios.get<Notification[]>('notifications/')
-        this.notifications = data
+        this.notifications = [...samples, ...data]
       } catch (e) {
         console.error(e)
       }

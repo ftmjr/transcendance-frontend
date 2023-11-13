@@ -17,9 +17,11 @@
         </VListItem>
         <VDivider />
         <template v-if="notifications.length > 0">
-          <VListItem v-for="notification in notifications" :key="notification.id">
-            <Notification :notification="notification" :is-short="true" />
-          </VListItem>
+          <div class="max-h-[500px] overflow-scroll hide-scroolbar">
+            <VListItem v-for="notification in notifications" :key="notification.id">
+              <Notification :notification="notification" :is-short="true" />
+            </VListItem>
+          </div>
         </template>
         <VListItem v-else>
           <div class="flex justify-center items-center">
@@ -53,7 +55,8 @@ export default defineComponent({
   },
   computed: {
     notifications(): NotificationT[] {
-      return this.notificationStore.allNotifications.slice(0, 5)
+      console.log(this.notificationStore.allNotifications)
+      return this.notificationStore.allNotifications
     }
   },
   methods: {

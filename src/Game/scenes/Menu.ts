@@ -355,11 +355,7 @@ export default class Menu extends Scene {
 class MenuSectionBox extends GameObjects.Container {
   private visibleSection: boolean = false
 
-  constructor(
-    public sectionType: MenuSection,
-    scene: Menu,
-    position: { x: number; y: number }
-  ) {
+  constructor(public sectionType: MenuSection, scene: Menu, position: { x: number; y: number }) {
     super(scene, position.x, position.y)
     this.setVisible(false).setActive(false)
   }

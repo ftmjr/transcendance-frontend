@@ -192,7 +192,7 @@ export default defineComponent({
       const histories = gameHistory.histories[this.userId]
       const lostEvent = histories.find((history) => history.event === GameEvent.MATCH_LOST)
       if (lostEvent) {
-        return 'perdu';
+        return 'perdu'
       }
       const startedTheGame = histories.find((history) => history.event === GameEvent.GAME_STARTED)
       if (startedTheGame) {
