@@ -121,6 +121,7 @@ const useRoomsStore = defineStore({
           console.log('chat room message received', message)
         },
         (message: PrivateMessage) => {
+          console.log('received private message', message);
           messageStore.handleReceivedMessage(message)
         },
         (error: string) => {

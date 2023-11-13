@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 /* eslint-disable no-undef */
 module.exports = {
-  content: ['src/**/*.vue', 'src/App.vue', './node_modules/flowbite/**/*.js'],
+  content: ['src/**/*.vue', 'src/App.vue'],
   theme: {
     container: {
       center: true,
@@ -57,7 +57,5 @@ module.exports = {
       },
     }
   },
-  plugins: [
-    require('flowbite/plugin')
-  ]
+  plugins: []
 }

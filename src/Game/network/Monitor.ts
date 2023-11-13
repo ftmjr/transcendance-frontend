@@ -130,7 +130,6 @@ export default class Monitor {
     })
     this.gameNetwork.onObjectsStatePacket((state) => {
       const { paddles, ball, scores, timestamp } = state
-      this.updateTimestampHistory(timestamp)
       if (paddles) {
         paddles.forEach((paddle) => {
           if (this._phaserPlayerMovedRoutine)
@@ -149,6 +148,7 @@ export default class Monitor {
         this.scores = scores
         if (this._phaserNewScoreRoutine) this._phaserNewScoreRoutine(scores, false)
       }
+      this.updateTimestampHistory(timestamp);
     })
   }
 

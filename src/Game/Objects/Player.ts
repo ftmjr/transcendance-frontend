@@ -50,44 +50,45 @@ export class Player {
     })
     // rotate to be on top of the paddle
     this.usernameText.rotation = -Math.PI / 2
-    this.usernameText.setOrigin(0.5, 0.5)
+    this.usernameText.setOrigin(0.5, 1)
     this.usernameText.setDepth(1)
   }
 
   // Updated method to move paddle with tween and deceleration
-  movePaddleWithTween(data: PaddleEngineData, latency: number) {
-    const duration = this.calculateTweenDuration(
-      {
-        x: this.paddle.x,
-        y: this.paddle.y
-      },
-      latency
-    )
-    this.scene.tweens.add({
-      targets: this.paddle,
-      y: data.position.y,
-      ease: 'Cubic.Out', // Easing function for deceleration
-      duration: duration,
-      onUpdate: () => {
-        // Update the username text position with the paddle
-        this.usernameText.setY(this.paddle.y)
-      }
-    })
-  }
-
-  // Calculate the duration for the tween based on latency
-  private calculateTweenDuration(newPosition: { x: number; y: number }, latency: number): number {
-    // Calculate the distance to the new position
-    const distance = Phaser.Math.Distance.Between(
-      this.paddle.x,
-      this.paddle.y,
-      newPosition.x,
-      newPosition.y
-    )
-    // Adjust the speed based on latency
-    const adjustedSpeed = distance / (latency / 1000)
-    return (distance / adjustedSpeed) * 1000
-  }
+  // movePaddleWithTween(data: PaddleEngineData, latency: number) {
+  //   const duration = this.calculateTweenDuration(
+  //     {
+  //       x: data.position.x,
+  //       y: data.position.y
+  //     },
+  //     latency
+  //   )
+  //   this.scene.tweens.add({
+  //     targets: this.paddle,
+  //     y: data.position.y,
+  //     x: data.position.x,
+  //     ease: 'Cubic.Out', // Easing function for deceleration
+  //     duration: duration,
+  //     onUpdate: () => {
+  //       // Update the username text position with the paddle
+  //       this.usernameText.setY(this.paddle.y)
+  //     }
+  //   })
+  // }
+  //
+  // // Calculate the duration for the tween based on latency
+  // private calculateTweenDuration(newPosition: { x: number; y: number }, latency: number): number {
+  //   // Calculate the distance to the new position
+  //   const distance = Phaser.Math.Distance.Between(
+  //     this.paddle.x,
+  //     this.paddle.y,
+  //     newPosition.x,
+  //     newPosition.y
+  //   )
+  //   // Adjust the speed based on latency
+  //   const adjustedSpeed = distance / (latency / 1000)
+  //   return (distance / adjustedSpeed) * 1000
+  // }
 
   // called when network send the new position of the paddle
   newPaddlePosition(data: PaddleEngineData) {

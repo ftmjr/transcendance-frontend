@@ -285,7 +285,7 @@ export default class Menu extends Scene {
   handleGameStateChange(state: GAME_STATE) {
     switch (state) {
       case GAME_STATE.Waiting:
-        this.statusNetworkText.text = 'Init'
+        this.statusNetworkText.text = 'Init, game'
         this.boardText.text = 'PONG'
         this.startButton.setVisible(true).btnActiveStatus = true
         break
@@ -297,7 +297,7 @@ export default class Menu extends Scene {
       case GAME_STATE.Ready:
         this.boardText.text = 'Ready'
         this.startButton.setVisible(true).btnActiveStatus = false
-        this.statusNetworkText.text = 'Waiting opponent'
+        this.statusNetworkText.text = 'Waiting opponent to start'
         break
       case GAME_STATE.Play:
         this.statusNetworkText.text = 'Playing'

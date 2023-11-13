@@ -41,13 +41,13 @@ export default class PongScene extends Scene {
     this.createScores()
     this.buildThemeLayer()
     this.buildCollisionsEffects()
-    this.monitor._phaserBallMovedRoutine = (data) => {
-      this.ball.newPosition(data.position, data.speed)
+    this.monitor._phaserBallMovedRoutine = (data, latency) => {
+      this.ball.newPosition(data.position, data.speed);
     }
-    this.monitor._phaserPlayerMovedRoutine = (data) => {
+    this.monitor._phaserPlayerMovedRoutine = (data, latency) => {
       this.players.forEach((player) => {
         if (player.info.userId === data.userId) {
-          player.newPaddlePosition(data)
+          player.newPaddlePosition(data);
         }
       })
     }
@@ -66,7 +66,15 @@ export default class PongScene extends Scene {
     }
     this.monitor._phaserNewPlayerListRoutine = (users) => {}
     this.monitor._phaserNewViewerListRoutine = (users) => {}
-    this.monitor._phaserPlayerLeftRoutine = (player) => {}
+    this.monitor._phaserPlayerLeftRoutine = (player) => {
+      // show a message that the player left
+      const message = this.add.bitmapText(667, 375, 'atari', 'Player Left');
+      message.setOrigin(0.5, 0.5);
+      message.setDepth(2);
+      this.time.delayedCall(200, () => {
+        message?.destroy();
+      })
+    }
   }
 
   createPlayers() {

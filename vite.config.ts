@@ -43,4 +43,18 @@ export default defineConfig({
       './src/**/*.vue',
     ],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: `[name].js`,
+        // chunkFileNames: `[name].js`,
+        assetFileNames: `[name].[ext]`,
+        manualChunks: {
+          phaser: ['phaser'],
+          chartjs: ['chart.js'],
+          vuetify: ['vuetify']
+        }
+      }
+    }
+  }
 })
