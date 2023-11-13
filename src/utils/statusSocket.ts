@@ -15,14 +15,25 @@ interface EmitEvents {
 }
 
 export class StatusSocket {
+  private static instance: StatusSocket
   private socket: Socket<ListenEvents, EmitEvents> | undefined
   public operational: boolean = false
 
-  constructor(
+  private constructor(
     private userId: number,
     private _onStatusUpdate: (data: ReceivedStatusUpdate) => void
   ) {
     this.connect()
+  }
+
+  public static getInstance(
+    userId: number,
+    onStatusUpdate: (data: ReceivedStatusUpdate) => void
+  ): StatusSocket {
+    if (!StatusSocket.instance) {
+      StatusSocket.instance = new StatusSocket(userId, onStatusUpdate)
+    }
+    return StatusSocket.instance
   }
 
   private connect() {

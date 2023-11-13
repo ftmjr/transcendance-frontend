@@ -34,7 +34,7 @@ const useNotificationStore = defineStore({
   actions: {
     async init(userId: number) {
       await this.getNotifications()
-      this.socketManager = new NotificationSocket(userId, (notification) => {
+      this.socketManager = NotificationSocket.getInstance(userId, (notification) => {
         this.notifications.unshift(notification)
       })
     },

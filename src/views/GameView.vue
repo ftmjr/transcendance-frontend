@@ -30,7 +30,7 @@ import { Theme } from '@/Game/scenes/Boot'
 export default defineComponent({
   name: 'GameUpgrade',
   components: {
-    GamePlayer: defineAsyncComponent(() => import('@/components/GamePlayer.vue'))
+    GamePlayer: defineAsyncComponent(() => import('@/Game/GamePlayer.vue'))
   },
   props: {
     gameId: {

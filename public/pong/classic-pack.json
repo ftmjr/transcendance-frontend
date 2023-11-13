@@ -4,7 +4,7 @@
             {
                 "key": "ball",
                 "type": "image",
-                "url": "/pong/classic/ball.png"
+                "url": "/pong/classic/white_box.png"
             },
             {
                 "key": "paddle",

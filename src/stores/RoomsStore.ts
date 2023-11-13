@@ -53,7 +53,9 @@ const useRoomsStore = defineStore({
     socketManager: ChatSocket | null
     currentReadRoomId: number | null
     currentRoomMembers: MemberRoomWithUserProfiles[]
-    searchTerm: string
+    searchTerm: string,
+    newUnseenMessages: number,
+    newUnseenPrivateMessages: number
   } => {
     return {
       rooms: [],
@@ -61,7 +63,9 @@ const useRoomsStore = defineStore({
       socketManager: null,
       currentReadRoomId: null,
       currentRoomMembers: [],
-      searchTerm: ''
+      searchTerm: '',
+      newUnseenMessages: 0,
+      newUnseenPrivateMessages: 0
     }
   },
   getters: {
@@ -109,19 +113,22 @@ const useRoomsStore = defineStore({
     },
     getSearchTerm(): string {
       return this.searchTerm
+    },
+    getNewMPMessageCount(): number {
+      return this.newUnseenPrivateMessages;
     }
   },
   actions: {
     async init(userId: number) {
       await this.getAllMyRooms()
       const messageStore = useMessageStore()
-      this.socketManager = new ChatSocket(
+      this.socketManager = ChatSocket.getInstance(
         userId,
         (message: ChatMessage) => {
           console.log('chat room message received', message)
         },
         (message: PrivateMessage) => {
-          console.log('received private message', message);
+          this.newUnseenPrivateMessages++;
           messageStore.handleReceivedMessage(message)
         },
         (error: string) => {

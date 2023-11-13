@@ -31,9 +31,10 @@ interface EmitEvents {
   join: (room: string) => void
 }
 export class NotificationSocket {
+  private static instance: NotificationSocket;
   socket: Socket<ListenEvents, EmitEvents> | undefined
   public operational: boolean = false
-  constructor(userId: number, onNotification: (data: Notification) => void) {
+  private constructor(userId: number, onNotification: (data: Notification) => void) {
     try {
       this.socket = io('/notification', { path: '/socket.io' })
       this.socket.on('connect', () => {
@@ -45,6 +46,12 @@ export class NotificationSocket {
     } finally {
       this.operational = true
     }
+  }
+  public static getInstance(userId: number, onNotification: (data: Notification) => void): NotificationSocket {
+    if (!NotificationSocket.instance) {
+      NotificationSocket.instance = new NotificationSocket(userId, onNotification);
+    }
+    return NotificationSocket.instance;
   }
   disconnect() {
     if (this.socket) {

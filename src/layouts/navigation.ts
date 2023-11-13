@@ -7,7 +7,7 @@ const navItems: VerticalNavItems = [
     to: 'dashboard'
   },
   {
-    title: 'Partie rapide 🤖',
+    title: 'Play solo 🤖',
     icon: { icon: 'noto-v1:game-die' },
     to: 'game'
   },
@@ -35,6 +35,8 @@ const navItems: VerticalNavItems = [
   {
     title: 'DMs',
     icon: { icon: 'tabler-mail' },
+    badgeContent: '2',
+    badgeClass: 'bg-light-primary text-primary',
     to: 'dm'
   },
   { heading: 'Info' },

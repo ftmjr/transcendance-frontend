@@ -389,7 +389,7 @@ const useUserStore = defineStore({
 
     /* Status*/
     initStatusSocket(userId: number) {
-      this.statusSocketManager = new StatusSocket(userId, (data: ReceivedStatusUpdate) => {
+      this.statusSocketManager = StatusSocket.getInstance(userId, (data: ReceivedStatusUpdate) => {
         this.usersStatus.set(data.userId, data.status)
       })
     },
