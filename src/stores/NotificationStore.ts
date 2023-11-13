@@ -17,9 +17,33 @@ const samples = [
     status: NotificationStatus.UNREAD,
     title: 'Game Invite',
     referenceId: 13,
-    createdAt: '',
-    updatedAt: '',
-    expiresAt: ''
+    createdAt: 1699842634715,
+    updatedAt: 1699842634715,
+    expiresAt: 1699842634715
+  },
+  {
+    type: NotificationType.GAME_INVITE,
+    id: 45454,
+    userId: 9,
+    message: 'Veut jouer une partie avec vous',
+    status: NotificationStatus.UNREAD,
+    title: 'Game Invite',
+    referenceId: 11,
+    createdAt: 1699842634715,
+    updatedAt: 1699842634715,
+    expiresAt: 1699920000000
+  },
+   {
+    type: NotificationType.GAME_INVITE,
+    id: 45,
+    userId: 9,
+    message: 'Veut jouer une partie avec vous',
+    status: NotificationStatus.READ,
+    title: 'Game Invite',
+    referenceId: 9,
+    createdAt: 1699842634715,
+    updatedAt: 1699842634715,
+    expiresAt: 1699920000000
   }
 ]
 
