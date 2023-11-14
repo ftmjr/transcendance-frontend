@@ -61,6 +61,7 @@
           placeholder="Ecrivez votre message..."
           density="default"
           autofocus
+          @keyup="sendIsTyping"
         >
           <template #append-inner>
             <VBtn @click.stop.prevent="sendMessage" rounded>

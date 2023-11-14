@@ -24,6 +24,7 @@ declare module 'vue' {
     GamePaused: typeof import('./src/components/notifications/game/GamePaused.vue')['default']
     GameResumed: typeof import('./src/components/notifications/game/GameResumed.vue')['default']
     GameStatusBadge: typeof import('./src/components/game/GameStatusBadge.vue')['default']
+    Greetings: typeof import('./src/components/profile/Greetings.vue')['default']
     Histories: typeof import('./src/components/profile/Histories.vue')['default']
     JoinedGame: typeof import('./src/components/notifications/game/JoinedGame.vue')['default']
     MessageContact: typeof import('./src/components/messages/MessageContact.vue')['default']

@@ -82,10 +82,8 @@ export default defineComponent({
   watch: {
     $route(to, from) {
       if (to.name === 'dm') {
-        if (to.params.friendId !== from.params.friendId) {
-          const id = to.params.friendId
-          if (id) this.loadConversation(id)
-        }
+        const id = to.params.friendId
+        if (id) this.loadConversation(id)
       }
     }
   },
