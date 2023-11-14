@@ -34,10 +34,7 @@
                   : 'text-left bg-[#343851] after:bg-[#343851]'
               "
             >
-              <span
-                  v-for="(msgData) in msgGrp.messages"
-                  :key="msgData.time"
-              >
+              <span v-for="msgData in msgGrp.messages" :key="msgData.time">
                 {{ msgData.message }}
               </span>
             </p>
@@ -54,9 +51,7 @@
         </PerfectScrollbar>
       </div>
     </div>
-    <p class="">
-      Test, is typing: {{ isTyping }}
-    </p>
+    <p class="">Test, is typing: {{ isTyping }}</p>
     <div class="flex-0 border shadow-lg drop-shadow-lg rounded-md">
       <VForm @submit.prevent="sendMessage">
         <VTextField
@@ -95,8 +90,8 @@ import useAuthStore from '@/stores/AuthStore'
 import { formatDate } from '@/vuetify/@core/utils/formatters'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import useGameStore, { GameSession } from '@/stores/GameStore'
-import useRoomsStore from "@/stores/RoomsStore";
-import useUserStore, { FriendshipStatus } from "@/stores/UserStore";
+import useRoomsStore from '@/stores/RoomsStore'
+import useUserStore, { FriendshipStatus } from '@/stores/UserStore'
 
 interface MessageGroup {
   senderId: number
@@ -120,17 +115,17 @@ export default defineComponent({
   },
   emits: ['update:isLeftSidebarOpen'],
   setup() {
-    const authStore = useAuthStore();
-    const messageStore = useMessageStore();
-    const roomsStore = useRoomsStore();
-    const gameStore = useGameStore();
-    const usersStore = useUserStore();
+    const authStore = useAuthStore()
+    const messageStore = useMessageStore()
+    const roomsStore = useRoomsStore()
+    const gameStore = useGameStore()
+    const usersStore = useUserStore()
     return {
       messageStore,
       authStore,
       gameStore,
       roomsStore,
-      usersStore,
+      usersStore
     }
   },
   data() {
@@ -144,8 +139,8 @@ export default defineComponent({
         gameSession: undefined
       } as { status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession },
       now: new Date().getDate(),
-      interval: null as  NodeJS.Timeout | null,
-      friendShip: FriendshipStatus.Friends as FriendshipStatus,
+      interval: null as NodeJS.Timeout | null,
+      friendShip: FriendshipStatus.Friends as FriendshipStatus
     }
   },
   computed: {
@@ -191,19 +186,22 @@ export default defineComponent({
       return this.$refs.MessagesLogScroller as PerfectScrollbar
     },
     isTyping(): boolean {
-      const typingContacts = this.roomsStore.getContactTyping;
-      const isCurrentContactTyping = typingContacts.find((contact) => (contact.userId === this.conversationWith.id) && (contact.timestamp < this.now - 2000));
-      return !!isCurrentContactTyping;
+      const typingContacts = this.roomsStore.getContactTyping
+      const isCurrentContactTyping = typingContacts.find(
+        (contact) =>
+          contact.userId === this.conversationWith.id && contact.timestamp < this.now - 2000
+      )
+      return !!isCurrentContactTyping
     },
     canWrite(): boolean {
-      return this.friendShip === FriendshipStatus.Friends;
+      return this.friendShip === FriendshipStatus.Friends
     }
   },
   watch: {
     conversationWith: {
       handler() {
-        this.loadPrivateMessages();
-        this.fetchAllStatus();
+        this.loadPrivateMessages()
+        this.fetchAllStatus()
       },
       deep: true,
       immediate: true
@@ -212,17 +210,17 @@ export default defineComponent({
   onMounted() {
     // refresh time every 5s
     this.interval = setInterval(() => {
-      this.now = new Date().getTime();
-    }, 5000);
+      this.now = new Date().getTime()
+    }, 5000)
   },
   onUnmounted() {
     if (this.interval) {
-      clearInterval(this.interval);
+      clearInterval(this.interval)
     }
   },
   methods: {
     refreshContact() {
-      this.fetchAllStatus();
+      this.fetchAllStatus()
     },
     async loadPrivateMessages() {
       this.loading = true
@@ -233,7 +231,7 @@ export default defineComponent({
       })
       this.loading = false
       this.$nextTick(() => {
-        this.scrollToBottomInChatLog();
+        this.scrollToBottomInChatLog()
       })
     },
     async sendMessage() {
@@ -247,13 +245,13 @@ export default defineComponent({
         this.scrollToBottomInChatLog()
       })
     },
-    async sendIsTyping(){
-      this.messageStore.sendUserIsTyping(this.conversationWith.id);
+    async sendIsTyping() {
+      this.messageStore.sendUserIsTyping(this.conversationWith.id)
     },
     async fetchAllStatus() {
-      this.gameStatus = await this.gameStore.getUserGameStatus(this.conversationWith.id);
-      const friendTest = await this.usersStore.checkFriendShip(this.conversationWith.id);
-      this.friendShip = friendTest.status;
+      this.gameStatus = await this.gameStore.getUserGameStatus(this.conversationWith.id)
+      const friendTest = await this.usersStore.checkFriendShip(this.conversationWith.id)
+      this.friendShip = friendTest.status
     },
     scrollToBottomInChatLog() {
       const scrollEl = this.chatLogPS?.$el

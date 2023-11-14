@@ -354,12 +354,15 @@ const useRoomsStore = defineStore({
       const { skip, take } = info
       if (!this.currentReadRoomId) return
       try {
-        const { data } = await axios.get<ChatMessage[]>(`/chat/messages/${this.currentReadRoomId}`, {
-          params: {
-            skip,
-            take
+        const { data } = await axios.get<ChatMessage[]>(
+          `/chat/messages/${this.currentReadRoomId}`,
+          {
+            params: {
+              skip,
+              take
+            }
           }
-        })
+        )
         this.currentRoomMessages = data
       } catch (error) {
         console.error('Failed to load room messages:', error)

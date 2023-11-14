@@ -66,8 +66,8 @@ export default defineComponent({
     const roomsStore = useRoomsStore()
     const notificationStore = useNotificationStore()
     const gameStore = useGameStore()
-    const usersStore = useUserStore();
-    authStore.activateRefreshTokenTimer();
+    const usersStore = useUserStore()
+    authStore.activateRefreshTokenTimer()
     // a beforeMount hook would be better
     onBeforeMount(() => {
       if (authStore.isLoggedIn && authStore.getUser?.id) {

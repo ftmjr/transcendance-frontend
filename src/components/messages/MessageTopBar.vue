@@ -101,8 +101,8 @@ export default defineComponent({
   methods: {
     async blockContact() {
       if (!this.contact) return
-      await this.usersStore.blockUser(this.contact.id);
-      this.$emit('blocked');
+      await this.usersStore.blockUser(this.contact.id)
+      this.$emit('blocked')
     },
     async showProfile() {
       if (!this.contact) return

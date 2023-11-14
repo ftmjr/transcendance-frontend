@@ -30,7 +30,7 @@ const dashboardRoutes: RouteRecordRaw = {
         return {
           gameId,
           waitingRoom: false,
-          isPlayer: true,
+          isPlayer: true
         }
       },
       meta: {

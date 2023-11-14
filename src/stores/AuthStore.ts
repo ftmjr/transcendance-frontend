@@ -145,7 +145,7 @@ const useAuthStore = defineStore({
         })
         const { accessToken, user } = data
         this.setUser(user)
-        this.setToken(accessToken);
+        this.setToken(accessToken)
         return true
       } catch (error) {
         if (isAxiosError(error)) {
@@ -314,17 +314,20 @@ const useAuthStore = defineStore({
     },
     activateRefreshTokenTimer() {
       // check first if current token is valid
-        if (this.isExpired) return;
-        if (this.timer) {
-            clearInterval(this.timer)
-            this.timer = null
-        }
-        this.timer = setInterval(async () => {
-          this.isRefreshingToken = true;
-          console.log('refreshing token');
-          await this.refreshToken();
-          this.isRefreshingToken = false;
-        }, 1000 * 60 * 2);
+      if (this.isExpired) return
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+      this.timer = setInterval(
+        async () => {
+          this.isRefreshingToken = true
+          console.log('refreshing token')
+          await this.refreshToken()
+          this.isRefreshingToken = false
+        },
+        1000 * 60 * 2
+      )
     },
     async updateUsername(username: string) {
       this.error = { state: false, message: '' }

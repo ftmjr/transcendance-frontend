@@ -74,7 +74,7 @@ export default defineComponent({
   data() {
     return {
       chatMessageContent: '',
-      loading: false,
+      loading: false
     }
   },
   computed: {

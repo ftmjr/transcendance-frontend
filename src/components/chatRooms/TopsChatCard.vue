@@ -101,13 +101,13 @@ export default defineComponent({
     }
   },
   async beforeMount() {
-    await this.fetchRooms();
+    await this.fetchRooms()
   },
   methods: {
     h,
     async fetchRooms() {
       this.loading = true
-      await this.roomsStore.fetchPublicRooms();
+      await this.roomsStore.fetchPublicRooms()
       this.loading = false
     },
     isCurrentUserAMember(room: ChatRoomWithMembers) {

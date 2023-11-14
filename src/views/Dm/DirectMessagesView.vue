@@ -83,32 +83,32 @@ export default defineComponent({
     $route(to, from) {
       if (to.name === 'dm') {
         if (to.params.friendId !== from.params.friendId) {
-          const id = to.params.friendId;
-          if (id) this.loadConversation(id);
+          const id = to.params.friendId
+          if (id) this.loadConversation(id)
         }
       }
     }
   },
   async beforeMount() {
-    await this.loadExtraData();
+    await this.loadExtraData()
     if (this.friendId) {
-      await this.loadConversation(this.friendId);
+      await this.loadConversation(this.friendId)
     }
     if (this.messageStore.currentConversationWith) {
       document.title = `${this.messageStore.currentConversationWith.profile?.name} - Message | Transcendence`
     }
   },
   methods: {
-    async loadExtraData(){
-      this.loading = true;
-      await this.messageStore.getUniqueConversations();
-      await this.userStore.loadAllMyFriends();
-      this.loading = false;
+    async loadExtraData() {
+      this.loading = true
+      await this.messageStore.getUniqueConversations()
+      await this.userStore.loadAllMyFriends()
+      this.loading = false
     },
     async loadConversation(friendId: number) {
-      this.loading = true;
-      await this.messageStore.setCurrentConversationWith(friendId);
-      this.loading = false;
+      this.loading = true
+      await this.messageStore.setCurrentConversationWith(friendId)
+      this.loading = false
     },
     showMyProfile() {
       this.$router.push({
@@ -122,7 +122,7 @@ export default defineComponent({
       })
     },
     startConversation() {
-      if (this.vuetifyDisplays.mdAndUp) return;
+      if (this.vuetifyDisplays.mdAndUp) return
       this.isLeftSidebarOpen = true
     }
   }
