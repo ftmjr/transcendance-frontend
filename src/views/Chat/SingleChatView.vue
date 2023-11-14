@@ -75,7 +75,6 @@ export default defineComponent({
     return {
       chatMessageContent: '',
       loading: false,
-      messages: []
     }
   },
   computed: {
@@ -88,7 +87,7 @@ export default defineComponent({
       return this.$refs.MessagesLogScroller as PerfectScrollbar
     },
     canWrite(): boolean {
-      return this.userRole !== ChatMemberRole.BAN
+      return this.userRole !== ChatMemberRole.BAN && this.userRole !== ChatMemberRole.MUTED
     }
   },
   watch: {},
@@ -102,7 +101,7 @@ export default defineComponent({
       // @TODO send chat
     },
     scrollToBottomInChatLog() {
-      const scrollEl = this.chatLogPS.$el
+      const scrollEl = this.chatLogPS?.$el
       scrollEl.scrollTop = scrollEl.scrollHeight
     }
   }

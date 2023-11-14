@@ -193,7 +193,10 @@ export default defineComponent({
       return winner === this.userId
     },
     getLostType(gameHistory: CompleteGameHistory): 'perdu' | 'abandon' | 'none' {
-      const histories = gameHistory.histories[this.userId]
+      const histories = gameHistory.histories[this.userId];
+      if (!histories) {
+        return 'none'
+      }
       const lostEvent = histories.find((history) => history.event === GameEvent.MATCH_LOST)
       if (lostEvent) {
         return 'perdu'

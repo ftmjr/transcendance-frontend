@@ -354,7 +354,7 @@ const useRoomsStore = defineStore({
       const { skip, take } = info
       if (!this.currentReadRoomId) return
       try {
-        const { data } = await axios.get<ChatMessage[]>(`/chat/${this.currentReadRoomId}`, {
+        const { data } = await axios.get<ChatMessage[]>(`/chat/messages/${this.currentReadRoomId}`, {
           params: {
             skip,
             take

@@ -95,7 +95,7 @@ export interface AuthState {
     state: boolean
     message: string
   }
-  isRefrehShingToken: boolean
+  isRefreshingToken: boolean
   timer: NodeJS.Timeout | null
 }
 export interface RegisterBody {

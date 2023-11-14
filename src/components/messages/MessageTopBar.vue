@@ -10,18 +10,16 @@
     >
       <VIcon size="24" icon="tabler-menu-2" />
     </VBtn>
-    <template v-if="contact">
+    <template>
       <div class="flex align-center cursor-pointer" @click="showProfile">
-        <AvatarBadge v-if="contact.profile" :user-id="contact.id" :user="contact" />
+        <AvatarBadge :user-id="contact.id" :user="contact" />
         <div class="flex-grow-1 ms-4 overflow-hidden">
           <h6 class="font-mono font-medium">
             {{ contact.profile.name }} {{ contact.profile.lastname }}
           </h6>
         </div>
       </div>
-
       <VSpacer />
-
       <div class="flex items-center">
         <GameStatusBadge
           v-if="contact.profile"
@@ -70,7 +68,8 @@ export default defineComponent({
       required: true
     },
     contact: {
-      type: Object as PropType<User>
+      type: Object as PropType<User>,
+      required: true
     },
     userGameStatus: {
       type: Object as PropType<{
@@ -80,7 +79,7 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['update:isLeftSidebarOpen'],
+  emits: ['update:isLeftSidebarOpen', 'blocked'],
   setup() {
     const authStore = useAuthStore()
     const usersStore = useUserStore()
@@ -102,7 +101,8 @@ export default defineComponent({
   methods: {
     async blockContact() {
       if (!this.contact) return
-      await this.usersStore.blockUser(this.contact.id)
+      await this.usersStore.blockUser(this.contact.id);
+      this.$emit('blocked');
     },
     async showProfile() {
       if (!this.contact) return

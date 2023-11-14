@@ -35,8 +35,6 @@ const navItems: VerticalNavItems = [
   {
     title: 'DMs',
     icon: { icon: 'tabler-mail' },
-    badgeContent: '2',
-    badgeClass: 'bg-light-primary text-primary',
     to: 'dm'
   },
   { heading: 'Info' },
