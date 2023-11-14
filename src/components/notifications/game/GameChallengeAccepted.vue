@@ -9,7 +9,8 @@
   >
     <div class="flex gap-4 w-full relative">
       <div :class="[isExpired ? 'opacity-50' : 'opacity-100']">
-        <avatar-badge :user-id="notification.referenceId"></avatar-badge>
+        <!-- <avatar-badge :user-id="notification.referenceId"></avatar-badge> -->
+        <VIcon class="text-2xl" color="orange">tabler:device-gamepad-2</VIcon>
       </div>
       <div class="flex-1 flex-col pr-4">
         <p :class="['text-left text-sm fomt-semiBold', isExpired ? 'text-gray-400/75' : '']">

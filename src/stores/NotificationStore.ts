@@ -17,9 +17,9 @@ const samples = [
     status: NotificationStatus.READ,
     title: 'Game Challenge Accepted',
     referenceId: 9,
-    createdAt: 1699842634715,
-    updatedAt: 1699842634715,
-    expiresAt: 1699842634715
+    createdAt: '1699842634715',
+    updatedAt: '1699842634715',
+    expiresAt: '1699842634715'
   },
   {
     type: NotificationType.GAME_INVITE,
@@ -29,9 +29,9 @@ const samples = [
     status: NotificationStatus.UNREAD,
     title: 'Game Invite',
     referenceId: 13,
-    createdAt: 1699842634715,
-    updatedAt: 1699842634715,
-    expiresAt: 1699842634715
+    createdAt: '1699842634715',
+    updatedAt: '1699842634715',
+    expiresAt: '1699842634715'
   },
   {
     type: NotificationType.GAME_INVITE,
@@ -41,9 +41,9 @@ const samples = [
     status: NotificationStatus.UNREAD,
     title: 'Game Invite',
     referenceId: 11,
-    createdAt: 1699842634715,
-    updatedAt: 1699842634715,
-    expiresAt: 1699920000000
+    createdAt: '1699842634715',
+    updatedAt: '1699842634715',
+    expiresAt: '1699920000000'
   },
   {
     type: NotificationType.GAME_INVITE,
@@ -53,9 +53,9 @@ const samples = [
     status: NotificationStatus.READ,
     title: 'Game Invite',
     referenceId: 9,
-    createdAt: 1699917466742,
-    updatedAt: 1699917466742,
-    expiresAt: 1699920170137
+    createdAt: '1699917466742',
+    updatedAt: '1699917466742',
+    expiresAt: '1699920170137'
   },
   {
     type: NotificationType.GAME_INVITE,
@@ -65,9 +65,9 @@ const samples = [
     status: NotificationStatus.UNREAD,
     title: 'Game Challenge Accepted',
     referenceId: 9,
-    createdAt: 1699842634715,
-    updatedAt: 1699842634715,
-    expiresAt: 1699921707882
+    createdAt: '1699842634715',
+    updatedAt: '1699842634715',
+    expiresAt: '1699921707882'
   }
 ]
 

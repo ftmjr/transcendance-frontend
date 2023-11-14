@@ -12,51 +12,53 @@
       height="320"
     >
       <VCarouselItem v-for="(room, index) in topRooms" :key="room.id">
-        <VCardText class="h-full">
-          <VRow class="h-25">
-            <VCol cols="12">
-              <h6 class="font-weight-semibold text-white">Les Top Chat - {{ index + 1 }}</h6>
-            </VCol>
-            <VCol cols="12" sm="6" order="2" order-sm="1">
-              <VRow>
-                <VCol cols="12" class="pb-0">
-                  <p class="text-xl font-weight-semibold">
-                    {{ room.name }}
-                  </p>
-                </VCol>
-                <VCol cols="6" class="text-no-wrap">
+        <div class="p-8 h-[320px]">
+          <div class="">
+            <h6 class="font-weight-semibold text-white">Les Top Chat - {{ index + 1 }}</h6>
+          </div>
+          <div class="flex h-full">
+            <div class="basis-full md:basis-1/2 flex flex-col gap-4">
+              <p class="text-xl font-weight-semibold">
+                {{ room.name }}
+              </p>
+              <div class="flex gap-4">
+                <div>
                   <VChip label class="me-2">
                     {{ room.members.length }}
                   </VChip>
                   <span>Membres(s)</span>
-                </VCol>
-                <VCol cols="6" class="text-no-wrap">
+                </div>
+                <div>
                   <VChip label class="me-2">
                     {{ room.type }}
                   </VChip>
-                </VCol>
-                <VCol cols="12" class="pt-2 items-center justify-center">
-                  <VBtn
-                    v-if="!isCurrentUserAMember(room)"
-                    color="white"
-                    class="text-no-wrap"
-                    @click="joinRoom(room.id)"
-                  >
-                    <VIcon left> mdi-account-plus </VIcon>
-                    <span>Rejoindre</span>
-                  </VBtn>
-                  <VBtn v-else color="white" @click="goToChatRoom(room.id)">
-                    <VIcon left> tabler-eye </VIcon>
-                    <span>Voir</span>
-                  </VBtn>
-                </VCol>
-              </VRow>
-            </VCol>
-            <VCol cols="12" sm="6" order="1" order-sm="2">
-              <img v-if="room.avatar" :src="room.avatar" class="rounded object-cover" />
-            </VCol>
-          </VRow>
-        </VCardText>
+                </div>
+              </div>
+              <div class="flex gap-4">
+                <VBtn
+                  v-if="!isCurrentUserAMember(room)"
+                  color="white"
+                  class="text-no-wrap"
+                  @click="joinRoom(room.id)"
+                >
+                  <VIcon left> mdi-account-plus </VIcon>
+                  <span>Rejoindre</span>
+                </VBtn>
+                <VBtn v-else color="white" @click="goToChatRoom(room.id)">
+                  <VIcon left> tabler-eye </VIcon>
+                  <span>Voir</span>
+                </VBtn>
+              </div>
+            </div>
+            <div class="basis-full md:basis-1/2 h-full py-4">
+              <img
+                v-if="room.avatar"
+                :src="room.avatar"
+                class="rounded object-cover h-full w-full"
+              />
+            </div>
+          </div>
+        </div>
       </VCarouselItem>
     </VCarousel>
   </VCard>
