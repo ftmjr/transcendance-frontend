@@ -54,16 +54,14 @@
         <VTextField
           v-model="mpContent"
           variant="solo"
-          class="transparent-input-box"
           placeholder="Ecrivez votre message..."
           density="default"
           autofocus
         >
           <template #append-inner>
             <VBtn
-              type="submit"
-              @click.prevent="sendMessage"
-              class="rounded-full h-8 w-8 text-gray-50 bg-red-400"
+              @click.stop.prevent="sendMessage"
+              rounded
             >
               <svg
                 class="fill-current text-current h-4 w-4"
@@ -207,8 +205,8 @@ export default defineComponent({
     },
     async sendMessage() {
       if (this.loading) return
+      if (!this.mpContent.trim()) return;
       this.loading = true
-      if (!this.mpContent.trim()) return
       this.messageStore.sendPrivateMessage(this.conversationWith.id, this.mpContent.trim())
       this.mpContent = ''
       this.loading = false

@@ -53,11 +53,12 @@ interface EmitEvents {
 }
 
 export class ChatSocket {
+  private static instance: ChatSocket;
   socket: Socket<ListenEvents, EmitEvents> | undefined
   public operational: boolean = false
   public managedRoomIds: number[] = []
 
-  constructor(
+  private constructor(
     public userId: number,
     onNewMessage: (message: ChatMessage) => void,
     onNewMp: (message: PrivateMessage) => void,
@@ -84,6 +85,25 @@ export class ChatSocket {
     } catch (e) {
       console.error(e)
     }
+  }
+
+  public static getInstance(
+    userId: number,
+    onNewMessage: (message: ChatMessage) => void,
+    onNewMp: (message: PrivateMessage) => void,
+    onFailedToSendMessage: (error: string) => void,
+    onConnectionError: (error: string) => void
+  ): ChatSocket {
+    if (!ChatSocket.instance) {
+      ChatSocket.instance = new ChatSocket(
+        userId,
+        onNewMessage,
+        onNewMp,
+        onFailedToSendMessage,
+        onConnectionError
+      );
+    }
+    return ChatSocket.instance;
   }
 
   disconnect() {

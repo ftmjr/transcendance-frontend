@@ -42,6 +42,7 @@ export default defineComponent({
       gameMonitor,
       theme: this.theme
     }
+    this.gameMonitor = gameMonitor;
     const game = new Game({
       type: WEBGL,
       scale: {
@@ -55,7 +56,7 @@ export default defineComponent({
           height: 750
         }
       },
-      backgroundColor: 'rgba(101,107,218,0.76)',
+      backgroundColor: 'rgba(12,12,23,0.76)',
       physics: {
         default: 'arcade',
         arcade: {
