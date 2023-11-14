@@ -11,6 +11,7 @@ export enum ChatMemberRole {
   OWNER = 'OWNER',
   ADMIN = 'ADMIN',
   USER = 'USER',
+  MUTED = 'MUTED',
   BAN = 'BAN'
 }
 export interface ChatRoomMember {
