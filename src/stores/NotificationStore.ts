@@ -9,7 +9,7 @@ export interface NotificationState {
 }
 
 const samples = [
-    {
+  {
     type: NotificationType.GAME_INVITE,
     id: 45,
     userId: 9,
@@ -45,7 +45,7 @@ const samples = [
     updatedAt: 1699842634715,
     expiresAt: 1699920000000
   },
-   {
+  {
     type: NotificationType.GAME_INVITE,
     id: 45,
     userId: 9,
@@ -53,9 +53,9 @@ const samples = [
     status: NotificationStatus.READ,
     title: 'Game Invite',
     referenceId: 9,
-    createdAt: 1699842634715,
-    updatedAt: 1699842634715,
-    expiresAt: 1699920000000
+    createdAt: 1699917466742,
+    updatedAt: 1699917466742,
+    expiresAt: 1699920170137
   },
   {
     type: NotificationType.GAME_INVITE,
@@ -67,7 +67,7 @@ const samples = [
     referenceId: 9,
     createdAt: 1699842634715,
     updatedAt: 1699842634715,
-    expiresAt: 1699920000000
+    expiresAt: 1699921707882
   }
 ]
 

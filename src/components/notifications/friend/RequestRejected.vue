@@ -5,14 +5,14 @@
     @click="handleRead"
   >
     <div class="flex gap-4 w-full relative">
-      <div :class="[notification.status === 'READ' ? 'opacity-50' : 'opacity-100']">
+      <div :class="[notification.status === 'READ' ? 'opacity-75' : 'opacity-100']">
         <avatar-badge :user-id="notification.referenceId"></avatar-badge>
       </div>
       <div class="flex-1 flex-col pr-4">
         <p
           :class="[
             'text-left text-sm fomt-semiBold',
-            notification.status === 'READ' ? 'text-gray-700/50' : ''
+            notification.status === 'READ' ? 'text-gray-400/75' : ''
           ]"
         >
           {{ notification.title }}
@@ -20,7 +20,7 @@
         <p
           :class="[
             'text-left text-xs',
-            notification.status === 'READ' ? 'text-gray-700/50' : 'text-gray-500/50'
+            notification.status === 'READ' ? 'text-gray-400/75' : 'text-gray-200/75'
           ]"
         >
           {{ notification.message }}
@@ -28,7 +28,7 @@
       </div>
       <div
         v-if="notification.status !== 'READ'"
-        class="absolute h-2 w-2 right-0 top-1/2 -translate-y-1/2 rounded-full bg-green-400/50 z-50"
+        class="absolute h-2 w-2 right-0 top-1/2 -translate-y-1/2 rounded-full bg-green-400/75 z-50"
       ></div>
     </div>
   </button>
@@ -64,10 +64,6 @@ const { isShort, notification } = defineProps({
 const router = useRouter()
 
 const notificationStore = useNotificationStore()
-const handleDelete = (e: Event) => {
-  e.preventDefault()
-  notificationStore.deleteNotification(notification.id)
-}
 
 const handleRead = (e: Event) => {
   e.preventDefault()

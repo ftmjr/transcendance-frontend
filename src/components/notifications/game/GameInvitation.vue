@@ -1,47 +1,44 @@
 <template>
   <button
     :disabled="isExpired"
-    :class="['relative block w-full p-4 hover:bg-[#01051e] cursor-pointer', notification.status === 'READ' ? 'opacity-50' : 'opacity-100']"
+    :class="[
+      'relative block w-full p-4 hover:bg-[#01051e] cursor-pointer',
+      notification.status === 'READ' ? 'opacity-75' : 'opacity-100'
+    ]"
     @click="handleRead"
   >
     <div class="flex gap-4 w-full relative">
-      <div :class="[isExpired ? 'opacity-50' : 'opacity-100']">
+      <div :class="[isExpired ? 'opacity-75' : 'opacity-100']">
         <avatar-badge :user-id="notification.referenceId"></avatar-badge>
       </div>
       <div class="flex-1 flex-col pr-4">
-        <p
-          :class="[
-            'text-left text-sm fomt-semiBold',
-            isExpired ? 'text-gray-700/50' : ''
-          ]"
-        >
+        <p :class="['text-left text-sm fomt-semiBold', isExpired ? 'text-gray-400/75' : '']">
           {{ notification.title }}
         </p>
-        <p
-          :class="[
-            'text-left text-xs',
-            isExpired ? 'text-gray-700/50' : 'text-gray-500/50'
-          ]"
-        >
+        <p :class="['text-left text-xs', isExpired ? 'text-gray-400/75' : 'text-gray-500/75']">
           {{ notification.message }}
         </p>
-        <p
-        v
-            :class="[
-              'text-left text-xs',
-              isExpired ? 'text-gray-700/50' : 'text-gray-500/50'
-            ]"
-          >
-            <span v-if="!isExpired">
-              cette invitation expire dans: xx:xy
-            </span>
-            <span v-else>
-              Cette invitation a expiré
-            </span>
-          </p>
+        <p v :class="['text-left text-xs', isExpired ? 'text-gray-400/75' : 'text-gray-500/75']">
+          <span v-if="!isExpired">
+            cette invitation expire dans: {{ formatTime(minutes) }}:{{ formatTime(secondes) }}
+          </span>
+          <span v-else> Cette invitation a expiré </span>
+        </p>
         <div class="flex gap-2 mt-4">
-          <button :disabled="isExpired" @click="hanleJoinGame" class="cursor-pointer px-8 py-2 rounded-md border border-gray-50/10 text-xs bg-green-700/50 hover:bg-green-700/60 text-gary-500 disabled:bg-gray-800/50 disabled:opacity-20">Joindre</button>
-          <button :disabled="isExpired" @click="handleReject" class="cursor-pointer px-4 py-2 rounded-md border border-gray-50/10 text-xs bg-red-700/50 hover:bg-red-700/60 text-gary-500 disabled:bg-gray-800/50 disabled:opacity-20">Refuser</button>
+          <button
+            :disabled="isExpired"
+            @click="hanleJoinGame"
+            class="cursor-pointer px-8 py-2 rounded-md border border-gray-50/10 text-xs bg-green-700/50 hover:bg-green-700/60 text-gary-500 disabled:bg-gray-800/50 disabled:opacity-50"
+          >
+            Joindre
+          </button>
+          <button
+            :disabled="isExpired"
+            @click="handleReject"
+            class="cursor-pointer px-4 py-2 rounded-md border border-gray-50/10 text-xs bg-red-700/50 hover:bg-red-700/60 text-gary-500 disabled:bg-gray-800/50 disabled:opacity-50"
+          >
+            Refuser
+          </button>
         </div>
       </div>
       <div
@@ -54,11 +51,11 @@
 
 <script setup lang="ts">
 import { PropType } from 'vue'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 import { Notification } from '@/utils/notificationSocket'
 import useNotificationStore from '@/stores/NotificationStore'
-import useGameStore from '@/stores/GameStore';
-import { ref, onMounted, onUnmounted, reactive } from 'vue';
+import useGameStore from '@/stores/GameStore'
+import { computed, ref, onBeforeUnmount, onMounted } from 'vue'
 
 // Game invitation type
 // {
@@ -94,36 +91,61 @@ const handleRead = (e: Event) => {
 
 const hanleJoinGame = async (e: Event) => {
   e.preventDefault()
-  handleRead(e);
+  handleRead(e)
   const r = await gameStore.acceptGameInvitation(notification.referenceId)
   if (r === 'preparing') {
     router.push({
       name: 'game',
-      params: { gameId: notification.referenceId },
+      params: { gameId: notification.referenceId }
       // query: { isPlayer: 'true' }
-    });
+    })
   }
 }
 
 const handleReject = (e: Event) => {
   e.preventDefault()
   gameStore.refuseGameInvitation(notification.referenceId)
-  handleRead(e);
+  handleRead(e)
 }
 
-const isExpired = (() => {
-  const now = new Date().getTime();
-  const expiresAt = new Date(notification.expiresAt).getTime();
-  return now >= expiresAt;
-})()
+const now = new Date().getTime()
+const expiresAt = new Date(notification.expiresAt).getTime()
+
+const isExpired = ref(now >= expiresAt)
+
+const minutes = ref(Math.floor((expiresAt - now) / 1000 / 60))
+const secondes = ref(Math.floor((expiresAt - now) / 1000) % 60)
+
+const updateCountDown = () => {
+  const now = new Date().getTime()
+  const timeLeft = expiresAt - now
+
+  isExpired.value = timeLeft <= 0
+
+  if (timeLeft <= 0 && interval) {
+    clearInterval(interval)
+    return
+  }
+
+  minutes.value = Math.floor(timeLeft / 1000 / 60)
+  secondes.value = Math.floor((timeLeft / 1000) % 60)
+}
+
+const formatTime = (time: number) => {
+  return time < 10 ? `0${time}` : `${time}`
+}
+
+let interval: NodeJS.Timer | null = null
 
 onMounted(() => {
-  // Update remaining time every minute
-  // const intervalId = setInterval(updateRemainingTime, 60 * 1000);
+  if (!isExpired.value) {
+    interval = setInterval(updateCountDown, 1000)
+  }
+})
 
-  // Clear interval when component is unmounted
-  // onUnmounted(() => clearInterval(intervalId));
-});
+onBeforeUnmount(() => {
+  if (interval) clearInterval(interval)
+})
 </script>
 
 <style scoped></style>
