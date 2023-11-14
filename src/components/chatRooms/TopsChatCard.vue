@@ -83,7 +83,6 @@ import { VIcon } from 'vuetify/components'
 import useAuthStore from '@/stores/AuthStore'
 import useRoomsStore, { ChatRoomWithMembers } from '@/stores/RoomsStore'
 import NotificationPopUp from '@/components/notifications/NotificationPopUp.vue'
-
 export default defineComponent({
   name: 'TopChatCard',
   components: { NotificationPopUp },
