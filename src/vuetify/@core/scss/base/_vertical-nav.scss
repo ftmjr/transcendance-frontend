@@ -203,9 +203,7 @@
 // 👉 Transitions
 .vertical-nav-section-title-enter-active,
 .vertical-nav-section-title-leave-active {
-  transition:
-    opacity 0.1s ease-in-out,
-    transform 0.1s ease-in-out;
+  transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
 }
 
 .vertical-nav-section-title-enter-from,
@@ -220,9 +218,7 @@
 
 .transition-slide-x-enter-active,
 .transition-slide-x-leave-active {
-  transition:
-    opacity 0.1s ease-in-out,
-    transform 0.12s ease-in-out;
+  transition: opacity 0.1s ease-in-out, transform 0.12s ease-in-out;
 }
 
 .transition-slide-x-enter-from,
@@ -237,9 +233,7 @@
 
 .vertical-nav-app-title-enter-active,
 .vertical-nav-app-title-leave-active {
-  transition:
-    opacity 0.1s ease-in-out,
-    transform 0.12s ease-in-out;
+  transition: opacity 0.1s ease-in-out, transform 0.12s ease-in-out;
 }
 
 .vertical-nav-app-title-enter-from,
