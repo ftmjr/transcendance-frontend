@@ -146,8 +146,9 @@ const useAuthStore = defineStore({
         this.setToken(accessToken)
         return true
       } catch (error) {
+        alert('error')
         if (isAxiosError(error)) {
-          if (error.response && error.response.status === 403) {
+          if (error.response && (error.response.status === 403 || error.response.status === 401)) {
             this.error = { state: true, message: error.response.data.message }
           }
         }
@@ -211,6 +212,12 @@ const useAuthStore = defineStore({
         this.error = { state: false, message: 'Failed to refresh user data' }
       }
     },
+    /**
+     * @name refreshToken
+     * @description Refresh token
+     * @returns
+     * @memberof AuthStore
+     */
     async refreshToken(): Promise<string | null> {
       this.error = { state: false, message: '' }
       try {
@@ -245,6 +252,12 @@ const useAuthStore = defineStore({
         return null
       }
     },
+    /**
+     * @name activate2FA
+     * @param otpCode 
+     * @description Activate 2FA with the OTP code 
+     * @returns 
+     */
     async activate2FA(otpCode: string): Promise<boolean> {
       this.error = { state: false, message: '' }
       try {
@@ -260,6 +273,13 @@ const useAuthStore = defineStore({
         return false
       }
     },
+
+    /**
+     * @name validate2FACode
+     * @param totpCode 
+     * @description Validate 2FA code
+     * @returns 
+     */
     async validate2FACode(totpCode: string): Promise<boolean> {
       this.error = { state: false, message: '' }
       try {
@@ -273,6 +293,12 @@ const useAuthStore = defineStore({
         return false
       }
     },
+
+    /**
+     * @name deactivate2FA
+     * @description Deactivate 2FA
+     * @returns 
+     */
     async deactivate2FA(): Promise<boolean> {
       this.error = { state: false, message: '' }
       try {
@@ -284,6 +310,13 @@ const useAuthStore = defineStore({
         return false
       }
     },
+
+    /**
+     * @name updatePassword
+     * @param info 
+     * @description Update password
+     * @returns 
+     */
     async updatePassword(info: {
       currentPassword: string
       newPassword: string
@@ -306,6 +339,13 @@ const useAuthStore = defineStore({
         return false
       }
     },
+
+    /**
+     * @name updateUsername
+     * @param username 
+     * @description Update username
+     * @returns 
+     */
     async updateUsername(username: string) {
       this.error = { state: false, message: '' }
       try {
@@ -327,6 +367,13 @@ const useAuthStore = defineStore({
         return false
       }
     },
+
+    /**
+     * @name updateUserInfo
+     * @param info 
+     * @description Update user info
+     * @returns 
+     */
     async updateUserInfo(info: { firstName: string; lastName: string; bio: string }) {
       this.error = { state: false, message: '' }
       try {
@@ -349,6 +396,13 @@ const useAuthStore = defineStore({
         return false
       }
     },
+
+    /**
+     * @name changeMyStatus
+     * @param value
+     * @description Change user status
+     * @returns 
+     */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async changeMyStatus(value: Status): Promise<'success' | 'error'> {
       try {
@@ -358,6 +412,13 @@ const useAuthStore = defineStore({
         return 'error'
       }
     },
+
+    /**
+     * @name updateAvatar
+     * @param avatar 
+     * @description Update avatar
+     * @returns 
+     */
     async updateAvatar(avatar: File): Promise<'success' | 'error'> {
       try {
         const formData = new FormData()
@@ -375,6 +436,13 @@ const useAuthStore = defineStore({
         return 'error'
       }
     },
+
+    /**
+     * @name resolveAvatarBadgeVariant
+     * @param status
+     * @description Resolve avatar badge variant
+     * @returns 
+     */
     resolveAvatarBadgeVariant(status: Status): 'success' | 'error' | 'warning' | 'secondary' {
       if (status === Status.Online) return 'success'
       else if (status === Status.Offline) return 'error'
