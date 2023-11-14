@@ -12,15 +12,16 @@
       :delimiter-icon="() => h(VIcon, { icon: 'fa-circle', size: '10' })"
       height="320"
     >
-      <VCarouselItem v-for="(room, index) in topRooms" :key="room.id">
+      <VCarouselItem v-for="(room, index) in topRooms" :key="room.id" class="p-0">
         <div class="p-8 h-[320px]">
           <div class="">
-            <h6 class="font-weight-semibold text-white">Les Top Chat - {{ index + 1 }}</h6>
+            <h2 class="text-4xl uppercase font-bold">Les Top Chat - {{ index + 1 }}</h2>
           </div>
           <div class="flex h-full">
             <div class="basis-full md:basis-1/2 flex flex-col gap-4">
-              <p class="text-xl font-weight-semibold">
-                {{ room.name }}
+              <p class="text-base font-medium text-gray-300">
+                Nom de la room:
+                <a class="text-gray-300 hover:text-gray-50" href="#">{{ room.name }}</a>
               </p>
               <div class="flex gap-4">
                 <div>
@@ -30,6 +31,7 @@
                   <span>Membres(s)</span>
                 </div>
                 <div>
+                  <span> Type: </span>
                   <VChip label class="me-2">
                     {{ room.type }}
                   </VChip>
@@ -39,14 +41,23 @@
                 <VBtn
                   v-if="!isCurrentUserAMember(room)"
                   color="white"
-                  class="text-no-wrap"
+                  class="text-no-wrap text-sm bg-transparent border hover:bg-white hover:text-[#952175] flex gap-6 iems-center justify-center"
                   @click="joinRoom(room.id)"
                 >
-                  <VIcon left> mdi-account-plus </VIcon>
+                  <span>
+                    <VIcon left> mdi-account-plus </VIcon>
+                  </span>
                   <span>Rejoindre</span>
                 </VBtn>
-                <VBtn v-else color="white" @click="goToChatRoom(room.id)">
-                  <VIcon left> tabler-eye </VIcon>
+                <VBtn
+                  class="text-no-wrap text-sm bg-transparent border hover:bg-white hover:text-[#952175] flex gap-2 iems-center justify-center"
+                  v-else
+                  color="white"
+                  @click="goToChatRoom(room.id)"
+                >
+                  <span>
+                    <VIcon left> tabler-eye </VIcon>
+                  </span>
                   <span>Voir</span>
                 </VBtn>
               </div>

@@ -51,7 +51,7 @@
             </VCol>
             <VCol cols="12" class="text-center">
               <div class="flex-wrap justify-center gap-3 d-flex">
-                <VBtn variant="tonal" color="cyan" rounded size="large" href="/api/auth/42">
+                <VBtn class="" variant="tonal" color="cyan" rounded size="large" href="/api/auth/42">
                   <VIcon icon="simple-icons:42" class="mr-1" />
                   Best school
                 </VBtn>
