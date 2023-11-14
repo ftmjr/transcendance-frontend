@@ -38,7 +38,7 @@
         </VCard>
       </VWindowItem>
       <VWindowItem value="awards">
-        <div>Les recompenses</div>
+        <Awards v-if="userId" :user-id="userId"  />
       </VWindowItem>
       <VWindowItem value="friends">
         <Friends v-if="userId === authStore.getUser?.id" />
@@ -55,6 +55,7 @@ import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import type { ProfileData, User, GameHistory, Profile } from '@/interfaces/User'
 import axios from '@/utils/axios'
+import Awards from '@/components/profile/Awards.vue'
 import Histories from '@/components/profile/Histories.vue'
 import UserProfileHeader from '@/components/profile/ProfileHeader.vue'
 import Friends from '@/components/profile/Friends.vue'
@@ -77,6 +78,7 @@ const emptyCoalition = {
 export default defineComponent({
   components: {
     PlayerSimpleStats,
+    Awards,
     Histories,
     UserProfileHeader,
     Friends
