@@ -4,6 +4,7 @@
       <v-progress-linear :active="isActive" color="blue" height="20" :indeterminate="true" />
     </template>
     <VCarousel
+      v-if="!loading && topRooms.length > 0"
       cycle
       :continuous="false"
       :show-arrows="false"
@@ -99,14 +100,14 @@ export default defineComponent({
       return publicRoom.slice(0, 3)
     }
   },
-  mounted() {
-    this.fetchPublicRooms()
+  async beforeMount() {
+    await this.fetchRooms();
   },
   methods: {
     h,
-    async fetchPublicRooms() {
+    async fetchRooms() {
       this.loading = true
-      await this.roomsStore.fetchPublicRooms()
+      await this.roomsStore.fetchPublicRooms();
       this.loading = false
     },
     isCurrentUserAMember(room: ChatRoomWithMembers) {
