@@ -20,7 +20,8 @@
         <VCard :loading="loading" color="transparent">
           <VCard v-if="profileData.profile">
             <div class="bg-[#1a1f3c] p-2 md:p-6">
-              <h3 class="underline underline-offset-4">Description</h3>
+              <h2 class="text-4xl uppercase font-bold">Description</h2>
+
               <p v-if="profileData.profile.bio" class="text-left md:w-1/2 py-2 font-mono">
                 <i>{{ profileData.profile.bio }}</i>
               </p>
@@ -38,10 +39,10 @@
         </VCard>
       </VWindowItem>
       <VWindowItem value="awards">
-        <div>Les recompenses</div>
+        <h2 class="text-4xl uppercase font-bold">Les recompenses</h2>
       </VWindowItem>
       <VWindowItem value="friends">
-        <Friends v-if="userId === authStore.getUser?.id" />
+        <friends v-if="userId === authStore.getUser?.id" />
       </VWindowItem>
       <VWindowItem value="history">
         <Histories v-if="userId" :user-id="userId" />
