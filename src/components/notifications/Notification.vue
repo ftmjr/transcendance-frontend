@@ -22,6 +22,28 @@ import GameResumed from '@/components/notifications/game/GameResumed.vue'
 import GameChallengeRejected from '@/components/notifications/game/GameChallengeRejected.vue'
 import JoinedGame from '@/components/notifications/game/JoinedGame.vue'
 
+// NotificationType.GAME_INVITE
+//
+// 'Game Invite'
+// 'Game Invite Rejected'
+// 'Challenge Accepted'
+// NotificationType.GAME_EVENT
+//
+// 'Joined Game'
+// NotificationType.FRIEND_REQUEST
+//
+// Demande d'amitié
+// Demande d'ami acceptée
+// Demande d'ami refusée
+// NotificationType.PRIVATE_MESSAGE
+//
+// 'Added to Chat'
+// 'Chat Room Destroyed'
+// 'Promoted in Chat Room'
+// 'Removed from Chat Room'
+
+
+
 export default defineComponent({
   components: {
     FriendRequest,
