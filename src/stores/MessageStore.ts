@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
-import type {Profile, User} from '@/interfaces/User'
+import type { Profile, User } from '@/interfaces/User'
 import axios from '@/utils/axios'
 import useUserStore from '@/stores/UserStore'
 import { ChatSocket } from '@/utils/chatSocket'
 import { isAxiosError } from 'axios'
 
 export interface MessageState {
-  conversationsUsers: Array<User & {profile: Profile}>
+  conversationsUsers: Array<User & { profile: Profile }>
   searchTerm: string
   currentConversationUser: number | null
   socketManager: ChatSocket | null
@@ -130,7 +130,7 @@ const useMessageStore = defineStore({
     // on mounted
     async getUniqueConversations() {
       try {
-        const { data } = await axios.get<Array<User & {profile: Profile}>>('/messages', {
+        const { data } = await axios.get<Array<User & { profile: Profile }>>('/messages', {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -192,6 +192,10 @@ const useMessageStore = defineStore({
     sendPrivateMessage(friendId: number, content: string) {
       if (!this.socketManager || !this.socketManager.operational) return
       this.socketManager.sendPrivateMessage(friendId, content)
+    },
+    sendUserIsTyping(receiverId: number) {
+      if (!this.socketManager || !this.socketManager.operational) return
+      this.socketManager.mpUserIsTyping(receiverId)
     },
     async handleReceivedMessage(message: PrivateMessage) {
       const userId =
