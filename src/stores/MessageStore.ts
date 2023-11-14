@@ -139,14 +139,6 @@ const useMessageStore = defineStore({
         if (this.conversationsUsers.length) {
           this.currentConversationUser = this.conversationsUsers[0].id
         }
-        // get the 200 first messages
-        this.conversationsUsers.forEach((user: User) => {
-          this.getPrivateMessageBetween({
-            userTwoId: user.id,
-            skip: 0,
-            take: 200
-          })
-        })
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response) {

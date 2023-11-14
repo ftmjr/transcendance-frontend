@@ -54,6 +54,7 @@ const useRoomsStore = defineStore({
     socketManager: ChatSocket | null
     currentReadRoomId: number | null
     currentRoomMembers: MemberRoomWithUserProfiles[]
+    currentRoomMessages: ChatMessage[]
     searchTerm: string
     contactTyping: { userId: number; timestamp: number }[]
     roomsMembersTyping: { roomId: number; senderId: number; username: string; timestamp: number }[]
@@ -62,10 +63,11 @@ const useRoomsStore = defineStore({
       userId: 0,
       rooms: [],
       publicRooms: [],
+      searchTerm: '',
       socketManager: null,
       currentReadRoomId: null,
       currentRoomMembers: [],
-      searchTerm: '',
+      currentRoomMessages: [],
       contactTyping: [],
       roomsMembersTyping: []
     }
@@ -144,7 +146,9 @@ const useRoomsStore = defineStore({
       this.socketManager = ChatSocket.getInstance(
         userId,
         (message: ChatMessage) => {
-          console.log('chat room message received', message)
+          if (message.chatroomId === this.currentReadRoomId) {
+            this.currentRoomMessages.push(message)
+          }
         },
         (message: PrivateMessage) => {
           messageStore.handleReceivedMessage(message)
@@ -304,7 +308,7 @@ const useRoomsStore = defineStore({
       }
     },
     /*
-     * Set the current room to read
+     * Set the current room to read, only if user is a member of the room
      * @param roomId the id of the room to read
      * @returns 'success' if success, string if error
      * The current room is the room that the user is currently reading
@@ -316,7 +320,6 @@ const useRoomsStore = defineStore({
         if (this.currentReadRoomId !== roomId) {
           this.currentRoomMembers = []
         }
-
         const members = await this.getRoomMembersData(roomId)
         if (Array.isArray(members)) {
           this.currentRoomMembers = members
@@ -346,6 +349,21 @@ const useRoomsStore = defineStore({
         }
       }
       return errorMessage
+    },
+    async getCurrentRoomMessages(info: { skip: number; take: number }): Promise<void> {
+      const { skip, take } = info
+      if (!this.currentReadRoomId) return
+      try {
+        const { data } = await axios.get<ChatMessage[]>(`/chat/${this.currentReadRoomId}`, {
+          params: {
+            skip,
+            take
+          }
+        })
+        this.currentRoomMessages = data
+      } catch (error) {
+        console.error('Failed to load room messages:', error)
+      }
     },
     // fetch PUBLIC and PROTECTED rooms
     async fetchPublicRooms() {

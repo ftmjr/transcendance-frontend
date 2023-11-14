@@ -42,8 +42,6 @@ import JoinedGame from '@/components/notifications/game/JoinedGame.vue'
 // 'Promoted in Chat Room'
 // 'Removed from Chat Room'
 
-
-
 export default defineComponent({
   components: {
     FriendRequest,
