@@ -77,7 +77,7 @@ export interface AppStatData {
 }
 
 export interface UserStoreState {
-  contacts: User[]
+  contacts: Array<User & {profile: Profile}>
   blockedUsers: BlockedUser[]
   stats: AppStatData
   statusSocketManager: StatusSocket | null
@@ -127,7 +127,7 @@ const useUserStore = defineStore({
     getStats(): AppStatData {
       return this.stats
     },
-    getContact(): User[] {
+    getContact(): Array<User & {profile: Profile}> {
       return this.contacts
     },
     getBlockedUsers(): BlockedUser[] {
@@ -193,8 +193,8 @@ const useUserStore = defineStore({
     },
     async loadAllMyFriends(): Promise<'success' | 'error'> {
       try {
-        const { data } = await axios.get('/friends')
-        this.contacts = data as User[]
+        const { data } = await axios.get<Array<User & {profile: Profile}>>('/friends')
+        this.contacts = data;
         return 'success'
       } catch (e) {
         return 'error'

@@ -54,8 +54,8 @@ const useRoomsStore = defineStore({
     currentReadRoomId: number | null
     currentRoomMembers: MemberRoomWithUserProfiles[]
     searchTerm: string
-    newUnseenMessages: number
-    newUnseenPrivateMessages: number
+    contactTyping: { userId: number; timestamp: number }[]
+    roomsMembersTyping: { roomId: number; senderId: number; username: string; timestamp: number }[]
   } => {
     return {
       rooms: [],
@@ -64,8 +64,8 @@ const useRoomsStore = defineStore({
       currentReadRoomId: null,
       currentRoomMembers: [],
       searchTerm: '',
-      newUnseenMessages: 0,
-      newUnseenPrivateMessages: 0
+      contactTyping: [],
+      roomsMembersTyping: []
     }
   },
   getters: {
@@ -114,8 +114,24 @@ const useRoomsStore = defineStore({
     getSearchTerm(): string {
       return this.searchTerm
     },
-    getNewMPMessageCount(): number {
-      return this.newUnseenPrivateMessages
+    getContactTyping(): { userId: number; timestamp: number }[] {
+      // return last 5 seconds typing contacts and remove old ones
+      const now = Date.now()
+      this.contactTyping = this.contactTyping.filter((contact) => now - contact.timestamp < 5000)
+      return this.contactTyping
+    },
+    getRoomMembersTyping(): {
+      roomId: number
+      senderId: number
+      username: string
+      timestamp: number
+    }[] {
+      // return last 5 seconds typing contacts and remove old ones
+      const now = Date.now()
+      this.roomsMembersTyping = this.roomsMembersTyping.filter(
+        (contact) => now - contact.timestamp < 5000
+      )
+      return this.roomsMembersTyping
     }
   },
   actions: {
@@ -125,17 +141,32 @@ const useRoomsStore = defineStore({
       this.socketManager = ChatSocket.getInstance(
         userId,
         (message: ChatMessage) => {
-          console.log('chat room message received', message)
+          messageStore.addMessage(message)
         },
         (message: PrivateMessage) => {
-          this.newUnseenPrivateMessages++
-          messageStore.handleReceivedMessage(message)
+          messageStore.addPrivateMessage(message)
         },
         (error: string) => {
-          console.log('failed sending msg', error)
+          console.error(error)
         },
         (error: string) => {
-          console.log('failed connecting', error)
+          console.error(error)
+        },
+        (roomId: number) => {
+          // if room is the current room, reload members
+          if (roomId === this.currentReadRoomId) {
+            this.setCurrentRoom(roomId);
+          }
+        },
+        (typingInfo: { senderId: number; roomId: number; username: string; timestamp: number }) => {
+          this.roomsMembersTyping.push(typingInfo)
+        },
+        (senderId: number) => {
+           // reload contact since relationship changed
+          // messageStore.reloadConversation(senderId)
+        },
+        (senderId: number, timestamp: number) => {
+          this.contactTyping.push({ userId: senderId, timestamp })
         }
       )
       if (!this.socketManager) return

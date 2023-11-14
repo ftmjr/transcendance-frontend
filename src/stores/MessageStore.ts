@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
-import type { User } from '@/interfaces/User'
+import type {Profile, User} from '@/interfaces/User'
 import axios from '@/utils/axios'
 import useUserStore from '@/stores/UserStore'
 import { ChatSocket } from '@/utils/chatSocket'
 import { isAxiosError } from 'axios'
 
 export interface MessageState {
-  conversationsUsers: User[]
+  conversationsUsers: Array<User & {profile: Profile}>
   searchTerm: string
   currentConversationUser: number | null
   socketManager: ChatSocket | null
@@ -113,7 +113,7 @@ const useMessageStore = defineStore({
       this.socketManager = socketManager
     },
     setCurrentConversationWith(userId: number) {
-      const idFound = this.conversationsUsers.findIndex((user: User) => user.id === userId)
+      const idFound = this.conversationsUsers.findIndex((user) => user.id === userId)
       if (idFound >= 0) {
         this.currentConversationUser = this.conversationsUsers[idFound].id
       } else {
@@ -130,7 +130,7 @@ const useMessageStore = defineStore({
     // on mounted
     async getUniqueConversations() {
       try {
-        const { data } = await axios.get<User[]>('/messages', {
+        const { data } = await axios.get<Array<User & {profile: Profile}>>('/messages', {
           headers: {
             'Content-Type': 'application/json'
           }
