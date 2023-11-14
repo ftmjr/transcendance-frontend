@@ -53,8 +53,8 @@ const useRoomsStore = defineStore({
     socketManager: ChatSocket | null
     currentReadRoomId: number | null
     currentRoomMembers: MemberRoomWithUserProfiles[]
-    searchTerm: string,
-    newUnseenMessages: number,
+    searchTerm: string
+    newUnseenMessages: number
     newUnseenPrivateMessages: number
   } => {
     return {
@@ -115,7 +115,7 @@ const useRoomsStore = defineStore({
       return this.searchTerm
     },
     getNewMPMessageCount(): number {
-      return this.newUnseenPrivateMessages;
+      return this.newUnseenPrivateMessages
     }
   },
   actions: {
@@ -128,7 +128,7 @@ const useRoomsStore = defineStore({
           console.log('chat room message received', message)
         },
         (message: PrivateMessage) => {
-          this.newUnseenPrivateMessages++;
+          this.newUnseenPrivateMessages++
           messageStore.handleReceivedMessage(message)
         },
         (error: string) => {

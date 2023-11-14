@@ -31,7 +31,7 @@ interface EmitEvents {
   join: (room: string) => void
 }
 export class NotificationSocket {
-  private static instance: NotificationSocket;
+  private static instance: NotificationSocket
   socket: Socket<ListenEvents, EmitEvents> | undefined
   public operational: boolean = false
   private constructor(userId: number, onNotification: (data: Notification) => void) {
@@ -47,11 +47,14 @@ export class NotificationSocket {
       this.operational = true
     }
   }
-  public static getInstance(userId: number, onNotification: (data: Notification) => void): NotificationSocket {
+  public static getInstance(
+    userId: number,
+    onNotification: (data: Notification) => void
+  ): NotificationSocket {
     if (!NotificationSocket.instance) {
-      NotificationSocket.instance = new NotificationSocket(userId, onNotification);
+      NotificationSocket.instance = new NotificationSocket(userId, onNotification)
     }
-    return NotificationSocket.instance;
+    return NotificationSocket.instance
   }
   disconnect() {
     if (this.socket) {

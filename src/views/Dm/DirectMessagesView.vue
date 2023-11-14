@@ -79,7 +79,7 @@ export default defineComponent({
     }
   },
   beforeMount() {
-    this.loadConversations();
+    this.loadConversations()
   },
   methods: {
     async loadConversations() {

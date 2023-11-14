@@ -49,7 +49,7 @@ import useUserStore, { UserWithScore } from '@/stores/UserStore'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 import useGameStore from '@/stores/GameStore'
-import { GameEvent, GameHistory } from "@/interfaces/User";
+import { GameEvent, GameHistory } from '@/interfaces/User'
 
 export default defineComponent({
   name: 'LeaderBoardView',
@@ -67,22 +67,22 @@ export default defineComponent({
   data() {
     return {
       users: [] as UserWithScore[],
-      loading: false,
+      loading: false
     }
   },
   async beforeMount() {
-    await this.fetchUsersGameStatusAndScores();
+    await this.fetchUsersGameStatusAndScores()
   },
   methods: {
     getCountByEvent(gameHistories: GameHistory[] | undefined, event: GameEvent) {
-      if (!gameHistories) return 0;
+      if (!gameHistories) return 0
       return gameHistories.filter((history) => history.event === event).length
     },
     async fetchUsersGameStatusAndScores() {
-      this.loading = true;
+      this.loading = true
       const users = await this.userStore.getPaginatedUsersWithScore({ take: 100 })
       const usersIds = users.map((user) => user.id)
-      const usersGameStatus = await this.gameStore.getUsersGameStatus(usersIds);
+      const usersGameStatus = await this.gameStore.getUsersGameStatus(usersIds)
       this.users = users.map((user, index) => {
         const userGameStatus = usersGameStatus[index]
         return {
@@ -90,7 +90,7 @@ export default defineComponent({
           gameStatus: userGameStatus
         }
       })
-      this.loading = false;
+      this.loading = false
     }
   }
 })

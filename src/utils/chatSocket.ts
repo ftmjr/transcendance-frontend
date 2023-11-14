@@ -54,7 +54,7 @@ interface EmitEvents {
 }
 
 export class ChatSocket {
-  private static instance: ChatSocket;
+  private static instance: ChatSocket
   socket: Socket<ListenEvents, EmitEvents> | undefined
   public operational: boolean = false
   public managedRoomIds: number[] = []
@@ -102,9 +102,9 @@ export class ChatSocket {
         onNewMp,
         onFailedToSendMessage,
         onConnectionError
-      );
+      )
     }
-    return ChatSocket.instance;
+    return ChatSocket.instance
   }
 
   disconnect() {

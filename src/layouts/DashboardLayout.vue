@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, onBeforeUnmount } from "vue";
+import { computed, defineComponent, onBeforeMount, onBeforeUnmount } from 'vue'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
 import { VerticalNavLayout } from '@layouts'
@@ -48,7 +48,7 @@ import useAuthStore from '@/stores/AuthStore'
 import useNotificationStore from '@/stores/NotificationStore'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
-import { NavLink, VerticalNavItems } from "@layouts/types";
+import { NavLink, VerticalNavItems } from '@layouts/types'
 
 export default defineComponent({
   components: {
@@ -105,7 +105,7 @@ export default defineComponent({
       // } else {
       //   setBadge(navItems[7] as NavLink, undefined, undefined);
       // }
-      return navItems;
+      return navItems
     })
     return {
       layoutAttrs,

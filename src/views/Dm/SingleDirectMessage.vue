@@ -59,10 +59,7 @@
           autofocus
         >
           <template #append-inner>
-            <VBtn
-              @click.stop.prevent="sendMessage"
-              rounded
-            >
+            <VBtn @click.stop.prevent="sendMessage" rounded>
               <svg
                 class="fill-current text-current h-4 w-4"
                 xmlns="http://www.w3.org/2000/svg"
@@ -205,7 +202,7 @@ export default defineComponent({
     },
     async sendMessage() {
       if (this.loading) return
-      if (!this.mpContent.trim()) return;
+      if (!this.mpContent.trim()) return
       this.loading = true
       this.messageStore.sendPrivateMessage(this.conversationWith.id, this.mpContent.trim())
       this.mpContent = ''

@@ -42,7 +42,7 @@ export default defineComponent({
       gameMonitor,
       theme: this.theme
     }
-    this.gameMonitor = gameMonitor;
+    this.gameMonitor = gameMonitor
     const game = new Game({
       type: WEBGL,
       scale: {

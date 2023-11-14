@@ -47,7 +47,11 @@
                   v-for="(eventInfo, index) in userActions.event"
                   :key="index"
                   :size="eventInfo.color === 'yellow' ? 32 : 24"
-                  :variant="(eventInfo.color === 'yellow' || eventInfo.color === 'orange') ? 'elevated' : 'tonal'"
+                  :variant="
+                    eventInfo.color === 'yellow' || eventInfo.color === 'orange'
+                      ? 'elevated'
+                      : 'tonal'
+                  "
                   :color="eventInfo.color"
                   :icon="eventInfo.icon"
                 />
@@ -192,7 +196,7 @@ export default defineComponent({
       const histories = gameHistory.histories[this.userId]
       const lostEvent = histories.find((history) => history.event === GameEvent.MATCH_LOST)
       if (lostEvent) {
-        return 'perdu';
+        return 'perdu'
       }
       const startedTheGame = histories.find((history) => history.event === GameEvent.GAME_STARTED)
       if (startedTheGame) {

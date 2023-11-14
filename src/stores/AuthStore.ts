@@ -51,7 +51,7 @@ const useAuthStore = defineStore({
         message: ''
       },
       isRefrehShingToken: false,
-      timer: null,
+      timer: null
     }
   },
   getters: {
@@ -147,10 +147,13 @@ const useAuthStore = defineStore({
         this.setUser(user)
         this.setToken(accessToken)
         // refresh every 5 minutes
-        this.timer = setInterval(() => {
-          this.refreshToken();
-          console.log('refreshing token');
-        }, 5 * 60 * 1000)
+        this.timer = setInterval(
+          () => {
+            this.refreshToken()
+            console.log('refreshing token')
+          },
+          5 * 60 * 1000
+        )
         return true
       } catch (error) {
         if (isAxiosError(error)) {
@@ -164,13 +167,13 @@ const useAuthStore = defineStore({
     async logout() {
       this.error = { state: false, message: '' }
       try {
-        this.removeUser();
-        this.removeToken();
+        this.removeUser()
+        this.removeToken()
         if (this.timer) {
           clearInterval(this.timer)
           this.timer = null
         }
-        await axios.get('auth/logout');
+        await axios.get('auth/logout')
       } catch (error) {
         if (isAxiosError(error)) {
           this.error = {
@@ -212,7 +215,7 @@ const useAuthStore = defineStore({
     async refreshCurrentUser() {
       this.error = { state: false, message: '' }
       try {
-        const { data } = await axios.get<User & {profile: Profile}>('auth/me', {
+        const { data } = await axios.get<User & { profile: Profile }>('auth/me', {
           headers: {
             Authorization: `Bearer ${this.token}`
           }

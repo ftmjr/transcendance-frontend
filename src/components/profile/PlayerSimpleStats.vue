@@ -103,8 +103,8 @@ export default defineComponent({
       }).length
     },
     numberOfGames(): number {
-      return this.numberOfWins + this.numberOfLostGames;
-    },
+      return this.numberOfWins + this.numberOfLostGames
+    }
   },
   beforeMount() {
     if (!this.histories || this.histories.length === 0) {

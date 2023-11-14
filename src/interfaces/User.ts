@@ -96,7 +96,7 @@ export interface AuthState {
     message: string
   }
   isRefrehShingToken: boolean
-  timer:  NodeJS.Timeout | null
+  timer: NodeJS.Timeout | null
 }
 export interface RegisterBody {
   lastName: string
