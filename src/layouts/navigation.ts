@@ -9,12 +9,12 @@ const navItems: VerticalNavItems = [
   {
     title: 'Play solo 🤖',
     icon: { icon: 'noto-v1:game-die' },
-    to: 'game'
+    to: 'bot-game'
   },
   {
     title: 'Waiting Room',
     icon: { icon: 'medical-icon:i-waiting-area', color: 'green' },
-    to: { name: 'game', query: { waitingRoom: 'true' } }
+    to: { name: 'waiting-room' }
   },
   {
     title: 'Trouver un joueur',

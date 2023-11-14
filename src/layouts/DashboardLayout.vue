@@ -1,5 +1,5 @@
 <template>
-  <VerticalNavLayout :nav-items="navItemsRefined" v-bind="layoutAttrs">
+  <VerticalNavLayout :nav-items="navItems" v-bind="layoutAttrs">
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="flex h-100 justify-between items-center">
         <VBtn
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, onBeforeUnmount } from 'vue'
+import { defineComponent, onBeforeMount, onBeforeUnmount } from 'vue'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
 import { VerticalNavLayout } from '@layouts'
@@ -48,7 +48,6 @@ import useAuthStore from '@/stores/AuthStore'
 import useNotificationStore from '@/stores/NotificationStore'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
-import { NavLink, VerticalNavItems } from '@layouts/types'
 
 export default defineComponent({
   components: {
@@ -89,27 +88,9 @@ export default defineComponent({
         usersStore.disconnectStatusSocket()
       }
     })
-    // const setBadge = (
-    //     item:  NavLink,
-    //     content: string | undefined,
-    //     badgeClass: string | undefined
-    // ) => {
-    //   item.badgeContent= content;
-    //   item.badgeClass= badgeClass;
-    // }
-    const navItemsRefined = computed<VerticalNavItems>(() => {
-      // check in roomsStore if new message update came from socket
-      // const mp = roomsStore.getNewMPMessageCount;
-      // if (mp > 0) {
-      //   setBadge(navItems[7] as NavLink, mp.toString(), 'bg-light-primary text-primary');
-      // } else {
-      //   setBadge(navItems[7] as NavLink, undefined, undefined);
-      // }
-      return navItems
-    })
     return {
       layoutAttrs,
-      navItemsRefined,
+      navItems,
       appRouteTransition,
       isLessThanOverlayNavBreakpoint,
       windowWidth

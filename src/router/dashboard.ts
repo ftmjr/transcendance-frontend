@@ -22,6 +22,42 @@ const dashboardRoutes: RouteRecordRaw = {
       }
     },
     {
+      path: 'bot-game/:gameId?',
+      name: 'bot-game',
+      component: GameView,
+      props: (route) => {
+        const gameId = route.params.gameId ? parseInt(route.params.gameId.toString()) : undefined
+        return {
+          gameId,
+          waitingRoom: false,
+          isPlayer: true,
+        }
+      },
+      meta: {
+        requiresAuth: true,
+        layoutWrapperClasses: 'layout-content-height-fixed',
+        title: 'Bot Game'
+      }
+    },
+    {
+      path: 'waiting-room/:gameId?',
+      name: 'waiting-room',
+      component: GameView,
+      props: (route) => {
+        const gameId = route.params.gameId ? parseInt(route.params.gameId.toString()) : undefined
+        return {
+          gameId,
+          waitingRoom: true,
+          isPlayer: true
+        }
+      },
+      meta: {
+        requiresAuth: true,
+        layoutWrapperClasses: 'layout-content-height-fixed',
+        title: 'Waiting Room'
+      }
+    },
+    {
       path: 'game/:gameId?',
       name: 'game',
       component: GameView,
