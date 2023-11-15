@@ -1,7 +1,6 @@
 <template>
-  <p v-if="numberOfWins > 0"> [WINNER WINNER] achievement! : win one game</p>
+  <p v-if="numberOfWins > 0"> [WINNER CIRCLE] achievement! : won one game</p>
   <p v-if="numberOfGoals >= 10"> [BIG SCORER] achievement! : scored 10 goals</p>
-  <p v-if="numberOfGames > 0 && numberOfLostGames <= 0"> [CLEAN SLATE] achievement: never lost a game</p>
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
