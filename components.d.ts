@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AddedToRoom: typeof import('./src/components/notifications/chat/AddedToRoom.vue')['default']
     AvatarBadge: typeof import('./src/components/profile/AvatarBadge.vue')['default']
+    Awards: typeof import('./src/components/profile/Awards.vue')['default']
     ChallengeModal: typeof import('./src/components/game/ChallengeModal.vue')['default']
     ChatConversationTopBar: typeof import('./src/components/chatRooms/ChatConversationTopBar.vue')['default']
     ChatUserProfileSidebar: typeof import('./src/components/chatRooms/ChatUserProfileSidebar.vue')['default']
