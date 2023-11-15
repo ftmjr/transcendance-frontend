@@ -37,7 +37,7 @@ const useMessageStore = defineStore({
   }),
   getters: {
     getConversingWith(): User[] {
-      if (!this.searchTerm) {
+      if (!this.searchTerm.trim()) {
         return this.conversationsUsers
       }
       const term = this.searchTerm.toLowerCase()
@@ -122,7 +122,7 @@ const useMessageStore = defineStore({
         const contacts = userStore.getContact
         const contactFound = contacts.findIndex((user: User) => user.id === userId)
         if (contactFound >= 0) {
-          this.conversationsUsers.push(contacts[contactFound])
+          this.conversationsUsers.unshift(contacts[contactFound])
           this.currentConversationUser = contacts[contactFound].id
         }
       }

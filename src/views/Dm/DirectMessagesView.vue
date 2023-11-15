@@ -1,5 +1,5 @@
 <template>
-  <VLayout class="bg-surface rounded border p-2 border-solid border-slate-400 shadow-sm">
+  <VLayout v-show="!loading" class="bg-surface rounded border p-2 border-solid border-slate-400 shadow-sm">
     <VNavigationDrawer
       v-model="isLeftSidebarOpen"
       absolute
@@ -80,28 +80,31 @@ export default defineComponent({
   },
   watch: {
     $route(to, from) {
-      console.log('route changed')
       if (to.name === 'dm') {
-        console.log('route changed to dm with friend id', to.params.friendId)
         const id = to.params.friendId
         if (id) this.loadConversation(id)
       }
+    },
+    'messageStore.currentConversationWith':{
+      handler(value){
+        if (value){
+          document.title = `${value.profile?.name} - Message | Transcendence`
+        }
+      },
+      immediate:true,
     }
   },
   async beforeMount() {
-    await this.loadExtraData()
+    await this.loadExtraData();
     if (this.friendId) {
       await this.loadConversation(this.friendId)
-    }
-    if (this.messageStore.currentConversationWith) {
-      document.title = `${this.messageStore.currentConversationWith.profile?.name} - Message | Transcendence`
     }
   },
   methods: {
     async loadExtraData() {
       this.loading = true
-      await this.messageStore.getUniqueConversations()
-      await this.userStore.loadAllMyFriends()
+      await this.messageStore.getUniqueConversations();
+      await this.userStore.loadAllMyFriends();
       this.loading = false
     },
     async loadConversation(friendId: number) {

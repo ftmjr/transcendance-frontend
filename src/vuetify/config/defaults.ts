@@ -22,7 +22,7 @@ export default {
     }
   },
   VPagination: {
-    activeColor: 'primary',
+    color: 'primary',
     density: 'comfortable',
     variant: 'tonal'
   },

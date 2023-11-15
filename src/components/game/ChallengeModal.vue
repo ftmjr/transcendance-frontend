@@ -66,7 +66,6 @@
                   v-bind="props"
                   :title="item?.raw?.name"
                   :color="item.raw.color"
-                  :active-color="item.raw.color"
                   :class="item?.raw?.styleClassName"
                 />
               </template>

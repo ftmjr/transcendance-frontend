@@ -44,7 +44,7 @@
     >
       <template #firstMessage>
         <span class="text-disabled ml-1">
-          {{ messageStore.getLastMessageBetween(contact.id)?.message }}
+          {{ messageStore.getLastMessageBetween(contact.id)?.text}}
         </span>
       </template>
     </MessageContact>
