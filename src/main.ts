@@ -8,7 +8,8 @@ import '@core/scss/template/index.scss'
 import './assets/main.scss' // tailwindcss styles
 const app = createApp(App)
 
-app.use(createPinia())
+const pinia = createPinia()
+app.use(pinia)
 app.use(router)
 app.use(vuetify)
 app.use(layoutsPlugin)

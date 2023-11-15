@@ -3,97 +3,109 @@
     <div class="border-b border-gray-50 flex-0">
       <MessageTopBar
         :is-left-sidebar-open="isLeftSidebarOpen"
-        :contact="conversationWith"
         :user-game-status="gameStatus"
+        :friendship-status="friendShip"
+        :is-blocked="isUserBlocked"
         @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
         @blocked="refreshContact"
       />
       <VDivider class="d-md-none" />
     </div>
-    <div class="flex-1 w-full overflow-scroll hide-scroolbar">
-      <div class="h-full w-full flex flex-col gap-4">
-        <PerfectScrollbar
-          ref="MessagesLogScroller"
-          tag="ul"
-          :options="{
-            wheelPropagation: false,
-            suppressScrollX: true
-          }"
-          class="h-full"
-        >
-          <div
-            v-for="(msgGrp, index) in msgGroups"
-            :key="index"
-            class="p-2"
-            :class="msgGrp.senderId !== conversationWith.id ? 'self-end text-right' : 'self-start'"
+    <template v-if="conversationWith && !loading">
+      <div class="flex-1 w-full overflow-scroll hide-scroolbar">
+        <div class="h-full w-full flex flex-col gap-4">
+          <PerfectScrollbar
+            ref="MessagesLogScroller"
+            tag="ul"
+            :options="{
+              wheelPropagation: false,
+              suppressScrollX: true
+            }"
+            class="h-full"
           >
-            <p
-              class="relative message inline-flex flex-col px-6 min-w-[75px] py-2 border shadow-sm rounded-xl drop-shadow-md after:content-[''] after:h-4 after:absolute after:top-full after:translate-x-full after:w-4 after:-z-10 after:-translate-y-1/4"
+            <div
+              v-for="(msgGrp, index) in msgGroups"
+              :key="index"
+              class="p-2"
               :class="
-                msgGrp.senderId !== conversationWith.id
-                  ? 'text-left mr-0 ml-auto bg-[#1a1f3c] after:bg-[#1a1f3c]'
-                  : 'text-left bg-[#343851] after:bg-[#343851]'
+                msgGrp.senderId !== conversationWith.id ? 'self-end text-right' : 'self-start'
               "
             >
-              <span v-for="msgData in msgGrp.messages" :key="msgData.time">
-                {{ msgData.message }}
-              </span>
-            </p>
-            <span class="text-[.5rem] text-gray-50/90 font-thin block mt-4 px-4">
-              {{
-                formatDate(msgGrp.messages[msgGrp.messages.length - 1].time, {
-                  hour: 'numeric',
-                  minute: 'numeric'
-                })
-              }}
-            </span>
-          </div>
-          <div class="h-8 shrink-0 grow-0 w-full"></div>
-        </PerfectScrollbar>
-      </div>
-    </div>
-    <div v-if="isTyping" class="">{{ conversationWith.profile.name }} est en train d'écrire...</div>
-    <div class="flex-0 border shadow-lg drop-shadow-lg rounded-md">
-      <VForm @submit.prevent="sendMessage">
-        <VTextField
-          v-model="mpContent"
-          :disabled="!canWrite"
-          variant="solo"
-          placeholder="Ecrivez votre message..."
-          density="default"
-          autofocus
-          @keyup="sendIsTyping"
-        >
-          <template #append-inner>
-            <VBtn @click.stop.prevent="sendMessage" rounded>
-              <svg
-                class="fill-current text-current h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
+              <p
+                class="relative message inline-flex flex-col px-6 min-w-[75px] py-2 border shadow-sm rounded-xl drop-shadow-md after:content-[''] after:h-4 after:absolute after:top-full after:translate-x-full after:w-4 after:-z-10 after:-translate-y-1/4"
+                :class="
+                  msgGrp.senderId !== conversationWith.id
+                    ? 'text-left mr-0 ml-auto bg-[#1a1f3c] after:bg-[#1a1f3c]'
+                    : 'text-left bg-[#343851] after:bg-[#343851]'
+                "
               >
-                <path
-                  d="M24 0l-6 22-8.129-7.239 7.802-8.234-10.458 7.227-7.215-1.754 24-12zm-15 16.668v7.332l3.258-4.431-3.258-2.901z"
-                />
-              </svg>
-            </VBtn>
-          </template>
-        </VTextField>
-      </VForm>
+                <span v-for="msgData in msgGrp.messages" :key="msgData.time">
+                  {{ msgData.message }}
+                </span>
+              </p>
+              <span class="text-[.5rem] text-gray-50/90 font-thin block mt-4 px-4">
+                {{
+                  formatDate(msgGrp.messages[msgGrp.messages.length - 1].time, {
+                    hour: 'numeric',
+                    minute: 'numeric'
+                  })
+                }}
+              </span>
+            </div>
+            <div class="h-8 shrink-0 grow-0 w-full"></div>
+          </PerfectScrollbar>
+        </div>
+      </div>
+      <p v-if="isTyping" class="font-weight-medium">
+        {{ conversationWith.profile.name }}
+        <span class="text-sm font-weight-light pr-1">est en train d'écrire</span>
+        <VIcon :size="24" color="primary" icon="svg-spinners:3-dots-bounce" />
+      </p>
+      <div class="flex-0 border shadow-lg drop-shadow-lg rounded-md">
+        <VForm @submit.prevent="sendMessage">
+          <VTextField
+            v-model="mpContent"
+            :disabled="!canWrite"
+            variant="solo"
+            placeholder="Ecrivez votre message..."
+            density="default"
+            autofocus
+            @keyup="sendIsTyping"
+          >
+            <template #append-inner>
+              <VBtn @click.stop.prevent="sendMessage" rounded>
+                <svg
+                  class="fill-current text-current h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M24 0l-6 22-8.129-7.239 7.802-8.234-10.458 7.227-7.215-1.754 24-12zm-15 16.668v7.332l3.258-4.431-3.258-2.901z"
+                  />
+                </svg>
+              </VBtn>
+            </template>
+          </VTextField>
+        </VForm>
+      </div>
+    </template>
+    <div v-else-if="loading" class="flex items-center justify-center h-full">
+      <v-progress-circular :size="70" :width="7" color="sky" indeterminate />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
-import { PropType, defineComponent } from 'vue'
-import { User } from '@/interfaces/User'
+import { defineComponent } from 'vue'
+import { Profile, User } from '@/interfaces/User'
 import MessageTopBar from '@/components/messages/MessageTopBar.vue'
 import useAuthStore from '@/stores/AuthStore'
 import { formatDate } from '@/vuetify/@core/utils/formatters'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import useRoomsStore from '@/stores/RoomsStore'
-import useUserStore, { FriendshipStatus } from '@/stores/UserStore'
+import useUserStore, { BlockedStatus, FriendshipStatus } from '@/stores/UserStore'
 
 interface MessageGroup {
   senderId: number
@@ -106,10 +118,6 @@ export default defineComponent({
     PerfectScrollbar
   },
   props: {
-    conversationWith: {
-      type: Object as PropType<User>,
-      required: true
-    },
     isLeftSidebarOpen: {
       type: Boolean,
       default: false
@@ -140,12 +148,15 @@ export default defineComponent({
         status: 'free',
         gameSession: undefined
       } as { status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession },
-      now: new Date().getDate(),
       friendShip: FriendshipStatus.Friends as FriendshipStatus,
-      isTyping: false
+      isTyping: false,
+      isUserBlocked: false
     }
   },
   computed: {
+    conversationWith(): (User & { profile: Profile }) | null {
+      return this.messageStore.currentContact
+    },
     messages(): PrivateMessage[] {
       return this.messageStore.currentConversationMessages
     },
@@ -188,20 +199,23 @@ export default defineComponent({
       return this.$refs.MessagesLogScroller as PerfectScrollbar
     },
     canWrite(): boolean {
-      return this.friendShip === FriendshipStatus.Friends
+      if (!this.messageStore.currentContact) return false
+      return !this.isUserBlocked
     }
   },
   watch: {
-    conversationWith: {
-      handler() {
-        this.loadPrivateMessages()
-        this.fetchAllStatus()
+    'messageStore.currentContact': {
+      handler(value: (User & { profile: Profile }) | null) {
+        if (!value) return
+        this.loadPrivateMessages(value.id)
+        this.fetchAllStatus(value.id)
       },
       deep: true,
       immediate: true
     },
     'roomsStore.getContactTyping': {
       handler() {
+        if (!this.conversationWith) return
         const lastTime = this.roomsStore.getContactTyping.get(this.conversationWith.id)
         if (!lastTime) return false
         const now = new Date().getTime()
@@ -227,12 +241,13 @@ export default defineComponent({
   },
   methods: {
     refreshContact() {
-      this.fetchAllStatus()
+      if (!this.conversationWith) return
+      this.fetchAllStatus(this.conversationWith.id)
     },
-    async loadPrivateMessages() {
+    async loadPrivateMessages(id: number) {
       this.loading = true
       await this.messageStore.getPrivateMessageBetween({
-        userTwoId: this.conversationWith.id,
+        userTwoId: id,
         skip: this.skip,
         take: this.take
       })
@@ -242,6 +257,7 @@ export default defineComponent({
       })
     },
     async sendMessage() {
+      if (!this.conversationWith) return
       if (this.loading) return
       if (!this.mpContent.trim()) return
       this.loading = true
@@ -253,12 +269,15 @@ export default defineComponent({
       })
     },
     async sendIsTyping() {
+      if (!this.conversationWith) return
       this.messageStore.sendUserIsTyping(this.conversationWith.id)
     },
-    async fetchAllStatus() {
+    async fetchAllStatus(id: number) {
       this.loading = true
-      this.gameStatus = await this.gameStore.getUserGameStatus(this.conversationWith.id)
-      const friendTest = await this.usersStore.checkFriendShip(this.conversationWith.id)
+      const blockStatus = await this.usersStore.checkBlocked(id)
+      this.isUserBlocked = blockStatus !== BlockedStatus.None
+      this.gameStatus = await this.gameStore.getUserGameStatus(id)
+      const friendTest = await this.usersStore.checkFriendShip(id)
       this.friendShip = friendTest.status
       this.loading = false
     },

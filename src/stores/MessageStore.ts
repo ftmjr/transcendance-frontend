@@ -36,11 +36,11 @@ const useMessageStore = defineStore({
     messages: new Map<number, PrivateMessage[]>()
   }),
   getters: {
-    getConversingWith(): User[] {
+    conversesWithContacts(): Array<User & { profile: Profile }> {
       if (!this.searchTerm.trim()) {
         return this.conversationsUsers
       }
-      const term = this.searchTerm.toLowerCase();
+      const term = this.searchTerm.toLowerCase()
       return this.conversationsUsers.filter((user) => {
         // Check username, email, and profile name and lastname
         return (
@@ -57,21 +57,21 @@ const useMessageStore = defineStore({
     currentContactId(): number | null {
       return this.currentConversationUser
     },
-    currentConversationWith(): User | null {
+    currentContact(): (User & { profile: Profile }) | null {
       if (this.currentContactId) {
-        const current = this.getConversingWith.find(
+        const current = this.conversesWithContacts.find(
           (user: User) => user.id === this.currentContactId
         )
         if (current) return current
       }
       return null
     },
-    getContactsWithoutConversation(): User[] {
-      // get contact from UserStore getter getContacts and filter
-      // out the ones that are already in conversationsUsers
+    contacts(): Array<User & { profile: Profile }> {
       const userStore = useUserStore()
-      const contacts = userStore.getContact
-      return contacts.filter((contact: User) => {
+      return userStore.contacts
+    },
+    contactsWithoutConversations(): Array<User & { profile: Profile }> {
+      return this.contacts.filter((contact: User) => {
         return !this.conversationsUsers.some((user: User) => user.id === contact.id)
       })
     },
@@ -92,15 +92,13 @@ const useMessageStore = defineStore({
     setCurrentConversationWith(userId: number) {
       const foundUser = this.conversationsUsers.find((user) => user.id === userId)
       if (foundUser) {
-        this.currentConversationUser = foundUser.id;
+        this.currentConversationUser = foundUser.id
       } else {
         // check if user is in contacts
-        const userStore = useUserStore()
-        const contacts = userStore.getContact
-        const contactFound = contacts.find((user: User) => user.id === userId)
+        const contactFound = this.contacts.find((user) => user.id === userId)
         if (contactFound) {
-          this.currentConversationUser = contactFound.id;
-          this.conversationsUsers.unshift({ ...contactFound })
+          this.conversationsUsers.unshift(contactFound)
+          this.currentConversationUser = contactFound.id
         }
       }
     },
@@ -113,9 +111,6 @@ const useMessageStore = defineStore({
           }
         })
         this.conversationsUsers = data
-        if (this.conversationsUsers.length) {
-          this.currentConversationUser = this.conversationsUsers[0].id
-        }
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response) {

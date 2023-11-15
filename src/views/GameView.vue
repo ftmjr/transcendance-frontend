@@ -60,8 +60,7 @@ export default defineComponent({
       error: null as unknown as string,
       info: null as unknown as string,
       showInfo: false,
-      showIsInQueList: true,
-      theme: Theme.Classic
+      showIsInQueList: true
     }
   },
   computed: {
@@ -72,6 +71,9 @@ export default defineComponent({
         avatar: this.authStore.getProfile?.avatar ?? '',
         userType: this.gameStore.isWatching ? GameUserType.Viewer : GameUserType.Player
       }
+    },
+    theme(): Theme {
+      return this.gameStore.currentGameSession?.rules.theme ?? Theme.Classic
     }
   },
   beforeMount() {

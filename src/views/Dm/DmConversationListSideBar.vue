@@ -36,27 +36,30 @@
       <span class="chat-contact-header text-primary text-xl font-weight-medium">Conversations</span>
     </li>
     <MessageContact
-      v-for="contact in messageStore.getConversingWith"
+      v-for="contact in messageStore.conversesWithContacts"
       :key="contact.id"
       class="mb-2"
       :contact="contact"
       @click="showMessages(contact.id)"
     >
-      <template #firstMessage>
-        <span class="text-disabled ml-1">
-          {{ messageStore.getLastMessageBetween(contact.id)?.text}}
-        </span>
-      </template>
+      <!--      <template #firstMessage>-->
+      <!--        <span class="text-disabled ml-1">-->
+      <!--          {{ messageStore.getLastMessageBetween(contact.id)?.text}}-->
+      <!--        </span>-->
+      <!--      </template>-->
     </MessageContact>
 
-    <span v-show="!messageStore.getConversingWith.length" class="no-chat-items-text text-disabled">
+    <span
+      v-show="messageStore.conversesWithContacts.length === 0"
+      class="no-chat-items-text text-disabled"
+    >
       Aucune Conversation
     </span>
     <li class="my-4">
       <span class="chat-contact-header text-primary text-xl font-weight-medium"> Contacts </span>
     </li>
     <MessageContact
-      v-for="contact in messageStore.getContactsWithoutConversation"
+      v-for="contact in messageStore.contactsWithoutConversations"
       :key="contact.id"
       class="mb-2"
       :contact="contact"

@@ -8,11 +8,7 @@
       :color="color"
       :bordered="bordered"
     >
-      <VAvatar
-        :variant="avatarVariant"
-        :size="size"
-        @click="$emit('showUserProfile')"
-      >
+      <VAvatar :variant="avatarVariant" :size="size" @click="$emit('showUserProfile')">
         <VImg
           v-if="userProfile.profile.avatar"
           :src="userProfile.profile.avatar"
@@ -119,11 +115,8 @@ export default defineComponent({
   watch: {
     userId: {
       handler(value: number) {
-        if (!this.user) {
-          this.loadUser(value)
-        }
-      },
-      immediate: true
+        this.loadUser(value)
+      }
     }
   },
   methods: {

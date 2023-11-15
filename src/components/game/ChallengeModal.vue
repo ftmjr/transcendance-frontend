@@ -75,7 +75,8 @@
       </VCardText>
       <VCardText class="flex justify-end flex-wrap gap-3 items-center">
         <VAlert v-if="status !== 'Online'" type="warning" variant="outlined" dismissible>
-          You can't challenge this player because he is not online
+          Le challengeur est hors ligne, il a été notifié de votre demande. Il a 5 minutes pour
+          accepter ou refuser.
         </VAlert>
         <VBtn variant="tonal" color="secondary" @click="isDialogVisible = false"> Fermer </VBtn>
         <VBtn :disabled="!canBeChallenged" @click="startChallenge"> Challenger </VBtn>

@@ -1,6 +1,6 @@
 <template>
-  <p v-if="numberOfWins > 0"> [WINNER CIRCLE] achievement! : won one game</p>
-  <p v-if="numberOfGoals >= 10"> [BIG SCORER] achievement! : scored 10 goals</p>
+  <p v-if="numberOfWins > 0">[WINNER CIRCLE] achievement! : won one game</p>
+  <p v-if="numberOfGoals >= 10">[BIG SCORER] achievement! : scored 10 goals</p>
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
@@ -66,8 +66,8 @@ export default defineComponent({
       }).length
     },
     numberOfGames(): number {
-      return this.numberOfWins + this.numberOfLostGames;
-    },
+      return this.numberOfWins + this.numberOfLostGames
+    }
   },
   beforeMount() {
     if (!this.histories || this.histories.length === 0) {
@@ -90,6 +90,4 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-    
-</style>
+<style></style>

@@ -1,5 +1,8 @@
 <template>
-  <VLayout v-show="!loading" class="bg-surface rounded border p-2 border-solid border-slate-400 shadow-sm">
+  <VLayout
+    v-show="!loading"
+    class="bg-surface rounded border p-2 border-solid border-slate-400 shadow-sm"
+  >
     <VNavigationDrawer
       v-model="isLeftSidebarOpen"
       absolute
@@ -18,9 +21,8 @@
     </VNavigationDrawer>
     <VMain class="chat-content-container">
       <SingleDirectMessage
-        v-if="messageStore.currentConversationWith"
+        v-if="!!messageStore.currentContact"
         v-model:is-left-sidebar-open="isLeftSidebarOpen"
-        :conversation-with="messageStore.currentConversationWith"
       />
       <div v-else class="flex h-full items-center justify-center flex-column">
         <VAvatar size="109" class="elevation-3 mb-6 bg-surface">
@@ -82,34 +84,32 @@ export default defineComponent({
     $route(to, from) {
       if (to.name === 'dm') {
         const id = to.params.friendId
-        if (id) this.loadConversation(id)
+        if (id) {
+          this.setConversation(Number(id))
+        }
       }
     },
-    'messageStore.currentConversationWith':{
-      handler(value){
-        if (value){
+    'messageStore.currentConversationWith': {
+      handler(value) {
+        if (value) {
           document.title = `${value.profile?.name} - Message | Transcendence`
         }
       },
-      immediate:true,
+      immediate: true
     }
+  },
+  created() {
+    this.userStore.loadAllMyFriends()
   },
   async beforeMount() {
-    await this.loadExtraData();
-    if (this.friendId) {
-      await this.loadConversation(this.friendId)
-    }
+    await this.messageStore.getUniqueConversations()
   },
   methods: {
-    async loadExtraData() {
+    async setConversation(friendId?: number) {
       this.loading = true
-      await this.messageStore.getUniqueConversations();
-      await this.userStore.loadAllMyFriends();
-      this.loading = false
-    },
-    async loadConversation(friendId: number) {
-      this.loading = true
-      await this.messageStore.setCurrentConversationWith(friendId)
+      if (friendId) {
+        await this.messageStore.setCurrentConversationWith(friendId)
+      }
       this.loading = false
     },
     showMyProfile() {
@@ -117,8 +117,8 @@ export default defineComponent({
         name: 'me'
       })
     },
-    openChatOfContact(id: number) {
-      this.$router.push({
+    async openChatOfContact(id: number) {
+      await this.$router.push({
         name: 'dm',
         params: { friendId: id }
       })
