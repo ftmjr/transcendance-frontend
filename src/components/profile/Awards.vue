@@ -89,6 +89,14 @@ export default defineComponent({
       return this.numberOfWins + this.numberOfLostGames;
     },
   },
+  watch: {
+    userId: {
+      immediate: true,
+      handler() {
+        this.fetchHistories()
+     }
+    }
+  },
   beforeMount() {
     if (!this.histories || this.histories.length === 0) {
       this.fetchHistories()
