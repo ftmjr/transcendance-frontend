@@ -115,7 +115,6 @@ export class ChatSocket {
       this.socket.on('reloadRoomMembers', onRoomMembersReload)
       this.socket.on('receivedUserIsTyping', (senderId) => {
         const timestamp = Date.now()
-        console.log('receivedUserIsTyping', senderId, timestamp);
         onUserIsTyping(senderId, timestamp)
       })
       this.socket.on('reloadMp', onConversationReload)
@@ -201,7 +200,6 @@ export class ChatSocket {
         senderId: this.userId,
         receiverId
       })
-      console.log('mpUserIsTyping emitted')
     }
   }
 

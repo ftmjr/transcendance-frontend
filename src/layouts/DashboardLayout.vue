@@ -32,8 +32,8 @@
   </VerticalNavLayout>
 </template>
 
-<script lang="ts">
-import { defineComponent, onBeforeMount, onBeforeUnmount } from 'vue'
+<script setup lang="ts">
+import { onBeforeMount, onBeforeUnmount } from 'vue'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
 import { VerticalNavLayout } from '@layouts'
@@ -49,52 +49,36 @@ import useNotificationStore from '@/stores/NotificationStore'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
 
-export default defineComponent({
-  components: {
-    UserProfileButton,
-    FooterSection,
-    VerticalNavLayout,
-    NavSearchBar,
-    NotificationButton
-  },
-  setup() {
-    const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
-    const { width: windowWidth } = useWindowSize()
-    const { layoutAttrs, injectSkinClasses } = useSkins()
-    injectSkinClasses()
-    const authStore = useAuthStore()
-    const roomsStore = useRoomsStore()
-    const notificationStore = useNotificationStore()
-    const gameStore = useGameStore()
-    const usersStore = useUserStore()
-    authStore.activateRefreshTokenTimer()
-    // a beforeMount hook would be better
-    onBeforeMount(() => {
-      if (authStore.isLoggedIn && authStore.getUser?.id) {
-        if (!notificationStore.socketOperational) {
-          notificationStore.init(authStore.getUser.id)
-        }
-        if (!roomsStore.socketOperational) {
-          roomsStore.init(authStore.getUser.id)
-        }
-        if (!usersStore.socketOperational) {
-          usersStore.initStatusSocket(authStore.getUser.id)
-        }
-        gameStore.getAllMyGameSessions()
-      }
-    })
-    onBeforeUnmount(() => {
-      if (!authStore.isLoggedIn) {
-        usersStore.disconnectStatusSocket()
-      }
-    })
-    return {
-      layoutAttrs,
-      navItems,
-      appRouteTransition,
-      isLessThanOverlayNavBreakpoint,
-      windowWidth
+const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
+const { width: windowWidth } = useWindowSize()
+const { layoutAttrs, injectSkinClasses } = useSkins()
+injectSkinClasses()
+const authStore = useAuthStore()
+const roomsStore = useRoomsStore()
+const notificationStore = useNotificationStore()
+const gameStore = useGameStore()
+const usersStore = useUserStore()
+authStore.activateRefreshTokenTimer()
+
+// a beforeMount hook would be better
+onBeforeMount(() => {
+  if (authStore.isLoggedIn && authStore.getUser?.id) {
+    if (!notificationStore.socketOperational) {
+      notificationStore.init(authStore.getUser.id)
     }
+    if (!roomsStore.socketOperational) {
+      roomsStore.init(authStore.getUser.id)
+    }
+    if (!usersStore.socketOperational) {
+      usersStore.initStatusSocket(authStore.getUser.id)
+    }
+    gameStore.getAllMyGameSessions()
+  }
+})
+
+onBeforeUnmount(() => {
+  if (!authStore.isLoggedIn) {
+    usersStore.disconnectStatusSocket()
   }
 })
 </script>

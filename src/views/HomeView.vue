@@ -1,44 +1,46 @@
 <template>
-  <div class="w-full">
-    <greetings />
+  <div>
     <div class="w-full">
-      <VCol class="w-full">
-        <top-chat-card />
-      </VCol>
+      <greetings />
+      <div class="w-full">
+        <VCol class="w-full">
+          <top-chat-card />
+        </VCol>
+      </div>
     </div>
-  </div>
-  <div class="flex flex-row py-8 flex-wrap">
-    <div v-for="meta in userListStatsMeta" :key="meta.title" class="basis-1/2 p-2">
-      <VCard>
-        <VCardText class="flex justify-space-between">
-          <div>
-            <span>{{ meta.title }}</span>
-            <div class="flex items-center gap-2 my-1">
-              <h6 class="text-h6">
-                {{ Math.round(meta.stats) }}
-              </h6>
+    <div class="flex flex-row py-8 flex-wrap">
+      <div v-for="meta in userListStatsMeta" :key="meta.title" class="basis-1/2 p-2">
+        <VCard>
+          <VCardText class="flex justify-space-between">
+            <div>
+              <span>{{ meta.title }}</span>
+              <div class="flex items-center gap-2 my-1">
+                <h6 class="text-h6">
+                  {{ Math.round(meta.stats) }}
+                </h6>
+              </div>
+              <span>{{ meta.subtitle }}</span>
             </div>
-            <span>{{ meta.subtitle }}</span>
-          </div>
-          <VAvatar rounded variant="tonal" :color="meta.color" :icon="meta.icon" />
-        </VCardText>
-      </VCard>
+            <VAvatar rounded variant="tonal" :color="meta.color" :icon="meta.icon" />
+          </VCardText>
+        </VCard>
+      </div>
     </div>
-  </div>
-  <div class="w-full">
-    <VRow>
-      <VCol>
-        <player-simple-stats
-          v-if="authStore.getUser"
-          :histories="authStore.getUser.gameHistories"
-          :user-id="authStore.getUser.id"
-          :color-class="colorClasses"
-        />
-      </VCol>
-    </VRow>
-  </div>
-  <div class="my-16">
-    <friends v-if="authStore.getUser" />
+    <div class="w-full">
+      <VRow>
+        <VCol>
+          <player-simple-stats
+            v-if="authStore.getUser"
+            :histories="authStore.getUser.gameHistories"
+            :user-id="authStore.getUser.id"
+            :color-class="colorClasses"
+          />
+        </VCol>
+      </VRow>
+    </div>
+    <div class="my-16">
+      <friends v-if="authStore.getUser" />
+    </div>
   </div>
 </template>
 
@@ -50,8 +52,6 @@ import TopChatCard from '@/components/chatRooms/TopsChatCard.vue'
 import PlayerSimpleStats from '@/components/profile/PlayerSimpleStats.vue'
 import Friends from '@/components/profile/Friends.vue'
 import Greetings from '@/components/profile/Greetings.vue'
-import { avatarText } from '@/vuetify/@core/utils/formatters'
-import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 
 export default defineComponent({
   components: { PlayerSimpleStats, TopChatCard, Friends, Greetings },

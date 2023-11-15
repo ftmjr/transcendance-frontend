@@ -21,7 +21,6 @@
         v-if="messageStore.currentConversationWith"
         v-model:is-left-sidebar-open="isLeftSidebarOpen"
         :conversation-with="messageStore.currentConversationWith"
-        @refresh-contact="loadConversations"
       />
       <div v-else class="flex h-full items-center justify-center flex-column">
         <VAvatar size="109" class="elevation-3 mb-6 bg-surface">
@@ -81,7 +80,9 @@ export default defineComponent({
   },
   watch: {
     $route(to, from) {
+      console.log('route changed')
       if (to.name === 'dm') {
+        console.log('route changed to dm with friend id', to.params.friendId)
         const id = to.params.friendId
         if (id) this.loadConversation(id)
       }

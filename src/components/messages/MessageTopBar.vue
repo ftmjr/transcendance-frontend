@@ -10,41 +10,37 @@
     >
       <VIcon size="24" icon="tabler-menu-2" />
     </VBtn>
-    <template>
-      <div class="flex align-center cursor-pointer" @click="showProfile">
-        <AvatarBadge :user-id="contact.id" :user="contact" />
-        <div class="flex-grow-1 ms-4 overflow-hidden">
-          <h6 class="font-mono font-medium">
-            {{ contact.profile.name }} {{ contact.profile.lastname }}
-          </h6>
-        </div>
+    <div class="flex align-center cursor-pointer" @click="showProfile">
+      <AvatarBadge :user-id="contact.id" :user="contact" />
+      <div class="flex-grow-1 ms-4 overflow-hidden">
+        <h6 class="font-mono font-medium">
+          {{ contact.profile.name }} {{ contact.profile.lastname }}
+        </h6>
       </div>
-      <VSpacer />
-      <div class="flex items-center">
-        <GameStatusBadge
-          v-if="contact.profile"
-          :status="contact.profile.status"
-          :user-id="contact.id"
-          :user-game-status="userGameStatus"
-        />
-      </div>
-
-      <VBtn v-if="contact" variant="text" color="default" icon size="small">
-        <VIcon size="22" icon="tabler-dots-vertical" />
-        <VMenu activator="parent">
-          <VList>
-            <VListItem prepend-icon="tabler-eye" @click="showProfile">
-              <VListItemTitle> Voir le profil</VListItemTitle>
-            </VListItem>
-            <VListItem prepend-icon="tabler-ban" @click="blockContact">
-              <VListItemTitle>Bloquer</VListItemTitle>
-            </VListItem>
-          </VList>
-        </VMenu>
-      </VBtn>
-    </template>
+    </div>
+    <VSpacer />
+    <div class="flex items-center">
+      <GameStatusBadge
+        v-if="contact.profile"
+        :status="contact.profile.status"
+        :user-id="contact.id"
+        :user-game-status="userGameStatus"
+      />
+    </div>
+    <VBtn v-if="contact" variant="text" color="default" icon size="small">
+      <VIcon size="22" icon="tabler-dots-vertical" />
+      <VMenu activator="parent">
+        <VList>
+          <VListItem prepend-icon="tabler-eye" @click="showProfile">
+            <VListItemTitle> Voir le profil</VListItemTitle>
+          </VListItem>
+          <VListItem prepend-icon="tabler-ban" @click="blockContact">
+            <VListItemTitle>Bloquer</VListItemTitle>
+          </VListItem>
+        </VList>
+      </VMenu>
+    </VBtn>
   </div>
-  <VDivider class="d-md-none" />
 </template>
 
 <script lang="ts">

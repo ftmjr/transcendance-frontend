@@ -354,11 +354,10 @@ const useAuthStore = defineStore({
       this.timer = setInterval(
         async () => {
           this.isRefreshingToken = true
-          console.log('refreshing token')
           await this.refreshToken()
           this.isRefreshingToken = false
         },
-        1000 * 60 * 2
+        1000 * 60 * 30 // 30 minutes refresh
       )
     },
     /**

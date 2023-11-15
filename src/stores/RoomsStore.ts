@@ -56,8 +56,8 @@ const useRoomsStore = defineStore({
     currentRoomMembers: MemberRoomWithUserProfiles[]
     currentRoomMessages: ChatMessage[]
     searchTerm: string
-    contactTyping: { userId: number; timestamp: number }[]
-    roomsMembersTyping: { roomId: number; senderId: number; username: string; timestamp: number }[]
+    contactTyping: Map<number, number>
+    roomsMembersTyping: Map<number, { senderId: number; username: string; timestamp: number }>
   } => {
     return {
       userId: 0,
@@ -68,8 +68,11 @@ const useRoomsStore = defineStore({
       currentReadRoomId: null,
       currentRoomMembers: [],
       currentRoomMessages: [],
-      contactTyping: [],
-      roomsMembersTyping: []
+      contactTyping: new Map<number, number>(),
+      roomsMembersTyping: new Map<
+        number,
+        { senderId: number; username: string; timestamp: number }
+      >()
     }
   },
   getters: {
@@ -118,23 +121,10 @@ const useRoomsStore = defineStore({
     getSearchTerm(): string {
       return this.searchTerm
     },
-    getContactTyping(): { userId: number; timestamp: number }[] {
-      // return last 5 seconds typing contacts and remove old ones
-      const now = Date.now()
-      this.contactTyping = this.contactTyping.filter((contact) => now - contact.timestamp < 5000)
+    getContactTyping(): Map<number, number> {
       return this.contactTyping
     },
-    getRoomMembersTyping(): {
-      roomId: number
-      senderId: number
-      username: string
-      timestamp: number
-    }[] {
-      // return last 5 seconds typing contacts and remove old ones
-      const now = Date.now()
-      this.roomsMembersTyping = this.roomsMembersTyping.filter(
-        (contact) => now - contact.timestamp < 5000
-      )
+    getRoomMembersTyping(): Map<number, { senderId: number; username: string; timestamp: number }> {
       return this.roomsMembersTyping
     }
   },
@@ -154,10 +144,10 @@ const useRoomsStore = defineStore({
           messageStore.handleReceivedMessage(message)
         },
         (error: string) => {
-          console.error(error)
+          console.log(error)
         },
         (error: string) => {
-          console.error(error)
+          console.log(error)
         },
         (roomId: number) => {
           // if room is the current room, reload members
@@ -166,14 +156,14 @@ const useRoomsStore = defineStore({
           }
         },
         (typingInfo: { senderId: number; roomId: number; username: string; timestamp: number }) => {
-          this.roomsMembersTyping.push(typingInfo)
+          this.roomsMembersTyping.set(typingInfo.roomId, typingInfo)
         },
         (senderId: number) => {
           // reload contact since relationship changed
           // messageStore.reloadConversation(senderId)
         },
         (senderId: number, timestamp: number) => {
-          this.contactTyping.push({ userId: senderId, timestamp })
+          this.contactTyping.set(senderId, timestamp)
         }
       )
       if (!this.socketManager) return

@@ -55,7 +55,6 @@ export default defineComponent({
   },
   computed: {
     notifications(): NotificationT[] {
-      console.log(this.notificationStore.allNotifications)
       return this.notificationStore.allNotifications
     }
   },

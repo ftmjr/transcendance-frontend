@@ -21,7 +21,7 @@
             <div class="flex gap-2">
               <button
                 class="px-4 py-2 text-sm border bg-none inline-block rounded-md hover:bg-orange/10"
-                @click="(e) => e.preventDefault()"
+                @click.prevent="goToPlayWithBot"
               >
                 <span class="flex gap-1 items-center">
                   <v-avatar rounded variant="tonal" color="orange" icon="mdi-gamepad-circle-up" />
@@ -30,7 +30,7 @@
               </button>
               <button
                 class="px-4 py-2 text-sm border bg-none inline-block rounded-md hover:bg-cyan-400/10"
-                @click="(e) => e.preventDefault()"
+                @click.prevent="goToWaitingRoom"
               >
                 <v-avatar rounded variant="tonal" color="cyan" icon="mdi-loading" />
                 <span> Sale d'attente </span>
@@ -43,14 +43,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { PropType } from 'vue'
-import { useRouter } from 'vue-router'
-import { RouterLink } from 'vue-router'
 import useAuthStore from '@/stores/AuthStore'
-import { ref, Ref, onMounted, onBeforeUnmount, onBeforeMount } from 'vue'
+import { ref, Ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
-
+const router = useRouter()
 const greetMe = () => {
   const now = new Date()
   if (now.getHours() >= 6 && now.getHours() < 12) {
@@ -71,7 +69,7 @@ type DateObject = {
   seconds: number | string
 }
 const now = new Date()
-const dateObject: Ref<DateObject> = ref({
+const dateObject = ref<DateObject>({
   now,
   hours: now.getHours(),
   minutes: now.getMinutes(),
@@ -129,4 +127,11 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (timer) clearInterval(timer)
 })
+
+const goToPlayWithBot = () => {
+  router.push({ name: 'bot-game' })
+}
+const goToWaitingRoom = () => {
+  router.push({ name: 'waiting-room' })
+}
 </script>

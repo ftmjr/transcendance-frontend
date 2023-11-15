@@ -6,8 +6,9 @@
         :contact="conversationWith"
         :user-game-status="gameStatus"
         @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
-        @refresh-contact="refreshContact"
+        @blocked="refreshContact"
       />
+      <VDivider class="d-md-none" />
     </div>
     <div class="flex-1 w-full overflow-scroll hide-scroolbar">
       <div class="h-full w-full flex flex-col gap-4">
@@ -51,7 +52,7 @@
         </PerfectScrollbar>
       </div>
     </div>
-    <p class="">Test, is typing: {{ isTyping }}</p>
+    <div v-if="isTyping" class="">{{ conversationWith.profile.name }} est en train d'écrire...</div>
     <div class="flex-0 border shadow-lg drop-shadow-lg rounded-md">
       <VForm @submit.prevent="sendMessage">
         <VTextField
@@ -140,8 +141,8 @@ export default defineComponent({
         gameSession: undefined
       } as { status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession },
       now: new Date().getDate(),
-      interval: null as NodeJS.Timeout | null,
-      friendShip: FriendshipStatus.Friends as FriendshipStatus
+      friendShip: FriendshipStatus.Friends as FriendshipStatus,
+      isTyping: false
     }
   },
   computed: {
@@ -186,14 +187,6 @@ export default defineComponent({
     chatLogPS(): PerfectScrollbar {
       return this.$refs.MessagesLogScroller as PerfectScrollbar
     },
-    isTyping(): boolean {
-      const typingContacts = this.roomsStore.getContactTyping
-      const isCurrentContactTyping = typingContacts.find(
-        (contact) =>
-          contact.userId === this.conversationWith.id && contact.timestamp < this.now - 2000
-      )
-      return !!isCurrentContactTyping
-    },
     canWrite(): boolean {
       return this.friendShip === FriendshipStatus.Friends
     }
@@ -206,17 +199,30 @@ export default defineComponent({
       },
       deep: true,
       immediate: true
-    }
-  },
-  onMounted() {
-    // refresh time every 5s
-    this.interval = setInterval(() => {
-      this.now = new Date().getTime()
-    }, 5000)
-  },
-  onUnmounted() {
-    if (this.interval) {
-      clearInterval(this.interval)
+    },
+    'roomsStore.getContactTyping': {
+      handler() {
+        const lastTime = this.roomsStore.getContactTyping.get(this.conversationWith.id)
+        if (!lastTime) return false
+        const now = new Date().getTime()
+        this.isTyping = now - lastTime < 5000
+      },
+      deep: true,
+      immediate: true
+    },
+    isTyping: {
+      handler(value) {
+        this.$nextTick(() => {
+          this.scrollToBottomInChatLog()
+        })
+        // return the value to false if changed to true after 3 seconds
+        if (!value) return
+        setTimeout(() => {
+          this.isTyping = false
+        }, 3000)
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {
@@ -250,9 +256,11 @@ export default defineComponent({
       this.messageStore.sendUserIsTyping(this.conversationWith.id)
     },
     async fetchAllStatus() {
+      this.loading = true
       this.gameStatus = await this.gameStore.getUserGameStatus(this.conversationWith.id)
       const friendTest = await this.usersStore.checkFriendShip(this.conversationWith.id)
       this.friendShip = friendTest.status
+      this.loading = false
     },
     scrollToBottomInChatLog() {
       const scrollEl = this.chatLogPS?.$el
