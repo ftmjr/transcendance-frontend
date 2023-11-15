@@ -112,15 +112,20 @@ export default defineComponent({
       return this.authStore.resolveAvatarBadgeVariant(this.status)
     }
   },
-  beforeMount() {
-    if (!this.user) {
-      this.loadUser()
+  watch: {
+    userId: {
+      handler(value: number) {
+        if (!this.user) {
+          this.loadUser(value)
+        }
+      },
+      immediate: true
     }
   },
   methods: {
     avatarText,
-    async loadUser() {
-      const data = await this.usersStore.getShortUserProfile(this.userId)
+    async loadUser(userId: number) {
+      const data = await this.usersStore.getShortUserProfile(userId)
       if (data) {
         this.userProfile = data
       }
