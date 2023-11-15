@@ -111,8 +111,8 @@ export default class PongScene extends Scene {
     const numberSpriteKey = 'numbers_score'
     this.scoreImages = {
       player1: {
-        digit1: this.add.image(middle - 120, 70, numberSpriteKey, '0'),
-        digit2: this.add.image(middle - 70, 70, numberSpriteKey, '0')
+        digit2: this.add.image(middle - 120, 70, numberSpriteKey, '0'),
+        digit1: this.add.image(middle - 70, 70, numberSpriteKey, '0')
       },
       player2: {
         digit1: this.add.image(middle + 70, 70, numberSpriteKey, '0'),
@@ -135,8 +135,8 @@ export default class PongScene extends Scene {
     const digitsScore2 = scores[1].score.toString().split('')
     if (digitsScore1.length > 1) {
       this.scoreImages.player1.digit1.setVisible(true)
-      this.scoreImages.player1.digit1.setFrame(digitsScore1[1])
-      this.scoreImages.player1.digit2.setFrame(digitsScore1[0])
+      this.scoreImages.player1.digit1.setFrame(digitsScore1[0])
+      this.scoreImages.player1.digit2.setFrame(digitsScore1[1])
     } else {
       this.scoreImages.player1.digit2.setFrame(digitsScore1[0])
     }

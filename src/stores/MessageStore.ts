@@ -40,7 +40,7 @@ const useMessageStore = defineStore({
       if (!this.searchTerm.trim()) {
         return this.conversationsUsers
       }
-      const term = this.searchTerm.toLowerCase()
+      const term = this.searchTerm.toLowerCase();
       return this.conversationsUsers.filter((user) => {
         // Check username, email, and profile name and lastname
         return (
@@ -56,29 +56,6 @@ const useMessageStore = defineStore({
     },
     currentContactId(): number | null {
       return this.currentConversationUser
-    },
-    nextConversationId(): number | null {
-      if (this.currentConversationUser === null || this.conversationsUsers.length === 0) {
-        return null
-      }
-
-      const currentIndex = this.conversationsUsers.findIndex(
-        (user) => user.id === this.currentConversationUser
-      )
-      const nextIndex = (currentIndex + 1) % this.conversationsUsers.length
-      return this.conversationsUsers[nextIndex]?.id || null
-    },
-    previousConversationId(): number | null {
-      if (this.currentConversationUser === null || this.conversationsUsers.length === 0) {
-        return null
-      }
-
-      const currentIndex = this.conversationsUsers.findIndex(
-        (user) => user.id === this.currentConversationUser
-      )
-      const prevIndex =
-        (currentIndex - 1 + this.conversationsUsers.length) % this.conversationsUsers.length
-      return this.conversationsUsers[prevIndex]?.id || null
     },
     currentConversationWith(): User | null {
       if (this.currentContactId) {
@@ -121,9 +98,11 @@ const useMessageStore = defineStore({
         const userStore = useUserStore()
         const contacts = userStore.getContact
         const contactFound = contacts.findIndex((user: User) => user.id === userId)
+        console.log('trying to find')
         if (contactFound >= 0) {
+          console.log('found')
           this.conversationsUsers.unshift(contacts[contactFound])
-          this.currentConversationUser = contacts[contactFound].id
+          this.currentConversationUser = contacts[contactFound].id;
         }
       }
     },
