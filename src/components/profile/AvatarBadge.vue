@@ -8,7 +8,11 @@
       :color="color"
       :bordered="bordered"
     >
-      <VAvatar :variant="avatarVariant" :size="size" @click="$emit('showUserProfile')">
+      <VAvatar
+        :variant="avatarVariant"
+        :size="size"
+        @click="$emit('showUserProfile')"
+      >
         <VImg
           v-if="userProfile.profile.avatar"
           :src="userProfile.profile.avatar"

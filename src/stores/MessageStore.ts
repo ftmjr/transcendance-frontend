@@ -90,19 +90,17 @@ const useMessageStore = defineStore({
       this.socketManager = socketManager
     },
     setCurrentConversationWith(userId: number) {
-      const idFound = this.conversationsUsers.findIndex((user) => user.id === userId)
-      if (idFound >= 0) {
-        this.currentConversationUser = this.conversationsUsers[idFound].id
+      const foundUser = this.conversationsUsers.find((user) => user.id === userId)
+      if (foundUser) {
+        this.currentConversationUser = foundUser.id;
       } else {
         // check if user is in contacts
         const userStore = useUserStore()
         const contacts = userStore.getContact
-        const contactFound = contacts.findIndex((user: User) => user.id === userId)
-        console.log('trying to find')
-        if (contactFound >= 0) {
-          console.log('found')
-          this.conversationsUsers.unshift(contacts[contactFound])
-          this.currentConversationUser = contacts[contactFound].id;
+        const contactFound = contacts.find((user: User) => user.id === userId)
+        if (contactFound) {
+          this.currentConversationUser = contactFound.id;
+          this.conversationsUsers.unshift({ ...contactFound })
         }
       }
     },
