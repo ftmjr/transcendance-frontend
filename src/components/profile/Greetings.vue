@@ -33,7 +33,7 @@
                 @click.prevent="goToWaitingRoom"
               >
                 <v-avatar rounded variant="tonal" color="cyan" icon="mdi-loading" />
-                <span> Sale d'attente </span>
+                <span> Salle d'attente </span>
               </button>
             </div>
           </div>

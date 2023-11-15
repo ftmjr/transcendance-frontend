@@ -39,7 +39,7 @@
         </VCard>
       </VWindowItem>
       <VWindowItem value="awards">
-        <h2 class="text-4xl uppercase font-bold">Les recompenses</h2>
+        <h2 class="text-4xl uppercase font-bold">Les récompenses</h2>
         <Awards v-if="userId" :user-id="userId"  />
       </VWindowItem>
       <VWindowItem value="friends">
