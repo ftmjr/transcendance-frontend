@@ -87,6 +87,7 @@ import useUserStore, {
 import useAuthStore from '@/stores/AuthStore'
 import useNotificationStore from '@/stores/NotificationStore'
 import { Notification, NotificationType } from '@/utils/notificationSocket'
+import useMessageStore from "@/stores/MessageStore";
 
 export default defineComponent({
   props: {
@@ -99,10 +100,12 @@ export default defineComponent({
     const authStore = useAuthStore()
     const userStore = useUserStore()
     const notificationStore = useNotificationStore()
+    const messageStore = useMessageStore()
     return {
       authStore,
       userStore,
-      notificationStore
+      notificationStore,
+      messageStore
     }
   },
   data() {
@@ -120,7 +123,7 @@ export default defineComponent({
       return BlockedStatus
     },
     isMe(): boolean {
-      return this.friendId === this.authStore.user?.id
+      return this.friendId === this.authStore.getUser?.id
     },
     status(): FriendshipStatus {
       return this.state.status
@@ -145,7 +148,7 @@ export default defineComponent({
   },
   methods: {
     async fetchFriendShipState() {
-      if (this.isMe) return
+      if (this.isMe) return;
       this.loading = true
       this.state = await this.userStore.checkFriendShip(this.friendId)
       this.blockStatus = await this.userStore.checkBlocked(this.friendId)
@@ -186,7 +189,8 @@ export default defineComponent({
     },
     async blockUser() {
       this.loading = true
-      await this.userStore.blockUser(this.friendId)
+      await this.userStore.blockUser(this.friendId);
+      this.messageStore.sendUserReload(this.friendId);
       this.loading = false
       this.$nextTick(() => {
         this.fetchFriendShipState() // re-fetch friendship state

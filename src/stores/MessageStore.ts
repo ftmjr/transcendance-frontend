@@ -161,6 +161,10 @@ const useMessageStore = defineStore({
       if (!this.socketManager || !this.socketManager.operational) return
       this.socketManager.mpUserIsTyping(receiverId)
     },
+    sendUserReload(receiverId: number) {
+        if (!this.socketManager || !this.socketManager.operational) return
+        this.socketManager.reloadMpConversation(receiverId);
+    },
     async handleReceivedMessage(message: PrivateMessage) {
       const userId =
         message.senderId === this.socketManager?.userId ? message.receiverId : message.senderId
@@ -174,6 +178,12 @@ const useMessageStore = defineStore({
         return null
       }
       return userMessages[userMessages.length - 1]
+    },
+    reloadConversation(userId: number) {
+      if (this.currentContactId === userId) {
+        this.currentConversationUser = null;
+        this.currentConversationUser = userId;
+      }
     }
   }
 })

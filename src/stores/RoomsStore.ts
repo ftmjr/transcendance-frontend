@@ -159,8 +159,7 @@ const useRoomsStore = defineStore({
           this.roomsMembersTyping.set(typingInfo.roomId, typingInfo)
         },
         (senderId: number) => {
-          // reload contact since relationship changed
-          // messageStore.reloadConversation(senderId)
+          messageStore.reloadConversation(senderId)
         },
         (senderId: number, timestamp: number) => {
           this.contactTyping.set(senderId, timestamp)

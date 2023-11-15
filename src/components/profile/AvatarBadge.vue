@@ -112,6 +112,11 @@ export default defineComponent({
       return this.authStore.resolveAvatarBadgeVariant(this.status)
     }
   },
+  async beforeMount() {
+    if (!this.userProfile) {
+      await this.loadUser(this.userId);
+    }
+  },
   watch: {
     userId: {
       handler(value: number) {

@@ -242,7 +242,8 @@ export default defineComponent({
   methods: {
     refreshContact() {
       if (!this.conversationWith) return
-      this.fetchAllStatus(this.conversationWith.id)
+      this.fetchAllStatus(this.conversationWith.id);
+      this.messageStore.sendUserReload(this.conversationWith.id);
     },
     async loadPrivateMessages(id: number) {
       this.loading = true

@@ -81,7 +81,8 @@ export interface UserStoreState {
   blockedUsers: BlockedUser[]
   stats: AppStatData
   statusSocketManager: StatusSocket | null
-  usersStatus: Map<number, Status>
+  usersStatus: Map<number, Status>,
+  shortProfiles: Map<number, ShortUserProfile>
 }
 
 type SortOrder = 'asc' | 'desc'
@@ -120,7 +121,8 @@ const useUserStore = defineStore({
       blockedUsers: [],
       stats,
       statusSocketManager: null,
-      usersStatus: new Map<number, Status>()
+      usersStatus: new Map<number, Status>(),
+      shortProfiles: new Map<number, ShortUserProfile>()
     }
   },
   getters: {
@@ -306,8 +308,14 @@ const useUserStore = defineStore({
           this.usersStatus.set(0, Status.Online)
           return defaultProfile
         }
+        // check if the user is in the map
+        const profile = this.shortProfiles.get(userId);
+        if (profile) {
+          return profile
+        }
         const { data } = await axios.get<ShortUserProfile>(`/users/short-profile/${userId}`)
-        this.usersStatus.set(userId, data.profile.status)
+        this.usersStatus.set(userId, data.profile.status);
+        this.shortProfiles.set(userId, data);
         return data
       } catch (e) {
         console.log(e)
