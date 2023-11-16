@@ -65,7 +65,6 @@ const router = useRouter()
 
 const notificationStore = useNotificationStore()
 
-
 const handleRead = (e: Event) => {
   e.preventDefault()
   console.log('handleRead', notification)

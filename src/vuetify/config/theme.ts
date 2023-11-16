@@ -59,7 +59,6 @@ const theme: VuetifyOptions['theme'] = {
         background: '#010626',
         'on-background': '#E4E6F4',
         surface: '#2F3349',
-        // surface: '#020c4b',
         'on-surface': '#E4E6F4',
         'grey-50': '#26293A',
         'grey-100': '#2F3349',

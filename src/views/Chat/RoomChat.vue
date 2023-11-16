@@ -57,8 +57,8 @@
           </PerfectScrollbar>
         </div>
       </div>
-      <p v-if="isTyping.length" class="font-weight-medium">
-        {{ isTyping }}
+      <p v-if="isTypingUserName" class="font-weight-medium">
+        {{ isTypingUserName }}
         <span class="text-sm font-weight-light pr-1">est en train d'écrire</span>
         <VIcon :size="24" color="primary" icon="svg-spinners:3-dots-bounce" />
       </p>
@@ -136,7 +136,7 @@ export default defineComponent({
       skip: 0,
       chatMessageContent: '',
       loading: false,
-      isTyping: ''
+      isTypingUserName: ''
     }
   },
   computed: {
@@ -215,12 +215,12 @@ export default defineComponent({
         const now = new Date().getTime()
         const isTyping = now - lastTypingUserInRoom.timestamp < 2000
         if (isTyping) {
-          this.isTyping = lastTypingUserInRoom.username
+          this.isTypingUserName = lastTypingUserInRoom.username
           setTimeout(() => {
-            this.isTyping = ''
+            this.isTypingUserName = ''
           }, 1000)
         } else {
-          this.isTyping = ''
+          this.isTypingUserName = ''
         }
       },
       deep: true,

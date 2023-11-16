@@ -15,7 +15,9 @@
         <avatar-badge :user-id="contact.id" :user="contact" :show-name="true" />
         <span class="pl-2 text-sm text-primary line-clamp-1"> @{{ contact.username }}</span>
       </div>
-      <v-chip class="ml-2" v-if="isBlocked" append-icon="tabler-lock" color="error"> Bloqué </v-chip>
+      <v-chip class="ml-2" v-if="isBlocked" append-icon="tabler-lock" color="error">
+        Bloqué
+      </v-chip>
       <VSpacer />
       <div class="flex items-center">
         <game-status-badge
