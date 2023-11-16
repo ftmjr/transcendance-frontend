@@ -7,12 +7,12 @@
     ]"
     @click="handleRead"
   >
-    <div class="flex gap-4 w-full relative">
+    <div class="relative flex w-full gap-4">
       <div :class="[isExpired ? 'opacity-50' : 'opacity-100']">
         <!-- <avatar-badge :user-id="notification.referenceId"></avatar-badge> -->
         <VIcon class="text-2xl" color="orange">tabler:device-gamepad-2</VIcon>
       </div>
-      <div class="flex-1 flex-col pr-4">
+      <div class="flex-col flex-1 pr-4">
         <p :class="['text-left text-sm fomt-semiBold', isExpired ? 'text-gray-400/75' : '']">
           {{ notification.title }}
         </p>
@@ -37,7 +37,7 @@
       </div>
       <div
         v-if="notification.status !== 'READ'"
-        class="absolute h-2 w-2 right-0 top-1/2 -translate-y-1/2 rounded-full bg-green-400/50 z-50"
+        class="absolute right-0 z-50 w-2 h-2 -translate-y-1/2 rounded-full top-1/2 bg-green-400/50"
       ></div>
     </div>
   </button>
@@ -83,17 +83,15 @@ const handleRead = (e: Event) => {
   notificationStore.markNotificationAsRead(notification.id)
 }
 
-const hanleJoinGame = async (e: Event) => {
+const hanleJoinGame = (e: Event) => {
   e.preventDefault()
   handleRead(e)
-  const r = await gameStore.acceptGameInvitation(notification.referenceId)
-  if (r === 'preparing') {
-    router.push({
-      name: 'game',
-      params: { gameId: notification.referenceId }
-      // query: { isPlayer: 'true' }
-    })
-  }
+
+  router.push({
+    name: 'game',
+    params: { gameId: notification.referenceId }
+    // query: { isPlayer: 'true' }
+  })
 }
 
 const handleReject = (e: Event) => {
@@ -134,6 +132,8 @@ let interval: NodeJS.Timer | null = null
 onMounted(() => {
   if (!isExpired.value) {
     interval = setInterval(updateCountDown, 1000)
+  } else {
+    if (notification.status !== 'READ') handleRead(new Event('click'))
   }
 })
 

@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <div class="py-4 px-8">
+    <div class="px-8 py-4">
       <h1 class="">
         <span class=""> {{ greetMe() }}, </span>
         <span class="text-2xl font-bold">
@@ -12,28 +12,37 @@
         </span>
       </h1>
       <div>
-        <div class="flex flex-col md:flex-row justify-between gap-4">
-          <p v-if="dateObject.hours" class="text-7xl font-thin">
-            {{ `${dateObject.hours}:${dateObject.minutes}:${dateObject.seconds}` }}
-          </p>
+        <div class="flex flex-col justify-between gap-4 md:flex-row">
+          <div>
+            <p v-if="dateObject.hours" class="font-thin text-7xl">
+              {{ `${dateObject.hours}:${dateObject.minutes}:${dateObject.seconds}` }}
+            </p>
+          </div>
           <div class="">
             <p class="">Partie Rapide</p>
             <div class="flex gap-2">
               <button
-                class="px-4 py-2 text-sm border bg-none inline-block rounded-md hover:bg-orange/10"
+                class="inline-block px-4 py-2 text-sm border rounded-md bg-none hover:bg-orange/10"
                 @click.prevent="goToPlayWithBot"
               >
-                <span class="flex gap-1 items-center">
+                <span class="flex items-center gap-1">
                   <v-avatar rounded variant="tonal" color="orange" icon="mdi-gamepad-circle-up" />
                   <span>Contre l'IA</span>
                 </span>
               </button>
               <button
-                class="px-4 py-2 text-sm border bg-none inline-block rounded-md hover:bg-cyan-400/10"
+                class="inline-block px-4 py-2 text-sm border rounded-md bg-none hover:bg-cyan-400/10"
                 @click.prevent="goToWaitingRoom"
               >
-                <v-avatar rounded variant="tonal" color="cyan" icon="mdi-loading" />
+                <v-avatar rounded variant="tonal" color="cyan" icon="medical-icon:i-waiting-area" />
                 <span> Salle d'attente </span>
+              </button>
+              <button
+                class="inline-block px-4 py-2 text-sm border rounded-md bg-none hover:bg-cyan-400/10"
+                @click.prevent="challenge"
+              >
+                <v-avatar rounded variant="tonal" color="cyan" icon="mdi-goal" />
+                <span> Challenger </span>
               </button>
             </div>
           </div>
@@ -133,5 +142,9 @@ const goToPlayWithBot = () => {
 }
 const goToWaitingRoom = () => {
   router.push({ name: 'waiting-room' })
+}
+
+const challenge = () => {
+  router.push({ name: 'user-list' })
 }
 </script>

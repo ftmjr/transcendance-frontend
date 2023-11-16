@@ -96,7 +96,7 @@ export default defineComponent({
     },
     getComponentForGameInvitation() {
       switch (this.notification.title) {
-        case 'Game Challenge Accepted':
+        case 'Challenge Accepted':
           return GameChallengeAccepted
         case 'Game Invite Rejected':
           return GameChallengeRejected
