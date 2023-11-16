@@ -115,6 +115,7 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore, { BlockedStatus, FriendshipStatus } from '@/stores/UserStore'
+
 import { timeStamp } from 'console'
 
 interface MessageGroup {
@@ -125,7 +126,7 @@ interface MessageGroup {
 export default defineComponent({
   components: {
     MessageTopBar,
-    PerfectScrollbar
+    PerfectScrollbar,
   },
   props: {
     isLeftSidebarOpen: {
