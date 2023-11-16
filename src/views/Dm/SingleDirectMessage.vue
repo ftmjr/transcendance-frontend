@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col w-full h-full">
     <div class="border-b border-gray-50 flex-0">
-      <MessageTopBar
+      <message-top-bar
         :is-left-sidebar-open="isLeftSidebarOpen"
         :user-game-status="gameStatus"
         :friendship-status="friendShip"
@@ -54,7 +54,7 @@
                   }}
                 </span>
               </li>
-              <li class="p-2" :class="'self-start text-left text-sm px-6'">
+              <li class="p-2" :class="'self-start text-left text-sm px-6 h-8'">
                 <p v-if="isTyping" class="font-light">
                   {{ conversationWith.profile.name.split(' ').shift() }}
                   <span class="pr-1">est en train d'écrire</span>
@@ -63,7 +63,7 @@
               </li>
             </ul>
 
-            <div class="w-full h-16 shrink-0 grow-0"></div>
+            <div class="w-full h-4 shrink-0 grow-0"></div>
           </PerfectScrollbar>
         </div>
       </div>

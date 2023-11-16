@@ -3,7 +3,7 @@
     v-show="!loading"
     class="p-2 border border-solid rounded shadow-sm bg-surface border-slate-400"
   >
-    <VNavigationDrawer
+    <v-navigation-drawer
       v-model="isLeftSidebarOpen"
       absolute
       touchless
@@ -13,14 +13,14 @@
       :permanent="$vuetify.display.mdAndUp"
       class="chat-list-sidebar"
     >
-      <DmConversationListSideBar
+      <dm-conversation-list-side-bar
         @open-chat-of-contact="openChatOfContact"
         @show-user-profile="showMyProfile"
         @close="isLeftSidebarOpen = false"
       />
-    </VNavigationDrawer>
+    </v-navigation-drawer>
     <VMain class="chat-content-container">
-      <SingleDirectMessage
+      <single-direct-message
           v-if="!!messageStore.currentContact"
           v-model:is-left-sidebar-open="isLeftSidebarOpen"
       />

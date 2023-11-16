@@ -177,7 +177,7 @@ const useMessageStore = defineStore({
       if (userMessages.length === 0) {
         return null
       }
-      return userMessages[userMessages.length - 1]
+      return userMessages[0]
     },
     reloadConversation(userId: number) {
       if (this.currentContactId === userId) {

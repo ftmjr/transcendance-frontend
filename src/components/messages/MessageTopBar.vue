@@ -1,6 +1,6 @@
 <template>
-  <div class="flex align-center text-medium-emphasis my-1">
-    <VBtn
+  <div class="flex my-1 align-center text-medium-emphasis">
+    <v-btn
       variant="text"
       color="default"
       icon
@@ -8,17 +8,17 @@
       class="d-md-none me-3"
       @click="isLeftSidebarOpenLocal = true"
     >
-      <VIcon size="24" icon="tabler-menu-2" />
-    </VBtn>
+      <v-icon size="24" icon="tabler-menu-2" />
+    </v-btn>
     <template v-if="contact">
-      <div class="flex align-center cursor-pointer" @click="showProfile">
-        <AvatarBadge :user-id="contact.id" :user="contact" :show-name="true" />
-        <span class="pl-2 text-sm text-primary"> @{{ contact.username }}</span>
+      <div class="flex cursor-pointer align-center" @click="showProfile">
+        <avatar-badge :user-id="contact.id" :user="contact" :show-name="true" />
+        <span class="pl-2 text-sm text-primary line-clamp-1"> @{{ contact.username }}</span>
       </div>
-      <VChip class="ml-2" v-if="isBlocked" append-icon="tabler-lock" color="error"> Bloqué </VChip>
+      <v-chip class="ml-2" v-if="isBlocked" append-icon="tabler-lock" color="error"> Bloqué </v-chip>
       <VSpacer />
       <div class="flex items-center">
-        <GameStatusBadge
+        <game-status-badge
           v-if="contact.profile"
           :status="contact.profile.status"
           :user-id="contact.id"
@@ -26,17 +26,17 @@
         />
       </div>
       <VBtn variant="text" color="default" icon size="small">
-        <VIcon size="22" icon="tabler-dots-vertical" />
-        <VMenu activator="parent">
-          <VList>
+        <v-icon size="22" icon="tabler-dots-vertical" />
+        <v-menu activator="parent">
+          <v-list>
             <VListItem prepend-icon="tabler-eye" @click="showProfile">
               <VListItemTitle> Voir le profil</VListItemTitle>
             </VListItem>
             <VListItem v-if="!isBlocked" prepend-icon="tabler-ban" @click="blockContact">
               <VListItemTitle>Bloquer</VListItemTitle>
             </VListItem>
-          </VList>
-        </VMenu>
+          </v-list>
+        </v-menu>
       </VBtn>
     </template>
   </div>

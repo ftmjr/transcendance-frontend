@@ -1,6 +1,6 @@
 <template>
-  <div class="text-end mt-2">
-    <VBtn
+  <div class="mt-2 text-end">
+    <v-btn
       v-if="$vuetify.display.smAndDown"
       variant="text"
       color="default"
@@ -8,17 +8,17 @@
       size="small"
       @click="$emit('close')"
     >
-      <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
-    </VBtn>
+      <v-icon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
+    </v-btn>
   </div>
-  <div class="flex mb-2 px-1">
-    <AvatarBadge
+  <div class="flex px-1 mb-2">
+    <avatar-badge
       v-if="authStore.getUser"
       :user="authStore.getUser"
       :user-id="authStore.getUser.id"
       @show-user-profile="$emit('showUserProfile')"
     />
-    <VTextField
+    <v-text-field
       v-model="search"
       density="compact"
       rounded
@@ -26,28 +26,30 @@
       class="ms-4 me-1 transparent-input-box"
     >
       <template #prepend-inner>
-        <VIcon size="22" icon="tabler-search" />
+        <v-icon size="22" icon="tabler-search" />
       </template>
-    </VTextField>
+    </v-text-field>
   </div>
   <VDivider />
-  <PerfectScrollbar tag="ul" class="chat-contacts-list px-3" :options="{ wheelPropagation: false }">
+  <PerfectScrollbar tag="ul" class="px-3 chat-contacts-list" :options="{ wheelPropagation: false }">
     <li class="py-4">
-      <span class="chat-contact-header text-primary text-xl font-weight-medium">Conversations</span>
+      <span class="text-xl chat-contact-header text-primary font-weight-medium">
+        Conversations
+      </span>
     </li>
-    <MessageContact
+    <message-contact
       v-for="contact in messageStore.conversesWithContacts"
       :key="contact.id"
       class="mb-2"
       :contact="contact"
       @click="showMessages(contact.id)"
     >
-      <!--      <template #firstMessage>-->
-      <!--        <span class="text-disabled ml-1">-->
-      <!--          {{ messageStore.getLastMessageBetween(contact.id)?.text}}-->
-      <!--        </span>-->
-      <!--      </template>-->
-    </MessageContact>
+      <template #firstMessage>
+        <span class="w-full ml-16 -mt-2 text-xs font-light text-disabled shrink-0 line-clamp-1">
+          {{ messageStore.getLastMessageBetween(contact.id)?.text }}
+        </span>
+      </template>
+    </message-contact>
 
     <span
       v-show="messageStore.conversesWithContacts.length === 0"
@@ -56,7 +58,7 @@
       Aucune Conversation
     </span>
     <li class="my-4">
-      <span class="chat-contact-header text-primary text-xl font-weight-medium"> Contacts </span>
+      <span class="text-xl chat-contact-header text-primary font-weight-medium"> Amis </span>
     </li>
     <MessageContact
       v-for="contact in messageStore.contactsWithoutConversations"
@@ -76,6 +78,8 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import MessageContact from '@/components/messages/MessageContact.vue'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import useUserStore from '@/stores/UserStore'
+import { Profile, User } from '@/interfaces/User'
+import useRoomsStore from '@/stores/RoomsStore'
 
 export default defineComponent({
   components: {
@@ -88,10 +92,12 @@ export default defineComponent({
     const authStore = useAuthStore()
     const messageStore = useMessageStore()
     const userStore = useUserStore()
+    const roomsStore = useRoomsStore()
     return {
       authStore,
       userStore,
-      messageStore
+      messageStore,
+      roomsStore
     }
   },
   data() {
@@ -109,6 +115,7 @@ export default defineComponent({
       }
     }
   },
+
   methods: {
     showMessages(userId: number) {
       this.$emit('openChatOfContact', userId)
