@@ -160,6 +160,7 @@ export default defineComponent({
       this.loading = false
     },
     async accessRoom(roomId: number) {
+      if (!roomId) return
       this.loading = true
       this.currentRoomStatus = await this.roomsStore.checkRoomRole(roomId)
       if (this.currentRoomStatus.state) {

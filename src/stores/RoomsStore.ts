@@ -319,6 +319,7 @@ const useRoomsStore = defineStore({
         if (Array.isArray(members)) {
           this.currentRoomMembers = members
           this.currentReadRoomId = roomId
+          this.currentRoomMessages = []
           this.listenToRoom(roomId)
           return 'success'
         } else {

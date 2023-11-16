@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full">
+  <div class="h-full w-full flex flex-col">
     <ChatConversationTopBar
       :is-left-sidebar-open="isLeftSidebarOpen"
       :is-right-sidebar-open="isRightSidebarOpen"
@@ -27,8 +27,8 @@
                 msgGrp.senderId === authStore.getUser.id ? 'self-end text-right' : 'self-start'
               "
             >
-              <p
-                class="relative message inline-flex flex-col px-6 min-w-[75px] py-2 border shadow-sm rounded-xl drop-shadow-md after:content-[''] after:h-4 after:absolute after:top-full after:translate-x-full after:w-4 after:-z-10 after:-translate-y-1/4"
+              <div
+                class="relative message inline-flex flex-col px-6 min-w-[75px] py-2 border shadow-sm rounded-xl drop-shadow-md"
                 :class="
                   msgGrp.senderId === authStore.getUser.id
                     ? 'text-left mr-0 ml-auto bg-[#1a1f3c] after:bg-[#1a1f3c]'
@@ -38,23 +38,20 @@
                 <span v-for="msgData in msgGrp.messages" :key="msgData.time">
                   {{ msgData.message }}
                 </span>
-              </p>
-              <p>
-                <span class="text-[.5rem] text-gray-50/90 font-thin block mt-4 px-4">
-                  {{
-                    formatDate(msgGrp.messages[msgGrp.messages.length - 1].time, {
-                      hour: 'numeric',
-                      minute: 'numeric'
-                    })
-                  }}
-                </span>
-                <span class="font-thin">
-                  {{
-                    currentChatRoomMembers.find((member) => member.id === msgGrp.senderId).member
-                      .profile.name
-                  }}
-                </span>
-              </p>
+                <div class="inline-flex gap-2 items-center justify-end">
+                  <span class="font-thin text-sm" :class="getMemberColorText(msgGrp.senderId)">
+                    {{ getNameOfMember(msgGrp.senderId) }}
+                  </span>
+                  <span class="text-[.5rem] text-gray-50/90 font-thin block">
+                    {{
+                      formatDate(msgGrp.messages[msgGrp.messages.length - 1].time, {
+                        hour: 'numeric',
+                        minute: 'numeric'
+                      })
+                    }}
+                  </span>
+                </div>
+              </div>
             </div>
             <div class="h-8 shrink-0 grow-0 w-full"></div>
           </PerfectScrollbar>
@@ -147,13 +144,13 @@ export default defineComponent({
       return this.roomStore.currentRoom
     },
     currentChatRoomMembers(): MemberRoomWithUserProfiles[] {
-      return this.roomStore.currentRoomMembers
+      return this.roomStore.getCurrentRoomMembers
     },
     userRole(): ChatMemberRole {
-      if (!this.currentChatRoom) return ChatMemberRole.BAN
+      if (!this.currentChatRoomMembers) return ChatMemberRole.BAN
       if (!this.authStore.getUser) return ChatMemberRole.BAN
       const member = this.currentChatRoomMembers.find(
-        (member) => member.id === this.authStore.getUser?.id
+        (member) => member.member.id === this.authStore.getUser?.id
       )
       if (!member) return ChatMemberRole.BAN
       return member.role
@@ -201,6 +198,13 @@ export default defineComponent({
     }
   },
   watch: {
+    currentChatRoom: {
+      handler(value: ChatRoomWithMembers | null) {
+        if (!value) return
+        this.fetchMessages()
+      },
+      immediate: true
+    },
     'roomStore.getRoomMembersTyping': {
       handler() {
         if (!this.currentChatRoom) return
@@ -209,9 +213,12 @@ export default defineComponent({
         )
         if (!lastTypingUserInRoom) return
         const now = new Date().getTime()
-        const isTyping = now - lastTypingUserInRoom.timestamp < 5000
+        const isTyping = now - lastTypingUserInRoom.timestamp < 2000
         if (isTyping) {
           this.isTyping = lastTypingUserInRoom.username
+          setTimeout(() => {
+            this.isTyping = ''
+          }, 1000)
         } else {
           this.isTyping = ''
         }
@@ -236,12 +243,44 @@ export default defineComponent({
     // send message
     async sendMessage() {
       if (!this.currentChatRoom) return
+      if (!this.chatMessageContent.trim()) return
+      if (this.loading) return
+      this.loading = true
       this.roomStore.sendMessage(this.currentChatRoom.id, this.chatMessageContent)
+      this.chatMessageContent = ''
+      this.loading = false
     },
     async sendIsTyping() {
       if (!this.currentChatRoom) return
       if (!this.authStore.getProfile) return
       this.roomStore.sendUserIsTypingInRoom(this.currentChatRoom.id, this.authStore.getProfile.name)
+    },
+    getNameOfMember(memberId: number): string {
+      if (!this.currentChatRoomMembers) return ''
+      const member = this.currentChatRoomMembers.find((member) => member.memberId === memberId)
+      if (!member) return ''
+      return member.member.profile.name
+    },
+    getMemberRole(memberId: number): ChatMemberRole {
+      if (!this.currentChatRoomMembers) return ChatMemberRole.BAN
+      const member = this.currentChatRoomMembers.find((member) => member.memberId === memberId)
+      if (!member) return ChatMemberRole.BAN
+      return member.role
+    },
+    getMemberColorText(memberId: number): string {
+      const role = this.getMemberRole(memberId)
+      switch (role) {
+        case ChatMemberRole.OWNER:
+          return 'text-yellow-500'
+        case ChatMemberRole.ADMIN:
+          return 'text-yellow-300'
+        case ChatMemberRole.MUTED:
+          return 'text-gray-500'
+        case ChatMemberRole.BAN:
+          return 'text-gray-500'
+        default:
+          return 'text-gray-500'
+      }
     },
     scrollToBottomInChatLog() {},
     formatDate
