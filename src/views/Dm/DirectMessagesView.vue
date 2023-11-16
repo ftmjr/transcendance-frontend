@@ -1,7 +1,7 @@
 <template>
   <VLayout
     v-show="!loading"
-    class="bg-surface rounded border p-2 border-solid border-slate-400 shadow-sm"
+    class="p-2 border border-solid rounded shadow-sm bg-surface border-slate-400"
   >
     <VNavigationDrawer
       v-model="isLeftSidebarOpen"
@@ -24,12 +24,12 @@
           v-if="!!messageStore.currentContact"
           v-model:is-left-sidebar-open="isLeftSidebarOpen"
       />
-      <div v-else class="flex h-full items-center justify-center flex-column">
-        <VAvatar size="109" class="elevation-3 mb-6 bg-surface">
+      <div v-else class="flex items-center justify-center h-full flex-column">
+        <VAvatar size="109" class="mb-6 elevation-3 bg-surface">
           <VIcon size="50" class="rounded-0 text-high-emphasis" icon="tabler-message" />
         </VAvatar>
         <p
-            class="mb-0 px-6 py-1 font-weight-medium text-lg elevation-3 rounded-xl text-high-emphasis bg-surface"
+            class="px-6 py-1 mb-0 text-lg font-weight-medium elevation-3 rounded-xl text-high-emphasis bg-surface"
             :class="[{ 'cursor-pointer': $vuetify.display.smAndDown }]"
             @click="startConversation"
         >

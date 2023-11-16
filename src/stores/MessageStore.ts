@@ -157,7 +157,7 @@ const useMessageStore = defineStore({
       if (!this.socketManager || !this.socketManager.operational) return
       this.socketManager.sendPrivateMessage(friendId, content)
     },
-    sendUserIsTyping(receiverId: number) {
+    sendUserTyping(receiverId: number) {
       if (!this.socketManager || !this.socketManager.operational) return
       this.socketManager.mpUserIsTyping(receiverId)
     },

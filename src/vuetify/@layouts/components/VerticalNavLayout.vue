@@ -70,7 +70,7 @@ export default defineComponent({
         [
           h(
             'div',
-            { class: 'navbar-content-container' },
+            { class: 'navbar-content-container ' },
             slots.navbar?.({
               toggleVerticalOverlayNavActive: toggleIsOverlayNavActive
             })

@@ -1,7 +1,7 @@
 <template>
-  <VerticalNavLayout :nav-items="navItems" v-bind="layoutAttrs">
+  <VerticalNavLayout :nav-items="navItems" v-bind="layoutAttrs" class="">
     <template #navbar="{ toggleVerticalOverlayNavActive }">
-      <div class="flex h-100 justify-between items-center">
+      <div class="flex items-center justify-between h-100">
         <VBtn
           v-if="isLessThanOverlayNavBreakpoint(windowWidth)"
           icon

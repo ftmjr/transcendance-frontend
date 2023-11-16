@@ -38,10 +38,10 @@
                 <span> Salle d'attente </span>
               </button>
               <button
-                class="inline-block px-4 py-2 text-sm border rounded-md bg-none hover:bg-cyan-400/10"
+                class="inline-block px-4 py-2 text-sm border rounded-md bg-none hover:bg-yellow-400/10"
                 @click.prevent="challenge"
               >
-                <v-avatar rounded variant="tonal" color="cyan" icon="mdi-goal" />
+                <v-avatar rounded variant="tonal" color="yellow" icon="mdi-goal" />
                 <span> Challenger </span>
               </button>
             </div>

@@ -37,15 +37,28 @@
 }
 
 .hide-scroolbar {
-  scrollbar-width: none;
+  scrollbar-width: none !important;
   /* Firefox */
-  -ms-overflow-style: none;
+  -ms-overflow-style: none !important;
   /* Internet Explorer 10+ */
   &::-webkit-scrollbar {
-    width: 0;
+    width: 0 !important;
     /* Remove scrollbar space */
     height: 0;
-    background: transparent;
+    background: transparent !important;
     /* Optional: just make scrollbar invisible */
   }
+}
+.hide-scroolbar {
+  /* Hide scrollbar on Firefox */
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar on WebKit-based browsers (Chrome, Safari, etc.) */
+.hide-scroolbar::-webkit-scrollbar {
+  display: none;
+}
+
+.ps__rail-y {
+  display: none !important;
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full flex flex-col">
+  <div class="flex flex-col w-full h-full">
     <div class="border-b border-gray-50 flex-0">
       <MessageTopBar
         :is-left-sidebar-open="isLeftSidebarOpen"
@@ -12,56 +12,63 @@
       <VDivider class="d-md-none" />
     </div>
     <template v-if="conversationWith && !loading">
-      <div class="flex-1 w-full overflow-scroll hide-scroolbar">
-        <div class="h-full w-full flex flex-col gap-4">
+      <div class="flex-1 w-full overflow-scroll hide-scroolbarr">
+        <div class="flex flex-col w-full h-full gap-4 hide-scroolbar">
           <PerfectScrollbar
-            ref="MessagesLogScroller"
-            tag="ul"
+            tag="div"
             :options="{
               wheelPropagation: false,
               suppressScrollX: true
             }"
-            class="h-full"
+            class="h-full hide-scroolbar"
+            ref="MessagesLogScroller"
+            id="messages-log"
           >
-            <div
-              v-for="(msgGrp, index) in msgGroups"
-              :key="index"
-              class="p-2"
-              :class="
-                msgGrp.senderId !== conversationWith.id ? 'self-end text-right' : 'self-start'
-              "
-            >
-              <p
-                class="relative message inline-flex flex-col px-6 min-w-[75px] py-2 border shadow-sm rounded-xl drop-shadow-md after:content-[''] after:h-4 after:absolute after:top-full after:translate-x-full after:w-4 after:-z-10 after:-translate-y-1/4"
+            <ul>
+              <li
+                v-for="(msgGrp, index) in msgGroups"
+                :key="index"
+                class="p-2"
                 :class="
-                  msgGrp.senderId !== conversationWith.id
-                    ? 'text-left mr-0 ml-auto bg-[#1a1f3c] after:bg-[#1a1f3c]'
-                    : 'text-left bg-[#343851] after:bg-[#343851]'
+                  msgGrp.senderId !== conversationWith.id ? 'self-end text-right' : 'self-start'
                 "
               >
-                <span v-for="msgData in msgGrp.messages" :key="msgData.time">
-                  {{ msgData.message }}
+                <p
+                  class="relative message inline-flex flex-col px-6 min-w-[75px] py-2 border shadow-sm rounded-xl drop-shadow-md after:content-[''] after:h-4 after:absolute after:top-full after:translate-x-full after:w-4 after:-z-10 after:-translate-y-1/4"
+                  :class="
+                    msgGrp.senderId !== conversationWith.id
+                      ? 'text-left mr-0 ml-auto bg-[#1a1f3c] after:bg-[#1a1f3c]'
+                      : 'text-left bg-[#343851] after:bg-[#343851]'
+                  "
+                >
+                  <span v-for="msgData in msgGrp.messages" :key="msgData.time">
+                    {{ msgData.message }}
+                  </span>
+                </p>
+                <span class="text-[.5rem] text-gray-50/90 font-thin block mt-4 px-4">
+                  {{
+                    formatDate(msgGrp.messages[msgGrp.messages.length - 1].time, {
+                      hour: 'numeric',
+                      minute: 'numeric'
+                    })
+                  }}
                 </span>
-              </p>
-              <span class="text-[.5rem] text-gray-50/90 font-thin block mt-4 px-4">
-                {{
-                  formatDate(msgGrp.messages[msgGrp.messages.length - 1].time, {
-                    hour: 'numeric',
-                    minute: 'numeric'
-                  })
-                }}
-              </span>
-            </div>
-            <div class="h-8 shrink-0 grow-0 w-full"></div>
+              </li>
+              <li class="p-2" :class="'self-start text-left text-sm px-6'">
+                <p v-if="isTyping" class="font-light">
+                  {{ conversationWith.profile.name.split(' ').shift() }}
+                  <span class="pr-1">est en train d'écrire</span>
+                  <v-icon :size="12" color="primary" icon="svg-spinners:3-dots-bounce" />
+                </p>
+              </li>
+            </ul>
+
+            <div class="w-full h-16 shrink-0 grow-0"></div>
           </PerfectScrollbar>
         </div>
       </div>
-      <p v-if="isTyping" class="font-weight-medium">
-        {{ conversationWith.profile.name }}
-        <span class="text-sm font-weight-light pr-1">est en train d'écrire</span>
-        <VIcon :size="24" color="primary" icon="svg-spinners:3-dots-bounce" />
-      </p>
-      <div class="flex-0 border shadow-lg drop-shadow-lg rounded-md">
+
+      <div class="border rounded-md shadow-lg flex-0 drop-shadow-lg">
         <VForm @submit.prevent="sendMessage">
           <VTextField
             v-model="mpContent"
@@ -70,12 +77,14 @@
             placeholder="Ecrivez votre message..."
             density="default"
             autofocus
-            @keyup="sendIsTyping"
+            @keypress="handleUserTyping"
           >
+            <!-- @input="() => handleInput()" -->
+            <!-- @keyup="sendIsTyping" -->
             <template #append-inner>
               <VBtn @click.stop.prevent="sendMessage" rounded>
                 <svg
-                  class="fill-current text-current h-4 w-4"
+                  class="w-4 h-4 text-current fill-current"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                 >
@@ -106,6 +115,7 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore, { BlockedStatus, FriendshipStatus } from '@/stores/UserStore'
+import { timeStamp } from 'console'
 
 interface MessageGroup {
   senderId: number
@@ -150,7 +160,8 @@ export default defineComponent({
       } as { status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession },
       friendShip: FriendshipStatus.Friends as FriendshipStatus,
       isTyping: false,
-      isUserBlocked: false
+      isUserBlocked: false,
+      lastInteraction: undefined as Number | undefined
     }
   },
   computed: {
@@ -204,11 +215,20 @@ export default defineComponent({
     }
   },
   watch: {
+    messages: {
+      handler() {
+        this.$nextTick(() => {
+          this.scrollToBottomInChatLog()
+        })
+      },
+      deep: true
+    },
     'messageStore.currentContact': {
       handler(value: (User & { profile: Profile }) | null) {
         if (!value) return
         this.loadPrivateMessages(value.id)
         this.fetchAllStatus(value.id)
+        this.lastInteraction = undefined
       },
       deep: true,
       immediate: true
@@ -219,7 +239,7 @@ export default defineComponent({
         const lastTime = this.roomsStore.getContactTyping.get(this.conversationWith.id)
         if (!lastTime) return false
         const now = new Date().getTime()
-        this.isTyping = now - lastTime < 5000
+        this.isTyping = now - lastTime < 3000
       },
       deep: true,
       immediate: true
@@ -233,7 +253,7 @@ export default defineComponent({
         if (!value) return
         setTimeout(() => {
           this.isTyping = false
-        }, 3000)
+        }, 1000)
       },
       deep: true,
       immediate: true
@@ -242,8 +262,8 @@ export default defineComponent({
   methods: {
     refreshContact() {
       if (!this.conversationWith) return
-      this.fetchAllStatus(this.conversationWith.id);
-      this.messageStore.sendUserReload(this.conversationWith.id);
+      this.fetchAllStatus(this.conversationWith.id)
+      this.messageStore.sendUserReload(this.conversationWith.id)
     },
     async loadPrivateMessages(id: number) {
       this.loading = true
@@ -269,10 +289,15 @@ export default defineComponent({
         this.scrollToBottomInChatLog()
       })
     },
-    async sendIsTyping() {
+    async handleUserTyping() {
+      const now = new Date().getTime()
       if (!this.conversationWith) return
-      this.messageStore.sendUserIsTyping(this.conversationWith.id)
+      if (this.lastInteraction && now - (this.lastInteraction as number) > 50) {
+        this.messageStore.sendUserTyping(this.conversationWith.id)
+        this.lastInteraction = now
+      } else this.lastInteraction = now
     },
+    async doneTyping() {},
     async fetchAllStatus(id: number) {
       this.loading = true
       const blockStatus = await this.usersStore.checkBlocked(id)
@@ -283,9 +308,10 @@ export default defineComponent({
       this.loading = false
     },
     scrollToBottomInChatLog() {
-      const scrollEl = this.chatLogPS?.$el
-      if (!scrollEl) return
-      scrollEl.scrollTop = scrollEl.scrollHeight
+      const el = this.$refs.MessagesLogScroller?.$el as HTMLElement
+      if (el) {
+        el.scrollTop = el.scrollHeight
+      }
     },
     scrollToTopInChatLog() {
       const scrollEl = this.chatLogPS?.$el
@@ -293,6 +319,9 @@ export default defineComponent({
       scrollEl.scrollTop = 0
     },
     formatDate
+  },
+  mounted() {
+    this.scrollToBottomInChatLog()
   }
 })
 </script>
