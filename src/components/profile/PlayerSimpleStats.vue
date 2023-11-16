@@ -122,7 +122,7 @@ export default defineComponent({
       immediate: true,
       handler() {
         this.fetchHistories()
-     }
+      }
     }
   },
   beforeMount() {

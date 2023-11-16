@@ -118,6 +118,9 @@ const useRoomsStore = defineStore({
     getCurrentRoomMembers(): MemberRoomWithUserProfiles[] {
       return this.currentRoomMembers
     },
+    getCurrentRoomMessages(): ChatMessage[] {
+      return this.currentRoomMessages
+    },
     getSearchTerm(): string {
       return this.searchTerm
     },
@@ -175,10 +178,11 @@ const useRoomsStore = defineStore({
       if (!this.socketManager) return
       this.socketManager.sendMessage(roomId, content)
     },
-    userIsTypingInRoom(roomId: number, username: string) {
+    sendUserIsTypingInRoom(roomId: number, username: string) {
       if (!this.socketManager) return
       this.socketManager.userIsTypingInRoom(roomId, username)
     },
+
     /*
      * Join a room
      * @param roomId the id of the room to join
@@ -214,18 +218,20 @@ const useRoomsStore = defineStore({
       return errorMessage
     },
     // Get current role if member of room or null if not a member
-    async checkIfRoomRole(
+    async checkRoomRole(
       roomId: number
-    ): Promise<{ state: boolean; role: ChatMemberRole | null }> {
+    ): Promise<{ state: boolean; role: ChatMemberRole | null; room?: ChatRoom }> {
       try {
-        const { data } = await axios.get<{ state: boolean; role: ChatMemberRole | null }>(
-          `/chat/room-role/${roomId}`
-        )
+        const { data } = await axios.get<{
+          state: boolean
+          role: ChatMemberRole | null
+          room?: ChatRoom
+        }>(`/chat/room-role/${roomId}`)
         return data
       } catch (error) {
         console.error(error)
-        return { state: false, role: null }
       }
+      return { state: false, role: null }
     },
     async leaveRoom(roomId: number): Promise<'success' | 'failed'> {
       try {
@@ -339,7 +345,22 @@ const useRoomsStore = defineStore({
       }
       return errorMessage
     },
-    async getCurrentRoomMessages(info: { skip: number; take: number }): Promise<void> {
+    async reloadCurrentRoomMembers(): Promise<'success' | 'failed'> {
+      if (!this.currentReadRoomId) return 'failed'
+      try {
+        const members = await this.getRoomMembersData(this.currentReadRoomId)
+        if (Array.isArray(members)) {
+          this.currentRoomMembers = members
+          return 'success'
+        } else {
+          return 'failed'
+        }
+      } catch (error) {
+        console.error(error)
+        return 'failed'
+      }
+    },
+    async loadCurrentRoomMessages(info: { skip: number; take: number }): Promise<void> {
       const { skip, take } = info
       if (!this.currentReadRoomId) return
       try {

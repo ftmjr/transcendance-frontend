@@ -39,19 +39,7 @@
               </div>
               <div class="flex gap-4">
                 <VBtn
-                  v-if="!isCurrentUserAMember(room)"
-                  color="white"
-                  class="text-no-wrap text-sm bg-transparent border hover:bg-white hover:text-[#952175] flex gap-6 iems-center justify-center"
-                  @click="joinRoom(room.id)"
-                >
-                  <span>
-                    <VIcon left> mdi-account-plus </VIcon>
-                  </span>
-                  <span>Rejoindre</span>
-                </VBtn>
-                <VBtn
                   class="text-no-wrap text-sm bg-transparent border hover:bg-white hover:text-[#952175] flex gap-2 iems-center justify-center"
-                  v-else
                   color="white"
                   @click="goToChatRoom(room.id)"
                 >
@@ -120,25 +108,8 @@ export default defineComponent({
       await this.roomsStore.fetchPublicRooms()
       this.loading = false
     },
-    isCurrentUserAMember(room: ChatRoomWithMembers) {
-      return room.members.some((member) => member.id === this.authStore.getUser?.id)
-    },
     goToChatRoom(roomId: number) {
       this.$router.push({ name: 'chat', params: { roomId: roomId } })
-    },
-    async joinRoom(roomId: number) {
-      this.loading = true
-      const result = await this.roomsStore.joinRoom(roomId, {
-        userId: this.authStore.getUser?.id ?? 0
-      })
-      if (typeof result === 'string') {
-        this.popUpMessage = result
-        this.popUpVisible = true
-      } else {
-        this.popUpMessage = 'Vous avez rejoint le chat avec succès'
-        this.popUpVisible = true
-      }
-      this.loading = false
     }
   }
 })
