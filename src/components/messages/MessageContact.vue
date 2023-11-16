@@ -17,7 +17,7 @@
     </div>
     <div class="flex items-center justify-center px-4">
       <slot
-        v-if="conversationWith && contact.id === conversationWith.id || !isTyping"
+        v-if="(conversationWith && contact.id === conversationWith.id) || !isTyping"
         name="firstMessage"
       />
       <p
