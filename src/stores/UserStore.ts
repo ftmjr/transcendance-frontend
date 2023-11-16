@@ -81,7 +81,7 @@ export interface UserStoreState {
   blockedUsers: BlockedUser[]
   stats: AppStatData
   statusSocketManager: StatusSocket | null
-  usersStatus: Map<number, Status>,
+  usersStatus: Map<number, Status>
   shortProfiles: Map<number, ShortUserProfile>
 }
 
@@ -309,13 +309,13 @@ const useUserStore = defineStore({
           return defaultProfile
         }
         // check if the user is in the map
-        const profile = this.shortProfiles.get(userId);
+        const profile = this.shortProfiles.get(userId)
         if (profile) {
           return profile
         }
         const { data } = await axios.get<ShortUserProfile>(`/users/short-profile/${userId}`)
-        this.usersStatus.set(userId, data.profile.status);
-        this.shortProfiles.set(userId, data);
+        this.usersStatus.set(userId, data.profile.status)
+        this.shortProfiles.set(userId, data)
         return data
       } catch (e) {
         console.log(e)

@@ -7,7 +7,8 @@
       icon
       size="small"
       class="d-md-none me-3"
-      @click="isLeftSidebarOpenLocal = true"
+      :active="isLeftSidebarOpenLocal"
+      @click="isLeftSidebarOpenLocal = !isLeftSidebarOpenLocal"
     >
       <VIcon size="24" icon="tabler-menu-2" />
     </VBtn>
@@ -62,11 +63,11 @@
         <VBtn
           v-if="roomStore.currentRoom"
           variant="text"
-          color="default"
           :disabled="userRole === 'BAN'"
           icon
           size="small"
-          @click="$emit('showAdminSidebar')"
+          :active="isRightSidebarOpenLocal"
+          @click="isRightSidebarOpenLocal = !isRightSidebarOpenLocal"
         >
           <VIcon size="22" icon="tabler-settings" />
         </VBtn>
@@ -89,7 +90,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import useRoomsStore, { ChatRoomWithMembers, MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
+import useRoomsStore, { ChatRoomWithMembers } from '@/stores/RoomsStore'
 import { ChatMemberRole } from '@/utils/chatSocket'
 import RoomCard from '@/components/chatRooms/RoomCard.vue'
 
@@ -102,14 +103,10 @@ export default defineComponent({
       required: true,
       default: false
     },
-    room: {
-      type: Object as PropType<ChatRoomWithMembers>,
-      required: true
-    },
-    roomMembers: {
-      type: Array as PropType<MemberRoomWithUserProfiles[]>,
+    isRightSidebarOpen: {
+      type: Boolean,
       required: true,
-      default: () => []
+      default: false
     },
     userRole: {
       type: String as PropType<ChatMemberRole>,
@@ -117,7 +114,7 @@ export default defineComponent({
       default: ChatMemberRole.USER
     }
   },
-  emits: ['update:isLeftSidebarOpen', 'showAdminSidebar'],
+  emits: ['update:isLeftSidebarOpen', 'update:isRightSidebarOpen'],
   setup() {
     const authStore = useAuthStore()
     const roomStore = useRoomsStore()
@@ -134,6 +131,17 @@ export default defineComponent({
       set(value: boolean) {
         this.$emit('update:isLeftSidebarOpen', value)
       }
+    },
+    isRightSidebarOpenLocal: {
+      get(): boolean {
+        return this.isRightSidebarOpen
+      },
+      set(value: boolean) {
+        this.$emit('update:isRightSidebarOpen', value)
+      }
+    },
+    room(): ChatRoomWithMembers | null {
+      return this.roomStore.currentRoom
     }
   },
   methods: {

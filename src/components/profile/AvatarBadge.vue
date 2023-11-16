@@ -114,7 +114,7 @@ export default defineComponent({
   },
   async beforeMount() {
     if (!this.userProfile) {
-      await this.loadUser(this.userId);
+      await this.loadUser(this.userId)
     }
   },
   watch: {

@@ -40,7 +40,7 @@
       </VWindowItem>
       <VWindowItem value="awards">
         <h2 class="text-4xl uppercase font-bold">Les récompenses</h2>
-        <Awards v-if="userId" :user-id="userId"  />
+        <Awards v-if="userId" :user-id="userId" />
       </VWindowItem>
       <VWindowItem value="friends">
         <friends v-if="userId === authStore.getUser?.id" />

@@ -5,38 +5,24 @@
         <VIcon :size="18" color="error" class="text-medium-emphasis"> tabler-x </VIcon>
       </VBtn>
     </div>
-    <div v-if="roomStore.getCurrentRoomMembers.length">
-      <h6 class="h3 text-lg text-center">Reglages</h6>
-      <VCard title="Admins">
-        <VTable>
-          <thead>
-            <tr>
-              <th scope="col">Utilisateur</th>
-              <th scope="col" class="flex justify-end align-center">
-                <VIcon :size="18"> tabler-dots-vertical </VIcon>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="member in roomStore.getCurrentRoomMembers" :key="member.member.id">
-              <td>
-                <AvatarBadge
-                  :user-id="member.member.id"
-                  :user="member.member"
-                  @show-user-profile="$emit('showUserProfile')"
-                />
-              </td>
-              <td class="flex justify-end align-center">
-                <VBtn variant="text" size="small" @click="$emit('showUserProfile')">
-                  <VIcon :size="18" color="error"> tabler-trash </VIcon>
-                </VBtn>
-              </td>
-            </tr>
-          </tbody>
-        </VTable>
-      </VCard>
-      <VCard title="Muted" />
-      <VCard title="Bans" />
+    <div v-if="roomStore.getCurrentRoomMembers">
+      <h6 class="h3 text-lg text-center">Room Reglages</h6>
+      <div v-if="owner" class="mt-4">
+        <h6 class="h6 text-sm text-center">Boss</h6>
+        <div class="mt-2">
+          <VAvatar size="30" :src="owner.member.profile.avatar" />
+          <span class="ms-2">{{ owner.member.username }}</span>
+        </div>
+      </div>
+      <div class="mt-4">
+        <h6 class="h6 text-sm text-center">Admins</h6>
+        <div class="mt-2">
+          <div v-for="admin in admins" :key="admin.member.id" class="d-flex align-items-center">
+            <VAvatar size="30" :src="admin.member.profile.avatar" />
+            <span class="ms-2">{{ admin.member.username }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -67,10 +53,19 @@ export default defineComponent({
     ChatMemberRole() {
       return ChatMemberRole
     },
+    roomMembers(): MemberRoomWithUserProfiles[] {
+      return this.roomStore.getCurrentRoomMembers
+    },
     userRole(): ChatMemberRole {
       const roomMembers = this.roomStore.getCurrentRoomMembers
+      if (!roomMembers) return ChatMemberRole.BAN
       const member = roomMembers.find((member) => member.member.id === this.authStore.getUser?.id)
       return member?.role ?? ChatMemberRole.USER
+    },
+    owner(): MemberRoomWithUserProfiles | undefined {
+      return this.roomStore.getCurrentRoomMembers.find(
+        (member) => member.role === ChatMemberRole.OWNER
+      )
     },
     admins(): MemberRoomWithUserProfiles[] {
       return this.roomStore.getCurrentRoomMembers.filter(
@@ -81,6 +76,25 @@ export default defineComponent({
       return this.roomStore.getCurrentRoomMembers.filter(
         (member) => member.role === ChatMemberRole.BAN
       )
+    },
+    muted(): MemberRoomWithUserProfiles[] {
+      return this.roomStore.getCurrentRoomMembers.filter(
+        (member) => member.role === ChatMemberRole.MUTED
+      )
+    }
+  },
+  methods: {
+    async banWithTime() {
+      // @TODO: Build this method to ban a user with a time
+    },
+    async ban() {
+      // @TODO: Build this method to ban a user
+    },
+    promoteToAdmin() {
+      // @TODO: Build this method to promote a user to admin
+    },
+    promoteToNormalUser() {
+      // @TODO: Build this method to promote a user to admin
     }
   }
 })

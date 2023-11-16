@@ -12,12 +12,13 @@
         <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
       </VBtn>
     </div>
-    <div class="flex mb-2 px-1">
+    <div class="flex mb-2 px-2">
       <AvatarBadge
         v-if="authStore.getUser !== null"
         :user-id="authStore.getUser.id"
         :user="authStore.getUser"
         @show-user-profile="$emit('showUserProfile')"
+        :bordered="true"
       />
       <VTextField
         v-model="search"
@@ -31,17 +32,20 @@
         </template>
       </VTextField>
     </div>
-    <v-toolbar color="#E5E7EB">
-      <v-toolbar-title class="text-slate-700"> Salles de discussion </v-toolbar-title>
+    <v-toolbar color="#952175">
+      <v-toolbar-title class="text-gray-300"> Salles de discussion </v-toolbar-title>
       <VBtn
         variant="elevated"
+        class="bg-transparent text-gray-300"
+        selected-class="bg-red text-red-300"
+        color="white"
+        :border="true"
         icon
         size="small"
-        color="primary"
         rounded
         @click="$emit('createRoom')"
       >
-        <VIcon size="18" icon="tabler-edit" color="#C8CAFEFF" class="text-medium-emphasis" />
+        <VIcon size="18" icon="tabler-edit" color="white" />
       </VBtn>
     </v-toolbar>
     <VDivider />
@@ -125,7 +129,7 @@ export default defineComponent({
   },
   methods: {
     showRoom(roomId: number) {
-      console.log('trying to show room', roomId)
+      this.$emit('showRoom', roomId)
     },
     showUserProfile() {
       this.$emit('showUserProfile')

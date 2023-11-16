@@ -47,7 +47,7 @@ import useAuthStore from '@/stores/AuthStore'
 import useMessageStore from '@/stores/MessageStore'
 import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar'
 import DmConversationListSideBar from './DmConversationListSideBar.vue'
-import SingleDirectMessage from '@/views/Dm/SingleDirectMessage.vue'
+import SingleDirectMessage from '@/views/Dm/ContactDirectMessage.vue'
 import useUserStore from '@/stores/UserStore'
 
 export default defineComponent({
@@ -99,10 +99,10 @@ export default defineComponent({
     }
   },
   created() {
-    this.userStore.loadAllMyFriends();
+    this.userStore.loadAllMyFriends()
   },
   async beforeMount() {
-    await this.messageStore.getUniqueConversations();
+    await this.messageStore.getUniqueConversations()
     if (this.friendId) {
       await this.setConversation(this.friendId)
     }

@@ -4,7 +4,7 @@
     :class="
       topBar
         ? 'text-slate-100'
-        : 'bg-slate-600/50 rounded hover:bg-slate-800/50 cursor-pointer transition ease-in-out delay-150'
+        : 'bg-slate-600/50 rounded-lg hover:bg-slate-800/50 cursor-pointer transition ease-in-out delay-150'
     "
   >
     <p class="flex gap-2 items-center">
