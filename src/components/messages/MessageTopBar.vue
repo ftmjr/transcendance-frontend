@@ -8,75 +8,49 @@
       class="d-md-none me-3"
       @click="isLeftSidebarOpenLocal = true"
     >
-      <VIcon
-        size="24"
-        icon="tabler-menu-2"
-      />
+      <VIcon size="24" icon="tabler-menu-2" />
     </VBtn>
     <template v-if="contact">
-      <div
-        class="flex align-center cursor-pointer"
-        @click="showProfile"
-      >
-        <AvatarBadge
-          v-if="contact.profile"
-          :user-id="contact.id"
-          :user="contact"
-        />
-        <div class="flex-grow-1 ms-4 overflow-hidden">
-          <h6 class="font-mono font-medium">
-            {{ contact.profile.name }} {{ contact.profile.lastname }}
-          </h6>
-        </div>
+      <div class="flex align-center cursor-pointer" @click="showProfile">
+        <AvatarBadge :user-id="contact.id" :user="contact" :show-name="true" />
+        <span class="pl-2 text-sm text-primary"> @{{ contact.username }}</span>
       </div>
-
+      <VChip class="ml-2" v-if="isBlocked" append-icon="tabler-lock" color="error"> Bloqué </VChip>
       <VSpacer />
-
       <div class="flex items-center">
         <GameStatusBadge
+          v-if="contact.profile"
           :status="contact.profile.status"
           :user-id="contact.id"
           :user-game-status="userGameStatus"
         />
       </div>
-
-      <VBtn
-        variant="text"
-        color="default"
-        icon
-        size="small"
-      >
-        <VIcon
-          size="22"
-          icon="tabler-dots-vertical"
-        />
+      <VBtn variant="text" color="default" icon size="small">
+        <VIcon size="22" icon="tabler-dots-vertical" />
         <VMenu activator="parent">
           <VList>
-            <VListItem prepend-icon="tabler-eye">
-              <VBtn @click="showProfile">
-                <VListItemTitle> Voir le profil</VListItemTitle>
-              </VBtn>
+            <VListItem prepend-icon="tabler-eye" @click="showProfile">
+              <VListItemTitle> Voir le profil</VListItemTitle>
             </VListItem>
-            <VListItem prepend-icon="tabler-ban">
-              <VBtn @click="blockContact">
-                <VListItemTitle>Bloquer</VListItemTitle>
-              </VBtn>
+            <VListItem v-if="!isBlocked" prepend-icon="tabler-ban" @click="blockContact">
+              <VListItemTitle>Bloquer</VListItemTitle>
             </VListItem>
           </VList>
         </VMenu>
       </VBtn>
     </template>
   </div>
-  <VDivider class="d-md-none" />
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import useAuthStore from '@/stores/AuthStore'
+import useUserStore from '@/stores/UserStore'
 import type { User } from '@/interfaces/User'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 import { GameSession } from '@/stores/GameStore'
+import { Profile } from '@/interfaces/User'
+import useMessageStore from '@/stores/MessageStore'
 
 export default defineComponent({
   name: 'MessageTopBar',
@@ -89,22 +63,30 @@ export default defineComponent({
       type: Boolean,
       required: true
     },
-    contact: {
-      type: Object as PropType<User>
-    },
     userGameStatus: {
       type: Object as PropType<{
         status: 'playing' | 'inQueue' | 'free'
         gameSession?: GameSession
       }>,
       required: true
+    },
+    friendshipStatus: {
+      type: String as PropType<'friend' | 'pending' | 'none'>,
+      required: true
+    },
+    isBlocked: {
+      type: Boolean,
+      required: true,
+      default: false
     }
   },
-  emits: ['update:isLeftSidebarOpen'],
+  emits: ['update:isLeftSidebarOpen', 'blocked'],
   setup() {
-    const authStore = useAuthStore()
+    const usersStore = useUserStore()
+    const messageStore = useMessageStore()
     return {
-      authStore
+      usersStore,
+      messageStore
     }
   },
   computed: {
@@ -115,11 +97,24 @@ export default defineComponent({
       set(value: boolean) {
         this.$emit('update:isLeftSidebarOpen', value)
       }
+    },
+    contact(): (User & { profile: Profile }) | null {
+      return this.messageStore.currentContact
     }
   },
   methods: {
-    async blockContact() {},
-    async showProfile() {}
+    async blockContact() {
+      if (!this.contact) return
+      const ret = await this.usersStore.blockUser(this.contact.id)
+      if (ret) this.$emit('blocked')
+    },
+    async showProfile() {
+      if (!this.contact) return
+      this.$router.push({
+        name: 'user-profile',
+        params: { userId: this.contact.id }
+      })
+    }
   }
 })
 </script>

@@ -1,254 +1,132 @@
 <template>
-  <div
-    :class="notificationClass"
-    @click="markAsRead"
-  >
-    <div class="flex justify-between items-center">
-      <div class="flex items-center">
-        <v-icon :class="iconClass">
-          {{ iconType }}
-        </v-icon>
-        <strong class="ml-2">{{ translatedTitle }}</strong>
-      </div>
-      <div>
-        <VIcon
-          v-if="notification.status === 'UNREAD'"
-          color="primary"
-          small
-        >
-          tabler-circle-dot
-        </VIcon>
-        <VIcon
-          v-else
-          small
-          color="primary"
-        >
-          tabler-circle
-        </VIcon>
-      </div>
-    </div>
-    <div class="flex">
-      <div>
-        <p
-          class="mt-2"
-          v-html="notification.message"
-        />
-        <div
-          v-if="isExpiringSoon"
-          class="mt-2 text-red-500 text-sm flex items-center"
-        >
-          <v-icon small>
-            mdi-alert-circle
-          </v-icon> Expire bientôt
-        </div>
-      </div>
-    </div>
-    <div>
-      <VBtn
-        v-if="showPlayButton"
-        color="primary"
-        size="small"
-        @click.stop="handlePlay(notification.referenceId)"
-      >
-        COMMENCER <VIcon>mdi-sword-cross</VIcon>
-      </VBtn>
-      <VBtn
-        v-else-if="notification.type === 'FRIEND_REQUEST'"
-        color="blue"
-        variant="outlined"
-        @click.stop="handleAccept(notification.referenceId)"
-      >
-        VOIR <VIcon>tabler-eye</VIcon>
-      </VBtn>
-      <VBtnGroup
-        v-if="showAcceptRejectButtons"
-        size="small"
-      >
-        <VBtn
-          size="small"
-          variant="outlined"
-          color="success"
-          @click.stop="handleAccept(notification.referenceId)"
-        >
-          <span>ACCEPTER<VIcon>tabler-check</VIcon></span>
-        </VBtn>
-        <VBtn
-          size="small"
-          variant="outlined"
-          color="error"
-          @click.stop="handleReject(notification.referenceId)"
-        >
-          REFUSER<VIcon>tabler-x</VIcon>
-        </VBtn>
-      </VBtnGroup>
-    </div>
-    <div class="flex items-center justify-end">
-      <VIcon small>
-        tabler-calendar-event
-      </VIcon>
-      <span class="text-sm">{{ formattedDate }}</span>
-    </div>
-  </div>
+  <component
+    :is="component"
+    :notification="notification"
+    :is-short="isShort"
+    @mark-as-read="$emit('markAsRead', notification.id)"
+  />
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { Notification, NotificationType, NotificationStatus } from '@/utils/notificationSocket'
-import useGameStore from '@/stores/GameStore'
-import useUserStore from '@/stores/UserStore'
+import { Notification, NotificationType } from '@/utils/notificationSocket'
+import FriendRequest from '@/components/notifications/friend/FriendRequest.vue'
+import FriendRequestAccepted from '@/components/notifications/friend/RequestAccepted.vue'
+import FriendRequestRejected from '@/components/notifications/friend/RequestRejected.vue'
+import AddedToRoom from '@/components/notifications/chat/AddedToRoom.vue'
+import RoomAdministrator from '@/components/notifications/chat/RoomAdministrator.vue'
+import GameChallengeAccepted from '@/components/notifications/game/GameChallengeAccepted.vue'
+import GameInvitation from '@/components/notifications/game/GameInvitation.vue'
+import GamePaused from '@/components/notifications/game/GamePaused.vue'
+import GameResumed from '@/components/notifications/game/GameResumed.vue'
+import GameChallengeRejected from '@/components/notifications/game/GameChallengeRejected.vue'
+import JoinedGame from '@/components/notifications/game/JoinedGame.vue'
 
-const notificationTranslations = [
-  {
-    type: 'GAME_INVITE',
-    translations: {
-      'Game Invite': 'Invitation de jeu',
-      'Challenge Accepted': 'Défi accepté'
-    }
-  },
-  {
-    type: 'FRIEND_REQUEST',
-    translations: {
-      'Friend Request': 'Demande d’ami',
-      'Friend Request Accepted': 'Demande d’ami acceptée',
-      'Friend Request Rejected': 'Demande d’ami rejetée'
-    }
-  },
-  {
-    type: 'PRIVATE_MESSAGE',
-    translations: {
-      'Added to Chat': 'Ajouté au chat'
-    }
-  }
-]
+// NotificationType.GAME_INVITE
+//
+// 'Game Invite'
+// 'Game Invite Rejected'
+// 'Challenge Accepted'
+// NotificationType.GAME_EVENT
+//
+// 'Joined Game'
+// NotificationType.FRIEND_REQUEST
+//
+// Demande d'amitié
+// Demande d'ami acceptée
+// Demande d'ami refusée
+// NotificationType.PRIVATE_MESSAGE
+//
+// 'Added to Chat'
+// 'Chat Room Destroyed'
+// 'Promoted in Chat Room'
+// 'Removed from Chat Room'
+
 export default defineComponent({
+  components: {
+    FriendRequest,
+    FriendRequestAccepted,
+    FriendRequestRejected,
+    AddedToRoom,
+    RoomAdministrator,
+    GameChallengeAccepted,
+    GameInvitation,
+    GamePaused
+  },
   props: {
     notification: {
       type: Object as PropType<Notification>,
       required: true
+    },
+    isShort: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['markAsRead'],
-  setup() {
-    const gameStore = useGameStore()
-    const userStore = useUserStore()
-    return {
-      gameStore,
-      userStore
-    }
-  },
+  setup() {},
   computed: {
-    notificationClass(): object {
-      return {
-        'p-4 mb-4 border-2 rounded cursor-pointer': true,
-        'bg-gray-100/10': this.notification.status === NotificationStatus.UNREAD,
-        'border-blue-400': this.notification.type === NotificationType.GAME_INVITE,
-        'border-green-400/30': this.notification.type === NotificationType.FRIEND_REQUEST,
-        'border-orange-400/10': this.notification.type === NotificationType.GAME_EVENT,
-        'border-red-400': this.notification.type === NotificationType.PRIVATE_MESSAGE
-      }
-    },
-    iconType(): string {
+    component() {
       switch (this.notification.type) {
-        case NotificationType.GAME_INVITE:
-          return 'tabler-device-gamepad'
         case NotificationType.FRIEND_REQUEST:
-          return 'tabler-user-plus'
+          return this.getComponentForFriends()
         case NotificationType.GAME_EVENT:
-          return 'tabler-calendar-event'
+          return this.getComponentForGameEvent()
+        case NotificationType.GAME_INVITE:
+          return this.getComponentForGameInvitation()
         case NotificationType.PRIVATE_MESSAGE:
-          return 'tabler-message-bolt'
+          return this.getComponentForChat()
         default:
-          return 'tabler-info-square-rounded'
+          return null
       }
-    },
-    iconClass(): object {
-      return {
-        'text-blue-400': this.notification.type === NotificationType.GAME_INVITE,
-        'text-green-400': this.notification.type === NotificationType.FRIEND_REQUEST,
-        'text-orange-400': this.notification.type === NotificationType.GAME_EVENT,
-        'text-red-400': this.notification.type === NotificationType.PRIVATE_MESSAGE
-      }
-    },
-    formattedDate(): string {
-      return new Date(this.notification.createdAt)
-        .toLocaleString('fr-CA', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric'
-        })
-        .replace(',', ' à')
-    },
-    isExpiringSoon(): boolean {
-      if (!this.notification.expiresAt) return false
-      const now = new Date()
-      const expiresAt = new Date(this.notification.expiresAt)
-      const oneDay = 24 * 60 * 60 * 1000 // hours*minutes*seconds*milliseconds
-      return expiresAt.getTime() - now.getTime() < oneDay
-    },
-    translatedTitle(): string {
-      const notification = notificationTranslations.find((n) => n.type === this.notification.type)
-      return notification
-        ? notification.translations[this.notification.title]
-        : this.notification.title
-    },
-    showPlayButton(): boolean {
-      const isCorrectType =
-        this.notification.type === NotificationType.GAME_INVITE &&
-        this.notification.title === 'Challenge Accepted'
-      const isExpired =
-        this.notification.expiresAt && new Date(this.notification.expiresAt) < new Date()
-      return isCorrectType && !isExpired
-    },
-    showAcceptRejectButtons(): boolean {
-      const isCorrectType =
-        this.notification.type === NotificationType.GAME_INVITE &&
-        this.notification.title === 'Game Invite'
-      const isExpired =
-        this.notification.expiresAt && new Date(this.notification.expiresAt) < new Date()
-      const isAlreadyResponded = this.notification.status !== NotificationStatus.UNREAD
-      return isCorrectType && !isExpired && !isAlreadyResponded
     }
   },
   methods: {
-    markAsRead() {
-      if (this.showAcceptRejectButtons) return
-      this.$emit('markAsRead', this.notification.id)
-    },
-    async handlePlay(gameId: number) {
-      this.$emit('markAsRead', this.notification.id)
-      if (this.notification.type === NotificationType.GAME_INVITE) {
-        this.$router.push({
-          name: 'game',
-          params: { gameId: gameId, isPlayer: true, theme: 'Arcade' }
-        })
+    getComponentForFriends() {
+      switch (this.notification.title) {
+        case `Demande d'ami acceptée`:
+          return FriendRequestAccepted
+        case `Demande d'ami refusée`:
+          return FriendRequestRejected
+        case `Demande d'amitié`:
+          return FriendRequest
+        default:
+          return null
       }
     },
-    async handleAccept(referenceId: number) {
-      this.$emit('markAsRead', this.notification.id)
-      if (this.notification.type === NotificationType.GAME_INVITE) {
-        const r = await this.gameStore.acceptGameInvitation(referenceId)
-        if (r === 'preparing') {
-          this.$router.push({
-            name: 'game',
-            params: { gameId: referenceId, isPlayer: true, theme: 'Arcade' }
-          })
-        }
-      } else if (this.notification.type === NotificationType.FRIEND_REQUEST) {
-        // referenceId is now the id of the user who sent the friend request, we push to view
-        this.$router.push({
-          name: 'user-profile',
-          params: { userId: this.notification.referenceId }
-        })
+    getComponentForGameInvitation() {
+      switch (this.notification.title) {
+        case 'Game Challenge Accepted':
+          return GameChallengeAccepted
+        case 'Game Invite Rejected':
+          return GameChallengeRejected
+        case 'Game Invite':
+          return GameInvitation
+        default:
+          return null
       }
     },
-    async handleReject(referenceId: number) {
-      this.$emit('markAsRead', this.notification.id)
-      if (this.notification.type === NotificationType.GAME_INVITE) {
-        await this.gameStore.refuseGameInvitation(referenceId)
+    getComponentForGameEvent() {
+      switch (this.notification.title) {
+        case 'Game Resumed':
+          return GameResumed
+        case 'Game Paused':
+          return GamePaused
+        case 'Joined Game':
+          return JoinedGame
+        default:
+          return null
       }
-      // no more reject friends since no reference on the request but on the user. We can only view the sender
+    },
+    getComponentForChat() {
+      switch (this.notification.title) {
+        case 'Room Administrator':
+          return RoomAdministrator
+        case 'Added to Chat':
+          return AddedToRoom
+        default:
+          return null
+      }
     }
   }
 })

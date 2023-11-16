@@ -1,8 +1,5 @@
 <template>
-  <VerticalNavLayout
-    :nav-items="navItems"
-    v-bind="layoutAttrs"
-  >
+  <VerticalNavLayout :nav-items="navItems" v-bind="layoutAttrs">
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="flex h-100 justify-between items-center">
         <VBtn
@@ -14,10 +11,7 @@
           size="small"
           @click="toggleVerticalOverlayNavActive(true)"
         >
-          <VIcon
-            icon="tabler-menu-2"
-            size="24"
-          />
+          <VIcon icon="tabler-menu-2" size="24" />
         </VBtn>
         <NavSearchBar class="ms-lg-n3" />
         <VSpacer />
@@ -27,10 +21,7 @@
     </template>
 
     <RouterView v-slot="{ Component }">
-      <Transition
-        :name="appRouteTransition"
-        mode="out-in"
-      >
+      <Transition :name="appRouteTransition" mode="out-in">
         <Component :is="Component" />
       </Transition>
     </RouterView>
@@ -41,8 +32,8 @@
   </VerticalNavLayout>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { onBeforeMount, onBeforeUnmount } from 'vue'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
 import { VerticalNavLayout } from '@layouts'
@@ -52,27 +43,42 @@ import FooterSection from '@/layouts/FooterSection.vue'
 import NavSearchBar from '@/components/navbar/NavSearchBar.vue'
 import UserProfileButton from '@/components/navbar/UserProfileButton.vue'
 import NotificationButton from '@/components/navbar/NotificationButton.vue'
+import useGameStore from '@/stores/GameStore'
+import useAuthStore from '@/stores/AuthStore'
+import useNotificationStore from '@/stores/NotificationStore'
+import useRoomsStore from '@/stores/RoomsStore'
+import useUserStore from '@/stores/UserStore'
 
-export default defineComponent({
-  components: {
-    UserProfileButton,
-    FooterSection,
-    VerticalNavLayout,
-    NavSearchBar,
-    NotificationButton
-  },
-  setup() {
-    const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
-    const { width: windowWidth } = useWindowSize()
-    const { layoutAttrs, injectSkinClasses } = useSkins()
-    injectSkinClasses()
-    return {
-      layoutAttrs,
-      navItems,
-      appRouteTransition,
-      isLessThanOverlayNavBreakpoint,
-      windowWidth
+const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
+const { width: windowWidth } = useWindowSize()
+const { layoutAttrs, injectSkinClasses } = useSkins()
+injectSkinClasses()
+const authStore = useAuthStore()
+const roomsStore = useRoomsStore()
+const notificationStore = useNotificationStore()
+const gameStore = useGameStore()
+const usersStore = useUserStore()
+authStore.activateRefreshTokenTimer()
+
+// a beforeMount hook would be better
+onBeforeMount(() => {
+  if (authStore.isLoggedIn && authStore.getUser?.id) {
+    if (!notificationStore.socketOperational) {
+      notificationStore.init(authStore.getUser.id)
     }
+    if (!roomsStore.socketOperational) {
+      roomsStore.init(authStore.getUser.id)
+    }
+    if (!usersStore.socketOperational) {
+      usersStore.initStatusSocket(authStore.getUser.id)
+    }
+    gameStore.getAllMyGameSessions()
+  }
+})
+
+onBeforeUnmount(() => {
+  if (!authStore.isLoggedIn) {
+    usersStore.disconnectStatusSocket()
   }
 })
 </script>

@@ -16,8 +16,7 @@ $font-family-custom:
   'Segoe UI Symbol';
 
 @forward '../../../base/libs/vuetify/variables' with (
-  $body-font-family: $font-family-custom !default,
-  $border-radius-root: 6px !default,
+  $body-font-family: $font-family-custom !default $border-radius-root: 6px !default,
 
   $shadow-key-umbra: (
     0: (

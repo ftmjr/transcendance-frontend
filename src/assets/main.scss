@@ -25,3 +25,27 @@
     @apply text-white;
   }
 }
+
+.message {
+  max-width: 40ch;
+  span {
+    overflow-wrap: break-word;
+  }
+  &::after {
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+  }
+}
+
+.hide-scroolbar {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  &::-webkit-scrollbar {
+    width: 0;
+    /* Remove scrollbar space */
+    height: 0;
+    background: transparent;
+    /* Optional: just make scrollbar invisible */
+  }
+}

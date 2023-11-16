@@ -3,6 +3,8 @@ import type { Profile, User } from '@/interfaces/User'
 import { Status } from '@/interfaces/User'
 import axios from '@/utils/axios'
 import { isAxiosError } from 'axios'
+import { ReceivedStatusUpdate, StatusSocket } from '@/utils/statusSocket'
+import { GameSession } from '@/stores/GameStore'
 
 export enum FriendshipStatus {
   Friends = 'friends',
@@ -60,6 +62,7 @@ export interface BlockedUser {
 
 export interface UserWithScore extends User {
   score: number
+  gameStatus: { status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }
 }
 
 export interface AppStatData {
@@ -74,11 +77,12 @@ export interface AppStatData {
 }
 
 export interface UserStoreState {
-  contacts: User[]
-  receivedRequest: FriendRequestWithSender[]
-  sentRequest: FriendRequestWithReceiver[]
+  contacts: Array<User & { profile: Profile }>
   blockedUsers: BlockedUser[]
   stats: AppStatData
+  statusSocketManager: StatusSocket | null
+  usersStatus: Map<number, Status>
+  shortProfiles: Map<number, ShortUserProfile>
 }
 
 type SortOrder = 'asc' | 'desc'
@@ -94,9 +98,10 @@ export interface userOrderBy {
   updatedAt?: SortOrder
 }
 
-export type ShortUserProfile = Pick<User, 'id' | 'profile' | 'username' | 'email' | 'updatedAt'> & {
-  profile: Profile
-}
+export type ShortUserProfile = Pick<
+  User & { profile: Profile },
+  'id' | 'profile' | 'username' | 'email' | 'updatedAt'
+>
 
 const useUserStore = defineStore({
   id: 'userStore',
@@ -113,27 +118,28 @@ const useUserStore = defineStore({
     }
     return {
       contacts: [],
-      receivedRequest: [],
-      sentRequest: [],
       blockedUsers: [],
-      stats
+      stats,
+      statusSocketManager: null,
+      usersStatus: new Map<number, Status>(),
+      shortProfiles: new Map<number, ShortUserProfile>()
     }
   },
   getters: {
     getStats(): AppStatData {
       return this.stats
     },
-    getContact(): User[] {
+    getContact(): Array<User & { profile: Profile }> {
       return this.contacts
     },
     getBlockedUsers(): BlockedUser[] {
       return this.blockedUsers
     },
-    getReceivedRequests(): FriendRequestWithSender[] {
-      return this.receivedRequest
+    socketOperational(): boolean {
+      return this.statusSocketManager?.operational ?? false
     },
-    getSentRequests(): FriendRequestWithReceiver[] {
-      return this.sentRequest
+    getUsersStatus(): Map<number, Status> {
+      return this.usersStatus
     }
   },
   actions: {
@@ -156,7 +162,6 @@ const useUserStore = defineStore({
     async cancelFriendRequest(requestId: number): Promise<'success' | 'error'> {
       try {
         await axios.delete(`/friends/sent/${requestId}`)
-        await this.fetchSentRequests()
         return 'success'
       } catch (e) {
         return 'error'
@@ -190,21 +195,30 @@ const useUserStore = defineStore({
     },
     async loadAllMyFriends(): Promise<'success' | 'error'> {
       try {
-        const { data } = await axios.get('/friends')
-        this.contacts = data as User[]
+        const { data } = await axios.get<Array<User & { profile: Profile }>>('/friends')
+        this.contacts = data
         return 'success'
       } catch (e) {
         return 'error'
       }
     },
-    async fetchSentRequests(): Promise<'success' | 'error'> {
+    async getSentRequests(): Promise<FriendRequestWithReceiver[]> {
       try {
-        const { data } = await axios.get('/friends/sent')
-        this.sentRequest = data as FriendRequestWithReceiver[]
-        return 'success'
+        const { data } = await axios.get<FriendRequestWithReceiver[]>('/friends/sent')
+        return data
       } catch (e) {
-        return 'error'
+        console.log('Failed to load sent request', e)
       }
+      return []
+    },
+    async getReceivedRequests(): Promise<FriendRequestWithSender[]> {
+      try {
+        const { data } = await axios.get<FriendRequestWithSender[]>('/friends/received')
+        return data
+      } catch (e) {
+        console.log('Failed to load received request', e)
+      }
+      return []
     },
     async checkFriendShip(userId: number): Promise<CheckFriendshipResponse> {
       try {
@@ -275,23 +289,33 @@ const useUserStore = defineStore({
       return null
     },
     async getShortUserProfile(userId: number): Promise<ShortUserProfile | null> {
+      const defaultProfile: ShortUserProfile = {
+        id: 0,
+        profile: {
+          id: 0,
+          userId: 0,
+          name: 'AI',
+          lastname: 'Bot',
+          avatar: '/pong/ia_avatar.jpg',
+          status: Status.Online
+        },
+        username: 'AI',
+        email: 'ai',
+        updatedAt: new Date().toISOString()
+      }
       try {
-        if (userId === 0)
-          return {
-            id: 0,
-            profile: {
-              id: 0,
-              userId: 0,
-              name: 'AI',
-              lastname: 'Bot',
-              avatar: '/public/pong/characters/fortnite_style_ai_avatar.png',
-              status: Status.Online
-            },
-            username: 'AI',
-            email: 'ai',
-            updatedAt: new Date().toISOString()
-          }
+        if (userId === 0) {
+          this.usersStatus.set(0, Status.Online)
+          return defaultProfile
+        }
+        // check if the user is in the map
+        const profile = this.shortProfiles.get(userId)
+        if (profile) {
+          return profile
+        }
         const { data } = await axios.get<ShortUserProfile>(`/users/short-profile/${userId}`)
+        this.usersStatus.set(userId, data.profile.status)
+        this.shortProfiles.set(userId, data)
         return data
       } catch (e) {
         console.log(e)
@@ -368,6 +392,42 @@ const useUserStore = defineStore({
       } catch (e) {
         console.log(e)
         return 'error'
+      }
+    },
+
+    /* Status*/
+    initStatusSocket(userId: number) {
+      this.statusSocketManager = StatusSocket.getInstance(userId, (data: ReceivedStatusUpdate) => {
+        this.usersStatus.set(data.userId, data.status)
+      })
+    },
+    disconnectStatusSocket() {
+      if (this.statusSocketManager) {
+        this.statusSocketManager.disconnect()
+      }
+    },
+    async getStatus(userId: number): Promise<Status> {
+      // check if the user is in the map
+      const status = this.usersStatus.get(userId)
+      if (status) {
+        return status
+      }
+      // if not, fetch the status from the server
+      try {
+        const shortProfile = await this.getShortUserProfile(userId)
+        if (!shortProfile) {
+          return Status.Offline
+        }
+        this.usersStatus.set(userId, shortProfile.profile.status)
+        return shortProfile.profile.status
+      } catch (e) {
+        console.log(e)
+      }
+      return Status.Offline
+    },
+    async updateMyStatus(status: Status) {
+      if (this.statusSocketManager) {
+        this.statusSocketManager.updateMyStatus(status)
       }
     }
   }

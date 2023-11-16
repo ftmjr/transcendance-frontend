@@ -20,6 +20,7 @@ export enum GameEvent {
   PLAYER_JOINED = 'PLAYER_JOINED',
   PLAYER_LEFT = 'PLAYER_LEFT',
   ACTION_PERFORMED = 'ACTION_PERFORMED',
+  IA_ACTION_PERFORMED = 'IA_ACTION_PERFORMED',
   MATCH_WON = 'MATCH_WON',
   MATCH_LOST = 'MATCH_LOST'
 }
@@ -40,7 +41,7 @@ export interface Profile {
   userId: number
   name: string
   lastname: string
-  avatar?: string
+  avatar: string
   bio?: string
   oauth?: {
     accessToken: string
@@ -79,6 +80,7 @@ export interface ProfileHeaderData {
   username: string
   joiningDate: string
   isCurrentUser: boolean
+  status: Status
 }
 export interface ProfileData {
   id: number
@@ -88,11 +90,13 @@ export interface ProfileData {
 }
 export interface AuthState {
   token: string | null
-  user: User | null
+  user: (User & { profile: Profile }) | null
   error: {
     state: boolean
     message: string
   }
+  isRefreshingToken: boolean
+  timer: NodeJS.Timeout | null
 }
 export interface RegisterBody {
   lastName: string
@@ -105,5 +109,5 @@ export interface RegisterBody {
 
 export interface ILoginData {
   accessToken: string
-  user: User
+  user: User & { profile: Profile }
 }

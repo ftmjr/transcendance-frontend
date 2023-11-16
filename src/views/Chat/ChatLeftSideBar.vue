@@ -9,20 +9,16 @@
         size="small"
         @click="$emit('close')"
       >
-        <VIcon
-          size="18"
-          icon="tabler-x"
-          color="error"
-          class="text-medium-emphasis"
-        />
+        <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
       </VBtn>
     </div>
-    <div class="flex mb-2 px-1">
+    <div class="flex mb-2 px-2">
       <AvatarBadge
-        v-if="authStore.getUser"
+        v-if="authStore.getUser !== null"
         :user-id="authStore.getUser.id"
         :user="authStore.getUser"
         @show-user-profile="$emit('showUserProfile')"
+        :bordered="true"
       />
       <VTextField
         v-model="search"
@@ -32,31 +28,24 @@
         class="ms-4 me-1 transparent-input-box"
       >
         <template #prepend-inner>
-          <VIcon
-            size="22"
-            icon="tabler-search"
-          />
+          <VIcon size="22" icon="tabler-search" />
         </template>
       </VTextField>
     </div>
-    <v-toolbar color="#C8CAFEFF">
-      <v-toolbar-title class="text-slate-700">
-        Salles de discussion
-      </v-toolbar-title>
+    <v-toolbar color="#952175">
+      <v-toolbar-title class="text-gray-300"> Salles de discussion </v-toolbar-title>
       <VBtn
         variant="elevated"
+        class="bg-transparent text-gray-300"
+        selected-class="bg-red text-red-300"
+        color="white"
+        :border="true"
         icon
         size="small"
-        color="primary"
         rounded
         @click="$emit('createRoom')"
       >
-        <VIcon
-          size="18"
-          icon="tabler-edit"
-          color="#C8CAFEFF"
-          class="text-medium-emphasis"
-        />
+        <VIcon size="18" icon="tabler-edit" color="white" />
       </VBtn>
     </v-toolbar>
     <VDivider />
@@ -74,15 +63,13 @@
           <template v-if="search.length"> pour `{{ search }}`</template>
         </span>
       </li>
-      <li
-        v-for="room in roomsStore.filteredRooms"
-        :key="room.id"
-        @click="showRoom(room.id)"
-      >
+      <li v-for="room in roomsStore.filteredRooms" :key="room.id" @click="showRoom(room.id)">
         <RoomCard :room="room" />
       </li>
       <li class="py-4">
-        <span class="chat-contact-header text-primary text-xl font-weight-medium">Salles publique</span>
+        <span class="chat-contact-header text-primary text-xl font-weight-medium"
+          >Salles publique</span
+        >
       </li>
       <li>
         <span
@@ -93,11 +80,7 @@
           <template v-if="search.length"> pour `{{ search }}`</template>
         </span>
       </li>
-      <li
-        v-for="room in roomsStore.filteredPublic"
-        :key="room.id"
-        @click="showRoom(room.id)"
-      >
+      <li v-for="room in roomsStore.filteredPublic" :key="room.id" @click="showRoom(room.id)">
         <RoomCard :room="room" />
       </li>
     </PerfectScrollbar>
@@ -146,7 +129,7 @@ export default defineComponent({
   },
   methods: {
     showRoom(roomId: number) {
-      console.log('trying to show room', roomId)
+      this.$emit('showRoom', roomId)
     },
     showUserProfile() {
       this.$emit('showUserProfile')

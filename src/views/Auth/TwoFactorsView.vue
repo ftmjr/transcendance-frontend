@@ -1,12 +1,7 @@
 <template>
-  <VCard
-    color="transparent"
-    :loading="isLoading"
-  >
+  <VCard color="transparent" :loading="isLoading">
     <VCardText>
-      <h5 class="text-h5 text-center font-semibold mb-4">
-        Verification à double facteur
-      </h5>
+      <h5 class="text-h5 text-center font-semibold mb-4">Verification à double facteur</h5>
       <p class="text-center font-light">
         Veuillez entrer le code de vérification inscrit dans votre application d'authentification.
       </p>
@@ -15,29 +10,15 @@
       <VForm @submit.prevent="validateCode">
         <VCol>
           <VOtpInput v-model="verificationCode" />
-          <p
-            v-if="errorMessage"
-            class="text-error text-center font-lighter"
-          >
+          <p v-if="errorMessage" class="text-error text-center font-lighter">
             {{ errorMessage }}
           </p>
         </VCol>
         <VCol cols="12">
-          <VBtn
-            block
-            type="submit"
-          >
-            Valider
-          </VBtn>
+          <VBtn block type="submit"> Valider </VBtn>
         </VCol>
       </VForm>
-      <VBtn
-        variant="text"
-        color="secondary"
-        @click="logout"
-      >
-        Déconnexion
-      </VBtn>
+      <VBtn variant="text" color="secondary" @click="logout"> Déconnexion </VBtn>
     </VCardText>
   </VCard>
 </template>
@@ -45,13 +26,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import { VOtpInput } from 'vuetify/labs/VOtpInput'
 
 export default defineComponent({
   name: 'TwoFactors',
-  components: {
-    VOtpInput
-  },
   setup() {
     const authStore = useAuthStore()
     return { authStore }

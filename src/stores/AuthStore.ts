@@ -40,14 +40,18 @@ const useAuthStore = defineStore({
   id: 'auth',
   state: (): AuthState => {
     const token = localStorage.getItem('__token__') || null
-    const user = JSON.parse(localStorage.getItem('__user__') ?? 'null') as User | null
+    const user = JSON.parse(localStorage.getItem('__user__') ?? 'null') as
+      | (User & { profile: Profile })
+      | null
     return {
       token,
       user,
       error: {
         state: false,
         message: ''
-      }
+      },
+      isRefreshingToken: false,
+      timer: null
     }
   },
   getters: {
@@ -97,7 +101,7 @@ const useAuthStore = defineStore({
     isLocked(): boolean {
       return this.status === LoginStatus.LOCKED
     },
-    getUser(): User | null {
+    getUser(): (User & { profile: Profile }) | null {
       return this.user
     },
     getProfile(): Profile | null {
@@ -109,10 +113,13 @@ const useAuthStore = defineStore({
     getCoalition(): Coalition {
       // @ts-expect-error : resolveCoalition, an action
       return this.resolveCoalition(this.getProfile)
+    },
+    getError(): { state: boolean; message: string } {
+      return this.error
     }
   },
   actions: {
-    setUser(user: User) {
+    setUser(user: User & { profile: Profile }) {
       this.user = user
       localStorage.setItem('__user__', JSON.stringify(user))
     },
@@ -131,18 +138,18 @@ const useAuthStore = defineStore({
     async login(credentials: { username: string; password: string }): Promise<boolean> {
       this.error = { state: false, message: '' }
       try {
-        const { data } = await axios.post('auth/login', credentials, {
+        const { data } = await axios.post<ILoginData>('auth/login', credentials, {
           headers: {
             'Content-Type': 'application/json'
           }
         })
-        const { accessToken, user } = data as ILoginData
+        const { accessToken, user } = data
         this.setUser(user)
         this.setToken(accessToken)
         return true
       } catch (error) {
         if (isAxiosError(error)) {
-          if (error.response && error.response.status === 403) {
+          if (error.response && (error.response.status === 403 || error.response.status === 401)) {
             this.error = { state: true, message: error.response.data.message }
           }
         }
@@ -154,6 +161,10 @@ const useAuthStore = defineStore({
       try {
         this.removeUser()
         this.removeToken()
+        if (this.timer) {
+          clearInterval(this.timer)
+          this.timer = null
+        }
         await axios.get('auth/logout')
       } catch (error) {
         if (isAxiosError(error)) {
@@ -196,7 +207,7 @@ const useAuthStore = defineStore({
     async refreshCurrentUser() {
       this.error = { state: false, message: '' }
       try {
-        const { data } = await axios.get('auth/me', {
+        const { data } = await axios.get<User & { profile: Profile }>('auth/me', {
           headers: {
             Authorization: `Bearer ${this.token}`
           }
@@ -206,6 +217,12 @@ const useAuthStore = defineStore({
         this.error = { state: false, message: 'Failed to refresh user data' }
       }
     },
+    /**
+     * @name refreshToken
+     * @description Refresh token
+     * @returns
+     * @memberof AuthStore
+     */
     async refreshToken(): Promise<string | null> {
       this.error = { state: false, message: '' }
       try {
@@ -240,6 +257,12 @@ const useAuthStore = defineStore({
         return null
       }
     },
+    /**
+     * @name activate2FA
+     * @param otpCode
+     * @description Activate 2FA with the OTP code
+     * @returns
+     */
     async activate2FA(otpCode: string): Promise<boolean> {
       this.error = { state: false, message: '' }
       try {
@@ -255,6 +278,13 @@ const useAuthStore = defineStore({
         return false
       }
     },
+
+    /**
+     * @name validate2FACode
+     * @param totpCode
+     * @description Validate 2FA code
+     * @returns
+     */
     async validate2FACode(totpCode: string): Promise<boolean> {
       this.error = { state: false, message: '' }
       try {
@@ -268,6 +298,12 @@ const useAuthStore = defineStore({
         return false
       }
     },
+
+    /**
+     * @name deactivate2FA
+     * @description Deactivate 2FA
+     * @returns
+     */
     async deactivate2FA(): Promise<boolean> {
       this.error = { state: false, message: '' }
       try {
@@ -279,6 +315,13 @@ const useAuthStore = defineStore({
         return false
       }
     },
+
+    /**
+     * @name updatePassword
+     * @param info
+     * @description Update password
+     * @returns
+     */
     async updatePassword(info: {
       currentPassword: string
       newPassword: string
@@ -301,10 +344,32 @@ const useAuthStore = defineStore({
         return false
       }
     },
+    activateRefreshTokenTimer() {
+      // check first if current token is valid
+      if (this.isExpired) return
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+      this.timer = setInterval(
+        async () => {
+          this.isRefreshingToken = true
+          await this.refreshToken()
+          this.isRefreshingToken = false
+        },
+        1000 * 60 * 30 // 30 minutes refresh
+      )
+    },
+    /**
+     * @name updateUsername
+     * @param username
+     * @description Update username
+     * @returns
+     */
     async updateUsername(username: string) {
       this.error = { state: false, message: '' }
       try {
-        const { data } = await axios.post<User>('users/username/' + username)
+        const { data } = await axios.post<User & { profile: Profile }>('users/username/' + username)
         if (this.user) {
           this.setUser({ ...this.user, username: data.username })
         } else {
@@ -322,6 +387,13 @@ const useAuthStore = defineStore({
         return false
       }
     },
+
+    /**
+     * @name updateUserInfo
+     * @param info
+     * @description Update user info
+     * @returns
+     */
     async updateUserInfo(info: { firstName: string; lastName: string; bio: string }) {
       this.error = { state: false, message: '' }
       try {
@@ -344,6 +416,13 @@ const useAuthStore = defineStore({
         return false
       }
     },
+
+    /**
+     * @name changeMyStatus
+     * @param value
+     * @description Change user status
+     * @returns
+     */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async changeMyStatus(value: Status): Promise<'success' | 'error'> {
       try {
@@ -353,6 +432,13 @@ const useAuthStore = defineStore({
         return 'error'
       }
     },
+
+    /**
+     * @name updateAvatar
+     * @param avatar
+     * @description Update avatar
+     * @returns
+     */
     async updateAvatar(avatar: File): Promise<'success' | 'error'> {
       try {
         const formData = new FormData()
@@ -370,6 +456,13 @@ const useAuthStore = defineStore({
         return 'error'
       }
     },
+
+    /**
+     * @name resolveAvatarBadgeVariant
+     * @param status
+     * @description Resolve avatar badge variant
+     * @returns
+     */
     resolveAvatarBadgeVariant(status: Status): 'success' | 'error' | 'warning' | 'secondary' {
       if (status === Status.Online) return 'success'
       else if (status === Status.Offline) return 'error'

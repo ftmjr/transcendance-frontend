@@ -1,7 +1,9 @@
+// src/stores/GameStore.ts
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
+import useAuthStore from '@/stores/AuthStore'
 import { GameHistory } from '@/interfaces/User'
-import { PongTheme } from '@/Game/pong-scenes/Assets'
+import { Theme } from '@/Game/scenes/Boot'
 
 export enum GameSessionType {
   Bot,
@@ -20,7 +22,7 @@ export interface GamerSession {
 export interface GameRules {
   maxScore: number
   maxTime: number
-  theme?: PongTheme
+  theme?: Theme
 }
 export interface GameSession {
   gameId: number
@@ -45,21 +47,35 @@ export enum StartAgainst {
 
 const useGameStore = defineStore({
   id: 'games',
-  state: (): { joinedGameSession: GameSession | null; myGameSessions: GameSession[] } => {
+  state: (): {
+    joinedGameSession: GameSession | null
+    myGameSessions: GameSession[]
+    viewingAGame: boolean
+  } => {
     return {
       joinedGameSession: null,
-      myGameSessions: []
+      myGameSessions: [],
+      viewingAGame: false
     }
   },
   getters: {
-    currentGameSession(): GameSession | null {
-      return this.joinedGameSession
-    },
     allGameSessions(): GameSession[] {
       return this.myGameSessions
     },
+    currentGameSession(): GameSession | null {
+      return this.joinedGameSession
+    },
     isPlaying(): boolean {
-      return this.currentGameSession !== null
+      if (this.currentGameSession === null) return false
+      const userId = useAuthStore().getUser?.id
+      if (!userId) {
+        return false
+      }
+      return this.currentGameSession.participants.some((p) => p.userId === userId)
+    },
+    isWatching(): boolean {
+      if (this.currentGameSession === null) return false
+      return this.viewingAGame
     },
     isPlayingWithBot(): boolean {
       return this.currentGameSession?.type === GameSessionType.Bot
@@ -141,11 +157,23 @@ const useGameStore = defineStore({
       try {
         const { data } = await axios.get<GameSession>(`/game/watch-game/${gameId}`)
         this.joinedGameSession = data
+        this.viewingAGame = true
         return 'preparing'
       } catch (e) {
         console.error(e)
         return 'Une erreur est survenue'
       }
+    },
+    stopViewingGame(): 'stopped' | string {
+      if (!this.joinedGameSession) {
+        return "Vous n'avez pas de session de jeu"
+      }
+      if (!this.viewingAGame) {
+        return "Vous n'etes pas en train de regarder une partie"
+      }
+      this.joinedGameSession = null
+      this.viewingAGame = false
+      return 'stopped'
     },
     async acceptGameInvitation(gameId: number): Promise<'preparing' | string> {
       if (!this.canStartOrAcceptGameInvitation) {
@@ -165,6 +193,9 @@ const useGameStore = defineStore({
       try {
         const { data } = await axios.get<GameSession[]>('/game/sessions')
         this.myGameSessions = data
+        if (this.myGameSessions.length > 0) {
+          this.joinedGameSession = this.myGameSessions[0]
+        }
       } catch (e) {
         console.error(e)
       }
@@ -189,14 +220,17 @@ const useGameStore = defineStore({
     async deleteGameSession(gameId: number) {
       try {
         await axios.delete('/game/sessions', { data: { gameId } })
-        await this.getAllMyGameSessions()
       } catch (e) {
         console.error(e)
       }
     },
-    async leaveCurrentGameSession() {
+    async leaveCurrentGameSession(userId: number) {
       if (this.joinedGameSession) {
-        await this.gameEnded(this.joinedGameSession.gameId, this.joinedGameSession.hostId)
+        if (this.viewingAGame) {
+          this.stopViewingGame()
+        } else {
+          await this.gameEnded(this.joinedGameSession.gameId, userId)
+        }
       }
     },
     // allow you to know witch user is currently playing or in a waiting queue

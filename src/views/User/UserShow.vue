@@ -1,18 +1,8 @@
 <template>
   <div>
-    <user-profile-header
-      :id="profileData.id"
-      class="mb-5"
-      :info="profileData.header"
-    />
-    <VTabs
-      v-model="activeTab"
-      class="v-tabs-pill"
-    >
-      <VTabs
-        v-model="activeTab"
-        class="v-tabs-pill"
-      >
+    <user-profile-header :id="profileData.id" class="mb-5" :info="profileData.header" />
+    <VTabs v-model="activeTab" class="v-tabs-pill">
+      <VTabs v-model="activeTab" class="v-tabs-pill">
         <VTab
           v-for="item in tabs"
           :key="item.icon"
@@ -20,40 +10,22 @@
           :to="getRoute(item.tab)"
           :loading="loading"
         >
-          <VIcon
-            size="20"
-            start
-            :icon="item.icon"
-          />
+          <VIcon size="20" start :icon="item.icon" />
           {{ item.title }}
         </VTab>
       </VTabs>
     </VTabs>
-    <VWindow
-      v-model="activeTab"
-      class="mt-6 disable-tab-transition"
-      :touch="false"
-    >
+    <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
       <VWindowItem value="profile">
-        <VCard
-          :loading="loading"
-          color="transparent"
-        >
+        <VCard :loading="loading" color="transparent">
           <VCard v-if="profileData.profile">
-            <div class="bg-purple-500/30">
-              <v-card-title class="text-h6">
-                [SHORT BIO]
-              </v-card-title>
-              <p
-                v-if="profileData.profile.bio"
-                class="text-center pb-2 font-mono"
-              >
+            <div class="bg-[#1a1f3c] p-2 md:p-6">
+              <h2 class="text-4xl uppercase font-bold">Description</h2>
+
+              <p v-if="profileData.profile.bio" class="text-left md:w-1/2 py-2 font-mono">
                 <i>{{ profileData.profile.bio }}</i>
               </p>
-              <p
-                v-else
-                class="text-center pb-2 font-mono text-sm"
-              >
+              <p v-else class="text-left pb-2 font-mono text-sm md:w-1/2 py-2">
                 <i>Aucune bio, pour l'instant</i>
               </p>
             </div>
@@ -67,16 +39,14 @@
         </VCard>
       </VWindowItem>
       <VWindowItem value="awards">
-        <div>Les recompenses</div>
+        <h2 class="text-4xl uppercase font-bold">Les récompenses</h2>
+        <Awards v-if="userId" :user-id="userId" />
       </VWindowItem>
       <VWindowItem value="friends">
-        <Friends v-if="userId === authStore.getUser?.id" />
+        <friends v-if="userId === authStore.getUser?.id" />
       </VWindowItem>
       <VWindowItem value="history">
-        <Histories
-          v-if="userId"
-          :user-id="userId"
-        />
+        <Histories v-if="userId" :user-id="userId" />
       </VWindowItem>
     </VWindow>
   </div>
@@ -87,17 +57,30 @@ import { defineComponent, PropType } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import type { ProfileData, User, GameHistory, Profile } from '@/interfaces/User'
 import axios from '@/utils/axios'
+import Awards from '@/components/profile/Awards.vue'
 import Histories from '@/components/profile/Histories.vue'
-import UserProfileHeader from '@/components/profile/Header.vue'
+import UserProfileHeader from '@/components/profile/ProfileHeader.vue'
 import Friends from '@/components/profile/Friends.vue'
 import PlayerSimpleStats from '@/components/profile/PlayerSimpleStats.vue'
+import { Status } from '@/interfaces/User'
 
 type Tab = 'profile' | 'awards' | 'history' | 'friends'
 type TabItem = { title: string; icon: string; tab: Tab }
-
+const emptyCoalition = {
+  color: '#cc0000',
+  cover_url:
+    'https://cdn.intra.42.fr/coalition/cover/243/42Q_035_22_BG_Coalitions_Legion_3000x2000.jpg',
+  id: 243,
+  image_url: 'https://cdn.intra.42.fr/coalition/image/243/42Q_035_22_Logo_Legion.svg',
+  name: 'Les pongistes',
+  score: 0,
+  slug: 'Pongiste',
+  user_id: 0
+}
 export default defineComponent({
   components: {
     PlayerSimpleStats,
+    Awards,
     Histories,
     UserProfileHeader,
     Friends
@@ -134,16 +117,17 @@ export default defineComponent({
       profileData: {
         id: 0,
         header: {
-          coalition: 'Legion',
+          coalition: emptyCoalition,
           avatar: '',
-          fullName: '',
-          username: 'no username',
-          joiningDate: Date.now()
+          fullName: 'Hidden',
+          username: 'no-username',
+          joiningDate: Date.now(),
+          status: Status.Offline
         },
         bio: '',
         email: '',
-        profile: null as unknown as Profile
-      } as ProfileData,
+        profile: null
+      } as unknown as ProfileData,
       gameHistories: [] as GameHistory[],
       errorMsg: ''
     }
@@ -183,26 +167,25 @@ export default defineComponent({
       this.loading = true
       this.errorMsg = ''
       try {
-        const { data } = await axios.get<User>(`/users/profile/${userId}`)
-        this.profileData = {
-          id: data.id,
-          header: {
-            coalition: this.authStore.resolveCoalition(data.profile),
-            avatar: data?.profile.avatar,
-            fullName: `${data.profile.name} ${data.profile.lastname}`,
-            username: data.username,
-            joiningDate: data.createdAt,
-            isCurrentUser: userId === this.authStore.getUser?.id
-          },
-          profile: data.profile,
-          email: data.email,
-          bio: data.profile.bio,
-          status: data.profile.status
+        const { data } = await axios.get<User & { profile: Profile }>(`/users/profile/${userId}`)
+        if (data) {
+          this.profileData = {
+            id: data.id,
+            header: {
+              coalition: this.authStore.resolveCoalition(data.profile),
+              avatar: data.profile.avatar,
+              fullName: `${data.profile.name} ${data.profile.lastname}`,
+              username: data.username,
+              joiningDate: data.createdAt,
+              isCurrentUser: userId === this.authStore.getUser?.id,
+              status: data.profile.status
+            },
+            profile: data.profile,
+            email: data.email
+          }
         }
         this.gameHistories = data.gameHistories ?? []
-      } catch (error) {
-        this.errorMsg = 'Failed to load profile'
-      }
+      } catch (error) {}
       this.loading = false
     }
   }

@@ -1,13 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 /* eslint-disable no-undef */
 module.exports = {
-  content: ['src/**/*.vue', 'src/App.vue', './node_modules/flowbite/**/*.js'],
+  content: ['src/**/*.vue', 'src/App.vue'],
   theme: {
     container: {
       center: true,
       padding: '2rem'
     },
     extend: {
+      maxWidth: {
+        '1/2': '50%',
+        '2/3': '60%',
+      },
       color: {
         darkBlue: '#010626',
         white: '#F2F3F4',
@@ -53,7 +57,5 @@ module.exports = {
       },
     }
   },
-  plugins: [
-    require('flowbite/plugin')
-  ]
+  plugins: []
 }

@@ -1,0 +1,33 @@
+{
+    "section1": {
+        "files": [
+            {
+                "url": "/pong/backgrounds/pink_street.png",
+                "type": "image",
+                "key": "pink_street"
+            },
+            {
+                "url": "/pong/backgrounds/school-logo-white.svg",
+                "type": "image",
+                "key": "school-logo-white"
+            },
+            {
+                "url": "/pong/backgrounds/winter_train_hd.png",
+                "type": "image",
+                "key": "winter_train_hd"
+            },
+            {
+                "url": "/pong/backgrounds/winter_trees_hd.png",
+                "type": "image",
+                "key": "winter_trees_hd"
+            }
+        ]
+    },
+    "meta": {
+        "app": "Phaser Editor 2D - Asset Pack Editor",
+        "contentType": "phasereditor2d.pack.core.AssetContentType",
+        "url": "https://phasereditor2d.com",
+        "version": 2,
+        "showAllFilesInBlocks": false
+    }
+}

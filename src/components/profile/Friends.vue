@@ -1,13 +1,9 @@
 <template>
-  <VCard
-    :loading="loading"
-    color="transparent"
-  >
-    <VCardTitle class="text-center text-lg font-weight-bold my-4">
-      Mes Amis
-    </VCardTitle>
+  <VCard :loading="loading" color="transparent" class="border-none">
+    <h2 class="text-4xl uppercase font-bold mb-8">Vos amis</h2>
     <VRow>
       <VCol
+        v-if="userStore.contacts.length"
         v-for="(friend, index) in userStore.contacts"
         :key="friend.id"
         cols="12"
@@ -15,28 +11,17 @@
       >
         <div class="bg-slate-700/30 rounded-lg mx-1 mt-8">
           <div class="flex items-center justify-center">
-            <VAvatar
-              rounded
-              size="120"
-              class="user-profile-avatar"
-            >
-              <VImg
-                v-if="friend.profile.avatar"
-                :src="friend.profile.avatar"
-              />
-              <VIcon
-                v-else
-                color="primary"
-                icon="tabler-user"
-              />
+            <VAvatar rounded size="120" class="user-profile-avatar">
+              <VImg v-if="friend.profile?.avatar" :src="friend.profile?.avatar" />
+              <VIcon v-else color="primary" icon="tabler-user" />
             </VAvatar>
           </div>
           <div class="relative -top-12">
             <VCardText class="flex flex-col items-center">
               <p class="text-center text-lg font-weight-bold">
-                {{ friend.profile.name }} {{ friend.profile.lastname }}
+                {{ friend.profile?.name }} {{ friend.profile?.lastname }}
               </p>
-              <RouterLink
+              <router-link
                 class="text-center text-lg font-weight-semibold text-purple-500"
                 :to="{
                   name: 'user-profile',
@@ -47,15 +32,20 @@
                 }"
               >
                 ☁︎ {{ friend.username }}
-              </RouterLink>
+              </router-link>
             </VCardText>
             <div class="flex flex-column align-center justify-center gap-4">
-              <FriendRequestBox :friend-id="friend.id" />
-              <GameStatusBadge
+              <friend-request-box :friend-id="friend.id" />
+              <game-status-badge
                 v-if="gameStatus[index] && friend.profile.status"
                 :status="friend.profile.status"
                 :user-id="friend.id"
                 :user-game-status="gameStatus[index]"
+              />
+              <status-badge
+                v-if="friend.id !== 0"
+                :user-id="friend.id"
+                :value="friend.profile?.status"
               />
               <VBtnGroup size="small">
                 <VBtn
@@ -70,10 +60,10 @@
                     }
                   }"
                 >
-                  <VIcon left>
-                    mdi-account
-                  </VIcon>
-                  Voir le Profile
+                  <span class="flex gap-2">
+                    <VIcon left> mdi-account </VIcon>
+                    <span> Profile </span>
+                  </span>
                 </VBtn>
                 <VBtn
                   size="small"
@@ -81,14 +71,21 @@
                   variant="tonal"
                   :to="{ name: 'dm', params: { friendId: friend.id } }"
                 >
-                  <VIcon left>
-                    mdi-chat
-                  </VIcon>
-                  Envoyer un DM
+                  <span class="flex gap-2">
+                    <VIcon left> mdi-chat </VIcon>
+                    <span> Discuter </span>
+                  </span>
                 </VBtn>
               </VBtnGroup>
             </div>
           </div>
+        </div>
+      </VCol>
+      <VCol v-else cols="12">
+        <div class="flex flex-col items-center justify-center gap-4">
+          <VIcon size="100" color="primary" icon="mdi-account-multiple" />
+          <p class="text-xl font-semibold">Vous n'avez pas encore d'amis</p>
+          <p class="text-lg font-semibold">Ajoutez des amis pour jouer avec eux</p>
         </div>
       </VCol>
     </VRow>
@@ -101,9 +98,10 @@ import useUserStore from '@/stores/UserStore'
 import FriendRequestBox from '@/components/profile/FriendRequestBox.vue'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 import useGameStore, { GameSession } from '@/stores/GameStore'
+import StatusBadge from '@/components/profile/StatusBadge.vue'
 
 export default defineComponent({
-  components: { GameStatusBadge, FriendRequestBox },
+  components: { GameStatusBadge, FriendRequestBox, StatusBadge },
   setup() {
     const userStore = useUserStore()
     const gameStore = useGameStore()

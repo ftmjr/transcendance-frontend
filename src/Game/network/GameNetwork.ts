@@ -1,10 +1,13 @@
+// src/Game/network/GameNetwork.ts
 import { io, Socket } from 'socket.io-client'
+
 import {
-  BallServedData,
   GAME_STATE,
-  GameMonitorState,
-  PadMovedData
-} from '@/Game/network/GameMonitor'
+  BallData,
+  PadMovedData,
+  GameStateDataPacket,
+  PaddleEngineData
+} from '@/Game/network/Monitor'
 
 export enum GameUserType {
   Player,
@@ -22,24 +25,24 @@ export enum GAME_EVENTS {
   HostChanged = 'hostChanged',
   GameMonitorStateChanged = 'gameMonitorStateChanged',
   GameStateChanged = 'gameStateChanged',
-  Scored = 'scored',
   ScoreChanged = 'scoreChanged',
   PadMoved = 'padMoved',
+  IaPadSpeed = 'iaPadSpeed',
   BallServed = 'ballServed',
+  BallMoved = 'ballMoved',
   PlayersRetrieved = 'players-retrieved',
   PlayerAdded = 'player-added',
   ViewersRetrieved = 'viewers-retrieved',
   ViewerAdded = 'viewer-added',
   reloadPlayersList = 'reloadPlayersList',
-  reloadViewersList = 'reloadViewersList'
+  reloadViewersList = 'reloadViewersList',
+  GameObjectState = 'gameObjectState',
+  PlayerLeft = 'player-left'
 }
 
 export interface ListenEvents {
   [GAME_EVENTS.HostChanged]: (received: { roomId: number; data: number }) => void
-  [GAME_EVENTS.GameMonitorStateChanged]: (received: {
-    roomId: number
-    data: GameMonitorState
-  }) => void
+  [GAME_EVENTS.GameMonitorStateChanged]: (received: { roomId: number; data: GAME_STATE }) => void
   [GAME_EVENTS.PlayersRetrieved]: (received: { roomId: number; data: GameUser[] }) => void
   [GAME_EVENTS.PlayerAdded]: (received: { roomId: number; data: GameUser }) => void
   [GAME_EVENTS.ViewersRetrieved]: (received: { roomId: number; data: GameUser[] }) => void
@@ -48,8 +51,11 @@ export interface ListenEvents {
     roomId: number
     data: Array<{ userId: number; score: number }>
   }) => void
-  [GAME_EVENTS.PadMoved]: (received: { roomId: number; data: PadMovedData }) => void
-  [GAME_EVENTS.BallServed]: (received: { roomId: number; data: BallServedData }) => void
+  [GAME_EVENTS.PadMoved]: (received: { roomId: number; data: PaddleEngineData }) => void
+  [GAME_EVENTS.BallServed]: (received: { roomId: number; data: BallData }) => void
+  [GAME_EVENTS.BallMoved]: (received: { roomId: number; data: BallData }) => void
+  [GAME_EVENTS.GameObjectState]: (received: { roomId: number; data: GameStateDataPacket }) => void
+  [GAME_EVENTS.PlayerLeft]: (received: { roomId: number; data: GameUser }) => void
 }
 
 export interface EmitEvents {
@@ -62,9 +68,9 @@ export interface EmitEvents {
     user: GameUser
     gameState: GAME_STATE
   }) => void
-  [GAME_EVENTS.Scored]: (sentData: { roomId: number; user: GameUser; isIa: boolean }) => void
   [GAME_EVENTS.PadMoved]: (sentData: { roomId: number; data: PadMovedData }) => void
-  [GAME_EVENTS.BallServed]: (sentData: { roomId: number; data: BallServedData }) => void
+  [GAME_EVENTS.IaPadSpeed]: (sentData: { roomId: number; data: number }) => void
+  [GAME_EVENTS.BallServed]: (sentData: { roomId: number; data: BallData }) => void
   [GAME_EVENTS.reloadPlayersList]: (sentData: { roomId: number }) => void
   [GAME_EVENTS.reloadViewersList]: (sentData: { roomId: number }) => void
 }
@@ -112,24 +118,27 @@ export class GameNetwork {
       this.socket?.emit(GAME_EVENTS.GameStateChanged, { roomId, user: this.user, gameState })
     }
   }
-  sendScored(isIa: boolean) {
-    const roomId = this.roomId
-    if (this.isOperational) {
-      this.socket?.emit(GAME_EVENTS.Scored, { roomId, user: this.user, isIa })
-    }
-  }
   sendPadMove(data: PadMovedData) {
     const roomId = this.roomId
     if (this.isOperational) {
       this.socket?.emit(GAME_EVENTS.PadMoved, { roomId, data })
     }
   }
-  sendBallServe(data: BallServedData) {
+
+  sendIaPadSpeed(data: number) {
+    const roomId = this.roomId
+    if (this.isOperational) {
+      this.socket?.emit(GAME_EVENTS.IaPadSpeed, { roomId, data })
+    }
+  }
+
+  sendBallServe(data: BallData) {
     const roomId = this.roomId
     if (this.isOperational) {
       this.socket?.emit(GAME_EVENTS.BallServed, { roomId, data })
     }
   }
+
   reloadPlayersList() {
     const roomId = this.roomId
     if (this.isOperational) {
@@ -149,7 +158,7 @@ export class GameNetwork {
       callback(data.data)
     })
   }
-  onGameMonitorStateChanged(callback: (state: GameMonitorState) => void) {
+  onGameMonitorStateChanged(callback: (state: GAME_STATE) => void) {
     this.socket?.on(GAME_EVENTS.GameMonitorStateChanged, (data) => {
       callback(data.data)
     })
@@ -161,6 +170,12 @@ export class GameNetwork {
   }
   onPlayerAdded(callback: (player: GameUser) => void) {
     this.socket?.on(GAME_EVENTS.PlayerAdded, (received) => {
+      callback(received.data)
+    })
+  }
+
+  onPlayerLeft(callback: (player: GameUser) => void) {
+    this.socket?.on(GAME_EVENTS.PlayerLeft, (received) => {
       callback(received.data)
     })
   }
@@ -179,13 +194,25 @@ export class GameNetwork {
       callback(received.data)
     })
   }
-  onPadMoved(callback: (data: PadMovedData) => void) {
+  onPadMoved(callback: (data: PaddleEngineData) => void) {
     this.socket?.on(GAME_EVENTS.PadMoved, (received) => {
       callback(received.data)
     })
   }
-  onBallServed(callback: (data: BallServedData) => void) {
+  onBallServed(callback: (data: BallData) => void) {
     this.socket?.on(GAME_EVENTS.BallServed, (received) => {
+      callback(received.data)
+    })
+  }
+
+  onBallMoved(callback: (data: BallData) => void) {
+    this.socket?.on(GAME_EVENTS.BallMoved, (received) => {
+      callback(received.data)
+    })
+  }
+
+  onObjectsStatePacket(callback: (data: GameStateDataPacket) => void) {
+    this.socket?.on(GAME_EVENTS.GameObjectState, (received) => {
       callback(received.data)
     })
   }

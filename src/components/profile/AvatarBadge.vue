@@ -1,20 +1,14 @@
 <template>
-  <div
-    v-if="userProfile"
-    class="flex items-center gap-2"
-  >
+  <div v-if="userProfile" class="flex items-center gap-2">
     <VBadge
       dot
       location="bottom right"
       offset-x="3"
       offset-y="3"
       :color="color"
-      :bordered="true"
+      :bordered="bordered"
     >
-      <VAvatar
-        :size="size"
-        @click="$emit('showUserProfile')"
-      >
+      <VAvatar :variant="avatarVariant" :size="size" @click="$emit('showUserProfile')">
         <VImg
           v-if="userProfile.profile.avatar"
           :src="userProfile.profile.avatar"
@@ -22,11 +16,9 @@
         />
         <span v-else>{{ avatarText(userProfile.username) }}</span>
       </VAvatar>
+      <slot />
     </VBadge>
-    <div
-      v-if="showName"
-      class="text-center"
-    >
+    <div v-if="showName" class="text-center">
       <span class="text-sm">{{ userProfile.profile.name }} {{ userProfile.profile.lastname }}</span>
     </div>
   </div>
@@ -41,11 +33,7 @@
       :bordered="true"
       class="animate-pulse"
     >
-      <VAvatar
-        :size="size"
-        icon="tabler-loader"
-        @click="$emit('showUserProfile')"
-      />
+      <VAvatar :size="size" icon="tabler-loader" @click="$emit('showUserProfile')" />
     </VBadge>
   </div>
 </template>
@@ -73,18 +61,33 @@ export default defineComponent({
       required: false,
       default: false
     },
+    showStatus: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     size: {
       type: Number,
       required: false,
       default: 38
+    },
+    bordered: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    avatarVariant: {
+      type: String as PropType<'flat' | 'tonal' | 'text' | 'elevated' | 'outlined' | 'plain'>,
+      required: false,
+      default: () => 'flat'
     }
   },
   emits: ['showUserProfile'],
   setup() {
-    const userStore = useUserStore()
+    const usersStore = useUserStore()
     const authStore = useAuthStore()
     return {
-      userStore,
+      usersStore,
       authStore
     }
   },
@@ -94,34 +97,37 @@ export default defineComponent({
       userProfile = this.user
     }
     return {
-      userProfile,
-      intervalId: null as unknown as number
+      userProfile: userProfile
     }
   },
   computed: {
-    color(): 'success' | 'error' | 'warning' | 'secondary' {
-      if (!this.userProfile) {
-        return this.authStore.resolveAvatarBadgeVariant(Status.Offline)
+    status(): Status {
+      if (this.userId === 0) {
+        return Status.Online
       }
-      const status = this.userProfile.profile?.status ?? Status.Offline
-      return this.authStore.resolveAvatarBadgeVariant(status)
+      const localValue = this.userProfile.profile.status ?? Status.Offline
+      return this.usersStore.getUsersStatus.get(this.userId) ?? localValue
+    },
+    color(): 'success' | 'error' | 'warning' | 'secondary' {
+      return this.authStore.resolveAvatarBadgeVariant(this.status)
     }
   },
-  beforeMount() {
-    this.intervalId = setInterval(this.loadUser, 5 * 60 * 1000)
+  async beforeMount() {
     if (!this.userProfile) {
-      this.loadUser()
+      await this.loadUser(this.userId)
     }
   },
-  beforeUnmount() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId)
+  watch: {
+    userId: {
+      handler(value: number) {
+        this.loadUser(value)
+      }
     }
   },
   methods: {
     avatarText,
-    async loadUser() {
-      const data = await this.userStore.getShortUserProfile(this.userId)
+    async loadUser(userId: number) {
+      const data = await this.usersStore.getShortUserProfile(userId)
       if (data) {
         this.userProfile = data
       }

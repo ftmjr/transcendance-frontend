@@ -8,12 +8,7 @@
       size="small"
       @click="$emit('close')"
     >
-      <VIcon
-        size="18"
-        icon="tabler-x"
-        color="error"
-        class="text-medium-emphasis"
-      />
+      <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
     </VBtn>
   </div>
   <div class="flex mb-2 px-1">
@@ -31,38 +26,31 @@
       class="ms-4 me-1 transparent-input-box"
     >
       <template #prepend-inner>
-        <VIcon
-          size="22"
-          icon="tabler-search"
-        />
+        <VIcon size="22" icon="tabler-search" />
       </template>
     </VTextField>
   </div>
   <VDivider />
-  <PerfectScrollbar
-    tag="ul"
-    class="chat-contacts-list px-3"
-    :options="{ wheelPropagation: false }"
-  >
+  <PerfectScrollbar tag="ul" class="chat-contacts-list px-3" :options="{ wheelPropagation: false }">
     <li class="py-4">
       <span class="chat-contact-header text-primary text-xl font-weight-medium">Conversations</span>
     </li>
     <MessageContact
-      v-for="contact in messageStore.getConversingWith"
+      v-for="contact in messageStore.conversesWithContacts"
       :key="contact.id"
       class="mb-2"
       :contact="contact"
       @click="showMessages(contact.id)"
     >
-      <template #firstMessage>
-        <span class="text-disabled ml-1">
-          {{ messageStore.getLastMessageBetween(contact.id)?.message }}
-        </span>
-      </template>
+      <!--      <template #firstMessage>-->
+      <!--        <span class="text-disabled ml-1">-->
+      <!--          {{ messageStore.getLastMessageBetween(contact.id)?.text}}-->
+      <!--        </span>-->
+      <!--      </template>-->
     </MessageContact>
 
     <span
-      v-show="!messageStore.getConversingWith.length"
+      v-show="messageStore.conversesWithContacts.length === 0"
       class="no-chat-items-text text-disabled"
     >
       Aucune Conversation
@@ -71,7 +59,7 @@
       <span class="chat-contact-header text-primary text-xl font-weight-medium"> Contacts </span>
     </li>
     <MessageContact
-      v-for="contact in messageStore.getContactsWithoutConversation"
+      v-for="contact in messageStore.contactsWithoutConversations"
       :key="contact.id"
       class="mb-2"
       :contact="contact"

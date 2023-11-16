@@ -1,11 +1,11 @@
 <template>
-  <VCard
-    :loading="loading"
-    color="transparent"
-    variant="flat"
-  >
+  <VCard :loading="loading" color="transparent" variant="flat">
     <div class="flex items-center justify-center gap-4">
-      <div v-if="blockStatus !== BlockedStatus.BlockedBy && !isMe">
+      <div
+        v-if="
+          blockStatus !== BlockedStatus.BlockedBy && !isMe && blockStatus === BlockedStatus.None
+        "
+      >
         <VBtn
           v-if="status === FriendshipStatus.Friends"
           color="error"
@@ -13,11 +13,7 @@
           variant="outlined"
           @click="unFriend"
         >
-          <VIcon
-            size="20"
-            start
-            icon="tabler-user-minus"
-          />
+          <VIcon size="20" start icon="tabler-user-minus" />
           Supprimer des amis
         </VBtn>
         <!-- CANCEL FRIEND REQUEST -->
@@ -28,39 +24,17 @@
           size="small"
           @click="cancelFriendRequest"
         >
-          <VIcon
-            size="20"
-            start
-            icon="tabler-x"
-          />
+          <VIcon size="20" start icon="tabler-x" />
           Annuler la demande
         </VBtn>
         <!-- ACCEPT/DECLINE FRIEND REQUEST -->
         <VBtnGroup v-else-if="status === FriendshipStatus.NeedApproval">
-          <VBtn
-            color="success"
-            size="small"
-            variant="outlined"
-            @click="acceptFriendRequest"
-          >
-            <VIcon
-              size="20"
-              start
-              icon="tabler-check"
-            />
+          <VBtn color="success" size="small" variant="outlined" @click="acceptFriendRequest">
+            <VIcon size="20" start icon="tabler-check" />
             Accepter
           </VBtn>
-          <VBtn
-            color="error"
-            size="small"
-            variant="outlined"
-            @click="declineFriendRequest"
-          >
-            <VIcon
-              size="20"
-              start
-              icon="tabler-x"
-            />
+          <VBtn color="error" size="small" variant="outlined" @click="declineFriendRequest">
+            <VIcon size="20" start icon="tabler-x" />
             Refuser
           </VBtn>
         </VBtnGroup>
@@ -72,27 +46,20 @@
           size="small"
           @click="beFriendRequest"
         >
-          <VIcon
-            size="20"
-            start
-            icon="tabler-user-plus"
-          />
+          <VIcon size="20" start icon="tabler-user-plus" />
           Ajouter en ami
         </VBtn>
       </div>
+
       <div v-if="!isMe">
         <VBtn
-          v-if="blockStatus === BlockedStatus.Blocked"
+          v-if="blockStatus === BlockedStatus.Blocked || blockStatus === BlockedStatus.Mutual"
           color="dark"
           variant="tonal"
           size="small"
-          @click="unBlockUser"
+          @click="unblockUser"
         >
-          <VIcon
-            size="20"
-            start
-            icon="tabler-lock"
-          />
+          <VIcon size="20" start icon="tabler-lock" />
           Débloquer
         </VBtn>
         <VBtn
@@ -102,11 +69,7 @@
           variant="tonal"
           @click="blockUser"
         >
-          <VIcon
-            size="20"
-            start
-            icon="mingcute-unlock-fill"
-          />
+          <VIcon size="20" start icon="mingcute-unlock-fill" />
           Bloquer
         </VBtn>
       </div>
@@ -122,6 +85,9 @@ import useUserStore, {
   FriendshipStatus
 } from '@/stores/UserStore'
 import useAuthStore from '@/stores/AuthStore'
+import useNotificationStore from '@/stores/NotificationStore'
+import { Notification, NotificationType } from '@/utils/notificationSocket'
+import useMessageStore from '@/stores/MessageStore'
 
 export default defineComponent({
   props: {
@@ -133,16 +99,20 @@ export default defineComponent({
   setup() {
     const authStore = useAuthStore()
     const userStore = useUserStore()
+    const notificationStore = useNotificationStore()
+    const messageStore = useMessageStore()
     return {
       authStore,
-      userStore
+      userStore,
+      notificationStore,
+      messageStore
     }
   },
   data() {
     return {
       loading: false,
       state: { status: FriendshipStatus.None, data: null } as CheckFriendshipResponse,
-      blockStatus: BlockedStatus.None as BlockedStatus
+      blockStatus: BlockedStatus.None
     }
   },
   computed: {
@@ -153,14 +123,28 @@ export default defineComponent({
       return BlockedStatus
     },
     isMe(): boolean {
-      return this.friendId === this.authStore.user?.id
+      return this.friendId === this.authStore.getUser?.id
     },
     status(): FriendshipStatus {
       return this.state.status
     }
   },
-  beforeMount() {
-    this.fetchFriendShipState()
+  watch: {
+    friendId: {
+      immediate: true,
+      handler() {
+        this.fetchFriendShipState()
+      }
+    },
+    'notificationStore.allNotifications': {
+      deep: true,
+      handler(newValue) {
+        const firstNotification = newValue[0] as Notification
+        if (firstNotification?.type === NotificationType.FRIEND_REQUEST) {
+          this.fetchFriendShipState()
+        }
+      }
+    }
   },
   methods: {
     async fetchFriendShipState() {
@@ -170,22 +154,6 @@ export default defineComponent({
       this.blockStatus = await this.userStore.checkBlocked(this.friendId)
       this.loading = false
     },
-    async unBlockUser() {
-      this.loading = true
-      await this.userStore.unblockUser(this.friendId)
-      this.loading = false
-      this.$nextTick(() => {
-        this.fetchFriendShipState() // re-fetch friendship state
-      })
-    },
-    async blockUser() {
-      this.loading = true
-      await this.userStore.blockUser(this.friendId)
-      this.loading = false
-      this.$nextTick(() => {
-        this.fetchFriendShipState() // re-fetch friendship state
-      })
-    },
     async beFriendRequest() {
       await this.userStore.askFriendRequest(this.friendId)
       this.$nextTick(() => {
@@ -193,25 +161,45 @@ export default defineComponent({
       })
     },
     async cancelFriendRequest() {
-      await this.userStore.cancelFriendRequest(this.friendId)
+      if (!this.state?.data?.id) return
+      await this.userStore.cancelFriendRequest(this.state.data.id)
       this.$nextTick(() => {
         this.fetchFriendShipState() // re-fetch friendship state
       })
     },
     async acceptFriendRequest() {
-      await this.userStore.approveFriendRequest(this.friendId)
+      if (!this.state?.data?.id) return
+      await this.userStore.approveFriendRequest(this.state.data.id)
       this.$nextTick(() => {
         this.fetchFriendShipState() // re-fetch friendship state
       })
     },
     async declineFriendRequest() {
-      await this.userStore.rejectFriendRequest(this.friendId)
+      if (!this.state?.data?.id) return
+      await this.userStore.rejectFriendRequest(this.state.data.id)
       this.$nextTick(() => {
         this.fetchFriendShipState() // re-fetch friendship state
       })
     },
     async unFriend() {
       await this.userStore.unFriend(this.friendId)
+      this.$nextTick(() => {
+        this.fetchFriendShipState() // re-fetch friendship state
+      })
+    },
+    async blockUser() {
+      this.loading = true
+      await this.userStore.blockUser(this.friendId)
+      this.messageStore.sendUserReload(this.friendId)
+      this.loading = false
+      this.$nextTick(() => {
+        this.fetchFriendShipState() // re-fetch friendship state
+      })
+    },
+    async unblockUser() {
+      this.loading = true
+      await this.userStore.unblockUser(this.friendId)
+      this.loading = false
       this.$nextTick(() => {
         this.fetchFriendShipState() // re-fetch friendship state
       })

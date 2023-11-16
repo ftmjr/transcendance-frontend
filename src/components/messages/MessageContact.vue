@@ -1,37 +1,20 @@
 <template>
   <li
-    class="cursor-pointer"
-    :class="{ 'chat-contact-active': isActive }"
+    v-if="contact"
+    class="flex flex-col cursor-pointer bg-slate-700 px-2 rounded-lg hover:bg-slate-600"
+    :class="{ 'bg-slate-600': isActive }"
   >
-    <div class="flex items-center contact">
-      <VBadge
-        v-if="contact.profile?.status"
-        dot
-        location="bottom right"
-        offset-x="3"
-        offset-y="3"
-        :color="authStore.resolveAvatarBadgeVariant(contact.profile.status)"
-        bordered
-      >
-        <VAvatar
-          size="40"
-          variant="tonal"
-          :color="authStore.resolveAvatarBadgeVariant(contact.profile.status)"
-        >
-          <VImg
-            v-if="contact.profile.avatar"
-            :src="contact.profile.avatar"
-            :alt="contact.username"
-          />
-          <span v-else>{{ avatarText(contact.profile.name) }}</span>
-        </VAvatar>
-      </VBadge>
-
-      <div class="flex ms-4 overflow-hidden">
-        <span>{{ contact.profile?.name }} {{ contact.profile?.lastname }}</span>
-      </div>
+    <div class="flex items-center gap-2 p-2">
+      <AvatarBadge
+        :user-id="contact.id"
+        :user="contact"
+        :avatar-variant="isActive ? 'outlined' : 'tonal'"
+      />
+      <span class="font-weight-medium" :class="{ 'font-weight-bold': isActive }">
+        {{ contact.profile.name }} {{ contact.profile.lastname }}
+      </span>
     </div>
-    <div>
+    <div class="flex items-center justify-center px-4">
       <slot name="firstMessage" />
     </div>
   </li>
@@ -39,23 +22,22 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import useAuthStore from '@/stores/AuthStore'
 import useMessageStore from '@/stores/MessageStore'
 import type { User } from '@/interfaces/User'
-import { avatarText } from '@core/utils/formatters'
+import AvatarBadge from '@/components/profile/AvatarBadge.vue'
+import { Profile } from '@/interfaces/User'
 
 export default defineComponent({
+  components: { AvatarBadge },
   props: {
     contact: {
-      type: Object as PropType<User>,
+      type: Object as PropType<User & { profile: Profile }>,
       required: true
     }
   },
   setup() {
-    const authStore = useAuthStore()
     const messageStore = useMessageStore()
     return {
-      authStore,
       messageStore
     }
   },
@@ -63,20 +45,8 @@ export default defineComponent({
     isActive() {
       return this.messageStore.currentContactId === this.contact.id
     }
-  },
-  methods: {
-    avatarText
   }
 })
 </script>
 
-<style scoped lang="scss">
-.contact {
-  &.chat-contact-active {
-    .v-avatar {
-      background: #fff;
-      outline: 2px solid #fff;
-    }
-  }
-}
-</style>
+<style scoped lang="scss"></style>

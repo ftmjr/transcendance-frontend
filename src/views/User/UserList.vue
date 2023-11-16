@@ -1,12 +1,6 @@
 <template>
   <VRow>
-    <VCol
-      v-for="meta in userListStatsMeta"
-      :key="meta.title"
-      cols="12"
-      sm="6"
-      lg="3"
-    >
+    <VCol v-for="meta in userListStatsMeta" :key="meta.title" cols="12" sm="6" lg="3">
       <VCard>
         <VCardText class="flex justify-space-between">
           <div>
@@ -18,12 +12,7 @@
             </div>
             <span>{{ meta.subtitle }}</span>
           </div>
-          <VAvatar
-            rounded
-            variant="tonal"
-            :color="meta.color"
-            :icon="meta.icon"
-          />
+          <VAvatar rounded variant="tonal" :color="meta.color" :icon="meta.icon" />
         </VCardText>
       </VCard>
     </VCol>
@@ -56,25 +45,15 @@
         <VTable class="bg-transparent">
           <thead>
             <tr>
-              <th scope="col">
-                UTILISATEURS
-              </th>
-              <th scope="col">
-                STATUS
-              </th>
+              <th scope="col">UTILISATEURS</th>
+              <th scope="col">STATUS</th>
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="user in users"
-              :key="user.id"
-            >
+            <tr v-for="user in users" :key="user.id">
               <td>
                 <div class="flex items-center">
-                  <AvatarBadge
-                    :user-id="user.id"
-                    :user="user"
-                  />
+                  <AvatarBadge :user-id="user.id" :user="user" />
 
                   <div class="d-flex flex-column">
                     <h6 class="text-base">
@@ -91,12 +70,7 @@
               </td>
               <td>
                 <div class="flex gap-4 items-center">
-                  <VChip
-                    label
-                    :color="authStore.resolveAvatarBadgeVariant(user.profile.status)"
-                  >
-                    {{ user.profile.status }}
-                  </VChip>
+                  <StatusBadge :value="user.profile.status" :user-id="user.id" />
                   <GameStatusBadge
                     v-if="user.gameStatus && user.id !== authStore.user?.id"
                     :user-game-status="user.gameStatus"
@@ -114,12 +88,7 @@
           <span class="text-sm text-disabled">
             {{ paginationData }}
           </span>
-          <VPagination
-            v-model="currentPage"
-            size="small"
-            :total-visible="5"
-            :length="totalPage"
-          />
+          <VPagination v-model="currentPage" size="small" :total-visible="5" :length="totalPage" />
         </VCardText>
       </VCard>
     </VCol>
@@ -135,6 +104,7 @@ import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import useAuthStore from '@/stores/AuthStore'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
+import StatusBadge from '@/components/profile/StatusBadge.vue'
 
 const userListStatsMeta: Array<{
   icon: string
@@ -181,7 +151,7 @@ type SpecialUser = User & { gameStatus: userGameStatus; profile: Profile }
 
 export default defineComponent({
   name: 'UserList',
-  components: { AvatarBadge, GameStatusBadge },
+  components: { StatusBadge, AvatarBadge, GameStatusBadge },
   setup() {
     const userStore = useUserStore()
     const authStore = useAuthStore()

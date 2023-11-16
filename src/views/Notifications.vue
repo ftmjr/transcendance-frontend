@@ -1,67 +1,58 @@
 <template>
-  <VCard>
+  <div class="px-8 py-8">
+    <div class="">
+      <h1 class="text-4xl">Notifications</h1>
+      <p class="text-sm mt-2 mb-0">
+        Voici une liste de ce qu'il se passe dans votre compte
+        <br />
+        Vous avez
+        <span class="font-weight-semibold text-md">
+          {{ notificationStore.unreadNotificationsCount }} notifications non lues
+        </span>
+      </p>
+    </div>
+    <div class="max-w-screen-sm my-16 p-8">
+      <div class="flex flex-col gap-4">
+        <div
+          class=""
+          v-for="notification in notificationStore.allNotifications"
+          :key="notification.id"
+        >
+          <Notification :notification="notification" @mark-as-read="markAsRead" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <VCard>
     <VCardItem>
       <VCardTitle>Notifications</VCardTitle>
       <p class="text-sm mt-2 mb-0">
-        Vous pouvez gérer les notifications de votre compte., y compris les notifications de jeu,
-        les demandes d'amis, les événements de jeu et les messages privés.
-        <br>
+        Voici une liste de ce qu'il se passe dans votre compte
+        <br />
         Vous avez
         <span class="font-weight-semibold text-md">
           {{ notificationStore.unreadNotificationsCount }} notifications non lues
         </span>
       </p>
     </VCardItem>
+    
     <VCardText>
       <VTable class="text-no-wrap rounded border bg-surface">
         <thead>
           <tr>
-            <th scope="col">
-              Notification
-            </th>
-            <th scope="col">
-              Action
-            </th>
+            <th scope="col">Notification</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="notification in notificationStore.allNotifications"
-            :key="notification.id"
-          >
+          <tr v-for="notification in notificationStore.allNotifications" :key="notification.id">
             <td class="text-center">
-              <div class="pt-2">
-                <Notification
-                  :notification="notification"
-                  @mark-as-read="markAsRead"
-                />
-              </div>
-            </td>
-            <td>
-              <VBtn
-                icon
-                small
-                variant="outlined"
-                @click="markAsRead(notification.id)"
-              >
-                <VIcon icon="tabler-mail-opened" />
-              </VBtn>
-              <VBtn
-                class="mx-2"
-                variant="elevated"
-                color="error"
-                icon
-                small
-                @click="deleteNotification(notification.id)"
-              >
-                <VIcon icon="tabler-trash" />
-              </VBtn>
+              <Notification :notification="notification" @mark-as-read="markAsRead" />
             </td>
           </tr>
         </tbody>
       </VTable>
     </VCardText>
-  </VCard>
+  </VCard> -->
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'

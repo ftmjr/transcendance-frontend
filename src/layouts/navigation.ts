@@ -4,38 +4,38 @@ const navItems: VerticalNavItems = [
   {
     title: 'Tableau de bord',
     icon: { icon: 'tabler-smart-home' },
-    to: 'dashboard'
+    to: { name: 'dashboard' }
   },
   {
-    title: 'Partie rapide 🤖',
+    title: 'Play solo 🤖',
     icon: { icon: 'noto-v1:game-die' },
-    to: 'game'
+    to: { name: 'bot-game' }
   },
   {
     title: 'Waiting Room',
     icon: { icon: 'medical-icon:i-waiting-area', color: 'green' },
-    to: { name: 'game', query: { waitingRoom: 'true' } }
+    to: { name: 'waiting-room' }
   },
   {
     title: 'Trouver un joueur',
     icon: { icon: 'tabler-users-group', color: 'blue' },
-    to: 'user-list'
+    to: { name: 'user-list' }
   },
   {
     title: 'Leaderboard',
     icon: { icon: 'solar:ranking-linear', color: 'yellow' },
-    to: 'leaderboard'
+    to: { name: 'leaderboard' }
   },
   { heading: 'Conversation' },
   {
     title: 'Chatrooms',
     icon: { icon: 'tabler-message' },
-    to: 'chat'
+    to: { name: 'chat' }
   },
   {
     title: 'DMs',
     icon: { icon: 'tabler-mail' },
-    to: 'dm'
+    to: { name: 'dm' }
   },
   { heading: 'Info' },
   {

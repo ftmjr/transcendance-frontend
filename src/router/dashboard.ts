@@ -1,12 +1,12 @@
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import HomeView from '@/views/HomeView.vue'
 import usersRoutes from '@/router/users'
-import DirectMessagesView from '@/views/Dm/DirectMessagesView.vue'
+import DirectMessagesView from '@/views/Dm/DirectMessagesMainView.vue'
 import ChatWindowView from '@/views/Chat/ChatWindowView.vue'
 import Notifications from '@/views/Notifications.vue'
 import LeaderboardView from '@/views/LeaderboardView.vue'
-import GameView from '@/views/GameView.vue'
 import { RouteRecordRaw } from 'vue-router'
+import GameView from '@/views/GameView.vue'
 
 const dashboardRoutes: RouteRecordRaw = {
   path: '/',
@@ -22,11 +22,47 @@ const dashboardRoutes: RouteRecordRaw = {
       }
     },
     {
+      path: 'bot-game/:gameId?',
+      name: 'bot-game',
+      component: GameView,
+      props: (route) => {
+        const gameId = route.params.gameId ? parseInt(route.params.gameId.toString()) : undefined
+        return {
+          gameId,
+          waitingRoom: false,
+          isPlayer: true
+        }
+      },
+      meta: {
+        requiresAuth: true,
+        layoutWrapperClasses: 'layout-content-height-fixed',
+        title: 'Bot Game'
+      }
+    },
+    {
+      path: 'waiting-room/:gameId?',
+      name: 'waiting-room',
+      component: GameView,
+      props: (route) => {
+        const gameId = route.params.gameId ? parseInt(route.params.gameId.toString()) : undefined
+        return {
+          gameId,
+          waitingRoom: true,
+          isPlayer: true
+        }
+      },
+      meta: {
+        requiresAuth: true,
+        layoutWrapperClasses: 'layout-content-height-fixed',
+        title: 'Waiting Room'
+      }
+    },
+    {
       path: 'game/:gameId?',
       name: 'game',
       component: GameView,
       props: (route) => {
-        const waitingRoom = route.query.waitingRoom ? route.query.waitingRoom === 'true' : false
+        const waitingRoom = route.query.waitingRoom ? route.query.waitingRoom == 'true' : false
         const isPlayer = route.query.isPlayer ? route.query.isPlayer === 'true' : true
         const gameId = route.params.gameId ? parseInt(route.params.gameId.toString()) : undefined
         return {
@@ -37,7 +73,8 @@ const dashboardRoutes: RouteRecordRaw = {
       },
       meta: {
         requiresAuth: true,
-        title: 'Game Test'
+        layoutWrapperClasses: 'layout-content-height-fixed',
+        title: 'Pong'
       }
     },
     {
@@ -89,7 +126,7 @@ const dashboardRoutes: RouteRecordRaw = {
       component: LeaderboardView,
       meta: {
         requiresAuth: true,
-        title: 'Message'
+        title: 'LeaderBoard'
       }
     },
     usersRoutes

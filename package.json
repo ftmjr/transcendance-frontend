@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "build-only",
+    "build": "vite build",
     "preview": "vite preview",
     "test:unit": "vitest",
-    "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig-test.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
@@ -17,17 +16,16 @@
     "@vueuse/core": "^10.5.0",
     "@vueuse/motion": "^2.0.0",
     "axios": "^1.5.1",
-    "flowbite": "^1.8.1",
+    "chart.js": "^4.4.0",
     "jwt-decode": "^3.1.2",
-    "phaser": "^3.60.0",
+    "phaser": "3.60.0",
     "pinia": "^2.1.7",
     "socket.io-client": "^4.7.1",
     "vue": "^3.3.4",
+    "vue-chartjs": "^5.2.0",
     "vue-router": "^4.2.5",
     "vue3-perfect-scrollbar": "^1.6.1",
-    "vuetify": "^3.3.22",
-    "vue-chartjs": "^5.2.0",
-    "chart.js": "^4.4.0",
+    "vuetify": "^3.4.0",
     "xvfb": "^0.4.0"
   },
   "devDependencies": {

@@ -17,7 +17,7 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
     theme: 'dark',
     isRtl: false,
     skin: Skins.Bordered,
-    routeTransition: RouteTransitions['Scroll Y Reverse'],
+    routeTransition: RouteTransitions['Slide Y Reverse'],
     iconRenderer: VIcon
   },
   navbar: {

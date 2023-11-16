@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
-import type { User } from '@/interfaces/User'
+import type { Profile, User } from '@/interfaces/User'
 import axios from '@/utils/axios'
 import useUserStore from '@/stores/UserStore'
 import { ChatSocket } from '@/utils/chatSocket'
 import { isAxiosError } from 'axios'
 
 export interface MessageState {
-  conversationsUsers: User[]
+  conversationsUsers: Array<User & { profile: Profile }>
   searchTerm: string
   currentConversationUser: number | null
   socketManager: ChatSocket | null
@@ -36,8 +36,8 @@ const useMessageStore = defineStore({
     messages: new Map<number, PrivateMessage[]>()
   }),
   getters: {
-    getConversingWith(): User[] {
-      if (!this.searchTerm) {
+    conversesWithContacts(): Array<User & { profile: Profile }> {
+      if (!this.searchTerm.trim()) {
         return this.conversationsUsers
       }
       const term = this.searchTerm.toLowerCase()
@@ -57,44 +57,21 @@ const useMessageStore = defineStore({
     currentContactId(): number | null {
       return this.currentConversationUser
     },
-    nextConversationId(): number | null {
-      if (this.currentConversationUser === null || this.conversationsUsers.length === 0) {
-        return null
-      }
-
-      const currentIndex = this.conversationsUsers.findIndex(
-        (user) => user.id === this.currentConversationUser
-      )
-      const nextIndex = (currentIndex + 1) % this.conversationsUsers.length
-      return this.conversationsUsers[nextIndex]?.id || null
-    },
-    previousConversationId(): number | null {
-      if (this.currentConversationUser === null || this.conversationsUsers.length === 0) {
-        return null
-      }
-
-      const currentIndex = this.conversationsUsers.findIndex(
-        (user) => user.id === this.currentConversationUser
-      )
-      const prevIndex =
-        (currentIndex - 1 + this.conversationsUsers.length) % this.conversationsUsers.length
-      return this.conversationsUsers[prevIndex]?.id || null
-    },
-    currentConversationWith(): User | null {
+    currentContact(): (User & { profile: Profile }) | null {
       if (this.currentContactId) {
-        const current = this.getConversingWith.find(
+        const current = this.conversesWithContacts.find(
           (user: User) => user.id === this.currentContactId
         )
         if (current) return current
       }
       return null
     },
-    getContactsWithoutConversation(): User[] {
-      // get contact from UserStore getter getContacts and filter
-      // out the ones that are already in conversationsUsers
+    contacts(): Array<User & { profile: Profile }> {
       const userStore = useUserStore()
-      const contacts = userStore.getContact
-      return contacts.filter((contact: User) => {
+      return userStore.contacts
+    },
+    contactsWithoutConversations(): Array<User & { profile: Profile }> {
+      return this.contacts.filter((contact: User) => {
         return !this.conversationsUsers.some((user: User) => user.id === contact.id)
       })
     },
@@ -113,40 +90,27 @@ const useMessageStore = defineStore({
       this.socketManager = socketManager
     },
     setCurrentConversationWith(userId: number) {
-      const idFound = this.conversationsUsers.findIndex((user: User) => user.id === userId)
-      if (idFound >= 0) {
-        this.currentConversationUser = this.conversationsUsers[idFound].id
+      const foundUser = this.conversationsUsers.find((user) => user.id === userId)
+      if (foundUser) {
+        this.currentConversationUser = foundUser.id
       } else {
         // check if user is in contacts
-        const userStore = useUserStore()
-        const contacts = userStore.getContact
-        const contactFound = contacts.findIndex((user: User) => user.id === userId)
-        if (contactFound >= 0) {
-          this.conversationsUsers.push(contacts[contactFound])
-          this.currentConversationUser = contacts[contactFound].id
+        const contactFound = this.contacts.find((user) => user.id === userId)
+        if (contactFound) {
+          this.conversationsUsers.unshift(contactFound)
+          this.currentConversationUser = contactFound.id
         }
       }
     },
     // on mounted
     async getUniqueConversations() {
       try {
-        const { data } = await axios.get<User[]>('/messages', {
+        const { data } = await axios.get<Array<User & { profile: Profile }>>('/messages', {
           headers: {
             'Content-Type': 'application/json'
           }
         })
         this.conversationsUsers = data
-        if (this.conversationsUsers.length) {
-          this.currentConversationUser = this.conversationsUsers[0].id
-        }
-        // get the 200 first messages
-        this.conversationsUsers.forEach((user: User) => {
-          this.getPrivateMessageBetween({
-            userTwoId: user.id,
-            skip: 0,
-            take: 200
-          })
-        })
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response) {
@@ -193,6 +157,14 @@ const useMessageStore = defineStore({
       if (!this.socketManager || !this.socketManager.operational) return
       this.socketManager.sendPrivateMessage(friendId, content)
     },
+    sendUserIsTyping(receiverId: number) {
+      if (!this.socketManager || !this.socketManager.operational) return
+      this.socketManager.mpUserIsTyping(receiverId)
+    },
+    sendUserReload(receiverId: number) {
+      if (!this.socketManager || !this.socketManager.operational) return
+      this.socketManager.reloadMpConversation(receiverId)
+    },
     async handleReceivedMessage(message: PrivateMessage) {
       const userId =
         message.senderId === this.socketManager?.userId ? message.receiverId : message.senderId
@@ -206,6 +178,12 @@ const useMessageStore = defineStore({
         return null
       }
       return userMessages[userMessages.length - 1]
+    },
+    reloadConversation(userId: number) {
+      if (this.currentContactId === userId) {
+        this.currentConversationUser = null
+        this.currentConversationUser = userId
+      }
     }
   }
 })
