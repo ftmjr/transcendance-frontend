@@ -20,7 +20,7 @@
       />
     </v-navigation-drawer>
     <VMain class="chat-content-container">
-      <single-direct-message
+      <contact-direct-message
           v-if="!!messageStore.currentContact"
           v-model:is-left-sidebar-open="isLeftSidebarOpen"
       />
