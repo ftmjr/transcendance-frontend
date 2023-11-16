@@ -20,7 +20,7 @@
       />
     </v-navigation-drawer>
     <VMain class="chat-content-container">
-      <single-direct-message
+      <contact-direct-message
         v-if="!!messageStore.currentContact"
         v-model:is-left-sidebar-open="isLeftSidebarOpen"
       />
@@ -47,13 +47,13 @@ import useAuthStore from '@/stores/AuthStore'
 import useMessageStore from '@/stores/MessageStore'
 import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar'
 import DmConversationListSideBar from './DmConversationListSideBar.vue'
-import SingleDirectMessage from '@/views/Dm/SingleDirectMessage.vue'
 import useUserStore from '@/stores/UserStore'
+import ContactDirectMessage from '@/views/Dm/ContactDirectMessage.vue'
 
 export default defineComponent({
   components: {
-    DmConversationListSideBar,
-    SingleDirectMessage
+    ContactDirectMessage,
+    DmConversationListSideBar
   },
   props: {
     friendId: {
