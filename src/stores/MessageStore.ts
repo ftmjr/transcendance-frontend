@@ -157,7 +157,7 @@ const useMessageStore = defineStore({
       if (!this.socketManager || !this.socketManager.operational) return
       this.socketManager.sendPrivateMessage(friendId, content)
     },
-    sendUserIsTyping(receiverId: number) {
+    sendUserTyping(receiverId: number) {
       if (!this.socketManager || !this.socketManager.operational) return
       this.socketManager.mpUserIsTyping(receiverId)
     },
@@ -177,7 +177,7 @@ const useMessageStore = defineStore({
       if (userMessages.length === 0) {
         return null
       }
-      return userMessages[userMessages.length - 1]
+      return userMessages[0]
     },
     reloadConversation(userId: number) {
       if (this.currentContactId === userId) {

@@ -2,7 +2,7 @@
   <div class="px-8 py-8">
     <div class="">
       <h1 class="text-4xl">Notifications</h1>
-      <p class="text-sm mt-2 mb-0">
+      <p class="mt-2 mb-0 text-sm">
         Voici une liste de ce qu'il se passe dans votre compte
         <br />
         Vous avez
@@ -11,7 +11,7 @@
         </span>
       </p>
     </div>
-    <div class="max-w-screen-sm my-16 p-8">
+    <div class="max-w-screen-sm p-8 my-16">
       <div class="flex flex-col gap-4">
         <div
           class=""
@@ -26,7 +26,7 @@
   <!-- <VCard>
     <VCardItem>
       <VCardTitle>Notifications</VCardTitle>
-      <p class="text-sm mt-2 mb-0">
+      <p class="mt-2 mb-0 text-sm">
         Voici une liste de ce qu'il se passe dans votre compte
         <br />
         Vous avez
@@ -37,7 +37,7 @@
     </VCardItem>
     
     <VCardText>
-      <VTable class="text-no-wrap rounded border bg-surface">
+      <VTable class="border rounded text-no-wrap bg-surface">
         <thead>
           <tr>
             <th scope="col">Notification</th>
@@ -58,6 +58,7 @@
 import { defineComponent } from 'vue'
 import useNotificationStore from '@/stores/NotificationStore'
 import Notification from '@/components/notifications/Notification.vue'
+import { NotificationType } from '@/utils/notificationSocket'
 
 export default defineComponent({
   components: { Notification },
@@ -87,6 +88,10 @@ export default defineComponent({
     reloadNotifications() {
       this.notificationStore.getNotifications()
     }
+  },
+  mounted() {
+    this.reloadNotifications()
+    console.log(this.notificationStore.allNotifications)
   }
 })
 </script>

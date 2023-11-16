@@ -1,9 +1,9 @@
 <template>
   <VLayout
     v-show="!loading"
-    class="bg-surface rounded border p-2 border-solid border-slate-400 shadow-sm"
+    class="p-2 border border-solid rounded shadow-sm bg-surface border-slate-400"
   >
-    <VNavigationDrawer
+    <v-navigation-drawer
       v-model="isLeftSidebarOpen"
       absolute
       touchless
@@ -13,25 +13,25 @@
       :permanent="$vuetify.display.mdAndUp"
       class="chat-list-sidebar"
     >
-      <DmConversationListSideBar
+      <dm-conversation-list-side-bar
         @open-chat-of-contact="openChatOfContact"
         @show-user-profile="showMyProfile"
         @close="isLeftSidebarOpen = false"
       />
-    </VNavigationDrawer>
+    </v-navigation-drawer>
     <VMain class="chat-content-container">
-      <SingleDirectMessage
-        v-if="!!messageStore.currentContact"
-        v-model:is-left-sidebar-open="isLeftSidebarOpen"
+      <single-direct-message
+          v-if="!!messageStore.currentContact"
+          v-model:is-left-sidebar-open="isLeftSidebarOpen"
       />
-      <div v-else class="flex h-full items-center justify-center flex-column">
-        <VAvatar size="109" class="elevation-3 mb-6 bg-surface">
+      <div v-else class="flex items-center justify-center h-full flex-column">
+        <VAvatar size="109" class="mb-6 elevation-3 bg-surface">
           <VIcon size="50" class="rounded-0 text-high-emphasis" icon="tabler-message" />
         </VAvatar>
         <p
-          class="mb-0 px-6 py-1 font-weight-medium text-lg elevation-3 rounded-xl text-high-emphasis bg-surface"
-          :class="[{ 'cursor-pointer': $vuetify.display.smAndDown }]"
-          @click="startConversation"
+            class="px-6 py-1 mb-0 text-lg font-weight-medium elevation-3 rounded-xl text-high-emphasis bg-surface"
+            :class="[{ 'cursor-pointer': $vuetify.display.smAndDown }]"
+            @click="startConversation"
         >
           Commencez une conversation
         </p>
@@ -47,7 +47,7 @@ import useAuthStore from '@/stores/AuthStore'
 import useMessageStore from '@/stores/MessageStore'
 import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar'
 import DmConversationListSideBar from './DmConversationListSideBar.vue'
-import SingleDirectMessage from '@/views/Dm/ContactDirectMessage.vue'
+import SingleDirectMessage from '@/views/Dm/SingleDirectMessage.vue'
 import useUserStore from '@/stores/UserStore'
 
 export default defineComponent({

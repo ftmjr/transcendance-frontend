@@ -84,7 +84,7 @@ const handleNavScroll = (evt: Event) => {
           <Transition name="vertical-nav-app-title">
             <h1
               v-show="!hideTitleAndIcon"
-              class="app-title font-weight-bold leading-normal text-xl"
+              class="text-xl leading-normal app-title font-weight-bold"
             >
               {{ config.app.title }}
             </h1>
