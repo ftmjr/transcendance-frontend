@@ -72,9 +72,29 @@
                 "key": "BarDownBlue"
             },
             {
+                "url": "/pong/ui/BarDown2.png",
+                "type": "image",
+                "key": "BarDownBrown"
+            },
+            {
+                "url": "/pong/ui/BarDown3.png",
+                "type": "image",
+                "key": "BarDownPink"
+            },
+            {
                 "url": "/pong/ui/BarTop1.png",
                 "type": "image",
                 "key": "BarTopBlue"
+            },
+            {
+                "url": "/pong/ui/BarTop2.png",
+                "type": "image",
+                "key": "BarTopBrown"
+            },
+            {
+                "url": "/pong/ui/BarTop3.png",
+                "type": "image",
+                "key": "BarTopPink"
             },
             {
                 "url": "/pong/ui/BgPanelBox2.png",
@@ -125,6 +145,16 @@
                 "url": "/pong/ui/SideBar1.png",
                 "type": "image",
                 "key": "SideBarBlue"
+            },
+            {
+                "url": "/pong/ui/SideBar2.png",
+                "type": "image",
+                "key": "SideBarBrown"
+            },
+            {
+                "url": "/pong/ui/SideBar3.png",
+                "type": "image",
+                "key": "SideBarPink"
             }
         ]
     },
