@@ -55,6 +55,11 @@
       :options="{ wheelPropagation: true }"
     >
       <li class="py-4">
+        <span class="chat-contact-header text-primary text-xl font-weight-medium">
+          Mes Salles de discussion
+        </span>
+      </li>
+      <li class="py-4">
         <span
           v-show="roomsStore.filteredRooms.length === 0"
           class="no-chat-items-text text-disabled"
@@ -67,9 +72,9 @@
         <RoomCard :room="room" />
       </li>
       <li class="py-4">
-        <span class="chat-contact-header text-primary text-xl font-weight-medium"
-          >Salles publique</span
-        >
+        <span class="chat-contact-header text-primary text-xl font-weight-medium">
+          Salles publique
+        </span>
       </li>
       <li>
         <span

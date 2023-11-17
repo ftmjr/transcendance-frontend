@@ -198,8 +198,8 @@ export default defineComponent({
     }
   },
   watch: {
-    currentChatRoom: {
-      handler(value: ChatRoomWithMembers | null) {
+    'roomStore.currentReadRoomId': {
+      handler(value) {
         if (!value) return
         this.fetchMessages()
       },
