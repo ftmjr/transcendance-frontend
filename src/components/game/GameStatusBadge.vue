@@ -12,12 +12,19 @@
         <span> En attente </span>
       </span>
     </v-chip>
-    <v-chip v-else color="blue" class="rounded-md">
+    <v-chip v-else-if="liveStatus === 'Online'" color="blue" class="rounded-md">
       <span class="flex gap-2">
         <v-icon left> mdi-account-check-outline </v-icon>
         <span> Peut jouer </span>
       </span>
     </v-chip>
+    <v-chip v-else color="error" class="rounded-md">
+      <span class="flex gap-2">
+        <v-icon left>tabler:device-gamepad</v-icon>
+        <span>Indisponible</span>
+      </span>
+    </v-chip>
+
     <v-btn
       v-if="userGameStatus.gameSession"
       size="small"
@@ -39,7 +46,7 @@
       </span>
     </v-btn>
     <challenge-modal
-      v-else
+      v-else-if="liveStatus === 'Online'"
       :status="liveStatus"
       :user-id="userId"
       :user-game-status="userGameStatus"
@@ -48,33 +55,65 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType } from 'vue'
-import { GameSession } from '@/stores/GameStore'
+import { computed, PropType, ref, watch } from 'vue'
+import useGameStore, { GameSession } from '@/stores/GameStore'
 import { Status } from '@/interfaces/User'
 import ChallengeModal from '@/components/game/ChallengeModal.vue'
 import useUserStore from '@/stores/UserStore'
 
-const { status, userId } = defineProps({
+const props = defineProps({
+  userId: {
+    type: Number,
+    required: true
+  },
   userGameStatus: {
     type: Object as PropType<{
       status: 'playing' | 'inQueue' | 'free'
       gameSession?: GameSession
     }>,
-    required: true
-  },
-  userId: {
-    type: Number,
-    required: true
+    default: () => ({ status: 'free', gameSession: undefined })
   },
   status: {
     type: String as PropType<Status>,
     required: false,
-    default: Status.Offline
+    default: () => Status.Offline
   }
 })
 const usersStore = useUserStore()
+const loading = ref(false)
+const gameStore = useGameStore()
+
+const localGameStatus = ref<{
+  status: 'playing' | 'inQueue' | 'free'
+  gameSession?: GameSession
+}>(props.userGameStatus)
+
 const liveStatus = computed(() => {
-  const localValue = status ?? Status.Offline
-  return usersStore.getUsersStatus.get(userId) ?? localValue
+  return usersStore.getUsersStatus.get(props.userId) ?? props.status
+})
+
+const updateLocalGameStatus = async (userId: number) => {
+  loading.value = true
+  localGameStatus.value = await gameStore.getUserGameStatus(userId)
+  loading.value = false
+}
+
+// watch userId
+watch(
+  props,
+  async (newProps) => {
+    if (!newProps.userId) return
+    await updateLocalGameStatus(newProps.userId)
+  },
+  { immediate: true }
+)
+
+// watch status change
+watch(liveStatus, async (newStatus) => {
+  if (newStatus === Status.Offline) {
+    localGameStatus.value = { status: 'free', gameSession: undefined }
+  } else {
+    await updateLocalGameStatus(props.userId)
+  }
 })
 </script>

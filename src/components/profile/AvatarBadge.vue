@@ -120,7 +120,7 @@ export default defineComponent({
       handler(value: ShortUserProfile) {
         if (value) {
           this.userProfile = value
-        } else{
+        } else {
           this.loadUser(value)
         }
       },
@@ -133,7 +133,7 @@ export default defineComponent({
     async loadUser(userId: number) {
       const data = await this.usersStore.getShortUserProfile(userId)
       if (data) {
-        this.userProfile = data;
+        this.userProfile = data
       }
     }
   }

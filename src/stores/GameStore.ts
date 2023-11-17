@@ -243,24 +243,32 @@ const useGameStore = defineStore({
     async getUserGameStatus(
       userId: number
     ): Promise<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }> {
-      const { data } = await axios.get<{
-        status: 'playing' | 'inQueue' | 'free'
-        gameSession?: GameSession
-      }>(`/game/status/${userId}`, { headers: { Accept: 'application/json' } })
-      return data
+      try {
+        const { data } = await axios.get<{
+          status: 'playing' | 'inQueue' | 'free'
+          gameSession?: GameSession
+        }>(`/game/status/${userId}`, { headers: { Accept: 'application/json' } })
+        return data
+      } catch (e) {
+        return { status: 'free', gameSession: undefined }
+      }
     },
 
     // same function as getUserGameStatus but for multiple users
     async getUsersGameStatus(
       userIds: number[]
     ): Promise<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }[]> {
-      const { data } = await axios.post<
-        {
-          status: 'playing' | 'inQueue' | 'free'
-          gameSession?: GameSession
-        }[]
-      >(`/game/status`, { userIds })
-      return data
+      try {
+        const { data } = await axios.post<
+          {
+            status: 'playing' | 'inQueue' | 'free'
+            gameSession?: GameSession
+          }[]
+        >(`/game/status`, { userIds })
+        return data
+      } catch (e) {
+        return userIds.map((id) => ({ status: 'free', gameSession: undefined }))
+      }
     },
     // get complete game history for a user
     async getUserCompleteGameHistory(userId: number): Promise<CompleteGameHistory[]> {
