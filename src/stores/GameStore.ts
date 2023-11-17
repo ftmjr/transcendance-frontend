@@ -92,19 +92,6 @@ const useGameStore = defineStore({
     }
   },
   actions: {
-    async joinAGameSessionQueue(): Promise<'preparing' | string> {
-      if (!this.canStartOrAcceptGameInvitation) {
-        return 'Vous avez deja une session de jeu'
-      }
-      try {
-        const { data } = await axios.post<GameSession>('/game/join-queue', {})
-        this.joinedGameSession = data
-        return 'preparing'
-      } catch (e) {
-        console.error(e)
-        return 'Une erreur est survenue'
-      }
-    },
     async startGameAgainstBot(): Promise<'preparing' | string> {
       if (!this.canStartOrAcceptGameInvitation) {
         return 'Vous avez deja une session de jeu'

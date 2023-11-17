@@ -232,15 +232,17 @@ export default class Monitor {
   }
 
   public async quitGame() {
-    this.sendGameState(GAME_STATE.Ended)
+    if (this.currentUser.userType === GameUserType.Viewer) return;
+    else {
+      if (this.state !== GAME_STATE.Ended) {
+        this.sendGameState(GAME_STATE.Ended)
+      }
+    }
     this.disconnectNetwork()
   }
   public async quitAndMoveToHistory() {
-    if (this.state !== GAME_STATE.Ended) {
-      this.sendGameState(GAME_STATE.Ended)
-    }
-    this.disconnectNetwork()
-    this.moveToHistory()
+    await this.quitGame();
+    this.moveToHistory();
   }
 
   private updateTimestampHistory(serverTimestamp: number) {
