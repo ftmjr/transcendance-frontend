@@ -1,36 +1,40 @@
 <template>
   <div class="h-full">
-    <div v-if="gameStore.isPlayingWithQueList">
-      <VSnackbar
-        v-model="showIsInQueList"
-        :timeout="3000"
-        closable
-        location="right"
-        color="primary"
-      >
-        Vous êtes dans la file d'attente, veuillez patienter...
-      </VSnackbar>
-    </div>
-    <v-alert
+    <template v-if="!loading">
+      <div v-if="gameStore.isPlayingWithQueList">
+        <VSnackbar
+          v-model="showIsInQueList"
+          :timeout="3000"
+          closable
+          location="right"
+          color="primary"
+        >
+          Vous êtes dans la file d'attente, veuillez patienter...
+        </VSnackbar>
+      </div>
+      <v-alert
         v-model="alertGameAlreadyJoined"
         border="start"
         variant="tonal"
         closable
         close-label="Close Alert"
         color="deep-purple-accent-4"
-        title="Closable Alert"
-    >
-     Vous avez deja une session, veuillez patienter...
-
-      Vous avez deja une partie en cours, elle va etre chargée.
-      Quand la partie sera terminée, vous serez redirigé vers la page de résultat.
-    </v-alert>
-    <GamePlayer
-      v-if="gameStore.currentGameSession"
-      :room-id="gameStore.currentGameSession.gameId"
-      :player="player"
-      :theme="theme"
-    />
+        title="Partie en cours"
+      >
+        Vous avez deja une session, veuillez patienter... Vous avez deja une partie en cours, elle
+        va etre chargée. Quand la partie sera terminée, vous serez redirigé vers la page de
+        résultat.
+      </v-alert>
+      <GamePlayer
+        v-if="gameStore.currentGameSession"
+        :room-id="gameStore.currentGameSession.gameId"
+        :player="player"
+        :theme="theme"
+      />
+    </template>
+    <div v-else class="h-full flex items-center justify-center">
+      <v-progress-circular indeterminate color="deep-purple-accent-4" />
+    </div>
   </div>
 </template>
 
@@ -86,7 +90,7 @@ export default defineComponent({
       }
     },
     theme(): Theme {
-      if (!this.gameStore.currentGameSession) return Theme.Classic;
+      if (!this.gameStore.currentGameSession) return Theme.Classic
       return this.gameStore.currentGameSession?.rules.theme ?? Theme.Classic
     }
   },
@@ -135,8 +139,8 @@ export default defineComponent({
       this.loading = false
     },
     async leaveGame() {
-      if (!this.gameStore.currentGameSession) return;
-      if (!this.authStore.getUser) return;
+      if (!this.gameStore.currentGameSession) return
+      if (!this.authStore.getUser) return
       await this.gameStore.leaveCurrentGameSession(this.authStore.getUser.id)
     }
   }

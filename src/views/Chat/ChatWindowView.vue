@@ -163,7 +163,7 @@ export default defineComponent({
     async accessRoom(roomId: number) {
       if (!roomId) return
       this.loading = true
-      this.currentRoomStatus = await this.roomsStore.checkRoomRole(roomId);
+      this.currentRoomStatus = await this.roomsStore.checkRoomRole(roomId)
       if (this.currentRoomStatus.state) {
         // is a member of the room
         const setRoomResult = await this.roomsStore.setCurrentRoom(roomId)
