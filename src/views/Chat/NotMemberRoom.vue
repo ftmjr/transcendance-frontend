@@ -54,7 +54,7 @@
         <img v-if="room.avatar" :src="room.avatar" class="rounded object-cover h-full w-full" />
       </div>
     </div>
-    <NotificationPopUp v-model:visible="popUpVisible" :snackbar-msg="errorMessage" />
+    <NotificationPopUp v-model:visible="popUpVisible" color="error" :snackbar-msg="errorMessage" />
   </div>
 </template>
 
@@ -111,10 +111,11 @@ export default defineComponent({
   },
   methods: {
     async joinRoom() {
+      if (!this.authStore.getUser) return
       this.isJoining = true
       this.password = this.password.trim()
-      const result = this.roomsStore.joinRoom(this.room.id, {
-        userId: this.authStore.getUser?.id ?? 0,
+      const result = await this.roomsStore.joinRoom(this.room.id, {
+        userId: this.authStore.getUser.id,
         password: this.password
       })
       if (typeof result === 'string') {
@@ -122,8 +123,6 @@ export default defineComponent({
         this.popUpVisible = true
       } else {
         const member = result as unknown as ChatRoomMember
-        this.popUpVisible = true
-        this.errorMessage = `Vous avez rejoint la salle de discussion ${this.room.name}`
         this.$nextTick(() => {
           this.$emit('joinRoom', member.chatroomId)
         })

@@ -60,11 +60,12 @@ import { ChatMemberRole } from '@/utils/chatSocket'
 import { Status } from '@/interfaces/User'
 import useUserStore from '@/stores/UserStore'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 // @TODO: BUild this component
 export default defineComponent({
   name: 'RoomAdministrationSideBar',
-  components: { AvatarBadge },
+  components: { AvatarBadge, PerfectScrollbar },
   emits: ['refreshMembers'],
   setup() {
     const roomStore = useRoomsStore()
