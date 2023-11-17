@@ -121,7 +121,7 @@ export default defineComponent({
         if (value) {
           this.userProfile = value
         } else {
-          this.loadUser(value)
+          this.loadUser(this.userId);
         }
       },
       deep: true,
@@ -131,7 +131,7 @@ export default defineComponent({
   methods: {
     avatarText,
     async loadUser(userId: number) {
-      const data = await this.usersStore.getShortUserProfile(userId)
+      const data = await this.usersStore.getShortUserProfile(userId);
       if (data) {
         this.userProfile = data
       }

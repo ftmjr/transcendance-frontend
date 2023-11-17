@@ -17,7 +17,7 @@
       <tbody>
         <tr v-for="history in histories" :key="history.gameId">
           <td>
-            <avatar-badge :user-id="getOpponentId(history) ?? 0" :show-name="true" :size="32" />
+            <avatar-badge :user-id="getOpponentId(history)" :show-name="true" :size="32" />
           </td>
           <td>{{ getDate(history) }}</td>
           <td>
@@ -165,17 +165,13 @@ export default defineComponent({
       const ids = Object.keys(gameHistory.histories)
       return ids.map((id) => parseInt(id, 10))
     },
-    getOpponentId(gameHistory: CompleteGameHistory): number | null {
+    getOpponentId(gameHistory: CompleteGameHistory): number  {
       const gameType = this.getGameType(gameHistory)
-      if (gameType === GameSessionType.Bot) {
-        return 0
-      }
+      if (gameType === GameSessionType.Bot)  return 0
       // find the first one different from the user
       const playersId = this.getPlayersIds(gameHistory)
       const opponentId = playersId.find((id) => id !== this.userId)
-      if (!opponentId) {
-        return null
-      }
+      if (!opponentId) return -1;
       return opponentId
     },
     getDate(gameHistory: CompleteGameHistory): string {
