@@ -11,6 +11,20 @@
         Vous êtes dans la file d'attente, veuillez patienter...
       </VSnackbar>
     </div>
+    <v-alert
+        v-model="alertGameAlreadyJoined"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="deep-purple-accent-4"
+        title="Closable Alert"
+    >
+     Vous avez deja une session, veuillez patienter...
+
+      Vous avez deja une partie en cours, elle va etre chargée.
+      Quand la partie sera terminée, vous serez redirigé vers la page de résultat.
+    </v-alert>
     <GamePlayer
       v-if="gameStore.currentGameSession"
       :room-id="gameStore.currentGameSession.gameId"
@@ -58,8 +72,7 @@ export default defineComponent({
     return {
       loading: false,
       error: null as unknown as string,
-      info: null as unknown as string,
-      showInfo: false,
+      alertGameAlreadyJoined: false,
       showIsInQueList: true
     }
   },
@@ -73,13 +86,13 @@ export default defineComponent({
       }
     },
     theme(): Theme {
+      if (!this.gameStore.currentGameSession) return Theme.Classic;
       return this.gameStore.currentGameSession?.rules.theme ?? Theme.Classic
     }
   },
   beforeMount() {
     if (this.gameStore.currentGameSession) {
-      this.info = 'Une partie est déjà en cours, elle va etre chargée'
-      this.showInfo = true
+      this.alertGameAlreadyJoined = true
     } else {
       if (!this.gameId && !this.waitingRoom) {
         this.startAgainstBot()
@@ -122,11 +135,9 @@ export default defineComponent({
       this.loading = false
     },
     async leaveGame() {
-      if (!this.gameStore.currentGameSession) {
-        return
-      }
-      const userId = this.authStore?.getUser.id
-      await this.gameStore.leaveCurrentGameSession(userId)
+      if (!this.gameStore.currentGameSession) return;
+      if (!this.authStore.getUser) return;
+      await this.gameStore.leaveCurrentGameSession(this.authStore.getUser.id)
     }
   }
 })
