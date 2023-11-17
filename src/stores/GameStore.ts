@@ -191,7 +191,9 @@ const useGameStore = defineStore({
     },
     async getAllMyGameSessions() {
       try {
-        const { data } = await axios.get<GameSession[]>('/game/sessions')
+        const { data } = await axios.get<GameSession[]>('/game/sessions', {
+            headers: { Accept: 'application/json' }
+        })
         this.myGameSessions = data
         if (this.myGameSessions.length > 0) {
           this.joinedGameSession = this.myGameSessions[0]
@@ -240,7 +242,7 @@ const useGameStore = defineStore({
       const { data } = await axios.get<{
         status: 'playing' | 'inQueue' | 'free'
         gameSession?: GameSession
-      }>(`/game/status/${userId}`)
+      }>(`/game/status/${userId}`, { headers: { Accept: 'application/json' } })
       return data
     },
 
@@ -259,7 +261,9 @@ const useGameStore = defineStore({
     // get complete game history for a user
     async getUserCompleteGameHistory(userId: number): Promise<CompleteGameHistory[]> {
       try {
-        const { data } = await axios.get<CompleteGameHistory[]>(`/game/history/${userId}`)
+        const { data } = await axios.get<CompleteGameHistory[]>(`/game/history/${userId}`,
+            { headers: { Accept: 'application/json' } }
+        )
         return data
       } catch (e) {
         console.log('failed to get user game history')
@@ -268,7 +272,9 @@ const useGameStore = defineStore({
     },
     async getSimpleGameHistory(userId: number): Promise<GameHistory[]> {
       try {
-        const { data } = await axios.get<GameHistory[]>(`/game/simple-history/${userId}`)
+        const { data } = await axios.get<GameHistory[]>(`/game/simple-history/${userId}`,
+            { headers: { Accept: 'application/json' } }
+        )
         return data
       } catch (e) {
         console.log('failed to get user game history')
