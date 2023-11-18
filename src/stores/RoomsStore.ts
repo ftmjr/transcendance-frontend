@@ -57,6 +57,8 @@ const useRoomsStore = defineStore({
     currentRoomMessages: ChatMessage[]
     searchTerm: string
     contactTyping: Map<number, number>
+    isLeftNavOpen: boolean
+    isRightNavOpen: boolean
     roomsMembersTyping: Map<number, { senderId: number; username: string; timestamp: number }>
   } => {
     return {
@@ -72,7 +74,9 @@ const useRoomsStore = defineStore({
       roomsMembersTyping: new Map<
         number,
         { senderId: number; username: string; timestamp: number }
-      >()
+      >(),
+      isLeftNavOpen: false,
+      isRightNavOpen: false
     }
   },
   getters: {
@@ -129,6 +133,12 @@ const useRoomsStore = defineStore({
     },
     getRoomMembersTyping(): Map<number, { senderId: number; username: string; timestamp: number }> {
       return this.roomsMembersTyping
+    },
+    getIsLeftNavOpen(): boolean {
+      return this.isLeftNavOpen
+    },
+    getIsRightNavOpen(): boolean {
+      return this.isRightNavOpen
     }
   },
   actions: {
@@ -416,6 +426,12 @@ const useRoomsStore = defineStore({
     disconnect() {
       this.socketManager?.disconnect()
       this.socketManager = null
+    },
+    toggleLeftNav() {
+      this.isLeftNavOpen = !this.isLeftNavOpen
+    },
+    toggleRightNav() {
+      this.isRightNavOpen = !this.isRightNavOpen
     }
   }
 })

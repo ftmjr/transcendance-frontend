@@ -1,97 +1,72 @@
 <template>
-  <div class="flex flex-col w-full h-full">
-    <ChatConversationTopBar
-      :is-left-sidebar-open="isLeftSidebarOpen"
-      :is-right-sidebar-open="isRightSidebarOpen"
-      @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
-      @update:is-right-sidebar-open="(val) => $emit('update:isRightSidebarOpen', val)"
-      :user-role="userRole"
-    />
-    <template v-if="currentChatRoom && !loading">
-      <div class="flex-1 w-full overflow-scroll hide-scroolbar">
-        <div class="flex flex-col w-full h-full gap-4">
-          <PerfectScrollbar
-            ref="MessagesLogScroller"
-            tag="ul"
-            :options="{
-              wheelPropagation: false,
-              suppressScrollX: true
-            }"
-            class="h-full"
+  <div class="flex flex-col flex-1 h-full">
+    <div class="w-full border-b h-14 text-primary">
+      <div class="flex items-center justify-between w-full h-full">
+        <v-btn
+          @click="roomStore.toggleLeftNav()"
+          icon
+          color="transparent"
+          class="inline-block lg:hidden"
+        >
+          <v-icon icon="ion:menu"></v-icon>
+        </v-btn>
+        <room-settings />
+        <v-btn
+          @click="roomStore.toggleRightNav"
+          icon
+          color="transparent"
+          class="inline-block md:hidden"
+        >
+          <v-icon>heroicons:user-group-solid</v-icon>
+        </v-btn>
+      </div>
+    </div>
+    <div class="relative flex-1 w-full pb-0 overflow-hidden">
+      <div class="w-full h-full">
+        <perfect-scrollbar
+          tag="ul"
+          :options="{
+            wheelPropagation: false,
+            suppressScrollX: true
+          }"
+          ref="MessagesLogScroller"
+          id="messages-log"
+          class="flex flex-col h-full gap-4 px-4 pt-6 pb-16 overflow-scroll hide-scroolbar"
+        >
+          <li
+            :key="`message-group-${index}`"
+            :class="msgGrp.senderId === authStore.getUser!.id ? 'self-end' : 'self-start'"
+            v-for="(msgGrp, index) in msgGroups"
           >
-            <div
-              v-for="(msgGrp, index) in msgGroups"
-              :key="index"
-              class="p-2"
-              :class="
-                msgGrp.senderId === authStore.getUser!.id ? 'self-end text-right' : 'self-start'
-              "
+            <message :is-sender="msgGrp.senderId === authStore.getUser!.id" :msg-group="msgGrp" />
+          </li>
+        </perfect-scrollbar>
+      </div>
+      <div
+        class="absolute w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-cyan-900/0 to-[50%] to-cyan-950"
+      >
+        <form action="" class="flex items-center justify-center w-full h-full">
+          <div class="w-full h-[40px] relative">
+            <input
+              type="text"
+              placeholder="Envoyer un message dans le chat général"
+              name=""
+              id=""
+              class="w-full h-full px-4 text-sm font-light border rounded-md"
+              style="background-color: #0e1231"
+            />
+            <v-btn
+              color="transparent"
+              @click="sendMessage"
+              class="absolute -translate-y-1/2 border right-2 top-1/2"
+              size="26"
+              icon
             >
-              <div
-                class="relative message inline-flex flex-col px-6 min-w-[75px] py-2 border shadow-sm rounded-xl drop-shadow-md"
-                :class="
-                  msgGrp.senderId === authStore.getUser!.id
-                    ? 'text-left mr-0 ml-auto bg-[#1a1f3c] after:bg-[#1a1f3c]'
-                    : 'text-left bg-[#343851] after:bg-[#343851]'
-                "
-              >
-                <span v-for="msgData in msgGrp.messages" :key="msgData.time">
-                  {{ msgData.message }}
-                </span>
-                <div class="inline-flex items-center justify-end gap-2">
-                  <span class="text-sm font-thin" :class="getMemberColorText(msgGrp.senderId)">
-                    {{ getNameOfMember(msgGrp.senderId) }}
-                  </span>
-                  <span class="text-[.5rem] text-gray-50/90 font-thin block">
-                    {{
-                      formatDate(msgGrp.messages[msgGrp.messages.length - 1].time, {
-                        hour: 'numeric',
-                        minute: 'numeric'
-                      })
-                    }}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="w-full h-8 shrink-0 grow-0"></div>
-          </PerfectScrollbar>
-        </div>
+              <v-icon color="primary" size="16" icon="mingcute:send-fill"></v-icon>
+            </v-btn>
+          </div>
+        </form>
       </div>
-      <p v-if="isTypingUserName" class="font-weight-medium">
-        {{ isTypingUserName }}
-        <span class="pr-1 text-sm font-weight-light">est en train d'écrire</span>
-        <VIcon :size="24" color="primary" icon="svg-spinners:3-dots-bounce" />
-      </p>
-      <div class="border rounded-md shadow-lg flex-0 drop-shadow-lg">
-        <VForm @submit.prevent="sendMessage">
-          <VTextField
-            v-model="chatMessageContent"
-            :disabled="!canWrite"
-            variant="solo"
-            placeholder="Ecrivez votre message..."
-            density="default"
-            autofocus
-            @keyup="sendIsTyping"
-          >
-            <template #append-inner>
-              <VBtn @click.stop.prevent="sendMessage" rounded>
-                <svg
-                  class="w-4 h-4 text-current fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M24 0l-6 22-8.129-7.239 7.802-8.234-10.458 7.227-7.215-1.754 24-12zm-15 16.668v7.332l3.258-4.431-3.258-2.901z"
-                  />
-                </svg>
-              </VBtn>
-            </template>
-          </VTextField>
-        </VForm>
-      </div>
-    </template>
-    <div v-else-if="loading" class="flex items-center justify-center h-full">
-      <v-progress-circular :size="70" :width="7" color="sky" indeterminate />
     </div>
   </div>
 </template>
@@ -100,17 +75,21 @@
 import { defineComponent } from 'vue'
 import useRoomsStore, { ChatRoomWithMembers, MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
 import ChatConversationTopBar from '@/components/chatRooms/ChatConversationTopBar.vue'
+// @ts-ignore
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import Message from './Message.vue'
+
 import useAuthStore from '@/stores/AuthStore'
 import { ChatMemberRole, ChatMessage } from '@/utils/chatSocket'
 import { formatDate } from '@core/utils/formatters'
+import RoomSettings from './Settings.vue'
 
-interface ChatMessageGroup {
+export interface ChatMessageGroup {
   senderId: number
   messages: Array<{ id: number; message: string; time: string }>
 }
 export default defineComponent({
-  components: { ChatConversationTopBar, PerfectScrollbar },
+  components: { ChatConversationTopBar, PerfectScrollbar, RoomSettings, Message },
   props: {
     isLeftSidebarOpen: {
       type: Boolean,
@@ -282,8 +261,8 @@ export default defineComponent({
           return 'text-gray-500'
       }
     },
-    scrollToBottomInChatLog() {},
     formatDate
-  }
+  },
+  mounted() {}
 })
 </script>

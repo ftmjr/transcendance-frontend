@@ -7,6 +7,7 @@ import Notifications from '@/views/Notifications.vue'
 import LeaderboardView from '@/views/LeaderboardView.vue'
 import { RouteRecordRaw } from 'vue-router'
 import GameView from '@/views/GameView.vue'
+import ChatHome from '@/views/Chat/HomeView.vue'
 
 const dashboardRoutes: RouteRecordRaw = {
   path: '/',
@@ -81,6 +82,22 @@ const dashboardRoutes: RouteRecordRaw = {
       path: 'chat/:roomId?',
       name: 'chat',
       component: ChatWindowView,
+      props: (route) => {
+        const roomId = route.params.roomId ? parseInt(route.params.roomId.toString()) : undefined
+        return {
+          roomId
+        }
+      },
+      meta: {
+        requiresAuth: true,
+        title: 'Chat',
+        layoutWrapperClasses: 'layout-content-height-fixed'
+      }
+    },
+    {
+      path: 'chats/:roomId?',
+      name: 'chat-new',
+      component: ChatHome,
       props: (route) => {
         const roomId = route.params.roomId ? parseInt(route.params.roomId.toString()) : undefined
         return {
