@@ -1,58 +1,60 @@
 <template>
-  <div class="w-full h-full" :class="canRead ? '' : 'blur-md'">
-    <perfect-scrollbar
-      id="messages-log"
-      ref="MessagesLogScroller"
-      tag="ul"
-      :options="{ wheelPropagation: false, suppressScrollX: true }"
-      class="flex flex-col h-full gap-4 px-4 pt-6 pb-16 overflow-scroll hide-scrollbar"
-    >
-      <li
-        v-for="(msgGrp, index) in msgGroups"
-        :key="`message-group-${index}-${msgGrp.senderId}`"
-        :class="msgGrp.senderId === roomStore.userId ? 'self-end' : 'self-start'"
+  <div>
+    <div class="w-full h-full" :class="canRead ? '' : 'blur-md'">
+      <perfect-scrollbar
+          id="messages-log"
+          ref="MessagesLogScroller"
+          tag="ul"
+          :options="{ wheelPropagation: false, suppressScrollX: true }"
+          class="flex flex-col h-full gap-4 px-4 pt-6 pb-16 overflow-scroll hide-scrollbar"
       >
-        <message :is-sender="msgGrp.senderId === roomStore.userId" :msg-group="msgGrp" />
-      </li>
-    </perfect-scrollbar>
-  </div>
-  <p v-if="isTypingUserName" class="font-weight-medium">
-    {{ isTypingUserName }}
-    <span class="pr-1 text-sm font-weight-light">est en train d'écrire</span>
-    <VIcon :size="24" color="primary" icon="svg-spinners:3-dots-bounce" />
-  </p>
-  <div
-    class="absolute w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-cyan-900/0 to-[50%] to-cyan-950"
-  >
-    <form action="" class="flex items-center justify-center w-full h-full">
-      <div class="w-full h-[40px] relative">
-        <VForm @submit.prevent="sendMessage">
-          <VTextField
-            v-model="chatMessageContent"
-            :disabled="!canWrite"
-            variant="solo"
-            placeholder="Envoyer un message dans le chat"
-            density="default"
-            class="px-4 text-sm font-light"
-            bg-color="#0e1231"
-            autofocus
-            @keyup="sendIsTyping"
-          >
-            <template #append-inner>
-              <v-btn
-                color="transparent"
-                class="absolute -translate-y-1/2 border right-2 top-1/2"
-                size="26"
-                icon
-                @click="sendMessage"
-              >
-                <v-icon color="primary" size="16" icon="mingcute:send-fill" />
-              </v-btn>
-            </template>
-          </VTextField>
-        </VForm>
-      </div>
-    </form>
+        <li
+            v-for="(msgGrp, index) in msgGroups"
+            :key="`message-group-${index}-${msgGrp.senderId}`"
+            :class="msgGrp.senderId === roomStore.userId ? 'self-end' : 'self-start'"
+        >
+          <message :is-sender="msgGrp.senderId === roomStore.userId" :msg-group="msgGrp" />
+        </li>
+      </perfect-scrollbar>
+    </div>
+    <p v-if="isTypingUserName" class="font-weight-medium pb-4">
+      {{ isTypingUserName }}
+      <span class="pr-1 text-sm font-weight-light">est en train d'écrire</span>
+      <VIcon :size="24" color="primary" icon="svg-spinners:3-dots-bounce" />
+    </p>
+    <div
+        class="absolute w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-cyan-900/0 to-[50%] to-cyan-950"
+    >
+      <form action="" class="flex items-center justify-center w-full h-full">
+        <div class="w-full h-[40px] relative">
+          <VForm @submit.prevent="sendMessage">
+            <VTextField
+                v-model="chatMessageContent"
+                :disabled="!canWrite"
+                variant="solo"
+                placeholder="Envoyer un message dans le chat"
+                density="default"
+                class="px-4 text-sm font-light"
+                bg-color="#0e1231"
+                autofocus
+                @keyup="sendIsTyping"
+            >
+              <template #append-inner>
+                <v-btn
+                    color="transparent"
+                    class="absolute -translate-y-1/2 border right-2 top-1/2"
+                    size="26"
+                    icon
+                    @click="sendMessage"
+                >
+                  <v-icon color="primary" size="16" icon="mingcute:send-fill" />
+                </v-btn>
+              </template>
+            </VTextField>
+          </VForm>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -154,11 +156,11 @@ export default defineComponent({
     }
   },
   watch: {
-    'roomStore.currentRoomId': {
+    'roomStore.currentRoomStatus': {
       handler(value: number) {
         if (!value) return
         if (!this.roomStore.getCurrentRoomStatus.state) return
-        this.fetchMessages()
+        this.fetchMessages();
       },
       immediate: true
     },
@@ -199,17 +201,14 @@ export default defineComponent({
       if (!this.chatMessageContent.trim()) return
       if (this.loading) return
       this.loading = true
-      this.roomStore.sendMessage(this.roomStore.userId, this.chatMessageContent)
+      this.roomStore.sendMessage(this.me.chatroomId, this.chatMessageContent);
       this.chatMessageContent = ''
       this.loading = false
     },
     async sendIsTyping() {
-      if (!this.roomStore.currentRoomId) return
-      if (!this.authStore.getProfile) return
-      this.roomStore.sendUserIsTypingInRoom(
-        this.roomStore.currentRoomId,
-        this.authStore.getProfile.name
-      )
+      if (!this.me) return
+      if (!this.authStore.getUser) return;
+      this.roomStore.sendUserIsTypingInRoom(this.me.chatroomId, this.authStore.getUser.username);
     },
     scrollToBottomInChatLog() {}
   }

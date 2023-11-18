@@ -2,7 +2,6 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import HomeView from '@/views/HomeView.vue'
 import usersRoutes from '@/router/users'
 import DirectMessagesView from '@/views/Dm/DirectMessagesMainView.vue'
-import ChatWindowView from '@/views/Chat/ChatWindowView.vue'
 import Notifications from '@/views/Notifications.vue'
 import LeaderboardView from '@/views/LeaderboardView.vue'
 import { RouteRecordRaw } from 'vue-router'
@@ -78,22 +77,6 @@ const dashboardRoutes: RouteRecordRaw = {
         title: 'Pong'
       }
     },
-    // {
-    //   path: 'chat/:roomId?',
-    //   name: 'chat',
-    //   component: ChatWindowView,
-    //   props: (route) => {
-    //     const roomId = route.params.roomId ? parseInt(route.params.roomId.toString()) : undefined
-    //     return {
-    //       roomId
-    //     }
-    //   },
-    //   meta: {
-    //     requiresAuth: true,
-    //     title: 'Chat',
-    //     layoutWrapperClasses: 'layout-content-height-fixed'
-    //   }
-    // },
     {
       path: 'chat/:roomId?',
       name: 'chat',
