@@ -56,6 +56,7 @@ export default defineConfig({
           vuetify: ['vuetify']
         }
       }
-    }
+    },
+    emptyOutDir: false,
   }
 })

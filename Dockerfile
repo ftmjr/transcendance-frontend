@@ -10,7 +10,15 @@ RUN yarn install
 
 #COPY . .
 
+# add dist folder and set permissions for uploads folder
+RUN mkdir dist && mkdir dist/uploads \
+    && chmod -R 777 /app/dist \
+    && chmod -R 777 /app/dist/uploads
+
 VOLUME /app
+
+# inform docker that the app will use the uploads folder
+VOLUME /app/dist/uploads
 
 EXPOSE 3000
 
