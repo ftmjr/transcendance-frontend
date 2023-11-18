@@ -11,15 +11,9 @@
               :size="36"
               avatar-variant="tonal"
             />
-            <VIcon v-if="isOwner" :size="16" color="primary">
-              tabler-crown
-            </VIcon>
-            <VIcon v-else-if="isMuted" :size="16" color="gray">
-              tabler-user-minus
-            </VIcon>
-            <VIcon v-else-if="isBan" :size="16" color="gray">
-              tabler-user-x
-            </VIcon>
+            <VIcon v-if="isOwner" :size="16" color="primary"> tabler-crown </VIcon>
+            <VIcon v-else-if="isMuted" :size="16" color="gray"> tabler-user-minus </VIcon>
+            <VIcon v-else-if="isBan" :size="16" color="gray"> tabler-user-x </VIcon>
           </span>
         </button>
       </template>

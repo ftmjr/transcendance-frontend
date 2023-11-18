@@ -11,7 +11,7 @@
     ></v-select>
 
     <v-btn
-      :disabled="(memberRole === role) || canNotPromote || isLoading"
+      :disabled="memberRole === role || canNotPromote || isLoading"
       @click="tryToMute"
       color="primary"
       text
@@ -51,7 +51,7 @@ const { memberRole, userId, roomId } = defineProps({
 })
 
 const isLoading = ref(false)
-const role = ref(memberRole);
+const role = ref(memberRole)
 
 const canNotPromote = computed(() => {
   return (
@@ -60,9 +60,6 @@ const canNotPromote = computed(() => {
     role.value === ChatMemberRole.MUTED
   )
 })
-
-
-
 
 const tryToMute = async (e: Event) => {
   e.preventDefault()

@@ -224,6 +224,7 @@ const useRoomsStore = defineStore({
       let errorMessage = `Vous n'êtes pas autorisé à rejoindre cette salle`
       try {
         const { data } = await axios.post<ChatRoomMember>(`/chat/join-room/${roomId}`, info)
+        await this.selectRoom(data.chatroomId)
         await this.getAllMyRooms()
         return data
       } catch (error) {

@@ -14,7 +14,7 @@
         <h2 v-else>Rejoindre {{ roomsStore.getCurrentRoomStatus.room.name }}</h2>
       </div>
       <v-menu
-        v-if="!alreadyMember"
+        v-if="alreadyMember"
         transition="scale-transition"
         v-model="menu"
         :close-on-content-click="false"
@@ -36,7 +36,11 @@
                   <v-form validate-on="submit lazy" @submit.prevent="upateRoomInfos">
                     <div class="flex flex-col gap-4">
                       <div class="flex gap-4">
-                        <span class="w-12 h-12 border rounded-full"></span>
+                        <VAvatar
+                          v-if="roomsStore.getCurrentRoomStatus.room.avatar"
+                          :size="42"
+                          :image="roomsStore.getCurrentRoomStatus.room.avatar"
+                        />
                         <v-file-input
                           label="Choisir une image"
                           prepend-icon="mdi-camera"
@@ -83,7 +87,7 @@
                         />
                       </div>
                       <v-btn
-                        :disabled="!form"
+                        :disabled="!loading"
                         :loading="loading"
                         type="submit"
                         block
@@ -208,6 +212,16 @@ export default defineComponent({
       ]
     }
   },
+  watch: {
+    'roomsStore.currentRoomStatus': {
+      handler(value: boolean) {
+        if (value) {
+          this.fillForm()
+        }
+      },
+      immediate: true
+    }
+  },
   methods: {
     upateRoomInfos() {
       this.loading = true
@@ -215,6 +229,12 @@ export default defineComponent({
         this.loading = false
         this.menu = false
       }, 2000)
+    },
+    fillForm() {
+      if (!this.roomsStore.getCurrentRoomStatus.room) return
+      this.roomName = this.roomsStore.getCurrentRoomStatus.room.name
+      this.roomType = this.roomsStore.getCurrentRoomStatus.room.type
+      this.roomOldPassword = this.roomsStore.getCurrentRoomStatus.room.password ? '********' : ''
     }
   }
 })
