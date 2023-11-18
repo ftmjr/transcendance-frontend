@@ -176,7 +176,7 @@ const useMessageStore = defineStore({
       userMessages.push(message)
       this.messages.set(userId, userMessages)
       if (prepareToReloadConversation) {
-        await this.getUniqueConversations();
+        await this.getUniqueConversations()
       }
     },
     getLastMessageBetween(userId: number): PrivateMessage | null {

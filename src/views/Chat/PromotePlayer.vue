@@ -1,33 +1,44 @@
 <template>
   <div class="flex items-center gap-6">
     <v-select
-      :disabled="playerRole === role || isLoading"
       v-model="role"
-      label="Select"
+      :disabled="canNotPromote || isLoading"
+      label="Role"
       :items="rolesList"
+      item-title="text"
+      item-value="value"
       variant="outlined"
     ></v-select>
 
     <v-btn
-      :disabled="playerRole === role"
+      :disabled="(memberRole === role) || canNotPromote || isLoading"
       @click="tryToMute"
       color="primary"
       text
       size="small"
       class="text-xs"
-      >Sauvegarder</v-btn
     >
+      Sauvegarder
+    </v-btn>
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { PropType, ref, computed } from 'vue'
+import { ChatMemberRole } from '@/utils/chatSocket'
 
-const rolesList = ['admin', 'moderator', 'player']
+const rolesList = [
+  { value: ChatMemberRole.USER, text: 'Utilisateur' },
+  { value: ChatMemberRole.ADMIN, text: 'Administrateur' },
+  { value: ChatMemberRole.OWNER, text: 'Propriétaire' },
+  { value: ChatMemberRole.BAN, text: 'Banni' },
+  { value: ChatMemberRole.MUTED, text: 'Muet' }
+]
 
-const props = defineProps({
-  playerRole: {
-    type: String,
-    required: true
+const { memberRole, userId, roomId } = defineProps({
+  memberRole: {
+    type: String as PropType<ChatMemberRole>,
+    required: true,
+    default: ChatMemberRole.USER
   },
   userId: {
     type: Number,
@@ -40,14 +51,25 @@ const props = defineProps({
 })
 
 const isLoading = ref(false)
-const role = ref(rolesList[0])
+const role = ref(memberRole);
+
+const canNotPromote = computed(() => {
+  return (
+    role.value === ChatMemberRole.OWNER ||
+    role.value === ChatMemberRole.BAN ||
+    role.value === ChatMemberRole.MUTED
+  )
+})
+
+
+
 
 const tryToMute = async (e: Event) => {
   e.preventDefault()
   try {
-    if (role.value === props.playerRole) return
+    if (role.value === memberRole) return
     isLoading.value = true
-    console.log(`trying to promote user ${props.userId} in room ${props.roomId}`)
+    console.log(`trying to promote user ${userId} in room ${roomId}`)
   } catch (error) {
     console.log(error)
   } finally {

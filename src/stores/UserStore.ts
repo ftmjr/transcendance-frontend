@@ -290,6 +290,26 @@ const useUserStore = defineStore({
       }
       return BlockedStatus.None
     },
+    async checkBlockedForMany(
+      userIds: number[]
+    ): Promise<{ userId: number; status: BlockedStatus }[]> {
+      try {
+        const { data } = await axios.post<BlockedStatus[]>(`/users/check-blocked/`, { userIds })
+        return userIds.map((id, index) => {
+          return {
+            userId: id,
+            status: data[index]
+          }
+        })
+      } catch (e) {
+        return userIds.map(() => {
+          return {
+            userId: 0,
+            status: BlockedStatus.None
+          }
+        })
+      }
+    },
     async blockUser(userId: number): Promise<'success' | 'error'> {
       try {
         const { data } = await axios.post<BlockedUser>(`/users/block/${userId}`)

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="weAreBlocked ? 'blur-3xl' : ''">
     <div
       :class="[
         'relative self-start inline-block max-w-xs px-4 py-2 text-sm rounded-md shadow-lg drop-shadow-lg',
@@ -7,7 +7,7 @@
       ]"
       style="background-color: #272b47"
     >
-      <p :key="msg.message" class="" v-for="(msg, index) in msgGroup.messages">
+      <p v-for="(msg, index) in msgGroup.messages" :key="index" class="">
         {{ msg.message }}
       </p>
     </div>
@@ -20,17 +20,35 @@
           })
         }}
       </span>
-      <span>Nom et prénom</span>
+      <span>{{ sender.member.username }}</span>
+      <VIcon v-if="sender.role === ChatMemberRole.OWNER" :size="16" color="primary">
+        tabler-crown
+      </VIcon>
+      <VIcon v-else-if="sender.role === ChatMemberRole.ADMIN" :size="16" color="secondary">
+        tabler-shield-check
+      </VIcon>
+      <VIcon v-else-if="sender.role === ChatMemberRole.BAN" :size="16" color="gray">
+        tabler-user-x
+      </VIcon>
+      <VIcon v-else-if="sender.role === ChatMemberRole.MUTED" :size="16" color="gray">
+        tabler-user-minus
+      </VIcon>
     </div>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { type ChatMessageGroup } from './ChatRoom.vue'
 import { formatDate } from '@core/utils/formatters'
+import useRoomsStore, { MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
+import { BlockedStatus } from '@/stores/UserStore'
+import { ChatMemberRole } from '@/utils/chatSocket'
+
+interface ChatMessageGroup {
+  senderId: number
+  messages: Array<{ id: number; message: string; time: string }>
+}
 
 export default defineComponent({
-  name: 'message',
   props: {
     msgGroup: {
       type: Object as PropType<ChatMessageGroup>,
@@ -39,6 +57,41 @@ export default defineComponent({
     isSender: {
       type: Boolean,
       required: true
+    }
+  },
+  setup() {
+    const roomStore = useRoomsStore()
+    return {
+      roomStore
+    }
+  },
+  computed: {
+    ChatMemberRole() {
+      return ChatMemberRole
+    },
+    sender(): MemberRoomWithUserProfiles | undefined {
+      return this.roomStore.getCurrentRoomMembers.find(
+        (member) => member.member.id === this.msgGroup.senderId
+      )
+    },
+    isBan(): boolean {
+      if (!this.sender) return true
+      return this.sender.member.role === 'BAN'
+    },
+    isAdmin(): boolean {
+      if (!this.sender) return false
+      return this.sender.member.role === 'ADMIN'
+    },
+    isOwner(): boolean {
+      if (!this.sender) return false
+      return this.sender.member.role === 'OWNER'
+    },
+    weAreBlocked(): boolean {
+      if (!this.sender) return true
+      const blockStatus = this.roomStore.getCurrentRoomBlockedStatus.find(
+        (block) => block.userId === this.sender?.member.id
+      )
+      return blockStatus?.status !== BlockedStatus.None
     }
   },
   methods: {

@@ -45,7 +45,7 @@ const useNotificationStore = defineStore({
     async getNotifications() {
       try {
         const { data } = await axios.get<Notification[]>('notifications/')
-        this.notifications = data;
+        this.notifications = data
       } catch (e) {
         console.error(e)
       }

@@ -28,9 +28,9 @@ export default defineComponent({
     }
   },
   created() {
-    window.addEventListener("storage", () => {
-      this.authStore.storageUpdated();
-    });
+    window.addEventListener('storage', () => {
+      this.authStore.storageUpdated()
+    })
   },
   computed: {
     rgbPrimary(): string | null {

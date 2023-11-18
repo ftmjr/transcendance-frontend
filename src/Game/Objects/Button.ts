@@ -101,7 +101,12 @@ export class HomeButton extends GameObjects.Image {
   }
   private _btnActive: boolean = true
   public isHomePage = true
-  constructor(scene: Menu, x: number, y: number, public _onClick: () => void) {
+  constructor(
+    scene: Menu,
+    x: number,
+    y: number,
+    public _onClick: () => void
+  ) {
     super(scene, x, y, 'Btn_Home_Active')
     this.setupInteractivity()
   }

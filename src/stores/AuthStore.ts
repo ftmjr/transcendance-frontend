@@ -128,14 +128,14 @@ const useAuthStore = defineStore({
       localStorage.setItem('__token__', token)
     },
     removeToken() {
-      localStorage.removeItem('__token__');
+      localStorage.removeItem('__token__')
       this.token = null
     },
     removeUser() {
-      localStorage.removeItem('__user__');
+      localStorage.removeItem('__user__')
       this.user = null
     },
-    storageUpdated(){
+    storageUpdated() {
       // check if token is still present in local storage
       alert('storage updated')
     },
@@ -163,8 +163,8 @@ const useAuthStore = defineStore({
     async logout() {
       this.error = { state: false, message: '' }
       try {
-        this.removeUser();
-        this.removeToken();
+        this.removeUser()
+        this.removeToken()
         if (this.timer) {
           clearInterval(this.timer)
           this.timer = null
@@ -274,7 +274,7 @@ const useAuthStore = defineStore({
           await axios.post('auth/2fa/turn-on', {
             twoFactorAuthenticationCode: otpCode
           })
-          await this.refreshCurrentUser();
+          await this.refreshCurrentUser()
         }
         return true
       } catch (error) {
