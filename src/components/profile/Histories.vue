@@ -165,13 +165,13 @@ export default defineComponent({
       const ids = Object.keys(gameHistory.histories)
       return ids.map((id) => parseInt(id, 10))
     },
-    getOpponentId(gameHistory: CompleteGameHistory): number  {
+    getOpponentId(gameHistory: CompleteGameHistory): number {
       const gameType = this.getGameType(gameHistory)
-      if (gameType === GameSessionType.Bot)  return 0
+      if (gameType === GameSessionType.Bot) return 0
       // find the first one different from the user
       const playersId = this.getPlayersIds(gameHistory)
       const opponentId = playersId.find((id) => id !== this.userId)
-      if (!opponentId) return -1;
+      if (!opponentId) return -1
       return opponentId
     },
     getDate(gameHistory: CompleteGameHistory): string {

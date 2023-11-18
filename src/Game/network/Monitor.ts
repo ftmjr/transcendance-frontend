@@ -232,7 +232,7 @@ export default class Monitor {
   }
 
   public async quitGame() {
-    if (this.currentUser.userType === GameUserType.Viewer) return;
+    if (this.currentUser.userType === GameUserType.Viewer) return
     else {
       if (this.state !== GAME_STATE.Ended) {
         this.sendGameState(GAME_STATE.Ended)
@@ -241,8 +241,8 @@ export default class Monitor {
     this.disconnectNetwork()
   }
   public async quitAndMoveToHistory() {
-    await this.quitGame();
-    this.moveToHistory();
+    await this.quitGame()
+    this.moveToHistory()
   }
 
   private updateTimestampHistory(serverTimestamp: number) {

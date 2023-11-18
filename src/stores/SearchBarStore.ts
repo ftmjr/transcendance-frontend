@@ -176,7 +176,7 @@ const useSearchBarStore = defineStore({
               avatar: user.profile?.avatar ?? '',
               title: `${user.profile?.name} ${user.profile?.lastname} - @${user.username}`,
               category: header.title
-            }) as SearchItem
+            } as SearchItem)
         )
         return [header, ...users]
       } catch (error) {

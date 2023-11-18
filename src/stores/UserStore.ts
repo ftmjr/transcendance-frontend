@@ -146,9 +146,9 @@ const useUserStore = defineStore({
       mostActiveGame: 0, //gameId
       mostActiveUser: 0 //userId
     }
-    const usersStatus = new Map<number, Status>();
-    usersStatus.set(-1, Status.Busy);
-    usersStatus.set(0, Status.Online);
+    const usersStatus = new Map<number, Status>()
+    usersStatus.set(-1, Status.Busy)
+    usersStatus.set(0, Status.Online)
     return {
       contacts: [],
       blockedUsers: [],
@@ -323,15 +323,15 @@ const useUserStore = defineStore({
     },
     async getShortUserProfile(userId: number): Promise<ShortUserProfile | null> {
       try {
-        if (userId === -1)  return roomWaiting;
-        if (userId === 0)  return aiProfile;
-        if (!userId) return roomWaiting;
+        if (userId === -1) return roomWaiting
+        if (userId === 0) return aiProfile
+        if (!userId) return roomWaiting
         // check if the user is in the map
-        const profile = this.shortProfiles.get(userId);
-        if (profile) return profile;
+        const profile = this.shortProfiles.get(userId)
+        if (profile) return profile
         const { data } = await axios.get<ShortUserProfile>(`/users/short-profile/${userId}`)
-        this.usersStatus.set(userId, data.profile.status);
-        this.shortProfiles.set(userId, data);
+        this.usersStatus.set(userId, data.profile.status)
+        this.shortProfiles.set(userId, data)
         return data
       } catch (e) {
         console.log(e)
@@ -424,7 +424,7 @@ const useUserStore = defineStore({
     },
     async getStatus(userId: number): Promise<Status> {
       // check if the user is in the map
-      const status = this.usersStatus.get(userId);
+      const status = this.usersStatus.get(userId)
       if (status) {
         return status
       }

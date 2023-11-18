@@ -39,11 +39,11 @@ export const rolePrint: Array<{
   color?: string
   bgClass?: string
 }> = [
-    { role: ChatMemberRole.OWNER, printRole: 'Big Boss', color: 'success' },
-    { role: ChatMemberRole.ADMIN, printRole: 'Administrateur', bgClass: 'info' },
-    { role: ChatMemberRole.USER, printRole: 'Utilisateur', color: 'dark' },
-    { role: ChatMemberRole.BAN, printRole: 'Ban', color: 'danger' }
-  ]
+  { role: ChatMemberRole.OWNER, printRole: 'Big Boss', color: 'success' },
+  { role: ChatMemberRole.ADMIN, printRole: 'Administrateur', bgClass: 'info' },
+  { role: ChatMemberRole.USER, printRole: 'Utilisateur', color: 'dark' },
+  { role: ChatMemberRole.BAN, printRole: 'Ban', color: 'danger' }
+]
 
 const useRoomsStore = defineStore({
   id: 'roomsStore',
@@ -71,7 +71,10 @@ const useRoomsStore = defineStore({
       currentRoomMembers: [],
       currentRoomMessages: [],
       contactTyping: new Map<number, number>(),
-      roomsMembersTyping: new Map<number, { senderId: number; username: string; timestamp: number }>(),
+      roomsMembersTyping: new Map<
+        number,
+        { senderId: number; username: string; timestamp: number }
+      >(),
       isLeftNavOpen: false,
       isRightNavOpen: false
     }
