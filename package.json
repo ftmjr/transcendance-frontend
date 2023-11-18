@@ -15,24 +15,24 @@
     "@iconify/vue": "^4.1.1",
     "@vueuse/core": "^10.5.0",
     "@vueuse/motion": "^2.0.0",
-    "axios": "^1.5.1",
+    "axios": "^1.6.2",
     "chart.js": "^4.4.0",
     "jwt-decode": "^3.1.2",
     "phaser": "3.60.0",
     "pinia": "^2.1.7",
     "socket.io-client": "^4.7.1",
-    "vue": "^3.3.4",
+    "vue": "^3.3.8",
     "vue-chartjs": "^5.2.0",
     "vue-router": "^4.2.5",
     "vue3-perfect-scrollbar": "^1.6.1",
-    "vuetify": "^3.4.0",
+    "vuetify": "^3.4.2",
     "xvfb": "^0.4.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.5.1",
     "@tsconfig/node18": "^18.2.2",
     "@types/jsdom": "^21.1.4",
-    "@types/node": "^18.14.2",
+    "@types/node": "^20.9.1",
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "@typescript-eslint/parser": "^6.8.0",
     "@vitejs/plugin-vue": "^4.4.0",
@@ -57,6 +57,6 @@
     "vite": "^4.5.0",
     "vite-plugin-vuetify": "^1.0.2",
     "vitest": "^0.34.6",
-    "vue-tsc": "^1.8.19"
+    "vue-tsc": "^1.8.22"
   }
 }

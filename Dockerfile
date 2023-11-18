@@ -2,24 +2,20 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package.json ./
-
-RUN yarn global add esbuild && yarn global add vite
+#copy everything, dockerignore will ignore node_modules
+COPY . .
 
 RUN yarn install
 
-#COPY . .
+# set prisma migration and sync with database
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
-# add dist folder and set permissions for uploads folder
-RUN mkdir dist && mkdir dist/uploads \
-    && chmod -R 777 /app/dist \
-    && chmod -R 777 /app/dist/uploads
-
-VOLUME /app
-
-# inform docker that the app will use the uploads folder
-VOLUME /app/dist/uploads
+# final version will not have this line
+VOLUME /app/src
+# final version will not have this line
+VOLUME /app/public
 
 EXPOSE 3000
 
-CMD ["yarn", "dev"]
+ENTRYPOINT ["/app/entrypoint.sh"]

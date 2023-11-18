@@ -697,10 +697,17 @@
   dependencies:
     undici-types "~5.26.4"
 
-"@types/node@^18.14.2", "@types/node@^18.17.5":
+"@types/node@^18.17.5":
   version "18.18.9"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.18.9.tgz#5527ea1832db3bba8eb8023ce8497b7d3f299592"
   integrity sha512-0f5klcuImLnG4Qreu9hPj/rEfFq6YRc5n2mAjSsH+ec/mJL+3voBH0+8T7o8RpFjH7ovc+TRsL/c7OYIQsPTfQ==
+  dependencies:
+    undici-types "~5.26.4"
+
+"@types/node@^20.9.1":
+  version "20.9.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.9.1.tgz#9d578c610ce1e984adda087f685ace940954fe19"
+  integrity sha512-HhmzZh5LSJNS5O8jQKpJ/3ZcrrlG6L70hpGqMIAoM9YVD0YBRNWYsfwcXq8VnSjlNpCpgLzMXdiPo+dxcvSmiA==
   dependencies:
     undici-types "~5.26.4"
 
@@ -1344,10 +1351,10 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.12.0.tgz#ce1c9d143389679e253b314241ea9aa5cec980d3"
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
 
-axios@^1.5.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.1.tgz#76550d644bf0a2d469a01f9244db6753208397d7"
-  integrity sha512-vfBmhDpKafglh0EldBEbVuoe7DyAavGSLWhuSm5ZSEKQnHhBf0xAAwybbNH1IkrJNGnS/VG4I5yxig1pCEXE4g==
+axios@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.2.tgz#de67d42c755b571d3e698df1b6504cde9b0ee9f2"
+  integrity sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==
   dependencies:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"
@@ -5504,7 +5511,7 @@ vue3-perfect-scrollbar@^1.6.1:
     perfect-scrollbar "^1.5.5"
     postcss-import "^12.0.0"
 
-vue@^3.3.4:
+vue@^3.3.8:
   version "3.3.8"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.3.8.tgz#532ff071af24f6a69e5ecc53a66858a9ee874ffc"
   integrity sha512-5VSX/3DabBikOXMsxzlW8JyfeLKlG9mzqnWgLQLty88vdZL7ZJgrdgBOmrArwxiLtmS+lNNpPcBYqrhE6TQW5w==
@@ -5515,10 +5522,10 @@ vue@^3.3.4:
     "@vue/server-renderer" "3.3.8"
     "@vue/shared" "3.3.8"
 
-vuetify@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.4.0.tgz#8530fe0b169ed907383d102953da82aea54717f6"
-  integrity sha512-aW3bJGCUN3fhl62yvsb+Hv6TtMWDqiadN0PTbEB8jd9z46/X1ddzQ/fhMjkqBX69sMFtZvENl3YFGU5c88/8qw==
+vuetify@^3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.4.2.tgz#439115ef71867d8358585cc499c21bb7f1cdbcab"
+  integrity sha512-WvfVmES1SkhrCfYcfzPp8jpfIM+L+OcN9EYiBM+4bpmsIXLNJyMv42QhoDDWihSO6/zbE8RqCtyHawpu4ApyzA==
 
 w3c-xmlserializer@^4.0.0:
   version "4.0.0"
