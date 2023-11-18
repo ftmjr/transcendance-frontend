@@ -1,34 +1,48 @@
 <template>
   <div>
-    <p
+    <div
       :class="[
         'relative self-start inline-block max-w-xs px-4 py-2 text-sm rounded-md shadow-lg drop-shadow-lg',
         isSender ? 'reply' : 'sender'
       ]"
       style="background-color: #272b47"
     >
-      {{ message }}
-    </p>
+      <p :key="msg.message" class="" v-for="(msg, index) in msgGroup.messages">
+        {{ msg.message }}
+      </p>
+    </div>
     <div class="flex items-center gap-4 text-xs font-light">
-      <span class="text-xs text-gray-400">12:00</span>
+      <span class="text-xs text-gray-400">
+        {{
+          formatDate(msgGroup.messages[msgGroup.messages.length - 1].time, {
+            hour: 'numeric',
+            minute: 'numeric'
+          })
+        }}
+      </span>
       <span>Nom et prénom</span>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
+import { type ChatMessageGroup } from './ChatRoom.vue'
+import { formatDate } from '@core/utils/formatters'
 
 export default defineComponent({
   name: 'message',
   props: {
-    message: {
-      type: String,
+    msgGroup: {
+      type: Object as PropType<ChatMessageGroup>,
       required: true
     },
     isSender: {
       type: Boolean,
       required: true
     }
+  },
+  methods: {
+    formatDate
   }
 })
 </script>

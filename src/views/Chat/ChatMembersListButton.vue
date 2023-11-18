@@ -1,11 +1,16 @@
 <template>
-  <div class="text-center">
-    <v-menu v-model="menu" :close-on-content-click="false" location="end">
+  <div class="w-full text-center">
+    <v-menu class="w-full" v-model="menu" :close-on-content-click="false" location="end">
       <template v-slot:activator="{ props }">
         <button class="w-full p-2 text-left" v-bind="props">
           <span class="flex items-center gap-2">
-            <span class="w-8 h-8 border rounded-full"></span>
-            <span> username </span>
+            <avatar-badge
+              :user-id="member.id"
+              :user-profile="member.member.profile"
+              :show-username="true"
+              :size="36"
+              avatar-variant="tonal"
+              />
           </span>
         </button>
       </template>
@@ -31,6 +36,16 @@ import { ref, computed } from 'vue'
 import MutePlayer from './MutePlayer.vue'
 import BannePlayer from './BannePlayer.vue'
 import PromotePlayer from './PromotePlayer.vue'
+import { MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
+import { PropType } from 'vue'
+import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 
 const menu = ref(false)
+
+const { member } = defineProps({
+  member: {
+    type: Object as PropType<MemberRoomWithUserProfiles>,
+    required: true
+  }
+})
 </script>

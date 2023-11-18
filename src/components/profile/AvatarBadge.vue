@@ -1,6 +1,6 @@
 <template>
   <div v-if="userProfile" class="flex items-center gap-2">
-    <VBadge
+    <v-badge
       dot
       location="bottom right"
       offset-x="3"
@@ -8,20 +8,25 @@
       :color="color"
       :bordered="bordered"
     >
-      <VAvatar :variant="avatarVariant" :size="size" @click="$emit('showUserProfile')">
-        <VImg
+      <v-avatar :variant="avatarVariant" :size="size" @click="$emit('showUserProfile')">
+        <v-img
           v-if="userProfile.profile.avatar"
           :src="userProfile.profile.avatar"
           :alt="`avatar de ${userProfile.username}`"
         />
         <span v-else>{{ avatarText(userProfile.username) }}</span>
-      </VAvatar>
+      </v-avatar>
       <slot />
-    </VBadge>
+    </v-badge>
     <div v-if="showName" class="text-center">
-      <span class="text-sm line-clamp-1"
-        >{{ userProfile.profile.name }} {{ userProfile.profile.lastname }}</span
-      >
+      <span class="text-sm line-clamp-1">
+        {{ userProfile.profile.name }} {{ userProfile.profile.lastname }}
+      </span>
+    </div>
+    <div v-else-if="showUsername" class="text-center">
+      <span class="text-sm line-clamp-1">
+        {{ userProfile.username }}
+      </span>
     </div>
   </div>
   <div v-else>
@@ -58,7 +63,17 @@ export default defineComponent({
       required: false,
       default: undefined
     },
+    showUsername: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     showName: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    covered: {
       type: Boolean,
       required: false,
       default: false

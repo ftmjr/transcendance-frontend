@@ -95,7 +95,7 @@ const dashboardRoutes: RouteRecordRaw = {
       }
     },
     {
-      path: 'chats/',
+      path: 'chats/:roomId?',
       name: 'chat-new',
       component: ChatHome,
       props: (route) => {

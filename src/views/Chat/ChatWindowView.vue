@@ -74,6 +74,7 @@ import useAuthStore from '@/stores/AuthStore'
 import useRoomsStore, { ChatRoomWithMembers } from '@/stores/RoomsStore'
 import { useResponsiveLeftSidebar } from '@core/composable/useResponsiveSidebar'
 import useUserStore from '@/stores/UserStore'
+
 import ChatLeftSideBar from '@/views/Chat/ChatLeftSideBar.vue'
 import NotificationPopUp from '@/components/notifications/NotificationPopUp.vue'
 import CreateRoomForm from '@/views/Chat/CreateRoomForm.vue'

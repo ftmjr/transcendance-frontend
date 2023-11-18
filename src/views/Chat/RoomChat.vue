@@ -24,13 +24,13 @@
               :key="index"
               class="p-2"
               :class="
-                msgGrp.senderId === authStore.getUser.id ? 'self-end text-right' : 'self-start'
+                msgGrp.senderId === authStore.getUser!.id ? 'self-end text-right' : 'self-start'
               "
             >
               <div
                 class="relative message inline-flex flex-col px-6 min-w-[75px] py-2 border shadow-sm rounded-xl drop-shadow-md"
                 :class="
-                  msgGrp.senderId === authStore.getUser.id
+                  msgGrp.senderId === authStore.getUser!.id
                     ? 'text-left mr-0 ml-auto bg-[#1a1f3c] after:bg-[#1a1f3c]'
                     : 'text-left bg-[#343851] after:bg-[#343851]'
                 "
