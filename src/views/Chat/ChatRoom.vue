@@ -31,7 +31,7 @@
           }"
           ref="MessagesLogScroller"
           id="messages-log"
-          class="flex flex-col h-full gap-4 px-4 pt-6 pb-16 overflow-scroll hide-scroolbar"
+          class="flex flex-col h-full gap-4 px-4 pt-6 pb-16 overflow-scroll hide-scrollbar"
         >
           <li
             :key="`message-group-${index}`"

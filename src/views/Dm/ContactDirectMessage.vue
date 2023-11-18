@@ -12,15 +12,15 @@
       <VDivider class="d-md-none" />
     </div>
     <template v-if="conversationWith && !loading">
-      <div class="flex-1 w-full overflow-scroll hide-scroolbarr">
-        <div class="flex flex-col w-full h-full gap-4 hide-scroolbar">
+      <div class="flex-1 w-full overflow-scroll hide-scrollbar">
+        <div class="flex flex-col w-full h-full gap-4 hide-scrollbar">
           <PerfectScrollbar
-            tag="div"
+            tag="ul"
             :options="{
               wheelPropagation: false,
               suppressScrollX: true
             }"
-            class="h-full hide-scroolbar"
+            class="h-full"
             ref="MessagesLogScroller"
             id="messages-log"
           >

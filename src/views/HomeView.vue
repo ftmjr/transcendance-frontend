@@ -39,7 +39,7 @@
       </VRow>
     </div>
     <div>
-      <div class="flex gap-4 my-8 overflow-scroll hide-scroolbar">
+      <div class="flex gap-4 my-8 overflow-scroll hide-scrollbar">
         <div
           class="flex flex-row items-center w-auto h-32 gap-4 p-4 border rounded-md max-w-64 grow-0 shrink-0"
           :key="friend.id"

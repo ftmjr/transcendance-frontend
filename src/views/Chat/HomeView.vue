@@ -14,7 +14,6 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-// @ts-ignore
 import { useDisplay } from 'vuetify'
 import useAuthStore from '@/stores/AuthStore'
 import useRoomsStore, { ChatRoomWithMembers } from '@/stores/RoomsStore'

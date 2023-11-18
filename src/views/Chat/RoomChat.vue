@@ -8,7 +8,7 @@
       :user-role="userRole"
     />
     <template v-if="currentChatRoom && !loading">
-      <div class="flex-1 w-full overflow-scroll hide-scroolbar">
+      <div class="flex-1 w-full overflow-scroll hide-scrollbar">
         <div class="flex flex-col w-full h-full gap-4">
           <PerfectScrollbar
             ref="MessagesLogScroller"

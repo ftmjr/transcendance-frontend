@@ -78,25 +78,25 @@ const dashboardRoutes: RouteRecordRaw = {
         title: 'Pong'
       }
     },
+    // {
+    //   path: 'chat/:roomId?',
+    //   name: 'chat',
+    //   component: ChatWindowView,
+    //   props: (route) => {
+    //     const roomId = route.params.roomId ? parseInt(route.params.roomId.toString()) : undefined
+    //     return {
+    //       roomId
+    //     }
+    //   },
+    //   meta: {
+    //     requiresAuth: true,
+    //     title: 'Chat',
+    //     layoutWrapperClasses: 'layout-content-height-fixed'
+    //   }
+    // },
     {
       path: 'chat/:roomId?',
       name: 'chat',
-      component: ChatWindowView,
-      props: (route) => {
-        const roomId = route.params.roomId ? parseInt(route.params.roomId.toString()) : undefined
-        return {
-          roomId
-        }
-      },
-      meta: {
-        requiresAuth: true,
-        title: 'Chat',
-        layoutWrapperClasses: 'layout-content-height-fixed'
-      }
-    },
-    {
-      path: 'chats/:roomId?',
-      name: 'chat-new',
       component: ChatHome,
       props: (route) => {
         const roomId = route.params.roomId ? parseInt(route.params.roomId.toString()) : undefined

@@ -1,75 +1,11 @@
 import { defineStore } from 'pinia'
 import { Notification, NotificationSocket } from '@/utils/notificationSocket'
 import axios from '@/utils/axios'
-import { NotificationType, NotificationStatus } from '@/utils/notificationSocket'
 
 export interface NotificationState {
   notifications: Notification[]
   socketManager: NotificationSocket | null
 }
-
-const samples = [
-  {
-    type: NotificationType.GAME_INVITE,
-    id: 45,
-    userId: 9,
-    message: 'Votre invitation a ete accepte',
-    status: NotificationStatus.READ,
-    title: 'Game Challenge Accepted',
-    referenceId: 9,
-    createdAt: '1699842634715',
-    updatedAt: '1699842634715',
-    expiresAt: '1699842634715'
-  },
-  {
-    type: NotificationType.GAME_INVITE,
-    id: 45454,
-    userId: 9,
-    message: 'Veut jouer une partie avec vous',
-    status: NotificationStatus.READ,
-    title: 'Game Invite',
-    referenceId: 13,
-    createdAt: '1699842634715',
-    updatedAt: '1699842634715',
-    expiresAt: '1699842634715'
-  },
-  {
-    type: NotificationType.GAME_INVITE,
-    id: 45454,
-    userId: 9,
-    message: 'Veut jouer une partie avec vous',
-    status: NotificationStatus.READ,
-    title: 'Game Invite',
-    referenceId: 11,
-    createdAt: '1699842634715',
-    updatedAt: '1699842634715',
-    expiresAt: '1699920000000'
-  },
-  {
-    type: NotificationType.GAME_INVITE,
-    id: 45,
-    userId: 9,
-    message: 'Veut jouer une partie avec vous',
-    status: NotificationStatus.READ,
-    title: 'Game Invite',
-    referenceId: 9,
-    createdAt: '1699917466742',
-    updatedAt: '1699917466742',
-    expiresAt: '1699920170137'
-  },
-  {
-    type: NotificationType.GAME_INVITE,
-    id: 45,
-    userId: 9,
-    message: 'Votre invitation a ete accepte',
-    status: NotificationStatus.READ,
-    title: 'Game Challenge Accepted',
-    referenceId: 9,
-    createdAt: '1699842634715',
-    updatedAt: '1699842634715',
-    expiresAt: '1699921707882'
-  }
-]
 
 const useNotificationStore = defineStore({
   id: 'notification',
@@ -109,7 +45,7 @@ const useNotificationStore = defineStore({
     async getNotifications() {
       try {
         const { data } = await axios.get<Notification[]>('notifications/')
-        this.notifications = [...samples, ...data]
+        this.notifications = data;
       } catch (e) {
         console.error(e)
       }

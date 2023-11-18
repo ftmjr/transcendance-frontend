@@ -1,7 +1,7 @@
 <template>
   <v-card class="border-none">
     <section class="max-w-screen-lg mx-auto">
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg hide-scroolbar">
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg hide-scrollbar">
         <table class="w-full text-sm text-left text-gray-500 bg-none">
           <caption class="p-5 text-lg font-semibold text-left text-white bg-none">
             Classement des meilleurs joueurs
@@ -156,9 +156,6 @@ export default defineComponent({
     }
   },
   computed: {
-    isTopPlayers(): boolean {
-      return this.$props.isTopPlayers
-    },
     topPlayers(): UserWithScore[] {
       return this.users.slice(0, 3)
     }

@@ -169,8 +169,15 @@ const useMessageStore = defineStore({
       const userId =
         message.senderId === this.socketManager?.userId ? message.receiverId : message.senderId
       const userMessages = this.messages.get(userId) || []
+      let prepareToReloadConversation = false
+      if (userMessages.length === 0) {
+        prepareToReloadConversation = true
+      }
       userMessages.push(message)
       this.messages.set(userId, userMessages)
+      if (prepareToReloadConversation) {
+        await this.getUniqueConversations();
+      }
     },
     getLastMessageBetween(userId: number): PrivateMessage | null {
       const userMessages = this.messages.get(userId) || []
