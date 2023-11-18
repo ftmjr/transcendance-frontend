@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full flex flex-col">
+  <div class="flex flex-col w-full h-full">
     <ChatConversationTopBar
       :is-left-sidebar-open="isLeftSidebarOpen"
       :is-right-sidebar-open="isRightSidebarOpen"
@@ -9,7 +9,7 @@
     />
     <template v-if="currentChatRoom && !loading">
       <div class="flex-1 w-full overflow-scroll hide-scroolbar">
-        <div class="h-full w-full flex flex-col gap-4">
+        <div class="flex flex-col w-full h-full gap-4">
           <PerfectScrollbar
             ref="MessagesLogScroller"
             tag="ul"
@@ -38,8 +38,8 @@
                 <span v-for="msgData in msgGrp.messages" :key="msgData.time">
                   {{ msgData.message }}
                 </span>
-                <div class="inline-flex gap-2 items-center justify-end">
-                  <span class="font-thin text-sm" :class="getMemberColorText(msgGrp.senderId)">
+                <div class="inline-flex items-center justify-end gap-2">
+                  <span class="text-sm font-thin" :class="getMemberColorText(msgGrp.senderId)">
                     {{ getNameOfMember(msgGrp.senderId) }}
                   </span>
                   <span class="text-[.5rem] text-gray-50/90 font-thin block">
@@ -53,16 +53,16 @@
                 </div>
               </div>
             </div>
-            <div class="h-8 shrink-0 grow-0 w-full"></div>
+            <div class="w-full h-8 shrink-0 grow-0"></div>
           </PerfectScrollbar>
         </div>
       </div>
       <p v-if="isTypingUserName" class="font-weight-medium">
         {{ isTypingUserName }}
-        <span class="text-sm font-weight-light pr-1">est en train d'écrire</span>
+        <span class="pr-1 text-sm font-weight-light">est en train d'écrire</span>
         <VIcon :size="24" color="primary" icon="svg-spinners:3-dots-bounce" />
       </p>
-      <div class="flex-0 border shadow-lg drop-shadow-lg rounded-md">
+      <div class="border rounded-md shadow-lg flex-0 drop-shadow-lg">
         <VForm @submit.prevent="sendMessage">
           <VTextField
             v-model="chatMessageContent"
@@ -76,7 +76,7 @@
             <template #append-inner>
               <VBtn @click.stop.prevent="sendMessage" rounded>
                 <svg
-                  class="fill-current text-current h-4 w-4"
+                  class="w-4 h-4 text-current fill-current"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                 >

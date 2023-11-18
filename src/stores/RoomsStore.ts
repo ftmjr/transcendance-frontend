@@ -39,11 +39,11 @@ export const rolePrint: Array<{
   color?: string
   bgClass?: string
 }> = [
-  { role: ChatMemberRole.OWNER, printRole: 'Big Boss', color: 'success' },
-  { role: ChatMemberRole.ADMIN, printRole: 'Administrateur', bgClass: 'info' },
-  { role: ChatMemberRole.USER, printRole: 'Utilisateur', color: 'dark' },
-  { role: ChatMemberRole.BAN, printRole: 'Ban', color: 'danger' }
-]
+    { role: ChatMemberRole.OWNER, printRole: 'Big Boss', color: 'success' },
+    { role: ChatMemberRole.ADMIN, printRole: 'Administrateur', bgClass: 'info' },
+    { role: ChatMemberRole.USER, printRole: 'Utilisateur', color: 'dark' },
+    { role: ChatMemberRole.BAN, printRole: 'Ban', color: 'danger' }
+  ]
 
 const useRoomsStore = defineStore({
   id: 'roomsStore',
@@ -57,6 +57,8 @@ const useRoomsStore = defineStore({
     currentRoomMessages: ChatMessage[]
     searchTerm: string
     contactTyping: Map<number, number>
+    isLeftNavOpen: boolean
+    isRightNavOpen: boolean
     roomsMembersTyping: Map<number, { senderId: number; username: string; timestamp: number }>
   } => {
     return {
@@ -69,10 +71,9 @@ const useRoomsStore = defineStore({
       currentRoomMembers: [],
       currentRoomMessages: [],
       contactTyping: new Map<number, number>(),
-      roomsMembersTyping: new Map<
-        number,
-        { senderId: number; username: string; timestamp: number }
-      >()
+      roomsMembersTyping: new Map<number, { senderId: number; username: string; timestamp: number }>(),
+      isLeftNavOpen: false,
+      isRightNavOpen: false
     }
   },
   getters: {
@@ -129,6 +130,12 @@ const useRoomsStore = defineStore({
     },
     getRoomMembersTyping(): Map<number, { senderId: number; username: string; timestamp: number }> {
       return this.roomsMembersTyping
+    },
+    getIsLeftNavOpen(): boolean {
+      return this.isLeftNavOpen
+    },
+    getIsRightNavOpen(): boolean {
+      return this.isRightNavOpen
     }
   },
   actions: {
@@ -419,6 +426,12 @@ const useRoomsStore = defineStore({
     disconnect() {
       this.socketManager?.disconnect()
       this.socketManager = null
+    },
+    toggleLeftNav() {
+      this.isLeftNavOpen = !this.isLeftNavOpen
+    },
+    toggleRightNav() {
+      this.isRightNavOpen = !this.isRightNavOpen
     }
   }
 })
