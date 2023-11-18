@@ -137,7 +137,11 @@ const useAuthStore = defineStore({
     },
     storageUpdated() {
       // check if token is still present in local storage
-      alert('storage updated')
+      const token = localStorage.getItem('__token__');
+      if (!token) {
+        // token is not present, logout
+        this.logout();
+      }
     },
     async login(credentials: { username: string; password: string }): Promise<boolean> {
       this.error = { state: false, message: '' }
