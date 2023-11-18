@@ -130,9 +130,7 @@ export default defineComponent({
     $route(to, from) {
       if (to.name === 'chat') {
         const id = to.params.roomId
-        if (id) {
-          this.accessRoom(Number(id))
-        }
+        this.prepareRoomAccess(id)
       }
     },
     'roomsStore.currentRoom': {
@@ -144,17 +142,20 @@ export default defineComponent({
       immediate: true
     }
   },
-  beforeMount() {
-    this.loadRooms()
-    if (this.roomId) {
-      this.accessRoom(this.roomId)
-    }
+  async beforeMount() {
+    await this.prepareRoomAccess(this.roomId)
   },
   methods: {
+    async prepareRoomAccess(roomId?: number) {
+      await this.loadRooms()
+      if (this.roomId) {
+        await this.accessRoom(this.roomId)
+      }
+    },
     async loadRooms() {
       this.loading = true
-      await this.roomsStore.getAllMyRooms()
       await this.roomsStore.fetchPublicRooms()
+      await this.roomsStore.getAllMyRooms()
       await this.userStore.loadAllMyFriends()
       await this.userStore.loadBlockedUsers()
       this.loading = false

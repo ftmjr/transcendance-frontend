@@ -226,7 +226,8 @@ export default class Menu extends Scene {
         '[-] The game is played with two players, each controlling a paddle.\n' +
         '[-] The ball is served with a random speed.\n' +
         '[-] The ball will bounce off the walls and the paddles.\n' +
-        '[-] To move the paddle, use the arrow keys.\n',
+        '[-] To move the paddle, use the arrow keys.\n' +
+        '[-] Press ESC or Q during the game to Quit\n',
       {
         fontFamily: 'Courier',
         fontSize: '20px',

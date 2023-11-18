@@ -94,12 +94,8 @@ export default defineComponent({
     }
   },
   data() {
-    let userProfile = null as unknown as ShortUserProfile
-    if (this.user) {
-      userProfile = this.user
-    }
     return {
-      userProfile: userProfile
+      userProfile: null as unknown as ShortUserProfile
     }
   },
   computed: {
@@ -114,22 +110,28 @@ export default defineComponent({
       return this.authStore.resolveAvatarBadgeVariant(this.status)
     }
   },
-  async beforeMount() {
-    if (!this.userProfile) {
-      await this.loadUser(this.userId)
-    }
-  },
   watch: {
     userId: {
       handler(value: number) {
         this.loadUser(value)
       }
+    },
+    user: {
+      handler(value: ShortUserProfile) {
+        if (value) {
+          this.userProfile = value
+        } else {
+          this.loadUser(this.userId);
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {
     avatarText,
     async loadUser(userId: number) {
-      const data = await this.usersStore.getShortUserProfile(userId)
+      const data = await this.usersStore.getShortUserProfile(userId);
       if (data) {
         this.userProfile = data
       }

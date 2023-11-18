@@ -92,19 +92,6 @@ const useGameStore = defineStore({
     }
   },
   actions: {
-    async joinAGameSessionQueue(): Promise<'preparing' | string> {
-      if (!this.canStartOrAcceptGameInvitation) {
-        return 'Vous avez deja une session de jeu'
-      }
-      try {
-        const { data } = await axios.post<GameSession>('/game/join-queue', {})
-        this.joinedGameSession = data
-        return 'preparing'
-      } catch (e) {
-        console.error(e)
-        return 'Une erreur est survenue'
-      }
-    },
     async startGameAgainstBot(): Promise<'preparing' | string> {
       if (!this.canStartOrAcceptGameInvitation) {
         return 'Vous avez deja une session de jeu'
@@ -191,13 +178,16 @@ const useGameStore = defineStore({
     },
     async getAllMyGameSessions() {
       try {
-        const { data } = await axios.get<GameSession[]>('/game/sessions')
+        const { data } = await axios.get<GameSession[]>('/game/sessions', {
+          headers: { Accept: 'application/json' }
+        })
         this.myGameSessions = data
         if (this.myGameSessions.length > 0) {
           this.joinedGameSession = this.myGameSessions[0]
         }
       } catch (e) {
         console.error(e)
+        this.myGameSessions = []
       }
     },
     async refuseGameInvitation(gameId: number) {
@@ -219,7 +209,10 @@ const useGameStore = defineStore({
     },
     async deleteGameSession(gameId: number) {
       try {
-        await axios.delete('/game/sessions', { data: { gameId } })
+        await axios.delete('/game/sessions', {
+          headers: { Accept: 'application/json' },
+          data: { gameId }
+        })
       } catch (e) {
         console.error(e)
       }
@@ -237,29 +230,39 @@ const useGameStore = defineStore({
     async getUserGameStatus(
       userId: number
     ): Promise<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }> {
-      const { data } = await axios.get<{
-        status: 'playing' | 'inQueue' | 'free'
-        gameSession?: GameSession
-      }>(`/game/status/${userId}`)
-      return data
+      try {
+        const { data } = await axios.get<{
+          status: 'playing' | 'inQueue' | 'free'
+          gameSession?: GameSession
+        }>(`/game/status/${userId}`, { headers: { Accept: 'application/json' } })
+        return data
+      } catch (e) {
+        return { status: 'free', gameSession: undefined }
+      }
     },
 
     // same function as getUserGameStatus but for multiple users
     async getUsersGameStatus(
       userIds: number[]
     ): Promise<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }[]> {
-      const { data } = await axios.post<
-        {
-          status: 'playing' | 'inQueue' | 'free'
-          gameSession?: GameSession
-        }[]
-      >(`/game/status`, { userIds })
-      return data
+      try {
+        const { data } = await axios.post<
+          {
+            status: 'playing' | 'inQueue' | 'free'
+            gameSession?: GameSession
+          }[]
+        >(`/game/status`, { userIds })
+        return data
+      } catch (e) {
+        return userIds.map((id) => ({ status: 'free', gameSession: undefined }))
+      }
     },
     // get complete game history for a user
     async getUserCompleteGameHistory(userId: number): Promise<CompleteGameHistory[]> {
       try {
-        const { data } = await axios.get<CompleteGameHistory[]>(`/game/history/${userId}`)
+        const { data } = await axios.get<CompleteGameHistory[]>(`/game/history/${userId}`, {
+          headers: { Accept: 'application/json' }
+        })
         return data
       } catch (e) {
         console.log('failed to get user game history')
@@ -268,7 +271,9 @@ const useGameStore = defineStore({
     },
     async getSimpleGameHistory(userId: number): Promise<GameHistory[]> {
       try {
-        const { data } = await axios.get<GameHistory[]>(`/game/simple-history/${userId}`)
+        const { data } = await axios.get<GameHistory[]>(`/game/simple-history/${userId}`, {
+          headers: { Accept: 'application/json' }
+        })
         return data
       } catch (e) {
         console.log('failed to get user game history')

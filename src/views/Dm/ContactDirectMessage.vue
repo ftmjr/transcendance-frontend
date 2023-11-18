@@ -126,7 +126,7 @@ interface MessageGroup {
 export default defineComponent({
   components: {
     MessageTopBar,
-    PerfectScrollbar,
+    PerfectScrollbar
   },
   props: {
     isLeftSidebarOpen: {

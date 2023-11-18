@@ -3,6 +3,7 @@
     v-model="isSnackbarVisible"
     transition="scale-transition"
     location="top"
+    :color="color"
     :timeout="2000"
   >
     {{ snackbarMsg }}
@@ -25,6 +26,10 @@ export default defineComponent({
     visible: {
       type: Boolean,
       default: () => false
+    },
+    color: {
+      type: String,
+      default: () => 'default'
     }
   },
   emits: ['update:visible'],

@@ -103,6 +103,36 @@ export type ShortUserProfile = Pick<
   'id' | 'profile' | 'username' | 'email' | 'updatedAt'
 >
 
+const aiProfile: ShortUserProfile = {
+  id: 0,
+  profile: {
+    id: 0,
+    userId: 0,
+    name: 'AI',
+    lastname: 'Bot',
+    avatar: '/pong/ia_avatar.jpg',
+    status: Status.Online
+  },
+  username: 'AI',
+  email: 'ai',
+  updatedAt: new Date().toISOString()
+}
+
+const roomWaiting: ShortUserProfile = {
+  id: -1,
+  profile: {
+    id: 0,
+    userId: -1,
+    name: 'Game',
+    lastname: 'Room',
+    avatar: '/pong/ia_avatar.jpg',
+    status: Status.Busy
+  },
+  username: 'GameRooom',
+  email: 'ftmjr',
+  updatedAt: new Date().toISOString()
+}
+
 const useUserStore = defineStore({
   id: 'userStore',
   state: (): UserStoreState => {
@@ -116,12 +146,15 @@ const useUserStore = defineStore({
       mostActiveGame: 0, //gameId
       mostActiveUser: 0 //userId
     }
+    const usersStatus = new Map<number, Status>();
+    usersStatus.set(-1, Status.Busy);
+    usersStatus.set(0, Status.Online);
     return {
       contacts: [],
       blockedUsers: [],
       stats,
       statusSocketManager: null,
-      usersStatus: new Map<number, Status>(),
+      usersStatus,
       shortProfiles: new Map<number, ShortUserProfile>()
     }
   },
@@ -289,38 +322,21 @@ const useUserStore = defineStore({
       return null
     },
     async getShortUserProfile(userId: number): Promise<ShortUserProfile | null> {
-      const defaultProfile: ShortUserProfile = {
-        id: 0,
-        profile: {
-          id: 0,
-          userId: 0,
-          name: 'AI',
-          lastname: 'Bot',
-          avatar: '/pong/ia_avatar.jpg',
-          status: Status.Online
-        },
-        username: 'AI',
-        email: 'ai',
-        updatedAt: new Date().toISOString()
-      }
       try {
-        if (userId === 0) {
-          this.usersStatus.set(0, Status.Online)
-          return defaultProfile
-        }
+        if (userId === -1)  return roomWaiting;
+        if (userId === 0)  return aiProfile;
+        if (!userId) return roomWaiting;
         // check if the user is in the map
-        const profile = this.shortProfiles.get(userId)
-        if (profile) {
-          return profile
-        }
+        const profile = this.shortProfiles.get(userId);
+        if (profile) return profile;
         const { data } = await axios.get<ShortUserProfile>(`/users/short-profile/${userId}`)
-        this.usersStatus.set(userId, data.profile.status)
-        this.shortProfiles.set(userId, data)
+        this.usersStatus.set(userId, data.profile.status);
+        this.shortProfiles.set(userId, data);
         return data
       } catch (e) {
         console.log(e)
       }
-      return null
+      return roomWaiting
     },
     async getPaginatedUser(params: {
       currentPage: number
@@ -408,7 +424,7 @@ const useUserStore = defineStore({
     },
     async getStatus(userId: number): Promise<Status> {
       // check if the user is in the map
-      const status = this.usersStatus.get(userId)
+      const status = this.usersStatus.get(userId);
       if (status) {
         return status
       }

@@ -12,7 +12,9 @@ export default class PongScene extends Scene {
   public monitor!: Monitor
   public currentUser!: GameUser & { userType: GameUserType }
   public theme!: Theme
-  public cursorkeys: Phaser.Types.Input.Keyboard.CursorKeys | undefined
+  public cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys | undefined
+  public escKey: Phaser.Input.Keyboard.Key | undefined
+  public QKey: Phaser.Input.Keyboard.Key | undefined
   private leftLine!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
   private rightLine!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
   private scoreImages!: { player1: ScoreBoard; player2: ScoreBoard }
@@ -35,7 +37,9 @@ export default class PongScene extends Scene {
     // this.physics.world.createDebugGraphic()
     this.physics.world.setBounds(0, 0, 1334, 750)
     // create inputs for keyboard and mouse
-    this.cursorkeys = this.input.keyboard?.createCursorKeys()
+    this.cursorKeys = this.input.keyboard?.createCursorKeys()
+    this.escKey = this.input.keyboard?.addKey('ESC')
+    this.QKey = this.input.keyboard?.addKey('Q')
     this.createPlayers()
     this.ball = new Ball(this, this.theme, { x: 667, y: 375 })
     this.createScores()
@@ -100,7 +104,7 @@ export default class PongScene extends Scene {
   createScores() {
     const middle = this.scale.width / 2
     if (this.theme !== Theme.Soccer) {
-      const bitmapKey = this.theme === Theme.Classic ? 'atari' : 'nokia'
+      const bitmapKey = 'atari'
       this.playerOneScoreText = this.add.bitmapText(middle - 50, 70, bitmapKey, '0')
       this.playerOneScoreText.setOrigin(0.5, 0.5)
       this.playerTwoScoreText = this.add.bitmapText(middle + 50, 70, bitmapKey, '0')
@@ -157,33 +161,42 @@ export default class PongScene extends Scene {
     this.playerTwoScoreText.text = this.monitor.getPlayer2Score().toString()
   }
 
-  private buildThemeLayer() {
+  private buildMiddleLine(color: number) {
     const middle = this.scale.width / 2
-    if (this.theme === Theme.Classic) {
-      const dashLength = 20 // Length of each dash
-      const gapLength = 10 // Length of the gap between dashes
-      const totalLength = 750 // Total length of the line
-      const graphics = this.add.graphics({
-        lineStyle: {
-          width: 5,
-          color: 0xffffff
-        }
-      })
-      // put graphics on another layer
-      graphics.setDepth(-1)
-      const numberOfDashes = Math.floor(totalLength / (dashLength + gapLength))
-      for (let i = 0; i < numberOfDashes; i++) {
-        const startY = i * (dashLength + gapLength)
-        const endY = startY + dashLength
-        const line = new Phaser.Geom.Line(middle - 2.5, startY, middle - 2.5, endY)
-        graphics.strokeLineShape(line)
+    const dashLength = 20 // Length of each dash
+    const gapLength = 10 // Length of the gap between dashes
+    const totalLength = 750 // Total length of the line
+    const graphics = this.add.graphics({
+      lineStyle: {
+        width: 5,
+        color: color
       }
+    })
+    // put graphics on another layer
+    graphics.setDepth(-1)
+    const numberOfDashes = Math.floor(totalLength / (dashLength + gapLength))
+    for (let i = 0; i < numberOfDashes; i++) {
+      const startY = i * (dashLength + gapLength)
+      const endY = startY + dashLength
+      const line = new Phaser.Geom.Line(middle - 2.5, startY, middle - 2.5, endY)
+      graphics.strokeLineShape(line)
+    }
+  }
+
+  private buildThemeLayer() {
+    if (this.theme === Theme.Classic) {
+      this.buildMiddleLine(0xffffff)
     } else if (this.theme === Theme.Soccer) {
       const soccer_court = this.add.image(667, 375, 'soccer_court')
       soccer_court.scaleX = 1.2853801967467613
       soccer_court.scaleY = 1.2427411843889709
       //put image on another layer
       soccer_court.setDepth(-1)
+    } else if (this.theme === Theme.Arcade) {
+      // put a pink middle line
+      this.buildMiddleLine(0xff00ff)
+      // put a dark blue background
+      this.cameras.main.setBackgroundColor('#000033')
     }
   }
 
@@ -209,9 +222,13 @@ export default class PongScene extends Scene {
     })
     this.ball.update()
     if (!this.scoreRoutineOn) {
-      if (this.cursorkeys?.space.isDown) {
+      if (this.cursorKeys?.space.isDown) {
         this.monitor.serveBall()
       }
+    }
+    // listen to esc key or Q key to quit the game
+    if (this.escKey?.isDown || this.QKey?.isDown) {
+      this.monitor.quitAndMoveToHistory()
     }
   }
 }

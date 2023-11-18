@@ -154,10 +154,10 @@ const useRoomsStore = defineStore({
           messageStore.handleReceivedMessage(message)
         },
         (error: string) => {
-          console.log(error)
+          console.log('message packet not sent')
         },
         (error: string) => {
-          console.log(error)
+          console.log('chat socket connection error', error)
         },
         (roomId: number) => {
           // if room is the current room, reload members
@@ -215,11 +215,8 @@ const useRoomsStore = defineStore({
         return data
       } catch (error) {
         if (isAxiosError(error)) {
-          const status = error.response?.status
-          if (status === 401 || status === 403 || status === 404) {
-            errorMessage =
-              error.response?.data.message ?? `Vous n'êtes pas autorisé à rejoindre cette salle`
-          }
+          errorMessage =
+            error.response?.data.message ?? `Vous n'êtes pas autorisé à rejoindre cette salle`
         }
       }
       return errorMessage
@@ -326,7 +323,6 @@ const useRoomsStore = defineStore({
         if (Array.isArray(members)) {
           this.currentRoomMembers = members
           this.currentReadRoomId = roomId
-          this.currentRoomMessages = []
           this.listenToRoom(roomId)
           return 'success'
         } else {
@@ -381,6 +377,7 @@ const useRoomsStore = defineStore({
             }
           }
         )
+        this.listenToRoom(this.currentReadRoomId)
         this.currentRoomMessages = data
       } catch (error) {
         console.error('Failed to load room messages:', error)
