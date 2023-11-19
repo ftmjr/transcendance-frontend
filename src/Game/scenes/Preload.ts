@@ -63,8 +63,8 @@ export default class Preload extends Scene {
       if (this.monitor.state === GAME_STATE.Play || this.monitor.state === GAME_STATE.Pause) {
         this.scene.start('PongGame', this.sceneData)
       } else {
-        this.monitor.sendGameState(GAME_STATE.Menu);
-        this.scene.start('Menu', this.sceneData);
+        this.monitor.sendGameState(GAME_STATE.Menu)
+        this.scene.start('Menu', this.sceneData)
       }
     }
   }

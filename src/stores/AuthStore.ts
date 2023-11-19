@@ -137,10 +137,10 @@ const useAuthStore = defineStore({
     },
     storageUpdated() {
       // check if token is still present in local storage
-      const token = localStorage.getItem('__token__');
+      const token = localStorage.getItem('__token__')
       if (!token) {
         // token is not present, logout
-        this.logout();
+        this.logout()
       }
     },
     async login(credentials: { username: string; password: string }): Promise<boolean> {
@@ -365,7 +365,7 @@ const useAuthStore = defineStore({
           await this.refreshToken()
           this.isRefreshingToken = false
         },
-        1000 * 60 * 30 // 30 minutes refresh
+        1000 * 60 * 14 // 14 minutes refresh
       )
     },
     /**

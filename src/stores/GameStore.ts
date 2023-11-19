@@ -183,10 +183,9 @@ const useGameStore = defineStore({
         })
         this.myGameSessions = data
         if (this.myGameSessions.length > 0) {
-          this.joinedGameSession = this.myGameSessions[0]
+          this.joinedGameSession = this.myGameSessions[this.myGameSessions.length - 1]
         }
       } catch (e) {
-        console.error(e)
         this.myGameSessions = []
       }
     },
@@ -214,7 +213,7 @@ const useGameStore = defineStore({
           data: { gameId }
         })
       } catch (e) {
-        console.error(e)
+        console.log('failed to delete game session')
       }
     },
     async leaveCurrentGameSession(userId: number) {
