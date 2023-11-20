@@ -75,7 +75,7 @@ export default class PongScene extends Scene {
       const message = this.add.bitmapText(667, 375, 'atari', 'Player Left')
       message.setOrigin(0.5, 0.5)
       message.setDepth(2)
-      this.time.delayedCall(200, () => {
+      this.time.delayedCall(500, () => {
         message?.destroy()
       })
     }

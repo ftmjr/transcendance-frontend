@@ -77,12 +77,9 @@ export default class Monitor {
     private readonly currentUser: GameUser & { userType: GameUserType },
     private moveToHistory: () => void
   ) {
-    this.gameNetwork = new GameNetwork({
-      userId: currentUser.userId,
-      username: currentUser.username,
-      avatar: currentUser.avatar
-    })
-    this.gameNetwork.connectToGame(roomId, currentUser.userType)
+    this.gameNetwork = GameNetwork.getInstance(currentUser);
+    this.gameNetwork.reconnect();
+    this.gameNetwork.connectToGame(this.roomId, this.currentUser.userType);
     this.listenToGameEvents()
   }
 
@@ -194,6 +191,7 @@ export default class Monitor {
     return this.gameNetwork.isOperational
   }
   reconnect() {
+    this.gameNetwork.reconnect();
     this.gameNetwork.connectToGame(this.roomId, this.currentUser.userType)
     this.listenToGameEvents()
   }
@@ -235,11 +233,7 @@ export default class Monitor {
 
   public async quitGame() {
     if (this.currentUser.userType === GameUserType.Viewer) return
-    else {
-      if (this.state !== GAME_STATE.Ended) {
-        this.sendGameState(GAME_STATE.Ended)
-      }
-    }
+    this.sendGameState(GAME_STATE.Ended);
     this.disconnectNetwork()
   }
   public async quitAndMoveToHistory() {

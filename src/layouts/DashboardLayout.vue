@@ -33,13 +33,13 @@
 </template>
 
 <script setup lang="ts">
-import {onBeforeMount, onBeforeUnmount, watch} from 'vue'
-import { useRouter } from 'vue-router'
-import { useThemeConfig } from '@core/composable/useThemeConfig'
+import {onBeforeMount, onBeforeUnmount, watch, ref} from 'vue'
+import {useRouter} from 'vue-router'
+import {useThemeConfig} from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
-import { VerticalNavLayout } from '@layouts'
-import { useWindowSize } from '@vueuse/core'
-import { useSkins } from '@core/composable/useSkins'
+import {VerticalNavLayout} from '@layouts'
+import {useWindowSize} from '@vueuse/core'
+import {useSkins} from '@core/composable/useSkins'
 import FooterSection from '@/layouts/FooterSection.vue'
 import NavSearchBar from '@/components/navbar/NavSearchBar.vue'
 import UserProfileButton from '@/components/navbar/UserProfileButton.vue'
@@ -47,6 +47,7 @@ import NotificationButton from '@/components/navbar/NotificationButton.vue'
 import useGameStore from '@/stores/GameStore'
 import useAuthStore from '@/stores/AuthStore'
 import useNotificationStore from '@/stores/NotificationStore'
+import {Notification as NotificationT, NotificationType} from "@/utils/notificationSocket";
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
 
@@ -61,6 +62,14 @@ const gameStore = useGameStore()
 const usersStore = useUserStore()
 const router = useRouter();
 
+const showChallengeAcceptedDialog = ref(false)
+const checkIfNewNotificationIsANewGameChallenge = (notification: NotificationT) => {
+  if (notification.type === NotificationType.GAME_EVENT && notification.title === 'Game Started') {
+    showChallengeAcceptedDialog.value = true
+  }
+}
+
+
 // watch if is locked and move him to locked page
 watch(
     () => authStore.isLocked,
@@ -70,6 +79,17 @@ watch(
       }
     }
 )
+
+// watch if new notification is a new game challenge
+watch(
+    () => notificationStore.allNotifications,
+    (notifications) => {
+      if (notifications.length > 0) {
+        checkIfNewNotificationIsANewGameChallenge(notifications[0])
+      }
+    }
+)
+
 // a beforeMount hook would be better
 onBeforeMount(() => {
   if (authStore.isLoggedIn && authStore.getUser?.id) {
