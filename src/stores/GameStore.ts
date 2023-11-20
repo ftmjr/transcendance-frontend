@@ -82,7 +82,8 @@ const useGameStore = defineStore({
       currentGameSession: undefined,
       currentWatchingGameSession: undefined,
       myGameSessions: [],
-      endedGames: []
+      endedGames: [],
+      gameNetwork: undefined
     }
   },
   getters: {
