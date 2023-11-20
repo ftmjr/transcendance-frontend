@@ -434,7 +434,7 @@ const useAuthStore = defineStore({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async changeMyStatus(value: Status): Promise<'success' | 'error'> {
       try {
-        // @ TODO: update user status, to be done later
+
         return 'success'
       } catch (e) {
         return 'error'

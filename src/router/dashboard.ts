@@ -7,6 +7,7 @@ import LeaderboardView from '@/views/LeaderboardView.vue'
 import { RouteRecordRaw } from 'vue-router'
 import GameView from '@/views/GameView.vue'
 import ChatHome from '@/views/Chat/ChatRooms.vue'
+import waitingRoom from "@/views/WaitingRoom.vue";
 
 const dashboardRoutes: RouteRecordRaw = {
   path: '/',
@@ -40,17 +41,9 @@ const dashboardRoutes: RouteRecordRaw = {
       }
     },
     {
-      path: 'waiting-room/:gameId?',
+      path: 'waiting-room',
       name: 'waiting-room',
-      component: GameView,
-      props: (route) => {
-        const gameId = route.params.gameId ? parseInt(route.params.gameId.toString()) : undefined
-        return {
-          gameId,
-          waitingRoom: true,
-          isPlayer: true
-        }
-      },
+      component: waitingRoom,
       meta: {
         requiresAuth: true,
         layoutWrapperClasses: 'layout-content-height-fixed',

@@ -72,7 +72,7 @@ onBeforeMount(() => {
     if (!usersStore.socketOperational) {
       usersStore.initStatusSocket(authStore.getUser.id)
     }
-    gameStore.getAllMyGameSessions()
+    gameStore.getAllGameSessions()
   }
 })
 

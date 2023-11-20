@@ -2,8 +2,11 @@
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
 import useAuthStore from '@/stores/AuthStore'
-import { GameHistory } from '@/interfaces/User'
+import {GameHistory, Status} from '@/interfaces/User'
 import { Theme } from '@/Game/scenes/Boot'
+import { GAME_STATE } from '@/Game/network/Monitor'
+import { isAxiosError } from 'axios'
+import useUserStore from "@/stores/UserStore";
 
 export enum GameSessionType {
   Bot,
@@ -28,9 +31,24 @@ export interface GameSession {
   gameId: number
   hostId: number
   type: GameSessionType
+  state: GAME_STATE
   participants: GamerSession[]
   observers: GamerSession[]
   rules: GameRules
+}
+
+export interface WaitingGameSession {
+  waitingGameId: number
+  hostId: number
+  type: GameSessionType.PrivateGame | GameSessionType.QueListGame
+  participants: GamerSession[]
+  rules: GameRules
+}
+
+export interface GameSessionQResponse {
+  matchFound: boolean
+  waitingSession?: WaitingGameSession
+  gameSession?: GameSession
 }
 
 export interface CompleteGameHistory {
@@ -38,6 +56,11 @@ export interface CompleteGameHistory {
   gameName: string
   winnerId: number
   histories: Record<number, GameHistory[]> // {opponentId: GameHistory[]}
+}
+
+export interface GameStatus {
+  status: 'playing' | 'inQueue' | 'free'
+  gameSession?: GameSession
 }
 
 export enum StartAgainst {
@@ -48,187 +71,231 @@ export enum StartAgainst {
 const useGameStore = defineStore({
   id: 'games',
   state: (): {
-    joinedGameSession: GameSession | null
+    currentGameSession: GameSession | undefined
+    currentWatchingGameSession: GameSession | undefined
     myGameSessions: GameSession[]
-    viewingAGame: boolean
+    endedGames: number[]
   } => {
     return {
-      joinedGameSession: null,
+      currentGameSession: undefined,
+      currentWatchingGameSession: undefined,
       myGameSessions: [],
-      viewingAGame: false
+      endedGames: []
     }
   },
   getters: {
-    allGameSessions(): GameSession[] {
-      return this.myGameSessions
-    },
-    currentGameSession(): GameSession | null {
-      return this.joinedGameSession
-    },
     isPlaying(): boolean {
-      if (this.currentGameSession === null) return false
-      const userId = useAuthStore().getUser?.id
-      if (!userId) {
-        return false
-      }
-      return this.currentGameSession.participants.some((p) => p.userId === userId)
+      return !!this.currentGameSession
     },
     isWatching(): boolean {
-      if (this.currentGameSession === null) return false
-      return this.viewingAGame
+      return !!this.currentWatchingGameSession
     },
-    isPlayingWithBot(): boolean {
-      return this.currentGameSession?.type === GameSessionType.Bot
+    canStartGame(): boolean {
+      return !this.currentGameSession && !this.currentWatchingGameSession
     },
-    isPlayingWithPlayer(): boolean {
-      return this.currentGameSession?.type === GameSessionType.CompetitionGame
+    canStartWatching(): boolean {
+      return !this.currentGameSession && !this.currentWatchingGameSession
+    },
+    currentGameId(): number | undefined {
+      return this.currentGameSession?.gameId
+    },
+    currentGameRules(): GameRules | undefined {
+      return this.currentGameSession?.rules
+    },
+    currentGameType(): GameSessionType | undefined {
+      return this.currentGameSession?.type
+    },
+    getCurrentGameSession(): GameSession | undefined {
+        return this.currentGameSession
+    },
+    getCurrentWatchingGameSession(): GameSession | undefined {
+        return this.currentWatchingGameSession
     },
     isPlayingWithQueList(): boolean {
       return this.currentGameSession?.type === GameSessionType.QueListGame
-    },
-    canStartOrAcceptGameInvitation(): boolean {
-      // host can not start a game if there is game session already
-      return this.currentGameSession === null
     }
   },
   actions: {
-    async startGameAgainstBot(): Promise<'preparing' | string> {
-      if (!this.canStartOrAcceptGameInvitation) {
-        return 'Vous avez deja une session de jeu'
-      }
-      try {
-        const { data } = await axios.post<GameSession>('/game/start', {
-          againstBot: true
-        })
-        this.joinedGameSession = data
-        return 'preparing'
-      } catch (e) {
-        console.error(e)
-        return 'Une erreur est survenue'
-      }
-    },
-    async startGameAgainstPlayer(userId: number, rules: GameRules): Promise<'preparing' | string> {
-      if (!this.canStartOrAcceptGameInvitation) {
-        return 'Vous avez deja une session de jeu'
-      }
-      try {
-        const { data } = await axios.post<GameSession>('/game/start', {
-          againstBot: false,
-          opponent: userId,
-          rules
-        })
-        this.joinedGameSession = data
-        return 'preparing'
-      } catch (e) {
-        console.error(e)
-        return 'Une erreur est survenue'
-      }
-    },
-    async startGameAgainstQueList(): Promise<'preparing' | string> {
-      if (!this.canStartOrAcceptGameInvitation) {
-        return 'Vous avez deja une session de jeu'
-      }
-      try {
-        const { data } = await axios.post<GameSession>('/game/join-queue')
-        this.joinedGameSession = data
-        return 'preparing'
-      } catch (e) {
-        console.error(e)
-        return 'Une erreur est survenue'
-      }
-    },
-    async startViewingGame(gameId: number): Promise<'preparing' | string> {
-      if (!this.canStartOrAcceptGameInvitation) {
-        return 'Vous avez deja une session de jeu'
-      }
-      try {
-        const { data } = await axios.get<GameSession>(`/game/watch-game/${gameId}`)
-        this.joinedGameSession = data
-        this.viewingAGame = true
-        return 'preparing'
-      } catch (e) {
-        console.error(e)
-        return 'Une erreur est survenue'
-      }
-    },
-    stopViewingGame(): 'stopped' | string {
-      if (!this.joinedGameSession) {
-        return "Vous n'avez pas de session de jeu"
-      }
-      if (!this.viewingAGame) {
-        return "Vous n'etes pas en train de regarder une partie"
-      }
-      this.joinedGameSession = null
-      this.viewingAGame = false
-      return 'stopped'
-    },
-    async acceptGameInvitation(gameId: number): Promise<'preparing' | string> {
-      if (!this.canStartOrAcceptGameInvitation) {
-        return 'Vous avez deja une session de jeu'
-      }
-      try {
-        const { data } = await axios.post<GameSession>('/game/accept-invitation', { gameId })
-        this.joinedGameSession = data
-        await this.getAllMyGameSessions()
-        return 'preparing'
-      } catch (e) {
-        console.error(e)
-        return 'Une erreur est survenue'
-      }
-    },
-    async getAllMyGameSessions() {
+    async getAllGameSessions() {
       try {
         const { data } = await axios.get<GameSession[]>('/game/sessions', {
           headers: { Accept: 'application/json' }
         })
         this.myGameSessions = data
-        if (this.myGameSessions.length > 0) {
-          this.joinedGameSession = this.myGameSessions[this.myGameSessions.length - 1]
+        if (this.currentGameSession) return
+        if (data.length){
+            const gameSession = data.find((gs) => gs.state !== GAME_STATE.Ended)
+            if (gameSession) this.currentGameSession = gameSession;
         }
       } catch (e) {
         this.myGameSessions = []
       }
     },
-    async refuseGameInvitation(gameId: number) {
-      try {
-        await axios.post<GameSession>('/game/refuse-invitation', { gameId })
-        await this.getAllMyGameSessions()
-      } catch (e) {
-        console.error(e)
+    async getAGameSession(gameId: number): Promise<GameSession | undefined> {
+      // load my game sessions
+      if (!this.myGameSessions.length) {
+        await this.getAllGameSessions();
+      }
+      const gameSession = this.myGameSessions.find((gs) => gs.gameId === gameId);
+      if (gameSession) {
+        return gameSession
       }
     },
-    async gameEnded(gameId: number, userId: number) {
-      if (this.joinedGameSession?.gameId === gameId) {
-        if (this.joinedGameSession.hostId === userId) {
-          await this.deleteGameSession(gameId)
-        }
-        this.joinedGameSession = null
-      }
-      await this.getAllMyGameSessions()
+    async enterAGameSession(gameId: number): Promise<string> {
+      if (this.currentGameSession) return 'Vous avez deja une session de jeu, en cours ou en attente'
+      const gameSession = await this.getAGameSession(gameId);
+      if (!gameSession) return 'Impossible de rejoindre la partie';
+      this.currentGameSession = gameSession;
+      const userStore = useUserStore();
+      userStore.statusSocketManager?.updateMyStatus(Status.Busy);
+      return 'success';
     },
-    async deleteGameSession(gameId: number) {
+    async quitGameSession(gameId: number): Promise<void> {
+      const userStore = useUserStore();
+      userStore.statusSocketManager?.updateMyStatus(Status.Online);
+      if (!this.currentGameSession) return
+      if (this.currentGameSession.gameId !== gameId) return;
+      this.currentGameSession = undefined
       try {
-        await axios.delete('/game/sessions', {
+        await axios.delete(`/game/sessions`, {
           headers: { Accept: 'application/json' },
           data: { gameId }
         })
+        this.currentGameSession = undefined
       } catch (e) {
-        console.log('failed to delete game session')
+        this.currentGameSession = undefined
       }
     },
-    async leaveCurrentGameSession(userId: number) {
-      if (this.joinedGameSession) {
-        if (this.viewingAGame) {
-          this.stopViewingGame()
-        } else {
-          await this.gameEnded(this.joinedGameSession.gameId, userId)
+
+    async startGameAgainstBot(): Promise<'jeu en preparation' | string> {
+      try {
+        if (this.currentGameSession)
+          return 'Vous avez deja une session de jeu, en cours ou en attente'
+        const { data } = await axios.post<GameSession>('/game/start', { againstBot: true })
+        this.currentGameSession = data
+        this.myGameSessions.push(data)
+        const userStore = useUserStore();
+        userStore.statusSocketManager?.updateMyStatus(Status.Busy);
+        return 'jeu en preparation'
+      } catch (e) {
+        return 'Une erreur est survenue'
+      }
+    },
+    async challengeAPlayer(userId: number, rules: GameRules): Promise<'challenge' | string> {
+      try {
+        await axios.post<WaitingGameSession>('/game/start', { againstBot: false, userId, rules })
+        return 'challenge'
+      } catch (e) {
+        return 'Impossible de lancer le challenge'
+      }
+    },
+
+    // waiting queue
+    async enterInQueList(): Promise<GameSessionQResponse> {
+      try {
+        if (this.currentGameSession) return { matchFound: false }
+        const { data } = await axios.post<GameSessionQResponse>('/game/start', {
+          againstBot: false
+        })
+        if (data.matchFound && data.gameSession) {
+          this.currentGameSession = data.gameSession
+          this.myGameSessions.push(data.gameSession)
+        }
+        return data
+      } catch (e) {
+        return { matchFound: false }
+      }
+    },
+    async quitQueList(): Promise<'success' | string> {
+      try {
+        await axios.get('/game/quit-waiting-queue')
+        return 'success'
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (error.response && (error.response.status === 403 || error.response.status === 401)) {
+            return error.response.data.message ?? 'Une erreur est survenue'
+          }
+        }
+      }
+      return 'Une erreur est survenue'
+    },
+    async isSomeoneInQueList(): Promise<boolean> {
+      try {
+        const { data } = await axios.get<boolean>('/game/is-someone-in-queue', {
+          headers: { Accept: 'application/json' }
+        })
+        return data
+      } catch (e) {
+        return false
+      }
+    },
+
+    //  viewing a game
+    async startViewingGame(gameId: number): Promise<'preparing' | string> {
+      try {
+        if (this.currentWatchingGameSession) return 'Vous regardez deja une partie'
+        const { data } = await axios.get<GameSession>(`/watch-game/:${gameId}`, {
+          headers: { Accept: 'application/json' }
+        })
+        this.currentWatchingGameSession = data
+        return 'preparing'
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (
+            error.response &&
+            (error.response.status === 403 ||
+              error.response.status === 401 ||
+              error.response.status === 404)
+          ) {
+            return error.response.data.message ?? 'Impossible de rejoindre la partie'
+          }
+        }
+      }
+      return 'Impossible de rejoindre la partie'
+    },
+
+    // accept or reject game challenge
+    async acceptGameChallenge(challengeId: number): Promise<GameSession | string> {
+      if (this.currentGameSession) {
+        return 'Vous avez deja une session de jeu'
+      }
+      try {
+        const { data } = await axios.post<GameSession>('/game/accept-invitation', { challengeId })
+        this.myGameSessions.push(data)
+        return data
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (
+            error.response &&
+            (error.response.status === 403 ||
+              error.response.status === 401 ||
+              error.response.status === 404)
+          ) {
+            return error.response.data.message ?? 'Impossible de rejoindre la partie'
+          }
+        }
+      }
+      return 'Impossible de rejoindre la partie'
+    },
+    async rejectGameChallenge(challengeId: number): Promise<void> {
+      try {
+        await axios.post('/game/reject-invitation', { challengeId })
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (
+            error.response &&
+            (error.response.status === 403 ||
+              error.response.status === 401 ||
+              error.response.status === 404)
+          ) {
+            console.log(error.response.data.message ?? 'Impossible de rejeter la partie')
+          }
         }
       }
     },
+
     // allow you to know witch user is currently playing or in a waiting queue
-    async getUserGameStatus(
-      userId: number
-    ): Promise<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }> {
+    async getUserGameStatus(userId: number): Promise<GameStatus> {
       try {
         const { data } = await axios.get<{
           status: 'playing' | 'inQueue' | 'free'
@@ -239,11 +306,8 @@ const useGameStore = defineStore({
         return { status: 'free', gameSession: undefined }
       }
     },
-
     // same function as getUserGameStatus but for multiple users
-    async getUsersGameStatus(
-      userIds: number[]
-    ): Promise<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }[]> {
+    async getUsersGameStatus(userIds: number[]): Promise<GameStatus[]> {
       try {
         const { data } = await axios.post<
           {

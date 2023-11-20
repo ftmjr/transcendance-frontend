@@ -9,7 +9,7 @@
           location="right"
           color="primary"
         >
-          Vous êtes dans la file d'attente, veuillez patienter...
+          Vous Jouez dans la file d'attente, veuillez patienter...
         </VSnackbar>
       </div>
       <v-alert
@@ -18,7 +18,7 @@
         variant="tonal"
         closable
         close-label="Close Alert"
-        color="deep-purple-accent-4"
+        color="secondary"
         title="Partie en cours"
       >
         Vous avez deja une session, veuillez patienter... Vous avez deja une partie en cours, elle
@@ -26,14 +26,27 @@
         résultat.
       </v-alert>
       <GamePlayer
-        v-if="gameStore.currentGameSession"
-        :room-id="gameStore.currentGameSession.gameId"
+        v-if="player"
+        :room-id="roomId"
         :player="player"
         :theme="theme"
       />
     </template>
-    <div v-else class="h-full flex items-center justify-center">
+    <div v-else-if="loading" class="h-full flex items-center justify-center">
       <v-progress-circular indeterminate color="deep-purple-accent-4" />
+    </div>
+    <div v-else>
+      <v-alert
+          v-model="alertGameAlreadyJoined"
+          border="start"
+          variant="tonal"
+          closable
+          close-label="Close Alert"
+          color="secondary"
+          title="Partie en cours"
+      >
+        Aucune partie en cours
+      </v-alert>
     </div>
   </div>
 </template>
@@ -46,7 +59,6 @@ import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
 import { Theme } from '@/Game/scenes/Boot'
 
 export default defineComponent({
-  name: 'GameUpgrade',
   components: {
     GamePlayer: defineAsyncComponent(() => import('@/Game/GamePlayer.vue'))
   },
@@ -55,14 +67,6 @@ export default defineComponent({
       type: Number,
       default: () => 0
     },
-    isPlayer: {
-      type: Boolean,
-      default: () => true
-    },
-    waitingRoom: {
-      type: Boolean,
-      default: () => false
-    }
   },
   setup() {
     const authStore = useAuthStore()
@@ -81,68 +85,105 @@ export default defineComponent({
     }
   },
   computed: {
-    player(): GameUser & { userType: GameUserType } {
-      return {
-        userId: this.authStore.getUser?.id ?? 0,
-        username: this.authStore.getUser?.username ?? '',
-        avatar: this.authStore.getProfile?.avatar ?? '',
-        userType: this.gameStore.isWatching ? GameUserType.Viewer : GameUserType.Player
+    roomId(): number | undefined {
+      if (this.gameStore.getCurrentGameSession) {
+        return this.gameStore.getCurrentGameSession.gameId
       }
+      if (this.gameStore.getCurrentWatchingGameSession) {
+        return this.gameStore.getCurrentWatchingGameSession.gameId
+      }
+      return undefined
+    },
+    player(): GameUser & { userType: GameUserType } | undefined {
+      if (this.gameStore.getCurrentGameSession){
+        // check if current user is in participants
+        const user = this.gameStore.getCurrentGameSession.participants.find(
+            (user) => user.userId === this.authStore.getUser?.id
+        )
+        if (user) {
+          return {
+            userId: user.userId,
+            username: user.username,
+            avatar: this.authStore.getProfile?.avatar ?? '',
+            userType: GameUserType.Player
+          }
+        }
+      }
+      if (this.gameStore.getCurrentWatchingGameSession) {
+        const user = this.gameStore.getCurrentWatchingGameSession.observers.find(
+            (user) => user.userId === this.authStore.getUser?.id
+        )
+        if (user) {
+          return {
+            userId: user.userId,
+            username: user.username,
+            avatar: this.authStore.getProfile?.avatar ?? '',
+            userType: GameUserType.Viewer,
+          }
+        }
+      }
+      return undefined
     },
     theme(): Theme {
-      if (!this.gameStore.currentGameSession) return Theme.Classic
-      return this.gameStore.currentGameSession?.rules.theme ?? Theme.Classic
+      if (this.gameStore.getCurrentGameSession) {
+        return this.gameStore.getCurrentGameSession.rules.theme ?? Theme.Classic
+      }
+      if (this.gameStore.getCurrentWatchingGameSession){
+        return this.gameStore.getCurrentWatchingGameSession.rules.theme ?? Theme.Classic
+      }
+      return Theme.Classic
     }
   },
-  beforeMount() {
-    if (this.gameStore.currentGameSession) {
-      this.alertGameAlreadyJoined = true
-    } else {
-      if (!this.gameId && !this.waitingRoom) {
-        this.startAgainstBot()
-      } else if (this.waitingRoom) {
-        this.startWaitingRoom()
-      } else if (!this.isPlayer && this.gameId) {
-        this.startWatchingGame()
-      }
+  watch:{
+    'gameStore.getCurrentGameSession': {
+      handler() {
+        this.moveToCurrentGame();
+      },
+    },
+    'gameStore.getCurrentWatchingGameSession': {
+      handler() {
+        this.moveToCurrentGame();
+      },
+      immediate: true
+    },
+  },
+  async beforeMount() {
+    this.loading = true;
+    await this.gameStore.getAllGameSessions();
+    if (!this.gameId){
+      this.startAgainstBot();
     }
+    this.loading = false;
   },
   beforeUnmount() {
-    this.leaveGame()
+    if (this.roomId && this.roomId === this.gameId){
+      if (this.player){
+        if (this.player.userType === GameUserType.Player){
+          this.gameStore.quitGameSession(this.roomId);
+          console.log('ssended a quit game session');
+        }
+      }
+    }
   },
   methods: {
+    moveToCurrentGame() {
+      if (this.gameStore.getCurrentGameSession) {
+        if (this.gameId !== this.gameStore.getCurrentGameSession.gameId) {
+          this.$router.push({name: 'game', params: {gameId: this.gameStore.getCurrentGameSession.gameId}})
+        }
+      }
+      if (this.gameStore.getCurrentWatchingGameSession) {
+        if (this.gameId !== this.gameStore.getCurrentWatchingGameSession.gameId) {
+          this.$router.push({name: 'game', params: {gameId: this.gameStore.getCurrentWatchingGameSession.gameId}})
+        }
+      }
+    },
     async startAgainstBot() {
-      this.loading = true
-      const r = await this.gameStore.startGameAgainstBot()
-      if (r !== 'preparing') {
-        this.error = r
+      const r = await this.gameStore.startGameAgainstBot();
+      if (r !== 'jeu en preparation'){
+          console.log(r);
       }
-      this.loading = false
     },
-    async startWaitingRoom() {
-      this.loading = true
-      const r = await this.gameStore.startGameAgainstQueList()
-      if (r !== 'preparing') {
-        this.error = r
-      }
-      this.loading = false
-    },
-    async startWatchingGame() {
-      this.loading = true
-      if (!this.gameId) {
-        throw new Error('gameId is not defined')
-      }
-      const r = await this.gameStore.startViewingGame(this.gameId)
-      if (r !== 'preparing') {
-        this.error = r
-      }
-      this.loading = false
-    },
-    async leaveGame() {
-      if (!this.gameStore.currentGameSession) return
-      if (!this.authStore.getUser) return
-      await this.gameStore.leaveCurrentGameSession(this.authStore.getUser.id)
-    }
   }
 })
 </script>
