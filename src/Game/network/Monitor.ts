@@ -177,14 +177,12 @@ export default class Monitor {
   }
 
   public serveBall() {
-    console.log('serve ball called')
     if (this.state !== GAME_STATE.Play) return
     this.gameNetwork.sendBallServe({
       userId: this.currentUser.userId,
       position: { x: 667, y: 375 },
       speed: { x: 0, y: 0 }
     })
-    console.log('sended serve ball')
   }
 
   isNetworkOperational(): boolean {

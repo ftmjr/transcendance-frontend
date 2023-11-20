@@ -42,7 +42,6 @@ export default defineComponent({
       gameMonitor,
       theme: this.theme
     }
-    console.log('gameMonitor', gameMonitor)
     this.gameMonitor = gameMonitor
     const game = new Game({
       type: WEBGL,

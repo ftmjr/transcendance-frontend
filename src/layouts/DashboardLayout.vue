@@ -62,6 +62,7 @@ const gameStore = useGameStore()
 const usersStore = useUserStore()
 const router = useRouter()
 
+gameStore.initSocket();
 const showChallengeAcceptedDialog = ref(false)
 const checkIfNewNotificationIsANewGameChallenge = (notification: NotificationT) => {
   if (notification.type === NotificationType.GAME_EVENT && notification.title === 'Game Started') {
@@ -74,6 +75,7 @@ watch(
   () => authStore.isLocked,
   (isLocked) => {
     if (isLocked) {
+      gameStore.disconnectSocket();
       router.push({ name: 'locked-screen' })
     }
   }

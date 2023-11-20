@@ -76,7 +76,9 @@ export default class PongScene extends Scene {
       message.setOrigin(0.5, 0.5)
       message.setDepth(2)
       this.time.delayedCall(500, () => {
-        message?.destroy()
+        message?.destroy();
+        // quit the game
+        this.monitor.quitAndMoveToHistory();
       })
     }
   }

@@ -7,6 +7,7 @@ import { Theme } from '@/Game/scenes/Boot'
 import { GAME_STATE } from '@/Game/network/Monitor'
 import { isAxiosError } from 'axios'
 import useUserStore from '@/stores/UserStore'
+import {GameNetwork} from "@/Game/network/GameNetwork";
 
 export enum GameSessionType {
   Bot,
@@ -74,7 +75,8 @@ const useGameStore = defineStore({
     currentGameSession: GameSession | undefined
     currentWatchingGameSession: GameSession | undefined
     myGameSessions: GameSession[]
-    endedGames: number[]
+    endedGames: number[],
+    gameNetwork: GameNetwork | undefined
   } => {
     return {
       currentGameSession: undefined,
@@ -116,6 +118,19 @@ const useGameStore = defineStore({
     }
   },
   actions: {
+    async initSocket(){
+      const authStore = useAuthStore();
+      const user = authStore.getUser;
+      if (!user) return;
+      this.gameNetwork = GameNetwork.getInstance({
+        userId: user.id ?? 0,
+        username: user.username ?? '',
+        avatar: user.profile.avatar ?? '',
+      })
+    },
+    disconnectSocket(){
+        this.gameNetwork?.disconnect();
+    },
     async getAllGameSessions() {
       try {
         const { data } = await axios.get<GameSession[]>('/game/sessions', {
@@ -176,23 +191,31 @@ const useGameStore = defineStore({
       userStore.statusSocketManager?.updateMyStatus(Status.Online)
     },
 
-    async startGameAgainstBot(): Promise<'jeu en preparation' | string> {
+    async startGameAgainstBot(): Promise<GameSession | string> {
       try {
         if (this.currentGameSession)
           return 'Vous avez deja une session de jeu, en cours ou en attente'
         const { data } = await axios.post<GameSession>('/game/start', { againstBot: true })
         this.currentGameSession = data
         this.myGameSessions.push(data)
-        const userStore = useUserStore()
+        const userStore = useUserStore();
         userStore.statusSocketManager?.updateMyStatus(Status.Busy)
-        return 'jeu en preparation'
+        return data;
       } catch (e) {
         return 'Une erreur est survenue'
       }
     },
     async challengeAPlayer(userId: number, rules: GameRules): Promise<'challenge' | string> {
       try {
-        await axios.post<WaitingGameSession>('/game/start', { againstBot: false, userId, rules })
+        await axios.post<WaitingGameSession>('/game/start', {
+          againstBot: false,
+          opponent: {
+            maxScore: rules.maxScore,
+            maxTime: rules.maxTime,
+            theme: rules.theme,
+          },
+          rules
+        })
         return 'challenge'
       } catch (e) {
         return 'Impossible de lancer le challenge'
