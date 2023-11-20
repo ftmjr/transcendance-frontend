@@ -33,7 +33,8 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onBeforeUnmount } from 'vue'
+import {onBeforeMount, onBeforeUnmount, watch} from 'vue'
+import { useRouter } from 'vue-router'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
 import { VerticalNavLayout } from '@layouts'
@@ -58,8 +59,17 @@ const roomsStore = useRoomsStore()
 const notificationStore = useNotificationStore()
 const gameStore = useGameStore()
 const usersStore = useUserStore()
-authStore.activateRefreshTokenTimer()
+const router = useRouter();
 
+// watch if is locked and move him to locked page
+watch(
+    () => authStore.isLocked,
+    (isLocked) => {
+      if (isLocked) {
+        router.push({ name: 'locked-screen' });
+      }
+    }
+)
 // a beforeMount hook would be better
 onBeforeMount(() => {
   if (authStore.isLoggedIn && authStore.getUser?.id) {
@@ -75,6 +85,7 @@ onBeforeMount(() => {
     gameStore.getAllGameSessions()
   }
 })
+
 
 onBeforeUnmount(() => {
   if (!authStore.isLoggedIn) {

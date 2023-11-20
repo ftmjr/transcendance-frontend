@@ -7,10 +7,14 @@ const axiosInstance = axios.create({
   // other config here
 })
 
+const notRefreshableRoutes = [
+    '/auth/login',
+    '/auth/refresh',
+]
 // Request interceptor
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const authStore = useAuthStore()
+    const authStore = useAuthStore();
     if (authStore.token && !authStore.isExpired) {
       config.headers['Authorization'] = `Bearer ${authStore.token}`
     }
@@ -20,5 +24,20 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error)
   }
 )
+
+axiosInstance.interceptors.response.use(
+    response => response,
+    async (error) => {
+        const authStore = useAuthStore();
+        const originalRequest = error.config;
+        if (error.response.status === 401 && !notRefreshableRoutes.includes(originalRequest.url) && !originalRequest._retry) {
+            originalRequest._retry = true;
+            const access_token = await authStore.refreshToken();
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
+            return axiosInstance(originalRequest);
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default axiosInstance
