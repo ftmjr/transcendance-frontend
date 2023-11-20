@@ -1,6 +1,6 @@
 <template>
   <VChip label :color="color">
-    {{ status }}
+  {{ status }}
   </VChip>
 </template>
 
@@ -10,7 +10,7 @@ import useUserStore from '@/stores/UserStore'
 import useAuthStore from '@/stores/AuthStore'
 import { Status } from '@/interfaces/User'
 
-const { userId, value } = defineProps({
+const props = defineProps({
   userId: {
     type: Number,
     required: true
@@ -19,14 +19,14 @@ const { userId, value } = defineProps({
     type: String as PropType<Status>,
     required: true,
     default: () => Status.Offline
-  }
+  },
 })
 const usersStore = useUserStore()
 const authStore = useAuthStore()
 
 const status = computed(() => {
-  const localValue = value ?? Status.Offline
-  return usersStore.getUsersStatus.get(userId) ?? localValue
+  const localValue = props.value ?? Status.Offline
+  return usersStore.getUsersStatus.get(props.userId) ?? localValue
 })
 const color = computed<'success' | 'error' | 'warning' | 'secondary'>(() => {
   return authStore.resolveAvatarBadgeVariant(status.value)
