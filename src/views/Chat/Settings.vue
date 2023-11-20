@@ -33,7 +33,11 @@
               <div class="p-4">
                 <v-sheet width="300" class="mx-auto">
                   <h2 class="mb-4 text-sm font-bold">Paramètres</h2>
-                  <v-form validate-on="submit lazy" @submit.prevent="upateRoomInfos">
+                  <v-form
+                    validate-on="submit lazy"
+                    @submit.prevent="upateRoomInfos"
+                    v-show="isOwner"
+                  >
                     <div class="flex flex-col gap-4">
                       <div class="flex gap-4">
                         <VAvatar
@@ -42,12 +46,14 @@
                           :image="roomsStore.getCurrentRoomStatus.room.avatar"
                         />
                         <v-file-input
+                          :disabled="loading || !isOwner"
                           label="Choisir une image"
                           prepend-icon="mdi-camera"
                           variant="solo-filled"
                         ></v-file-input>
                       </div>
-                      <VTextField
+                      <!-- <VTextField
+                        :disabled="loading || !isAdminOrOwner"
                         v-model="roomName"
                         label="Nom de la salle"
                         placeholder="Entrez le nom de la salle"
@@ -55,8 +61,9 @@
                         dense
                         :rules="rules.roomName"
                         class="mt-4"
-                      />
+                      /> -->
                       <VSelect
+                        :disabled="loading || !isOwner"
                         v-model="roomType"
                         :items="roomTypes"
                         item-title="text"
@@ -68,6 +75,7 @@
                       />
                       <div v-if="askPassword">
                         <VTextField
+                          :disabled="loading || !isOwner"
                           v-model="roomPassword"
                           label="Mot de passe"
                           placeholder="Entrez le mot de passe"
@@ -87,7 +95,7 @@
                         />
                       </div>
                       <v-btn
-                        :disabled="!loading"
+                        :disabled="loading || !isOwner"
                         :loading="loading"
                         type="submit"
                         block
@@ -96,6 +104,16 @@
                       ></v-btn>
                     </div>
                   </v-form>
+
+                  <v-divider class="my-4"></v-divider>
+                  <v-btn
+                    :disabled="loading"
+                    @click="quitRoom"
+                    type="button"
+                    block
+                    class="mt-2"
+                    text="Quittez la salle"
+                  ></v-btn>
                 </v-sheet>
               </div>
             </v-list-item>
@@ -182,6 +200,11 @@ export default defineComponent({
     showErrorPopUp: false
   }),
   computed: {
+    isOwner(): boolean {
+      return (
+        this.roomsStore.getCurrentRoomStatus.role === 'OWNER'
+      )
+    },
     alreadyMember(): boolean {
       return this.roomsStore.getCurrentRoomStatus.state
     },
@@ -235,6 +258,21 @@ export default defineComponent({
       this.roomName = this.roomsStore.getCurrentRoomStatus.room.name
       this.roomType = this.roomsStore.getCurrentRoomStatus.room.type
       this.roomOldPassword = this.roomsStore.getCurrentRoomStatus.room.password ? '********' : ''
+    },
+    async quitRoom() {
+      this.loading = true
+      const room = this.roomsStore.getCurrentRoomStatus.room
+      if (!room) {
+        this.loading = false
+        return
+      }
+      const res = await this.roomsStore.quitRoom(room.id)
+      if (res === 'success') {
+        this.$router.push({ name: 'chat' })
+      } else {
+        this.showErrorPopUp = true
+      }
+      this.loading = false
     }
   }
 })

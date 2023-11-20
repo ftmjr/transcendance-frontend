@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <div class="w-full h-full" :class="canRead ? '' : 'blur-md'">
+  <div class="h-full">
+    <div class="w-full h-full overflow-sroll" :class="canRead ? '' : 'blur-sm'">
       <perfect-scrollbar
         id="messages-log"
         ref="MessagesLogScroller"
         tag="ul"
         :options="{ wheelPropagation: false, suppressScrollX: true }"
-        class="flex flex-col h-full gap-4 px-4 pt-6 pb-16 overflow-scroll hide-scrollbar"
+        class="flex flex-col h-full gap-4 px-4 pt-6 pb-32 overflow-scroll hide-scrollbar"
       >
         <li
           v-for="(msgGrp, index) in msgGroups"
@@ -15,15 +15,16 @@
         >
           <message :is-sender="msgGrp.senderId === roomStore.userId" :msg-group="msgGrp" />
         </li>
+        <li v-if="isTypingUserName" class="pb-4 font-weight-medium">
+          <p>
+            <span class="text-primary">{{ isTypingUserName }}</span> est en train d'écrire...
+          </p>
+        </li>
       </perfect-scrollbar>
     </div>
-    <p v-if="isTypingUserName" class="font-weight-medium pb-4">
-      {{ isTypingUserName }}
-      <span class="pr-1 text-sm font-weight-light">est en train d'écrire</span>
-      <VIcon :size="24" color="primary" icon="svg-spinners:3-dots-bounce" />
-    </p>
+
     <div
-      class="absolute w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-cyan-900/0 to-[50%] to-cyan-950"
+      class="absolute w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-[#262A46]/0 to-[80%] to-[#262A46]"
     >
       <form action="" class="flex items-center justify-center w-full h-full">
         <div class="w-full h-[40px] relative">
@@ -34,10 +35,9 @@
               variant="solo"
               placeholder="Envoyer un message dans le chat"
               density="default"
-              class="px-4 text-sm font-light"
-              bg-color="#0e1231"
+              class="h-full px-4 -mt-5 text-sm font-light"
               autofocus
-              @keyup="sendIsTyping"
+              @keypress="sendIsTyping"
             >
               <template #append-inner>
                 <v-btn
@@ -64,7 +64,7 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import Message from './Message.vue'
 import useRoomsStore from '@/stores/RoomsStore'
 import useAuthStore from '@/stores/AuthStore'
-import { ChatMemberRole, ChatMessage, ChatRoomMember } from '@/utils/chatSocket'
+import { ChatMemberRole, ChatMessage, ChatRoomMember, RoomType } from '@/utils/chatSocket'
 
 interface ChatMessageGroup {
   senderId: number
@@ -90,6 +90,9 @@ export default defineComponent({
     }
   },
   computed: {
+    chatLogPS(): PerfectScrollbar {
+      return this.$refs.MessagesLogScroller as PerfectScrollbar
+    },
     me(): ChatRoomMember | undefined {
       if (!this.roomStore.getCurrentRoomStatus.state) return undefined
       return this.roomStore.getCurrentRoomMembers.find(
@@ -159,7 +162,12 @@ export default defineComponent({
     'roomStore.currentRoomStatus': {
       handler(value: number) {
         if (!value) return
-        if (!this.roomStore.getCurrentRoomStatus.state) return
+        if (!this.roomStore.getCurrentRoomStatus.room) return
+        if (
+          !this.roomStore.getCurrentRoomStatus.state &&
+          this.roomStore.getCurrentRoomStatus.room.type !== RoomType.PUBLIC
+        )
+          return
         this.fetchMessages()
       },
       immediate: true
@@ -185,16 +193,31 @@ export default defineComponent({
       },
       deep: true,
       immediate: true
+    },
+    messages: {
+      handler() {
+        this.$nextTick(() => {
+          this.scrollToBottomInChatLog()
+        })
+      },
+      deep: true
     }
   },
   methods: {
     async fetchMessages() {
       this.loading = true
-      if (!this.canRead) return
+
+      if (!this.roomStore.getCurrentRoomStatus.room) return
+      // to allow public room to be read
+      const isPublic = this.roomStore.getCurrentRoomStatus.room?.type === RoomType.PUBLIC
+      if (!this.canRead && !isPublic) return
       if (!this.roomStore.currentRoomId) return
-      if (!this.roomStore.getCurrentRoomStatus.state) return
+
       await this.roomStore.loadCurrentRoomMessages({ skip: this.skip, take: this.take })
       this.loading = false
+      this.$nextTick(() => {
+        this.scrollToBottomInChatLog()
+      })
     },
     async sendMessage() {
       if (!this.me) return
@@ -204,13 +227,29 @@ export default defineComponent({
       this.roomStore.sendMessage(this.me.chatroomId, this.chatMessageContent)
       this.chatMessageContent = ''
       this.loading = false
+      this.$nextTick(() => {
+        this.scrollToBottomInChatLog()
+      })
     },
     async sendIsTyping() {
       if (!this.me) return
       if (!this.authStore.getUser) return
       this.roomStore.sendUserIsTypingInRoom(this.me.chatroomId, this.authStore.getUser.username)
     },
-    scrollToBottomInChatLog() {}
+    scrollToBottomInChatLog() {
+      const el = this.$refs.MessagesLogScroller?.$el as HTMLElement
+      if (el) {
+        el.scrollTop = el.scrollHeight
+      }
+    },
+    scrollToTopInChatLog() {
+      const scrollEl = this.chatLogPS?.$el
+      if (!scrollEl) return
+      scrollEl.scrollTop = 0
+    }
+  },
+  mounted() {
+    this.scrollToBottomInChatLog()
   }
 })
 </script>

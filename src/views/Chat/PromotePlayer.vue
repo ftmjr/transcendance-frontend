@@ -28,10 +28,7 @@ import { ChatMemberRole } from '@/utils/chatSocket'
 
 const rolesList = [
   { value: ChatMemberRole.USER, text: 'Utilisateur' },
-  { value: ChatMemberRole.ADMIN, text: 'Administrateur' },
-  { value: ChatMemberRole.OWNER, text: 'Propriétaire' },
-  { value: ChatMemberRole.BAN, text: 'Banni' },
-  { value: ChatMemberRole.MUTED, text: 'Muet' }
+  { value: ChatMemberRole.ADMIN, text: 'Administrateur' }
 ]
 
 const { memberRole, userId, roomId } = defineProps({

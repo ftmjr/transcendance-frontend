@@ -19,7 +19,7 @@
       <slot />
     </v-badge>
     <div v-if="showName" class="text-center">
-      <span class="text-sm line-clamp-1">
+      <span class="ext-sm line-clamp-1">
         {{ userProfile.profile.name }} {{ userProfile.profile.lastname }}
       </span>
     </div>

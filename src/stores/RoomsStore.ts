@@ -41,11 +41,11 @@ export const rolePrint: Array<{
   color?: string
   bgClass?: string
 }> = [
-  { role: ChatMemberRole.OWNER, printRole: 'Big Boss', color: 'success' },
-  { role: ChatMemberRole.ADMIN, printRole: 'Administrateur', bgClass: 'info' },
-  { role: ChatMemberRole.USER, printRole: 'Utilisateur', color: 'dark' },
-  { role: ChatMemberRole.BAN, printRole: 'Ban', color: 'danger' }
-]
+    { role: ChatMemberRole.OWNER, printRole: 'Big Boss', color: 'success' },
+    { role: ChatMemberRole.ADMIN, printRole: 'Administrateur', bgClass: 'info' },
+    { role: ChatMemberRole.USER, printRole: 'Utilisateur', color: 'dark' },
+    { role: ChatMemberRole.BAN, printRole: 'Ban', color: 'danger' }
+  ]
 
 const useRoomsStore = defineStore({
   id: 'roomsStore',
@@ -101,7 +101,7 @@ const useRoomsStore = defineStore({
         return room.name.toLowerCase().includes(term)
       })
     },
-    AllPublic(): ChatRoomWithMembers[] {
+    allPublic(): ChatRoomWithMembers[] {
       return this.publicRooms
     },
     publicButNotJoined(): ChatRoomWithMembers[] {
@@ -235,7 +235,7 @@ const useRoomsStore = defineStore({
       }
       return errorMessage
     },
-    async leaveRoom(roomId: number): Promise<'success' | 'failed'> {
+    async quitRoom(roomId: number): Promise<'success' | 'failed'> {
       try {
         await axios.get(`/chat/leave-room/${roomId}`)
         // Mise à jour du store après avoir quitté la salle

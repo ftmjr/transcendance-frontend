@@ -21,7 +21,7 @@
               </div>
               <span>{{ meta.subtitle }}</span>
             </div>
-            <VAvatar rounded variant="tonal" :color="meta.color" :icon="meta.icon" />
+            <v-avatar rounded variant="tonal" :color="meta.color" :icon="meta.icon" />
           </VCardText>
         </VCard>
       </div>
@@ -45,7 +45,7 @@
           :key="friend.id"
           v-for="(friend, index) in userStore.contacts"
         >
-          <VAvatar
+          <v-avatar
             @click="(_) => pushToUserProfile(friend.id, $router)"
             rounded
             size="96"
@@ -57,7 +57,7 @@
               :src="friend.profile?.avatar"
             />
             <VIcon v-else color="primary" icon="tabler-user" />
-          </VAvatar>
+          </v-avatar>
           <div class="flex flex-col gap-4">
             <button
               @click="(_) => pushToUserProfile(friend.id, $router)"

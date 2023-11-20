@@ -1,38 +1,45 @@
 <template>
-  <div :class="weAreBlocked ? 'blur-3xl' : ''">
-    <div
-      :class="[
-        'relative self-start inline-block max-w-xs px-4 py-2 text-sm rounded-md shadow-lg drop-shadow-lg',
-        isSender ? 'reply' : 'sender'
-      ]"
-      style="background-color: #272b47"
-    >
-      <p v-for="(msg, index) in msgGroup.messages" :key="index" class="">
-        {{ msg.message }}
-      </p>
-    </div>
-    <div class="flex items-center gap-4 text-xs font-light">
-      <span class="text-xs text-gray-400">
-        {{
-          formatDate(msgGroup.messages[msgGroup.messages.length - 1].time, {
-            hour: 'numeric',
-            minute: 'numeric'
-          })
-        }}
-      </span>
-      <span>{{ sender.member.username }}</span>
-      <VIcon v-if="sender.role === ChatMemberRole.OWNER" :size="16" color="primary">
-        tabler-crown
-      </VIcon>
-      <VIcon v-else-if="sender.role === ChatMemberRole.ADMIN" :size="16" color="secondary">
-        tabler-shield-check
-      </VIcon>
-      <VIcon v-else-if="sender.role === ChatMemberRole.BAN" :size="16" color="gray">
-        tabler-user-x
-      </VIcon>
-      <VIcon v-else-if="sender.role === ChatMemberRole.MUTED" :size="16" color="gray">
-        tabler-user-minus
-      </VIcon>
+  <div :class="weAreBlocked ? 'blur-xl pointer-events-none' : ''">
+    <div class="flex flex-col" :class="[isSender ? 'justify-end items-end' : 'order-2 text-left']">
+      <div
+        :class="[
+          'relative inline-block max-w-xs px-4 py-4 text-sm rounded-md shadow-lg drop-shadow-lg mb-2',
+          isSender ? 'reply order-2' : 'sender order-1'
+        ]"
+        style="background-color: #272b47"
+      >
+        <p v-for="(msg, index) in msgGroup.messages" :key="index" class="my-2 text-sm">
+          {{ msg.message }}
+        </p>
+      </div>
+      <div
+        class="items-center inline-block w-48 h-auto gap-4 text-xs font-light grow-0 shrink-0"
+        :class="[isSender ? 'order-2 text-right' : 'order-2 text-left']"
+      >
+        <span class="text-xs text-gray-400">
+          {{
+            formatDate(msgGroup.messages[msgGroup.messages.length - 1].time, {
+              hour: 'numeric',
+              minute: 'numeric'
+            })
+          }}
+        </span>
+        <div class="flex items-center gap-2" :class="[isSender ? 'justify-end' : 'justify-start']">
+          <span class="line-clamp-1">{{ sender.member.username.split(' ').shift() }}</span>
+          <VIcon v-if="sender.role === ChatMemberRole.OWNER" :size="16" color="primary">
+            tabler-crown
+          </VIcon>
+          <VIcon v-else-if="sender.role === ChatMemberRole.ADMIN" :size="16" color="secondary">
+            tabler-shield-check
+          </VIcon>
+          <VIcon v-else-if="sender.role === ChatMemberRole.BAN" :size="16" color="gray">
+            tabler-user-x
+          </VIcon>
+          <VIcon v-else-if="sender.role === ChatMemberRole.MUTED" :size="16" color="gray">
+            tabler-user-minus
+          </VIcon>
+        </div>
+      </div>
     </div>
   </div>
 </template>

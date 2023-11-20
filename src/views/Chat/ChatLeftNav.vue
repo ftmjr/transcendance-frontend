@@ -22,7 +22,10 @@
         </v-btn>
       </div>
       <div class="flex-1">
-        <div class="w-full border-b h-1/2 shrink-0 grow-0">
+        <div class="relative w-full border-b h-1/2 shrink-0 grow-0">
+          <span
+            class="absolute z-10 w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-[#262A46]/0 to-[80%] to-[#262A46]"
+          ></span>
           <perfect-scrollbar
             tag="ul"
             :options="{ wheelPropagation: true }"
@@ -31,13 +34,12 @@
             <li class="sticky top-0 z-50 p-2 text-lg font-bold bg-primary">
               <span> Salles Rejoint</span>
             </li>
-            <li class="">
+            <li class="self-center p-2">
               <span
                 v-show="roomsStore.filteredRooms.length === 0"
                 class="no-chat-items-text text-disabled"
               >
-                Aucune salle de discussion
-                <template v-if="search.length"> pour `{{ search }}`</template>
+                Vous n'avez rejoins aucune salle de discussion.
               </span>
             </li>
             <li v-for="room in roomsStore.filteredRooms" :key="room.id" @click="showRoom(room.id)">
@@ -46,6 +48,9 @@
           </perfect-scrollbar>
         </div>
         <div class="w-full h-1/2 shrink-0 grow-0">
+          <span
+            class="absolute z-10 w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-[#262A46]/0 to-[80%] to-[#262A46]"
+          ></span>
           <perfect-scrollbar
             tag="ul"
             :options="{ wheelPropagation: true }"

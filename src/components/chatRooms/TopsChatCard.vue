@@ -94,7 +94,7 @@ export default defineComponent({
       return VIcon
     },
     topRooms(): ChatRoomWithMembers[] {
-      const publicRoom = this.roomsStore.AllPublic
+      const publicRoom = this.roomsStore.allPublic
       return publicRoom.slice(0, 3)
     }
   },
