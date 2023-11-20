@@ -8,7 +8,6 @@ import {
   GameStateDataPacket,
   PaddleEngineData
 } from '@/Game/network/Monitor'
-import {EmitEvents, GameSocket, ListenEvents} from "@/utils/gameSocket";
 
 export enum GameUserType {
   Player,
@@ -39,6 +38,41 @@ export enum GAME_EVENTS {
   reloadViewersList = 'reloadViewersList',
   GameObjectState = 'gameObjectState',
   PlayerLeft = 'player-left'
+}
+
+export interface ListenEvents {
+  [GAME_EVENTS.HostChanged]: (received: { roomId: number; data: number }) => void
+  [GAME_EVENTS.GameMonitorStateChanged]: (received: { roomId: number; data: GAME_STATE }) => void
+  [GAME_EVENTS.PlayersRetrieved]: (received: { roomId: number; data: GameUser[] }) => void
+  [GAME_EVENTS.PlayerAdded]: (received: { roomId: number; data: GameUser }) => void
+  [GAME_EVENTS.ViewersRetrieved]: (received: { roomId: number; data: GameUser[] }) => void
+  [GAME_EVENTS.ViewerAdded]: (received: { roomId: number; data: GameUser }) => void
+  [GAME_EVENTS.ScoreChanged]: (received: {
+    roomId: number
+    data: Array<{ userId: number; score: number }>
+  }) => void
+  [GAME_EVENTS.PadMoved]: (received: { roomId: number; data: PaddleEngineData }) => void
+  [GAME_EVENTS.BallServed]: (received: { roomId: number; data: BallData }) => void
+  [GAME_EVENTS.BallMoved]: (received: { roomId: number; data: BallData }) => void
+  [GAME_EVENTS.GameObjectState]: (received: { roomId: number; data: GameStateDataPacket }) => void
+  [GAME_EVENTS.PlayerLeft]: (received: { roomId: number; data: GameUser }) => void
+}
+
+export interface EmitEvents {
+  [GAME_EVENTS.JoinGame]: (
+      sentData: { roomId: number; user: GameUser; userType: GameUserType },
+      callback: (res: { worked: boolean; roomId: number }) => void
+  ) => void
+  [GAME_EVENTS.GameStateChanged]: (sentData: {
+    roomId: number
+    user: GameUser
+    gameState: GAME_STATE
+  }) => void
+  [GAME_EVENTS.PadMoved]: (sentData: { roomId: number; data: PadMovedData }) => void
+  [GAME_EVENTS.IaPadSpeed]: (sentData: { roomId: number; data: number }) => void
+  [GAME_EVENTS.BallServed]: (sentData: { roomId: number; data: BallData }) => void
+  [GAME_EVENTS.reloadPlayersList]: (sentData: { roomId: number }) => void
+  [GAME_EVENTS.reloadViewersList]: (sentData: { roomId: number }) => void
 }
 
 export class GameNetwork {
