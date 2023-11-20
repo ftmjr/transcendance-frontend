@@ -114,6 +114,8 @@ export default defineComponent({
           return GamePaused
         case 'Joined Game':
           return JoinedGame
+        case 'Game Started':
+          return GameChallengeAccepted
         default:
           return null
       }

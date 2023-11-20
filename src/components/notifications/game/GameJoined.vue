@@ -6,7 +6,7 @@
   >
     <div class="flex gap-4 w-full relative">
       <div :class="[notification.status === 'READ' ? 'opacity-50' : 'opacity-100']">
-        <avatar-badge :user-id="notification.referenceId"></avatar-badge>
+        <v-icon class="text-2xl" color="orange">tabler:device-gamepad-2</v-icon>
       </div>
       <div class="flex-1 flex-col pr-4">
         <p

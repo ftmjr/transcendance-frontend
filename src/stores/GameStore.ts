@@ -138,6 +138,8 @@ const useGameStore = defineStore({
       }
       const gameSession = this.myGameSessions.find((gs) => gs.gameId === gameId);
       if (gameSession) {
+        const userStore = useUserStore();
+        userStore.statusSocketManager?.updateMyStatus(Status.Busy);
         return gameSession
       }
     },
@@ -146,11 +148,9 @@ const useGameStore = defineStore({
       const gameSession = await this.getAGameSession(gameId);
       if (!gameSession) return 'Impossible de rejoindre la partie';
       this.currentGameSession = gameSession;
-      const userStore = useUserStore();
-      userStore.statusSocketManager?.updateMyStatus(Status.Busy);
       return 'success';
     },
-    async quitGameSession(gameId: number): Promise<void> {
+    async quitCurrentGameSession(gameId: number): Promise<void> {
       const userStore = useUserStore();
       userStore.statusSocketManager?.updateMyStatus(Status.Online);
       if (!this.currentGameSession) return
@@ -165,6 +165,14 @@ const useGameStore = defineStore({
       } catch (e) {
         this.currentGameSession = undefined
       }
+    },
+    async quitGameSession(gameId: number): Promise<void> {
+        await axios.delete(`/game/sessions`, {
+            headers: { Accept: 'application/json' },
+            data: { gameId }
+        })
+        const userStore = useUserStore();
+        userStore.statusSocketManager?.updateMyStatus(Status.Online);
     },
 
     async startGameAgainstBot(): Promise<'jeu en preparation' | string> {

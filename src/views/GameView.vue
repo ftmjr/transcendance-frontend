@@ -36,17 +36,7 @@
       <v-progress-circular indeterminate color="deep-purple-accent-4" />
     </div>
     <div v-else>
-      <v-alert
-          v-model="alertGameAlreadyJoined"
-          border="start"
-          variant="tonal"
-          closable
-          close-label="Close Alert"
-          color="secondary"
-          title="Partie en cours"
-      >
-        Aucune partie en cours
-      </v-alert>
+      Aucune partie en cours
     </div>
   </div>
 </template>
@@ -159,8 +149,7 @@ export default defineComponent({
     if (this.roomId && this.roomId === this.gameId){
       if (this.player){
         if (this.player.userType === GameUserType.Player){
-          this.gameStore.quitGameSession(this.roomId);
-          console.log('ssended a quit game session');
+          this.gameStore.quitCurrentGameSession(this.roomId);
         }
       }
     }

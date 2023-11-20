@@ -90,13 +90,13 @@ export class GameNetwork {
   }
 
   get isOperational() {
-    if (!this.socket) return false
-    return this.socket.connected && this.joinedGame
+    return this.socket?.connected && this.joinedGame
   }
 
   connectToGame(roomId: number, userType: GameUserType) {
     if (this.socket) {
-      this.disconnect()
+      console.log('disconnecting game socket')
+      this.disconnect();
     }
     try {
       this.socket = io('/game', { path: '/socket.io' })
@@ -105,6 +105,7 @@ export class GameNetwork {
     } finally {
       this.socket?.emit(GAME_EVENTS.JoinGame, { roomId, user: this.user, userType }, (res) => {
         const { worked, roomId } = res
+        console.log('join game response', res);
         this.roomId = roomId
         this.joinedGame = worked
       })
@@ -134,7 +135,9 @@ export class GameNetwork {
 
   sendBallServe(data: BallData) {
     const roomId = this.roomId
+    console.log('send ball serve, in room', roomId);
     if (this.isOperational) {
+      console.log('is Operational, sending data')
       this.socket?.emit(GAME_EVENTS.BallServed, { roomId, data })
     }
   }
