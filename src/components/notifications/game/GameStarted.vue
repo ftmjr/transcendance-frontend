@@ -1,7 +1,7 @@
 <template>
-  <v-btn
+  <div
     :class="[
-      'relative block w-full p-4 hover:bg-[#01051e] cursor-pointer',
+      'relative block w-full p-4 hover:bg-[#01051e]',
       notification.status === 'READ' ? 'opacity-75' : 'opacity-100'
     ]"
     @click.prevent="handleRead"
@@ -23,17 +23,19 @@
           </span>
           <span v-else> Le delais a expiré </span>
         </p>
-        <div class="flex gap-2 mt-4">
+        <div class="flex gap-2">
           <v-btn
             :disabled="isExpired"
-            class="basis-full cursor-pointer px-8 py-2 rounded-md border border-gray-50/10 text-xs bg-green-700/50 hover:bg-green-700/60 text-gary-500 disabled:bg-gray-800/75 disabled:opacity-75 max-w-[200px]"
             @click.prevent.stop="hanleJoinGame"
+            color="secondary"
+            size="small"
           >
             Jouer
           </v-btn>
           <v-btn
-            class="basis-full cursor-pointer px-8 py-2 rounded-md border border-gray-50/10 text-xs bg-red-700/50 hover:bg-red-700/60 text-gary-500 disabled:bg-gray-800/75 disabled:opacity-75 max-w-[200px]"
-            @click.prevent.stop="refuseToPlay"
+           @click.prevent.stop="refuseToPlay"
+           color="error"
+           size="small"
           >
             Refuser
           </v-btn>
@@ -44,7 +46,7 @@
         class="absolute right-0 z-50 w-2 h-2 -translate-y-1/2 rounded-full top-1/2 bg-green-400/50"
       ></div>
     </div>
-  </v-btn>
+  </div>
 </template>
 
 <script setup lang="ts">

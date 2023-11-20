@@ -15,32 +15,13 @@ import FriendRequestAccepted from '@/components/notifications/friend/RequestAcce
 import FriendRequestRejected from '@/components/notifications/friend/RequestRejected.vue'
 import AddedToRoom from '@/components/notifications/chat/AddedToRoom.vue'
 import RoomAdministrator from '@/components/notifications/chat/RoomAdministrator.vue'
-import GameChallengeAccepted from '@/components/notifications/game/GameChallengeAccepted.vue'
 import GameInvitation from '@/components/notifications/game/GameInvitation.vue'
 import GamePaused from '@/components/notifications/game/GamePaused.vue'
 import GameResumed from '@/components/notifications/game/GameResumed.vue'
 import GameChallengeRejected from '@/components/notifications/game/GameChallengeRejected.vue'
 import JoinedGame from '@/components/notifications/game/JoinedGame.vue'
-
-// NotificationType.GAME_INVITE
-//
-// 'Game Invite'
-// 'Game Invite Rejected'
-// 'Challenge Accepted'
-// NotificationType.GAME_EVENT
-//
-// 'Joined Game'
-// NotificationType.FRIEND_REQUEST
-//
-// Demande d'amitié
-// Demande d'ami acceptée
-// Demande d'ami refusée
-// NotificationType.PRIVATE_MESSAGE
-//
-// 'Added to Chat'
-// 'Chat Room Destroyed'
-// 'Promoted in Chat Room'
-// 'Removed from Chat Room'
+import GameMatched from "@/components/notifications/game/GameMatched.vue";
+import GameStarted from "@/components/notifications/game/GameStarted.vue";
 
 export default defineComponent({
   components: {
@@ -49,9 +30,10 @@ export default defineComponent({
     FriendRequestRejected,
     AddedToRoom,
     RoomAdministrator,
-    GameChallengeAccepted,
     GameInvitation,
-    GamePaused
+    GameStarted,
+    GamePaused,
+    GameMatched,
   },
   props: {
     notification: {
@@ -97,7 +79,7 @@ export default defineComponent({
     getComponentForGameInvitation() {
       switch (this.notification.title) {
         case 'Challenge Accepted':
-          return GameChallengeAccepted
+          return GameStarted
         case 'Game Invite Rejected':
           return GameChallengeRejected
         case 'Game Invite':
@@ -114,8 +96,10 @@ export default defineComponent({
           return GamePaused
         case 'Joined Game':
           return JoinedGame
+        case 'Game Matched':
+          return GameMatched
         case 'Game Started':
-          return GameChallengeAccepted
+          return GameStarted
         default:
           return null
       }

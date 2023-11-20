@@ -1,6 +1,6 @@
 <template>
-  <button
-    :disabled="true"
+  <div
+    @click="handleRead"
     class="relative block w-full p-4 hover:bg-[#01051e] cursor-pointer opacity-80"
   >
     <div class="relative flex w-full gap-4">
@@ -16,12 +16,13 @@
         </p>
       </div>
     </div>
-  </button>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref, onBeforeUnmount } from "vue";
-import { Notification as NotificationT } from '@/utils/notificationSocket'
+import {computed, onBeforeUnmount, PropType, ref} from "vue";
+import {Notification as NotificationT} from "@/utils/notificationSocket";
+import useNotificationStore from "@/stores/NotificationStore";
 
 const props = defineProps({
   notification: {
@@ -33,13 +34,14 @@ const props = defineProps({
     default: false
   }
 })
-
+const notificationStore = useNotificationStore();
 const now = ref(new Date().getTime())
+const expireTime = ref(new Date(props.notification?.expiresAt).getTime())
 const isExpired = computed(() => {
   if (!props.notification?.expiresAt) return false
-  const expireTime = new Date(props.notification?.expiresAt).getTime()
-  return now.value > expireTime
+  return now.value > expireTime.value
 })
+
 // update now every second
 const interval = setInterval(() => {
   now.value = new Date().getTime()
@@ -48,6 +50,10 @@ const interval = setInterval(() => {
 onBeforeUnmount(() => {
   clearInterval(interval)
 })
+
+const handleRead = async () => {
+  await notificationStore.markNotificationAsRead(props.notification.id);
+}
 </script>
 
 <style scoped>
