@@ -109,10 +109,8 @@ import useAuthStore from '@/stores/AuthStore'
 import useUserStore from '@/stores/UserStore'
 import TopChatCard from '@/components/chatRooms/TopsChatCard.vue'
 import PlayerSimpleStats from '@/components/profile/PlayerSimpleStats.vue'
-import Friends from '@/components/profile/Friends.vue'
 import Greetings from '@/components/profile/Greetings.vue'
 import useMessageStore from '@/stores/MessageStore'
-import MessageContact from '@/components/messages/MessageContact.vue'
 import { pushToUserProfile, pushToDmWithUser } from '@/utils/router'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 import StatusBadge from '@/components/profile/StatusBadge.vue'
@@ -123,9 +121,7 @@ export default defineComponent({
   components: {
     PlayerSimpleStats,
     TopChatCard,
-    Friends,
     Greetings,
-    MessageContact,
     GameStatusBadge,
     StatusBadge,
     LeaderBoardView

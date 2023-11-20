@@ -1,23 +1,26 @@
 <template>
   <v-container fluid>
-    <v-row
-      align="center"
-      justify="center"
-    >
-      <v-col
-        cols="12"
-        md="8"
-      >
+    <v-row align="center" justify="center">
+      <v-col cols="12" md="8">
         <v-card color="secondary">
-          <v-card-title class="text-h5">
-            Bienvenue dans la salle d'attente
-          </v-card-title>
+          <v-card-title class="text-h5"> Bienvenue dans la salle d'attente </v-card-title>
+          <div v-if="!gameStore.getCurrentGameSession" class="flex justify-center">
+            <p class="w-1/2 text-center">
+              Voulez-vous rejoindre une fille d'attente pour jouer à Pong avec un autre joueur ?
+            </p>
+            <VIcon icon="medical-icon:i-waiting-area" :size="128" />
+          </div>
+          <div v-else class="flex justify-center">
+            <p class="w-1/2 text-center">Vous avez deja une session de jeu en cours</p>
+            <VIcon color="orange" :size="128">tabler:device-gamepad-2</VIcon>
+          </div>
           <v-card-actions>
             <v-btn
               v-if="!gameStore.getCurrentGameSession"
               :loading="loading"
               :disabled="loading"
               color="primary"
+              variant="elevated"
               @click="joinQueue"
             >
               Rejoindre la file d'attente
@@ -26,26 +29,23 @@
         </v-card>
       </v-col>
     </v-row>
-    <NotificationPopUp
-      v-model:visible="showErrorPopUp"
-      :message="popUpMessage"
-    />
+    <NotificationPopUp v-model:visible="showErrorPopUp" :message="popUpMessage" />
   </v-container>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import useGameStore, {GameSessionQResponse} from "@/stores/GameStore";
-import useNotificationStore from "@/stores/NotificationStore";
-import NotificationPopUp from "@/components/notifications/NotificationPopUp.vue";
-import {NotificationType} from "@/utils/notificationSocket";
+import { defineComponent } from 'vue'
+import useGameStore, { GameSessionQResponse } from '@/stores/GameStore'
+import useNotificationStore from '@/stores/NotificationStore'
+import NotificationPopUp from '@/components/notifications/NotificationPopUp.vue'
+import { NotificationType } from '@/utils/notificationSocket'
 
 export default defineComponent({
   components: { NotificationPopUp },
-  props:{},
+  props: {},
   setup() {
-    const gameStore = useGameStore();
-    const notificationStore = useNotificationStore();
+    const gameStore = useGameStore()
+    const notificationStore = useNotificationStore()
     return {
       gameStore,
       notificationStore
@@ -62,52 +62,61 @@ export default defineComponent({
   watch: {
     'gameStore.getCurrentGameSession': {
       handler() {
-        this.checkIfAlreadyInGame();
+        this.checkIfAlreadyInGame()
       },
       immediate: true
     },
     'notificationStore.allNotifications': {
       handler() {
-        this.checkIfGameMatched();
+        this.checkIfGameMatched()
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   async beforeMount() {
-    await this.gameStore.getAllGameSessions();
+    await this.gameStore.getAllGameSessions()
   },
   async beforeUnmount() {
-    if (this.queuResponse){
-      await this.gameStore.quitQueList();
+    if (this.queuResponse) {
+      await this.gameStore.quitQueList()
     }
   },
   methods: {
     async checkIfAlreadyInGame() {
       if (this.gameStore.getCurrentGameSession) {
-        this.$router.push({ name: 'game', params: { gameId: this.gameStore.getCurrentGameSession.gameId } });
+        this.$router.push({
+          name: 'game',
+          params: { gameId: this.gameStore.getCurrentGameSession.gameId }
+        })
       }
     },
     async joinQueue() {
       if (this.gameStore.getCurrentGameSession) {
-        this.$router.push({ name: 'game', params: { gameId: this.gameStore.getCurrentGameSession.gameId } })
+        this.$router.push({
+          name: 'game',
+          params: { gameId: this.gameStore.getCurrentGameSession.gameId }
+        })
       } else {
-        this.loading = true;
-        const qResponse = await this.gameStore.enterInQueList();
-        this.queuResponse = qResponse;
+        this.loading = true
+        const qResponse = await this.gameStore.enterInQueList()
+        this.queuResponse = qResponse
         if (qResponse.gameSession) {
           this.$router.push({ name: 'game', params: { gameId: qResponse.gameSession?.gameId } })
         } else {
           this.popUpMessage = `Vous êtes dans la file d'attente.`
-          this.showErrorPopUp = true;
+          this.showErrorPopUp = true
         }
-        this.loading = false;
+        this.loading = false
       }
     },
-    async checkIfGameMatched(){
-      console.log(this.notificationStore.allNotifications);
+    async checkIfGameMatched() {
+      console.log(this.notificationStore.allNotifications)
       if (this.notificationStore.allNotifications.length > 0) {
-        const notification = this.notificationStore.allNotifications[0];
-        if (notification.type === NotificationType.GAME_EVENT && notification.title === 'Game Matched') {
+        const notification = this.notificationStore.allNotifications[0]
+        if (
+          notification.type === NotificationType.GAME_EVENT &&
+          notification.title === 'Game Matched'
+        ) {
           this.$router.push({ name: 'game', params: { gameId: notification.referenceId } })
         }
       }
@@ -116,6 +125,4 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
