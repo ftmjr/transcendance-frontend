@@ -60,8 +60,8 @@ export interface ListenEvents {
 
 export interface EmitEvents {
   [GAME_EVENTS.JoinGame]: (
-      sentData: { roomId: number; user: GameUser; userType: GameUserType },
-      callback: (res: { worked: boolean; roomId: number }) => void
+    sentData: { roomId: number; user: GameUser; userType: GameUserType },
+    callback: (res: { worked: boolean; roomId: number }) => void
   ) => void
   [GAME_EVENTS.GameStateChanged]: (sentData: {
     roomId: number
@@ -86,15 +86,15 @@ export class GameNetwork {
       this.socket = io('/game', { path: '/socket.io' })
     } catch (e) {
       this.joinedGame = false
-      this.roomId = 0;
+      this.roomId = 0
     }
   }
-  connect(){
+  connect() {
     try {
       this.socket = io('/game', { path: '/socket.io' })
     } catch (e) {
       this.joinedGame = false
-      this.roomId = 0;
+      this.roomId = 0
     }
   }
 
@@ -113,7 +113,7 @@ export class GameNetwork {
   public connectToGame(roomId: number, userType: GameUserType) {
     this.socket?.emit(GAME_EVENTS.JoinGame, { roomId, user: this.user, userType }, (res) => {
       const { worked, roomId } = res
-      console.log('join game response', res);
+      console.log('join game response', res)
       this.roomId = roomId
       this.joinedGame = worked
     })
@@ -142,7 +142,7 @@ export class GameNetwork {
 
   sendBallServe(data: BallData) {
     const roomId = this.roomId
-    console.log('send ball serve, in room', roomId);
+    console.log('send ball serve, in room', roomId)
     if (this.isOperational) {
       console.log('is Operational, sending data')
       this.socket?.emit(GAME_EVENTS.BallServed, { roomId, data })
@@ -229,16 +229,16 @@ export class GameNetwork {
 
   disconnect() {
     if (this.socket) {
-      this.socket.disconnect();
+      this.socket.disconnect()
     }
-    this.roomId = 0;
-    this.joinedGame = false;
+    this.roomId = 0
+    this.joinedGame = false
   }
 
   reconnect() {
-    if (!this.socket) this.connect();
+    if (!this.socket) this.connect()
     if (this.socket?.disconnected) {
-      this.socket.connect();
+      this.socket.connect()
     }
   }
 }

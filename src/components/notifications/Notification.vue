@@ -20,8 +20,8 @@ import GamePaused from '@/components/notifications/game/GamePaused.vue'
 import GameResumed from '@/components/notifications/game/GameResumed.vue'
 import GameChallengeRejected from '@/components/notifications/game/GameChallengeRejected.vue'
 import JoinedGame from '@/components/notifications/game/JoinedGame.vue'
-import GameMatched from "@/components/notifications/game/GameMatched.vue";
-import GameStarted from "@/components/notifications/game/GameStarted.vue";
+import GameMatched from '@/components/notifications/game/GameMatched.vue'
+import GameStarted from '@/components/notifications/game/GameStarted.vue'
 
 export default defineComponent({
   components: {
@@ -33,7 +33,7 @@ export default defineComponent({
     GameInvitation,
     GameStarted,
     GamePaused,
-    GameMatched,
+    GameMatched
   },
   props: {
     notification: {

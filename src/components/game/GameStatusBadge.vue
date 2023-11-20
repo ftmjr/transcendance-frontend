@@ -45,7 +45,7 @@
       </span>
     </v-btn>
     <challenge-modal
-      v-else-if="liveStatus === 'Online' "
+      v-else-if="liveStatus === 'Online'"
       :status="liveStatus"
       :user-id="userId"
       :user-game-status="userGameStatus"

@@ -286,7 +286,9 @@ export default class Menu extends Scene {
   handleGameStateChange(state: GAME_STATE) {
     switch (state) {
       case GAME_STATE.Waiting:
-        this.statusNetworkText.text = this.monitor.isNetworkOperational() ? 'Init, game' : 'Game not found on server'
+        this.statusNetworkText.text = this.monitor.isNetworkOperational()
+          ? 'Init, game'
+          : 'Game not found on server'
         this.boardText.text = 'PONG'
         this.startButton.setVisible(true).btnActiveStatus = true
         break

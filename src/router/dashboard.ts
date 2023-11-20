@@ -7,7 +7,7 @@ import LeaderboardView from '@/views/LeaderboardView.vue'
 import { RouteRecordRaw } from 'vue-router'
 import GameView from '@/views/GameView.vue'
 import ChatHome from '@/views/Chat/ChatRooms.vue'
-import waitingRoom from "@/views/WaitingRoom.vue";
+import waitingRoom from '@/views/WaitingRoom.vue'
 
 const dashboardRoutes: RouteRecordRaw = {
   path: '/',

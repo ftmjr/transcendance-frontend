@@ -43,7 +43,7 @@ const useAuthStore = defineStore({
     const user = JSON.parse(localStorage.getItem('__user__') ?? 'null') as
       | (User & { profile: Profile })
       | null
-    const now = new Date().getTime();
+    const now = new Date().getTime()
     return {
       token,
       user,
@@ -63,12 +63,12 @@ const useAuthStore = defineStore({
       }
       return null
     },
-    isExpired():boolean {
+    isExpired(): boolean {
       if (this.token) {
         const decoded = decodeJWT(this.token)
         if (decoded) {
           const now = this.now
-          return (decoded.exp * 1000) <= now
+          return decoded.exp * 1000 <= now
         }
       }
       return false
@@ -128,15 +128,15 @@ const useAuthStore = defineStore({
     },
     setToken(token: string) {
       this.token = token
-      localStorage.setItem('__token__', token);
+      localStorage.setItem('__token__', token)
       if (this.timer) {
-        clearInterval(this.timer);
+        clearInterval(this.timer)
       }
       this.timer = setInterval(() => {
-        this.now = new Date().getTime();
-      }, 10000); // 10 seconds before token expiration check
+        this.now = new Date().getTime()
+      }, 10000) // 10 seconds before token expiration check
     },
-    async refreshToken(): Promise<string>{
+    async refreshToken(): Promise<string> {
       console.log('refreshing token')
       const { data } = await axios.get('/auth/refresh', {
         headers: {

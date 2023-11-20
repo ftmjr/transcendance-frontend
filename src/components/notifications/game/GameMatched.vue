@@ -20,9 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onBeforeUnmount, PropType, ref} from "vue";
-import {Notification as NotificationT} from "@/utils/notificationSocket";
-import useNotificationStore from "@/stores/NotificationStore";
+import { computed, onBeforeUnmount, PropType, ref } from 'vue'
+import { Notification as NotificationT } from '@/utils/notificationSocket'
+import useNotificationStore from '@/stores/NotificationStore'
 
 const props = defineProps({
   notification: {
@@ -34,7 +34,7 @@ const props = defineProps({
     default: false
   }
 })
-const notificationStore = useNotificationStore();
+const notificationStore = useNotificationStore()
 const now = ref(new Date().getTime())
 const expireTime = ref(new Date(props.notification?.expiresAt).getTime())
 const isExpired = computed(() => {
@@ -52,10 +52,8 @@ onBeforeUnmount(() => {
 })
 
 const handleRead = async () => {
-  await notificationStore.markNotificationAsRead(props.notification.id);
+  await notificationStore.markNotificationAsRead(props.notification.id)
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

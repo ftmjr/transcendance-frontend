@@ -1,6 +1,6 @@
 <template>
   <VChip label :color="color">
-  {{ status }}
+    {{ status }}
   </VChip>
 </template>
 
@@ -19,7 +19,7 @@ const props = defineProps({
     type: String as PropType<Status>,
     required: true,
     default: () => Status.Offline
-  },
+  }
 })
 const usersStore = useUserStore()
 const authStore = useAuthStore()
