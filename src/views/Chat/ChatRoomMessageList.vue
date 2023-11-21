@@ -28,6 +28,23 @@
     >
       <form action="" class="flex items-center justify-center w-full h-full">
         <div class="w-full h-[40px] relative">
+          <div
+            v-if="isMuted"
+            class="absolute left-0 z-50 flex items-center justify-center w-full h-full -top-5"
+          >
+            <p class="text-xs text-primary">
+              Vous pourrez envoyer de messages dans
+              <span class="text-xs text-primary">
+                {{ canWriteAt }}
+              </span>
+            </p>
+          </div>
+          <div
+            v-if="isBan"
+            class="absolute left-0 z-50 flex items-center justify-center w-full h-full -top-5"
+          >
+            <p class="text-xs text-primary">Vous est banni</p>
+          </div>
           <VForm @submit.prevent="sendMessage">
             <VTextField
               v-model="chatMessageContent"
@@ -35,7 +52,7 @@
               variant="solo"
               placeholder="Envoyer un message dans le chat"
               density="default"
-              class="h-full px-4 -mt-5 text-sm font-light"
+              class="h-full px-4 -mt-5 text-sm font-light disabled:blur-md"
               autofocus
               @keypress="sendIsTyping"
             >
@@ -86,7 +103,10 @@ export default defineComponent({
       skip: 0,
       chatMessageContent: '',
       loading: false,
-      isTypingUserName: ''
+      isTypingUserName: '',
+      timer: null as NodeJS.Timeout | null,
+      canWriteAt: '',
+      expiresAt: new Date().getTime() + 1000 * 30
     }
   },
   computed: {
@@ -110,6 +130,14 @@ export default defineComponent({
     isOwner(): boolean {
       if (!this.me) return false
       return this.me.role === ChatMemberRole.OWNER
+    },
+    canWriteAt: {
+      get: () => {
+        return this.canWriteAt
+      },
+      set: (value: string) => {
+        this.canWriteAt = value
+      }
     },
     canRead(): boolean {
       if (!this.me) return false
@@ -246,10 +274,48 @@ export default defineComponent({
       const scrollEl = this.chatLogPS?.$el
       if (!scrollEl) return
       scrollEl.scrollTop = 0
+    },
+    getTimeRemaining() {
+      const now = Date.now()
+      const timeDifference = this.expiresAt - now
+
+      if (timeDifference <= 0) {
+        this.canWriteAt = ''
+        return
+      } else {
+        const seconds = Math.floor((timeDifference / 1000) % 60)
+        const minutes = Math.floor((timeDifference / (1000 * 60)) % 60)
+        const hours = Math.floor((timeDifference / (1000 * 60 * 60)) % 24)
+        const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24))
+
+        let rtn = ''
+        if (days > 0) {
+          rtn += `${days} jours `
+        }
+
+        if (hours > 0) {
+          rtn += `${hours} heure(s) `
+        }
+
+        if (minutes > 0) {
+          rtn += `${minutes} minute(s) `
+        }
+
+        if (seconds > 0) {
+          rtn += `${seconds} seconde(s)`
+        }
+
+        this.canWriteAt = rtn
+      }
     }
   },
+
   mounted() {
     this.scrollToBottomInChatLog()
+    this.timer = setInterval(this.getTimeRemaining, 1000)
+  },
+  beforeUnmount() {
+    if (this.timer) clearInterval(this.timer)
   }
 })
 </script>

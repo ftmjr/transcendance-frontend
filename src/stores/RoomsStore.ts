@@ -239,6 +239,10 @@ const useRoomsStore = defineStore({
     async quitRoom(roomId: number): Promise<'success' | 'failed'> {
       try {
         await axios.get(`/chat/leave-room/${roomId}`)
+        //effacer la room si elle est vide
+        if (this.currentRoomMembers.length === 1) {
+          await axios.delete<ChatRoom>(`/chat/delete-room/${roomId}`)
+        }
         // Mise à jour du store après avoir quitté la salle
         this.rooms = this.rooms.filter((room) => room.id !== roomId)
         return 'success'

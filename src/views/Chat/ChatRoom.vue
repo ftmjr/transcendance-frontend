@@ -38,10 +38,8 @@
             </VAvatar>
             <p
               class="px-6 py-1 mb-0 text-lg font-weight-medium elevation-3 rounded-xl text-high-emphasis bg-surface"
-              :class="[{ 'cursor-pointer': $vuetify.display.smAndDown }]"
-              @click="roomStore.toggleLeftNav()"
             >
-              Trouver une salle de discussion
+              Rejoignez une salle pour commencer à chatter
             </p>
           </div>
         </template>

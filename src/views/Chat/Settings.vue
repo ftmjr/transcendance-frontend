@@ -13,8 +13,8 @@
         <h2 v-if="alreadyMember">{{ roomsStore.getCurrentRoomStatus.room.name }}</h2>
         <h2 v-else>Rejoindre {{ roomsStore.getCurrentRoomStatus.room.name }}</h2>
       </div>
-      <v-menu
-        v-if="alreadyMember"
+      <!-- <v-menu
+        v-if="alreadyMember && !isMuted && !isBanned"
         transition="scale-transition"
         v-model="menu"
         :close-on-content-click="false"
@@ -109,6 +109,7 @@
                   <v-divider class="my-4"></v-divider>
                   <v-btn
                     :disabled="loading"
+                    v-show="!isMuted"
                     @click="quitRoom"
                     type="button"
                     block
@@ -120,7 +121,7 @@
             </v-list-item>
           </v-list>
         </v-card>
-      </v-menu>
+      </v-menu> -->
     </div>
     <NotificationPopUp
       v-model:visible="showErrorPopUp"
@@ -203,6 +204,12 @@ export default defineComponent({
   computed: {
     isOwner(): boolean {
       return this.roomsStore.getCurrentRoomStatus.role === 'OWNER'
+    },
+    isMuted(): boolean {
+      return this.roomsStore.getCurrentRoomStatus.role === 'MUTED'
+    },
+    isBanned(): boolean {
+      return this.roomsStore.getCurrentRoomStatus.role === 'BAN'
     },
     alreadyMember(): boolean {
       return this.roomsStore.getCurrentRoomStatus.state
