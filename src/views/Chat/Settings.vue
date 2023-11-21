@@ -13,7 +13,7 @@
         <h2 v-if="alreadyMember">{{ roomsStore.getCurrentRoomStatus.room.name }}</h2>
         <h2 v-else>Rejoindre {{ roomsStore.getCurrentRoomStatus.room.name }}</h2>
       </div>
-      <!-- <v-menu
+      <v-menu
         v-if="alreadyMember && !isMuted && !isBanned"
         transition="scale-transition"
         v-model="menu"
@@ -121,7 +121,7 @@
             </v-list-item>
           </v-list>
         </v-card>
-      </v-menu> -->
+      </v-menu>
     </div>
     <NotificationPopUp
       v-model:visible="showErrorPopUp"

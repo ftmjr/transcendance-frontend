@@ -13,7 +13,7 @@
           :key="`message-group-${index}-${msgGrp.senderId}`"
           :class="msgGrp.senderId === roomStore.userId ? 'self-end' : 'self-start'"
         >
-          <message :is-sender="msgGrp.senderId === roomStore.userId" :msg-group="msgGrp" />
+          <!-- <message :is-sender="msgGrp.senderId === roomStore.userId" :msg-group="msgGrp" /> -->
         </li>
         <li v-if="isTypingUserName" class="pb-4 font-weight-medium">
           <p>
