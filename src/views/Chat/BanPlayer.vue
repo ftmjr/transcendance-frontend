@@ -1,20 +1,21 @@
 <template>
-  <div class="flex items-center justify-end gap-6">
-    <v-switch v-model="banned" color="primary" label="Bannir" hide-details></v-switch>
-    <v-btn
-      :disabled="stateOfIsBanned === banned || isLoading"
-      @click="handleUpdateIsBanned"
-      color="primary"
-      text
-      size="small"
-      class="text-xs"
-    >
-      Sauvegarder
-    </v-btn>
-  </div>
+  <v-btn
+    :disabled="isLoading"
+    @click="handleUpdateIsBanned"
+    color="primary"
+    text
+    size="large"
+    class="w-full text-xs"
+  >
+    {{ banned ? 'Débannir' : 'Bannir' }}
+  </v-btn>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import useRoomsStore from '@/stores/RoomsStore'
+import { ChatMemberRole } from '@/utils/chatSocket'
+
+const roomsStore = useRoomsStore()
 
 const props = defineProps({
   stateOfIsBanned: {
@@ -37,11 +38,15 @@ const banned = ref(props.stateOfIsBanned)
 const handleUpdateIsBanned = async (e: Event) => {
   e.preventDefault()
   try {
-    if (banned.value == props.stateOfIsBanned) return
     isLoading.value = true
-    console.log(
-      `trying to ${banned.value ? 'banne' : 'unbanne'} user ${props.userId} in room ${props.roomId}`
+    const member = roomsStore.getCurrentRoomMembers.find(
+      (member) => member.memberId === props.userId
     )
+    if (!member) return
+
+    const newRole = banned.value ? ChatMemberRole.USER : ChatMemberRole.BAN
+    await roomsStore.changeMemberRole(props.roomId, member, newRole)
+    isLoading.value = false
   } catch (error) {
     console.log(error)
   } finally {

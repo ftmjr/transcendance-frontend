@@ -52,20 +52,10 @@
                           variant="solo-filled"
                         ></v-file-input>
                       </div>
-                      <!-- <VTextField
-                        :disabled="loading || !isAdminOrOwner"
-                        v-model="roomName"
-                        label="Nom de la salle"
-                        placeholder="Entrez le nom de la salle"
-                        outlined
-                        dense
-                        :rules="rules.roomName"
-                        class="mt-4"
-                      /> -->
                       <VSelect
                         :disabled="loading || !isOwner"
-                        v-model="roomType"
-                        :items="roomTypes"
+                        v-model="type"
+                        :items="typeList"
                         item-title="text"
                         item-value="value"
                         label="Type de la salle"
@@ -73,24 +63,35 @@
                         dense
                         class="mt-4"
                       />
-                      <div v-if="askPassword">
-                        <VTextField
-                          :disabled="loading || !isOwner"
-                          v-model="roomPassword"
+                      <div>
+                        <v-text-field
+                          :disabled="loading || !isOwner || !askPassword"
+                          v-model="oldPassword"
+                          label="Ancien mot de passe"
+                          placeholder="Entrez l'ancien mot de passe"
+                          outlined
+                          dense
+                          :rules="rules.oldPassword"
+                          class="mt-4"
+                        />
+                        <v-text-field
+                          :disabled="loading || !isOwner || !askPassword"
+                          v-model="password"
                           label="Mot de passe"
                           placeholder="Entrez le mot de passe"
                           outlined
                           dense
-                          :rules="rules.roomPassword"
+                          :rules="rules.password"
                           class="mt-4"
                         />
-                        <VTextField
-                          v-model="roomPasswordConfirmation"
+                        <v-text-field
+                          :disabled="loading || !isOwner || !askPassword"
+                          v-model="passwordConfirmation"
                           label="Confirmation du mot de passe"
                           placeholder="Confirmez le mot de passe"
                           outlined
                           dense
-                          :rules="rules.roomPasswordConfirmation"
+                          :rules="rules.passwordConfirmation"
                           class="mt-4"
                         />
                       </div>
@@ -146,14 +147,14 @@ export default defineComponent({
   },
   data: () => ({
     menu: false,
-    roomName: '',
+    name: '',
     roomDescription: '',
-    roomType: RoomType.PUBLIC as RoomType,
-    roomOldPassword: '',
-    roomPassword: '',
-    roomPasswordConfirmation: '',
+    type: RoomType.PUBLIC as RoomType,
+    oldPassword: '',
+    password: '',
+    passwordConfirmation: '',
     rules: {
-      roomName: [
+      name: [
         (v: string) => !!v || 'Le nom de la salle est requis',
         (v: string) =>
           (v && v.length <= 20) || 'Le nom de la salle doit être inférieur à 20 caractères',
@@ -161,19 +162,19 @@ export default defineComponent({
           (v && v.length >= 3) || 'Le nom de la salle doit être supérieur à 3 caractères',
         (v: string) => !this.checkBadWord(v) || 'Le nom de la salle contient un mot interdit'
       ],
-      roomOldPassword: [
+      oldPassword: [
         (v: string) => !!v || 'Le mot de passe est requis',
         (v: string) =>
           (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
         (v: string) => (v && v.length >= 3) || 'Le mot de passe doit être supérieur à 3 caractères'
       ],
-      roomPassword: [
+      password: [
         (v: string) => !!v || 'Le mot de passe est requis',
         (v: string) =>
           (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
         (v: string) => (v && v.length >= 3) || 'Le mot de passe doit être supérieur à 3 caractères'
       ],
-      roomPasswordConfirmation: [
+      passwordConfirmation: [
         (v: string) => !!v || 'La confirmation du mot de passe est requise',
         (v: string) =>
           (v && v.length <= 20) ||
@@ -181,7 +182,7 @@ export default defineComponent({
         (v: string) =>
           (v && v.length >= 3) ||
           'La confirmation du mot de passe doit être supérieur à 3 caractères',
-        (v: string) => v === this.roomPassword || 'Les mots de passe ne correspondent pas'
+        (v: string) => v === this.password || 'Les mots de passe ne correspondent pas'
       ]
     },
     loading: false,
@@ -201,15 +202,13 @@ export default defineComponent({
   }),
   computed: {
     isOwner(): boolean {
-      return (
-        this.roomsStore.getCurrentRoomStatus.role === 'OWNER'
-      )
+      return this.roomsStore.getCurrentRoomStatus.role === 'OWNER'
     },
     alreadyMember(): boolean {
       return this.roomsStore.getCurrentRoomStatus.state
     },
     askPassword(): boolean {
-      return this.roomType === RoomType.PRIVATE || this.roomType === RoomType.PROTECTED
+      return this.type === type.PRIVATE || this.type === type.PROTECTED
     },
     hasPassword(): boolean {
       if (!this.roomsStore.getCurrentRoomStatus.state) return false
@@ -218,19 +217,19 @@ export default defineComponent({
       if (!hashedPass) return false
       return hashedPass.length > 0
     },
-    roomTypes(): { text: string; value: RoomType }[] {
+    typeList(): { text: string; value: type }[] {
       return [
         {
           text: 'Publique',
-          value: RoomType.PUBLIC
+          value: type.PUBLIC
         },
         {
           text: 'Protégée',
-          value: RoomType.PROTECTED
+          value: type.PROTECTED
         },
         {
           text: 'Privée',
-          value: RoomType.PRIVATE
+          value: type.PRIVATE
         }
       ]
     }
@@ -255,9 +254,9 @@ export default defineComponent({
     },
     fillForm() {
       if (!this.roomsStore.getCurrentRoomStatus.room) return
-      this.roomName = this.roomsStore.getCurrentRoomStatus.room.name
-      this.roomType = this.roomsStore.getCurrentRoomStatus.room.type
-      this.roomOldPassword = this.roomsStore.getCurrentRoomStatus.room.password ? '********' : ''
+      this.name = this.roomsStore.getCurrentRoomStatus.room.name
+      this.type = this.roomsStore.getCurrentRoomStatus.room.type
+      this.oldPassword = this.roomsStore.getCurrentRoomStatus.room.password ? '********' : ''
     },
     async quitRoom() {
       this.loading = true

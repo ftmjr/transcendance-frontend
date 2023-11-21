@@ -15,23 +15,26 @@
       @click="tryToMute"
       color="primary"
       text
-      size="small"
+      size="large"
       class="text-xs"
     >
-      Sauvegarder
+      Promouvoir
     </v-btn>
   </div>
 </template>
 <script setup lang="ts">
 import { PropType, ref, computed } from 'vue'
 import { ChatMemberRole } from '@/utils/chatSocket'
+import useRoomsStore from '@/stores/RoomsStore'
+
+const roomsStore = useRoomsStore()
 
 const rolesList = [
-  { value: ChatMemberRole.USER, text: 'Utilisateur' },
-  { value: ChatMemberRole.ADMIN, text: 'Administrateur' }
+  { value: ChatMemberRole.USER, text: 'Rétrograder' },
+  { value: ChatMemberRole.ADMIN, text: 'Promouvoir' }
 ]
 
-const { memberRole, userId, roomId } = defineProps({
+const props = defineProps({
   memberRole: {
     type: String as PropType<ChatMemberRole>,
     required: true,
@@ -48,7 +51,7 @@ const { memberRole, userId, roomId } = defineProps({
 })
 
 const isLoading = ref(false)
-const role = ref(memberRole)
+const role = ref(props.memberRole)
 
 const canNotPromote = computed(() => {
   return (
@@ -61,12 +64,18 @@ const canNotPromote = computed(() => {
 const tryToMute = async (e: Event) => {
   e.preventDefault()
   try {
-    if (role.value === memberRole) return
+    if (role.value === props.memberRole) return
+
     isLoading.value = true
-    console.log(`trying to promote user ${userId} in room ${roomId}`)
+
+    const member = roomsStore.getCurrentRoomMembers.find(
+      (member) => member.memberId === props.userId
+    )
+    if (!member) return
+    await roomsStore.changeMemberRole(props.roomId, member, role.value)
+    isLoading.value = false
   } catch (error) {
     console.log(error)
-  } finally {
     isLoading.value = false
   }
 }

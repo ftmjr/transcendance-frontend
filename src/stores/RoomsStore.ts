@@ -12,6 +12,7 @@ import { Profile, User } from '@/interfaces/User'
 import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
 import { isAxiosError } from 'axios'
 import useUserStore, { BlockedStatus } from '@/stores/UserStore'
+import { parse } from 'path'
 
 export interface JoinRoom {
   userId: number
@@ -270,17 +271,16 @@ const useRoomsStore = defineStore({
     },
     async changeMemberRole(
       roomId: number,
-      userId: number,
-      newRole: ChatMemberRole,
-      existingRole: ChatMemberRole,
-      expireAt?: number // timestamp for the end of BAN role if needed
+      member: ChatRoomMember,
+      promoteTo: ChatMemberRole,
+      expireAt?: number // timestamp for the end of MUTED role if needed
     ): Promise<'success' | 'failed'> {
       try {
-        // only owner can't change his role
-        if (existingRole === ChatMemberRole.OWNER) {
+        // cannot chnage role of owner
+        if (member.role === ChatMemberRole.OWNER) {
           return 'failed'
         }
-        await axios.post(`/chat/promote/${roomId}`, { userId, role: newRole, expireAt })
+        await axios.post(`/chat/promote/${roomId}`, { userId: member.memberId, role: promoteTo, expireAt })
         this.sendReloadRoomMembers(roomId)
         return 'success'
       } catch (error) {
@@ -416,7 +416,29 @@ const useRoomsStore = defineStore({
     },
     toggleRightNav() {
       this.isRightNavOpen = !this.isRightNavOpen
-    }
+    },
+
+    /**
+     * @name kickMember
+     * @description kick a member from a room
+     * @param roomId the id of the room
+     * @param userId the id of the user to kick
+     * @returns 'success' if success, 'failed' if failed
+    */
+    async kickMember(roomId: number, memberId: number): Promise<'success' | 'failed'> {
+      try {
+        await axios.post(`/chat/remove-member/${roomId}`, {
+          roomId,
+          userId: memberId
+        }),
+          // Mise à jour du store après avoir kické un membre
+          this.currentRoomMembers = this.currentRoomMembers.filter((member) => member.memberId !== memberId)
+        return 'success'
+      } catch (error) {
+        console.error(error)
+        return 'failed'
+      }
+    },
   }
 })
 

@@ -41,32 +41,27 @@
           </template>
 
           <v-card>
-            <v-list class="py-8">
+            <v-list class="py-4">
               <v-list-item v-if="amTheOwner || (amAnAdmin && !isOwner)">
-                <mute-player
-                  :state-of-is-muted="isMuted"
-                  :room-id="member.chatroomId"
-                  :user-id="member.memberId"
-                />
+                <div class="flex flex-col gap-3">
+                  <mute-player
+                    :state-of-is-muted="isMuted"
+                    :room-id="member.chatroomId"
+                    :user-id="member.memberId"
+                  />
+                  <div class="flex gap-2">
+                    <div class="basis-1/2">
+                      <ban-player
+                        :state-of-is-banned="isBan"
+                        :room-id="member.chatroomId"
+                        :user-id="member.memberId"
+                      />
+                    </div>
+                    <kick-player :room-id="member.chatroomId" :user-id="member.memberId" />
+                  </div>
+                </div>
               </v-list-item>
-              <v-list-item v-if="amTheOwner || (amAnAdmin && !isOwner)">
-                <ban-player
-                  :state-of-is-banned="isBan"
-                  :room-id="member.chatroomId"
-                  :user-id="member.memberId"
-                />
-              </v-list-item>
-              <v-divider class="my-4"></v-divider>
-              <v-list-item v-if="amTheOwner || (amAnAdmin && !isOwner)">
-                <v-btn
-                  :disabled="!amTheOwner && !amAnAdmin"
-                  @click=""
-                  type="button"
-                  block
-                  class="mt-2"
-                  text="Kick"
-                ></v-btn>
-              </v-list-item>
+              <v-divider v-if="(amAnAdmin && !isAdmin && !isOwner) || amTheOwner"></v-divider>
               <v-list-item v-if="amTheOwner">
                 <promote-player
                   :member-role="member.role"
@@ -91,6 +86,7 @@ import { defineComponent, PropType } from 'vue'
 import MutePlayer from './MutePlayer.vue'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import BanPlayer from './BanPlayer.vue'
+import KickPlayer from './KickPlayer.vue'
 import PromotePlayer from './PromotePlayer.vue'
 import useRoomsStore, { MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
 import { pushToUserProfile, pushToDmWithUser } from '@/utils/router'
@@ -106,7 +102,8 @@ export default defineComponent({
     PromotePlayer,
     AvatarBadge,
     GameStatusBadge,
-    FriendRequestBox
+    FriendRequestBox,
+    KickPlayer
   },
   props: {
     member: {

@@ -12,16 +12,12 @@
           </caption>
           <thead class="text-xs uppercase border-b rounded-md text-gray-50 bg-none">
             <tr>
-              <th class="w-4 px-1 py-1 text-center">Rang</th>
+              <th class="px-1 py-1 text-center">Pos</th>
               <th class="px-6 py-3 text-center">Avatar</th>
               <th class="px-6 py-3 text-center">Username</th>
               <th class="px-6 py-3 text-center">Total</th>
               <th class="px-6 py-3 text-center">Victoires</th>
               <th class="px-6 py-3 text-center">Défaites</th>
-              <th class="px-6 py-3 text-center">Challenger</th>
-              <th class="px-6 py-3 text-center">
-                <span class="">Écrire</span>
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -30,15 +26,15 @@
               class="text-gray-200 bg-none"
               v-for="(user, index) in topPlayers"
             >
-              <th
+              <td
                 scope="row"
                 :key="user.id"
-                class="w-4 px-1 py-1 text-xl font-bold text-gray-200 whitespace-nowrap dark:text-white"
+                class="w-10 px-1 py-1 text-xl font-bold text-gray-200 whitespace-nowrap"
               >
                 {{ index + 1 }}
-              </th>
+              </td>
               <td class="px-6 py-4">
-                <button @click="(_) => pushToUserProfile(user.id, $router)">
+                <button class="mx-auto" @click="(_) => pushToUserProfile(user.id, $router)">
                   <avatar-badge :user-id="user.id" :user="user" />
                 </button>
               </td>
@@ -103,14 +99,6 @@
               </td>
               <td class="px-6 py-4">
                 {{ getCountByEvent(user?.gameHistories, 'MATCH_LOST') }}
-              </td>
-              <td class="px-6 py-4 text-right">
-                <game-status-badge
-                  v-if="user.gameStatus && user.id !== authStore.user?.id"
-                  :user-game-status="user.gameStatus"
-                  :user-id="user.id"
-                  :status="user?.profile?.status"
-                />
               </td>
             </tr>
           </tbody>
