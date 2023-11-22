@@ -12,10 +12,10 @@
         <p
           :class="[
             'text-left text-sm fomt-semiBold',
-            notification.status === 'READ' ? 'text-gray-400/75' : ''
+            notification.status === 'READ' ? 'text-gray-400/50' : ''
           ]"
         >
-          {{ notification.title }}
+          Demande d'amitié Accetpée
         </p>
         <p
           :class="[
@@ -41,16 +41,7 @@ import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import { Notification } from '@/utils/notificationSocket'
 import useNotificationStore from '@/stores/NotificationStore'
 
-// Friend request Rejected
-// {
-//   // userId: number, // current user, user receiving the notification
-//   type: NotificationType.FRIEND_REQUEST,
-//     title: `Demande d'ami refusée`,
-//   message: message,
-//   referenceId: friendId,
-// }
-
-const { isShort, notification } = defineProps({
+const props = defineProps({
   notification: {
     type: Object as PropType<Notification>,
     required: true
@@ -61,13 +52,17 @@ const { isShort, notification } = defineProps({
   }
 })
 
-const router = useRouter()
-
-const notificationStore = useNotificationStore()
-
-const handleRead = (e: Event) => {
-  e.preventDefault()
-  notificationStore.markNotificationAsRead(notification.id)
+const router = useRouter();
+const notificationStore = useNotificationStore();
+// const handleDelete = () => {
+//   notificationStore.deleteNotification(props.notification.id)
+// }
+const handleRead = () => {
+  notificationStore.markNotificationAsRead(props.notification.id)
+  router.push({
+    name: 'user-profile',
+    params: { userId: props.notification.referenceId }
+  })
 }
 </script>
 

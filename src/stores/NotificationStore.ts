@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
-import { Notification, NotificationSocket } from '@/utils/notificationSocket'
+import { Notification, NotificationSocket, RealTimeNotification } from "@/utils/notificationSocket";
 import axios from '@/utils/axios'
 
 export interface NotificationState {
-  notifications: Notification[]
+  notifications: Notification[],
+  realTimeNotifications: RealTimeNotification[],
   socketManager: NotificationSocket | null
 }
 
@@ -12,6 +13,7 @@ const useNotificationStore = defineStore({
   state: (): NotificationState => {
     return {
       notifications: [],
+      realTimeNotifications: [],
       socketManager: null
     }
   },
@@ -29,7 +31,10 @@ const useNotificationStore = defineStore({
     },
     socketOperational(): boolean {
       return this.socketManager?.operational ?? false
-    }
+    },
+    allRealTimeNotifications(): RealTimeNotification[] {
+      return this.realTimeNotifications
+    },
   },
   actions: {
     async init(userId: number) {
@@ -41,6 +46,12 @@ const useNotificationStore = defineStore({
     disconnect() {
       this.socketManager?.disconnect()
       this.socketManager = null
+    },
+    listenToRoomNotifications(roomId: number) {
+      this.socketManager?.listenToRoomNotifications(roomId);
+    },
+    leaveRoomNotifications(roomId: number) {
+      this.socketManager?.leaveRoomNotifications(roomId);
     },
     async getNotifications() {
       try {

@@ -1,6 +1,6 @@
 <template>
   <button
-    :disabled="isExpired"
+    :disabled="notification.status === 'READ'"
     :class="[
       'relative block w-full p-4 hover:bg-[#01051e] cursor-pointer',
       notification.status === 'READ' ? 'opacity-75' : 'opacity-100'
@@ -12,17 +12,11 @@
         <v-icon class="text-2xl" color="orange">tabler:device-gamepad-2</v-icon>
       </div>
       <div class="flex-col flex-1 pr-4">
-        <p :class="['text-left text-sm fomt-semiBold', isExpired ? 'text-gray-400/75' : '']">
+        <p :class="['text-left text-sm fomt-semiBold']">
           {{ notification.title }}
         </p>
-        <p :class="['text-left text-xs', isExpired ? 'text-gray-400/75' : 'text-gray-500/75']">
+        <p :class="['text-left text-xs text-gray-500/75']">
           {{ notification.message }}
-        </p>
-        <p v :class="['text-left text-xs', isExpired ? 'text-gray-400/75' : 'text-gray-500/75']">
-          <span v-if="!isExpired">
-            cette invitation expire dans: {{ formatTime(minutes) }}:{{ formatTime(secondes) }}
-          </span>
-          <span v-else> Cette invitation a expiré </span>
         </p>
         <div class="flex gap-2 mt-4">
           <button
@@ -55,25 +49,13 @@ import { useRouter } from 'vue-router'
 import { Notification } from '@/utils/notificationSocket'
 import useNotificationStore from '@/stores/NotificationStore'
 import useGameStore from '@/stores/GameStore'
-import { computed, ref, onBeforeUnmount, onMounted } from 'vue'
-
-// Game invitation type
-// {
-//   userId: number, // current user
-//   type: NotificationType.GAME_INVITE,
-//   title: 'Game Invite',
-//   message: message,
-//   referenceId: gameId,
-//   expiresAt: new Date(Date.now() + 1000 * 60 * 5), // 5 minutes
-// }
-// invitation to a game need to more than just mark as read on click
-// gamestore
+import { ref } from 'vue'
 
 const router = useRouter()
 const notificationStore = useNotificationStore()
 const gameStore = useGameStore()
 
-const { isShort, notification } = defineProps({
+const props = defineProps({
   notification: {
     type: Object as PropType<Notification>,
     required: true
@@ -84,70 +66,7 @@ const { isShort, notification } = defineProps({
   }
 })
 
-const handleRead = (e: Event) => {
-  if (!e.defaultPrevented) e.preventDefault()
-  notificationStore.markNotificationAsRead(notification.id)
-}
-
-const hanleJoinGame = async (e: Event) => {
-  e.preventDefault()
-  handleRead(e)
-  const r = await gameStore.acceptGameInvitation(notification.referenceId)
-  if (r === 'preparing') {
-    router.push({
-      name: 'game',
-      params: { gameId: notification.referenceId }
-      // query: { isPlayer: 'true' }
-    })
-  }
-}
-
-const handleReject = (e: Event) => {
-  e.preventDefault()
-  gameStore.refuseGameInvitation(notification.referenceId)
-  handleRead(e)
-}
-
-const now = new Date().getTime()
-const expiresAt = new Date(notification.expiresAt).getTime()
-
-const isExpired = ref(now >= expiresAt)
-
-const minutes = ref(Math.floor((expiresAt - now) / 1000 / 60))
-const secondes = ref(Math.floor((expiresAt - now) / 1000) % 60)
-
-const updateCountDown = () => {
-  const now = new Date().getTime()
-  const timeLeft = expiresAt - now
-
-  isExpired.value = timeLeft <= 0
-
-  if (timeLeft <= 0 && interval) {
-    clearInterval(interval)
-    return
-  }
-
-  minutes.value = Math.floor(timeLeft / 1000 / 60)
-  secondes.value = Math.floor((timeLeft / 1000) % 60)
-}
-
-const formatTime = (time: number) => {
-  return time < 10 ? `0${time}` : `${time}`
-}
-
-let interval: NodeJS.Timer | null = null
-
-onMounted(() => {
-  if (!isExpired.value) {
-    interval = setInterval(updateCountDown, 1000)
-  } else {
-    if (notification.status !== 'READ') handleRead(new Event('click'))
-  }
-})
-
-onBeforeUnmount(() => {
-  if (interval) clearInterval(interval)
-})
+const isExpired = ref(false)
 </script>
 
 <style scoped></style>

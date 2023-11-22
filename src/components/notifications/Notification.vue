@@ -8,32 +8,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { Notification, NotificationType } from '@/utils/notificationSocket'
-import FriendRequest from '@/components/notifications/friend/FriendRequest.vue'
-import FriendRequestAccepted from '@/components/notifications/friend/RequestAccepted.vue'
-import FriendRequestRejected from '@/components/notifications/friend/RequestRejected.vue'
-import AddedToRoom from '@/components/notifications/chat/AddedToRoom.vue'
-import RoomAdministrator from '@/components/notifications/chat/RoomAdministrator.vue'
-import GameInvitation from '@/components/notifications/game/GameInvitation.vue'
-import GamePaused from '@/components/notifications/game/GamePaused.vue'
-import GameResumed from '@/components/notifications/game/GameResumed.vue'
-import GameChallengeRejected from '@/components/notifications/game/GameChallengeRejected.vue'
-import JoinedGame from '@/components/notifications/game/JoinedGame.vue'
-import GameMatched from '@/components/notifications/game/GameMatched.vue'
-import GameStarted from '@/components/notifications/game/GameStarted.vue'
+import { defineComponent, PropType } from "vue";
+import { Notification, NotificationTitle, NotificationType } from "@/utils/notificationSocket";
+import FriendRequest from "@/components/notifications/friend/FriendRequest.vue";
+import FriendRequestAccepted from "@/components/notifications/friend/FriendRequestAccepted.vue";
+import FriendRequestRejected from "@/components/notifications/friend/FriendRequestRejected.vue";
 
 export default defineComponent({
   components: {
-    FriendRequest,
-    FriendRequestAccepted,
-    FriendRequestRejected,
-    AddedToRoom,
-    RoomAdministrator,
-    GameInvitation,
-    GameStarted,
-    GamePaused,
-    GameMatched
+    // List all components that can be used in notifications
   },
   props: {
     notification: {
@@ -66,50 +49,44 @@ export default defineComponent({
   methods: {
     getComponentForFriends() {
       switch (this.notification.title) {
-        case `Demande d'ami acceptée`:
-          return FriendRequestAccepted
-        case `Demande d'ami refusée`:
-          return FriendRequestRejected
-        case `Demande d'amitié`:
-          return FriendRequest
+        case NotificationTitle.FriendRequest:
+          return FriendRequest;
+        case NotificationTitle.FriendRequestAccepted:
+          return FriendRequestAccepted;
+        case NotificationTitle.FriendRequestRejected:
+          return FriendRequestRejected;
         default:
           return null
       }
     },
     getComponentForGameInvitation() {
       switch (this.notification.title) {
-        case 'Challenge Accepted':
-          return GameStarted
-        case 'Game Invite Rejected':
-          return GameChallengeRejected
-        case 'Game Invite':
-          return GameInvitation
+        case NotificationTitle.GameInvitation:
+          return GameInvitation;
+        case NotificationTitle.GameInvitationRejected:
+          return GameInvitationRejected;
         default:
           return null
       }
     },
     getComponentForGameEvent() {
       switch (this.notification.title) {
-        case 'Game Resumed':
-          return GameResumed
-        case 'Game Paused':
-          return GamePaused
-        case 'Joined Game':
-          return JoinedGame
-        case 'Game Matched':
-          return GameMatched
-        case 'Game Started':
-          return GameStarted
+        case NotificationTitle.JoinedGame:
+          return JoinedGame;
         default:
           return null
       }
     },
     getComponentForChat() {
       switch (this.notification.title) {
-        case 'Room Administrator':
-          return RoomAdministrator
-        case 'Added to Chat':
-          return AddedToRoom
+        case NotificationTitle.PrivateChatInvitation:
+          return PrivateChatInvitation;
+        case NotificationTitle.MemberJoinedChatRoom:
+          return MemberJoinedChatRoom;
+        case NotificationTitle.RemovedFromChatRoom:
+          return RemovedFromChatRoom;
+        case NotificationTitle.PromotedToAdmin:
+          return PromotedToAdmin;
         default:
           return null
       }
