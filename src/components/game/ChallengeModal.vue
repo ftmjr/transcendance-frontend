@@ -161,9 +161,9 @@ const decrement = () => {
 
 const startChallenge = async () => {
   isDialogLoading.value = true
-  const r = await gameStore.startGameAgainstPlayer(props.userId as number, gameRulesFields)
+  const r = await gameStore.challengeAPlayer(props.userId as number, gameRulesFields)
   isDialogLoading.value = false
-  if (r !== 'preparing') {
+  if (r !== 'challenge') {
     isDialogError.value = true
     errorMsg.value = r
   } else {

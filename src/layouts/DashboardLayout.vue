@@ -27,13 +27,20 @@
     </RouterView>
 
     <template #footer>
+      <NotificationPopUp
+        v-if="challengeNotification"
+        v-model:visible="showChallengePopUp"
+        :snackbar-msg="challengeNotification.message"
+        color="success"
+      />
       <FooterSection />
     </template>
   </VerticalNavLayout>
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onBeforeUnmount } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
 import { VerticalNavLayout } from '@layouts'
@@ -46,8 +53,14 @@ import NotificationButton from '@/components/navbar/NotificationButton.vue'
 import useGameStore from '@/stores/GameStore'
 import useAuthStore from '@/stores/AuthStore'
 import useNotificationStore from '@/stores/NotificationStore'
+import {
+  RealTimeNotification,
+  RealTimeNotificationTitle,
+  RealTimeNotificationType
+} from '@/utils/notificationSocket'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
+import NotificationPopUp from "@/components/notifications/NotificationPopUp.vue";
 
 const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
 const { width: windowWidth } = useWindowSize()
@@ -58,7 +71,44 @@ const roomsStore = useRoomsStore()
 const notificationStore = useNotificationStore()
 const gameStore = useGameStore()
 const usersStore = useUserStore()
-authStore.activateRefreshTokenTimer()
+const router = useRouter()
+
+gameStore.initSocket()
+const showChallengePopUp = ref(false)
+const challengeNotification = ref<RealTimeNotification>(null as unknown as RealTimeNotification)
+const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotification) => {
+  if (
+    notification.type === RealTimeNotificationType.Game &&
+    notification.title === RealTimeNotificationTitle.GameStarted
+  ) {
+    challengeNotification.value = notification
+    if (!authStore.getUser?.id) return
+    if (!notification.userId) return
+    if (notification.userId === authStore.getUser.id) {
+      showChallengePopUp.value = true;
+      if (notification.gameId) {
+        router.push({ name: 'game', params: { gameId: notification.gameId } })
+      }
+    }
+  }
+}
+
+const lock = computed(() => {
+  return authStore.isLocked
+})
+// watch if is locked and move him to locked page
+watch(lock, (isLocked) => {
+  if (isLocked) {
+    router.push({ name: 'locked-screen' })
+  }
+})
+
+// watch if new notification is a new game challenge
+watch(notificationStore.allRealTimeNotifications, (notifications) => {
+  if (notifications.length > 0) {
+    checkIfNewNotificationIsANewGameChallenge(notifications[0])
+  }
+})
 
 // a beforeMount hook would be better
 onBeforeMount(() => {
@@ -72,7 +122,7 @@ onBeforeMount(() => {
     if (!usersStore.socketOperational) {
       usersStore.initStatusSocket(authStore.getUser.id)
     }
-    gameStore.getAllMyGameSessions()
+    gameStore.getAllGameSessions()
   }
 })
 

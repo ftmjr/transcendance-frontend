@@ -67,6 +67,7 @@ export default class Monitor {
   public _phaserPlayerMovedRoutine: ((data: PaddleEngineData, latency: number) => void) | undefined
   public _phaserGameMonitorStateChangedRoutine: ((state: GAME_STATE) => void) | undefined
   public _phaserPlayerLeftRoutine: ((player: GameUser) => void) | undefined
+  public _phaserBallPaddleCollisionRoutine: ((userId: number) => void) | undefined
 
   // latency
   private timestampHistory: number[] = [] // Store last 20 timestamps
@@ -77,12 +78,9 @@ export default class Monitor {
     private readonly currentUser: GameUser & { userType: GameUserType },
     private moveToHistory: () => void
   ) {
-    this.gameNetwork = new GameNetwork({
-      userId: currentUser.userId,
-      username: currentUser.username,
-      avatar: currentUser.avatar
-    })
-    this.gameNetwork.connectToGame(roomId, currentUser.userType)
+    this.gameNetwork = GameNetwork.getInstance(currentUser)
+    this.gameNetwork.reconnect()
+    this.gameNetwork.connectToGame(this.roomId, this.currentUser.userType)
     this.listenToGameEvents()
   }
 
@@ -98,6 +96,10 @@ export default class Monitor {
     this.gameNetwork.onScoreChanged((newScores) => {
       this.scores = newScores
       if (this._phaserNewScoreRoutine) this._phaserNewScoreRoutine(newScores, true)
+    })
+    this.gameNetwork.onViewerLoadScore((newScores) => {
+      this.scores = newScores
+      if (this._phaserNewScoreRoutine) this._phaserNewScoreRoutine(newScores, false)
     })
     this.gameNetwork.onPlayersRetrieved((players) => {
       this.players = players
@@ -150,6 +152,9 @@ export default class Monitor {
       }
       this.updateTimestampHistory(timestamp)
     })
+    this.gameNetwork.onBallPaddleCollision((paddleUserId) => {
+      if (this._phaserBallPaddleCollisionRoutine) this._phaserBallPaddleCollisionRoutine(paddleUserId)
+    });
   }
 
   cleanAllPhaserRoutines() {
@@ -161,6 +166,7 @@ export default class Monitor {
     this._phaserPlayerMovedRoutine = undefined
     this._phaserGameMonitorStateChangedRoutine = undefined
     this._phaserPlayerLeftRoutine = undefined
+    this._phaserBallPaddleCollisionRoutine = undefined
   }
 
   public isAgainstIA(): boolean {
@@ -168,19 +174,23 @@ export default class Monitor {
   }
 
   public sendPadMove(data: PadMovedData) {
+    if (this.currentUser.userType !== GameUserType.Player) return;
     if (this.state !== GAME_STATE.Play) return
     this.gameNetwork.sendPadMove(data)
   }
 
   public sendIaPadSpeed(velocity: number) {
     if (this.state !== GAME_STATE.Play) return
+    if (this.currentUser.userType !== GameUserType.Player) return;
     // only send when we are the host
     if (this.hostId !== this.currentUser.userId) return
     this.gameNetwork.sendIaPadSpeed(velocity)
   }
 
   public serveBall() {
-    if (this.state !== GAME_STATE.Play) return
+    if (this.state !== GAME_STATE.Play) return;
+    // only send when it's a player
+    if (this.currentUser.userType !== GameUserType.Player) return;
     this.gameNetwork.sendBallServe({
       userId: this.currentUser.userId,
       position: { x: 667, y: 375 },
@@ -192,6 +202,7 @@ export default class Monitor {
     return this.gameNetwork.isOperational
   }
   reconnect() {
+    this.gameNetwork.reconnect()
     this.gameNetwork.connectToGame(this.roomId, this.currentUser.userType)
     this.listenToGameEvents()
   }
@@ -232,14 +243,12 @@ export default class Monitor {
   }
 
   public async quitGame() {
+    if (this.currentUser.userType === GameUserType.Viewer) return
     this.sendGameState(GAME_STATE.Ended)
     this.disconnectNetwork()
   }
   public async quitAndMoveToHistory() {
-    if (this.state !== GAME_STATE.Ended) {
-      this.sendGameState(GAME_STATE.Ended)
-    }
-    this.disconnectNetwork()
+    await this.quitGame()
     this.moveToHistory()
   }
 

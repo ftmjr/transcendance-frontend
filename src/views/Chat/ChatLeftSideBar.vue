@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="text-end mt-2">
+    <div class="mt-2 text-end">
       <VBtn
         v-if="$vuetify.display.smAndDown"
         variant="text"
@@ -12,7 +12,7 @@
         <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
       </VBtn>
     </div>
-    <div class="flex mb-2 px-2">
+    <div class="flex px-2 mb-2">
       <AvatarBadge
         v-if="authStore.getUser !== null"
         :user-id="authStore.getUser.id"
@@ -36,8 +36,8 @@
       <v-toolbar-title class="text-gray-300"> Salles de discussion </v-toolbar-title>
       <VBtn
         variant="elevated"
-        class="bg-transparent text-gray-300"
-        selected-class="bg-red text-red-300"
+        class="text-gray-300 bg-transparent"
+        selected-class="text-red-300 bg-red"
         color="white"
         :border="true"
         icon
@@ -51,15 +51,20 @@
     <VDivider />
     <PerfectScrollbar
       tag="ul"
-      class="chat-contacts-list px-3"
+      class="px-3 chat-contacts-list"
       :options="{ wheelPropagation: true }"
     >
+      <li class="py-4">
+        <span class="text-xl chat-contact-header text-primary font-weight-medium">
+          Mes Salles de discussion
+        </span>
+      </li>
       <li class="py-4">
         <span
           v-show="roomsStore.filteredRooms.length === 0"
           class="no-chat-items-text text-disabled"
         >
-          Aucune salle de discussion
+          Vous n'avez rejoins aucune salle de discussion.
           <template v-if="search.length"> pour `{{ search }}`</template>
         </span>
       </li>
@@ -67,9 +72,9 @@
         <RoomCard :room="room" />
       </li>
       <li class="py-4">
-        <span class="chat-contact-header text-primary text-xl font-weight-medium"
-          >Salles publique</span
-        >
+        <span class="text-xl chat-contact-header text-primary font-weight-medium">
+          Salles publique
+        </span>
       </li>
       <li>
         <span

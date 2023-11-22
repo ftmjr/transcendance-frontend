@@ -60,7 +60,7 @@
     <li class="my-4">
       <span class="text-xl chat-contact-header text-primary font-weight-medium"> Amis </span>
     </li>
-    <MessageContact
+    <message-contact
       v-for="contact in messageStore.contactsWithoutConversations"
       :key="contact.id"
       class="mb-2"

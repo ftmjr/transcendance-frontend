@@ -1,0 +1,172 @@
+<template>
+  <div class="w-full p-2 text-center rounded-md cursor:pointer hover:bg-darkBlue/50" v-if="member">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <button
+          class="w-40 overflow-scroll line-clamp-1 hide-scrollbar"
+          @click.prevent="(_) => pushToUserProfile(member.memberId, $router)"
+        >
+          <avatar-badge
+            :user-id="member.memberId"
+            :user-profile="member.member.profile"
+            :show-username="true"
+            :size="36"
+            avatar-variant="tonal"
+          />
+        </button>
+        <span class="flex items-center gap-2">
+          <v-icon v-if="isOwner" :size="16" color="primary"> tabler-crown </v-icon>
+          <v-icon v-else-if="isAdmin" :size="16" color="secondary"> tabler-shield-check </v-icon>
+          <v-icon v-else-if="isMuted" :size="16" color="gray"> tabler-user-minus </v-icon>
+          <v-icon v-else-if="isBan" :size="16" color="gray"> tabler-user-x </v-icon>
+        </span>
+      </div>
+      <div class="flex items-center gap-2" v-if="!amTheMember">
+        <v-btn
+          @click.prevent="(_) => pushToDmWithUser(member.id, $router)"
+          icon
+          title="envoyer un message"
+          :size="16"
+          color="transparent"
+          class="text-gray-400"
+        >
+          <v-icon :size="16" class="" title="Envoyer un message">lets-icons:chat-light</v-icon>
+        </v-btn>
+
+        <v-menu class="" v-model="menu" :close-on-content-click="false" location="end">
+          <template v-slot:activator="{ props }">
+            <button class="w-full p-2 text-left" icon v-bind="props">
+              <v-icon class="text-red-600" :size="16">ri:user-settings-line</v-icon>
+            </button>
+          </template>
+
+          <v-card>
+            <v-list class="py-4">
+              <v-list-item v-if="amTheOwner || (amAnAdmin && !isOwner)">
+                <div class="flex flex-col gap-3">
+                  <mute-player
+                    :state-of-is-muted="isMuted"
+                    :room-id="member.chatroomId"
+                    :user-id="member.memberId"
+                  />
+                  <div class="flex gap-2">
+                    <div class="basis-1/2">
+                      <ban-player
+                        :state-of-is-banned="isBan"
+                        :room-id="member.chatroomId"
+                        :user-id="member.memberId"
+                      />
+                    </div>
+                    <kick-player :room-id="member.chatroomId" :user-id="member.memberId" />
+                  </div>
+                </div>
+              </v-list-item>
+              <v-divider v-if="(amAnAdmin && !isAdmin && !isOwner) || amTheOwner"></v-divider>
+              <v-list-item v-if="amTheOwner">
+                <promote-player
+                  :member-role="member.role"
+                  :room-id="member.chatroomId"
+                  :user-id="member.memberId"
+                />
+              </v-list-item>
+              <v-divider v-if="(amAnAdmin && !isAdmin && !isOwner) || amTheOwner"></v-divider>
+              <div class="flex flex-col items-start gap-2 p-6 justify-normal">
+                <game-status-badge :user-id="member.memberId" />
+                <friend-request-box :friend-id="member.memberId" />
+              </div>
+            </v-list>
+          </v-card>
+        </v-menu>
+      </div>
+    </div>
+  </div>
+</template>
+<script lang="ts">
+import { defineComponent, PropType } from 'vue'
+import MutePlayer from './MutePlayer.vue'
+import AvatarBadge from '@/components/profile/AvatarBadge.vue'
+import BanPlayer from './BanPlayer.vue'
+import KickPlayer from './KickPlayer.vue'
+import PromotePlayer from './PromotePlayer.vue'
+import useRoomsStore, { MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
+import { pushToUserProfile, pushToDmWithUser } from '@/utils/router'
+import { ChatMemberRole } from '@/utils/chatSocket'
+
+import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
+import FriendRequestBox from '@/components/profile/FriendRequestBox.vue'
+
+export default defineComponent({
+  components: {
+    MutePlayer,
+    BanPlayer,
+    PromotePlayer,
+    AvatarBadge,
+    GameStatusBadge,
+    FriendRequestBox,
+    KickPlayer
+  },
+  props: {
+    member: {
+      type: Object as PropType<MemberRoomWithUserProfiles>,
+      required: true
+    }
+  },
+  setup() {
+    const roomStore = useRoomsStore()
+
+    return {
+      roomStore
+    }
+  },
+  data() {
+    return {
+      menu: false
+    }
+  },
+  computed: {
+    isOwner(): boolean {
+      if (!this.member) return false
+      return this.member.role === ChatMemberRole.OWNER
+    },
+    me(): MemberRoomWithUserProfiles | undefined {
+      const roomMembers = this.roomStore.getCurrentRoomMembers
+      if (!roomMembers) return undefined
+
+      const me = roomMembers.find((member) => member.memberId === this.roomStore.userId)
+      return me
+    },
+    amAnAdmin(): boolean {
+      if (!this.me) return false
+      return this.me.role === ChatMemberRole.ADMIN
+    },
+    amTheMember(): boolean {
+      if (!this.me) return false
+      return this.me.memberId === this.member.memberId
+    },
+    amTheOwner(): boolean {
+      if (!this.me) return false
+      return this.me.role === 'OWNER'
+    },
+
+    isAdmin(): boolean {
+      if (!this.me) return false
+      return this.member.role === 'ADMIN'
+    },
+    isMuted(): boolean {
+      if (!this.member) return false
+      return this.member.role === 'MUTED'
+    },
+    isBan(): boolean {
+      if (!this.member) return false
+      return this.member.role === 'BAN'
+    }
+  },
+  methods: {
+    toggleMenu() {
+      this.menu = !this.menu
+    },
+    pushToDmWithUser,
+    pushToUserProfile
+  }
+})
+</script>

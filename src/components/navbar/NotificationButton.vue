@@ -17,7 +17,7 @@
         </VListItem>
         <VDivider />
         <template v-if="notifications.length > 0">
-          <div class="max-h-[500px] overflow-scroll hide-scroolbar">
+          <div class="max-h-[500px] overflow-scroll hide-scrollbar">
             <VListItem v-for="notification in notifications" :key="notification.id">
               <Notification :notification="notification" :is-short="true" />
             </VListItem>

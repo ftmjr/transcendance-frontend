@@ -1,30 +1,38 @@
 <template>
-  <div
+  <button
+    :disabled="notification.status === 'READ'"
     :class="[
-      'flex justify-between items-start gap-1 py-3 px-3 rounded-md gap-4',
-      notification.status === 'READ' ? 'bg-[#343851]/30' : 'bg-green-600/30'
+      'relative block w-full p-4 hover:bg-[#01051e] cursor-pointer',
+      notification.status === 'READ' ? 'opacity-75' : 'opacity-100'
     ]"
+    @click="handleRead"
   >
-    <div v-if="isShort" />
-    <div v-else />
-  </div>
+    <div class="relative flex w-full gap-4">
+      <div>
+        <v-icon class="text-2xl" color="orange">tabler:eye</v-icon>
+      </div>
+      <div class="flex-col flex-1 pr-4">
+        <p :class="['text-left text-sm fomt-semiBold']">A Rejoins</p>
+        <p :class="['text-left text-xs text-gray-500/75']">
+          {{ notification.message }}
+        </p>
+      </div>
+      <div
+        v-if="notification.status !== 'READ'"
+        class="absolute right-0 z-50 w-2 h-2 -translate-y-1/2 rounded-full top-1/2 bg-green-400/50"
+      ></div>
+    </div>
+  </button>
 </template>
 
 <script setup lang="ts">
 import { PropType } from 'vue'
 import { Notification } from '@/utils/notificationSocket'
+import useNotificationStore from '@/stores/NotificationStore'
 
-// Game invitation type
-// {
-// userId: number, // current user
-// type: NotificationType.GAME_EVENT,
-// title: 'Joined Game',
-// message: message, // like `<a href="/users/show/${user.id}">${user.username}</a> a été ajouté à la partie`
-// referenceId: gameId,
-// }
-// nothing to do only make notification read
+const notificationStore = useNotificationStore()
 
-const { notification } = defineProps({
+const props = defineProps({
   notification: {
     type: Object as PropType<Notification>,
     required: true
@@ -34,6 +42,9 @@ const { notification } = defineProps({
     default: false
   }
 })
+const handleRead = () => {
+  notificationStore.markNotificationAsRead(props.notification.id)
+}
 </script>
 
 <style scoped></style>

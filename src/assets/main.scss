@@ -36,7 +36,7 @@
   }
 }
 
-.hide-scroolbar {
+.hide-scrollbar {
   scrollbar-width: none !important;
   /* Firefox */
   -ms-overflow-style: none !important;
@@ -49,13 +49,13 @@
     /* Optional: just make scrollbar invisible */
   }
 }
-.hide-scroolbar {
+.hide-scrollbar {
   /* Hide scrollbar on Firefox */
   scrollbar-width: none;
 }
 
 /* Hide scrollbar on WebKit-based browsers (Chrome, Safari, etc.) */
-.hide-scroolbar::-webkit-scrollbar {
+.hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
 

@@ -1,44 +1,110 @@
 <template>
-  <v-card class="mx-auto" max-width="">
-    <v-card-title> THE PONG LEADERBOARD </v-card-title>
-
-    <v-divider />
-
-    <v-virtual-scroll v-if="!loading" :items="users" height="500" item-height="48">
-      <template #default="{ item, index }">
-        <v-list-item
-          :style="index === 0 ? 'font-weight: bold; color: #99842e;' : ''"
-          :title="index == 0 ? item.username + ' <PONG BOSS>' : item.username"
-          :subtitle="`Wins: ${getCountByEvent(
-            item?.gameHistories,
-            'MATCH_WON'
-          )}  Loss: ${getCountByEvent(item?.gameHistories, 'MATCH_LOST')}`"
-        >
-          <template #prepend>
-            <v-avatar
-              :size="60"
-              :class="{
-                'special-avatar-gold': index === 0, // Apply gold style for 1st place
-                'special-avatar-silver': index === 1, // Apply silver style for 2nd place
-                'special-avatar-bronze': index === 2, // Apply bronze style for 3rd place
-                'special-avatar-trans': index > 2 // Apply bronze style for 3rd place
-              }"
+  <v-card class="border-none">
+    <section class="max-w-screen-lg mx-auto">
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg hide-scrollbar">
+        <table class="w-full text-sm text-left text-gray-500 bg-none">
+          <caption class="p-5 text-lg font-semibold text-left text-white bg-none">
+            Classement des meilleurs joueurs
+            <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
+              Regardez le classement des joueurs du jeu. Les 3 premiers joueurs sont récompensés
+              avec des awards spéciaux.
+            </p>
+          </caption>
+          <thead class="text-xs uppercase border-b rounded-md text-gray-50 bg-none">
+            <tr>
+              <th class="px-1 py-1 text-center">Pos</th>
+              <th class="px-6 py-3 text-center">Avatar</th>
+              <th class="px-6 py-3 text-center">Username</th>
+              <th class="px-6 py-3 text-center">Total</th>
+              <th class="px-6 py-3 text-center">Victoires</th>
+              <th class="px-6 py-3 text-center">Défaites</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-if="isTopPlayers"
+              class="text-gray-200 bg-none"
+              v-for="(user, index) in topPlayers"
             >
-              {{ index + 1 }}
-            </v-avatar>
-            <AvatarBadge :user-id="item.id" :user="item" />
-          </template>
-          <template #append>
-            <GameStatusBadge
-              v-if="item.gameStatus && item.id !== authStore.user?.id"
-              :user-game-status="item.gameStatus"
-              :user-id="item.id"
-              :status="item?.profile?.status"
-            />
-          </template>
-        </v-list-item>
-      </template>
-    </v-virtual-scroll>
+              <td
+                scope="row"
+                :key="user.id"
+                class="w-10 px-1 py-1 text-xl font-bold text-gray-200 whitespace-nowrap"
+              >
+                {{ index + 1 }}
+              </td>
+              <td class="px-6 py-4">
+                <button class="mx-auto" @click="(_) => pushToUserProfile(user.id, $router)">
+                  <avatar-badge :user-id="user.id" :user="user" />
+                </button>
+              </td>
+              <td class="px-6 py-4">
+                <button
+                  @click="(_) => pushToUserProfile(user.id, $router)"
+                  class="w-48 line-clamp-1"
+                >
+                  {{ user.username }}
+                </button>
+              </td>
+              <td class="px-6 py-4">
+                {{
+                  getCountByEvent(user?.gameHistories, 'MATCH_WON') +
+                  getCountByEvent(user?.gameHistories, 'MATCH_LOST')
+                }}
+              </td>
+              <td class="px-6 py-4">
+                {{ getCountByEvent(user?.gameHistories, 'MATCH_WON') }}
+              </td>
+              <td class="px-6 py-4">
+                {{ getCountByEvent(user?.gameHistories, 'MATCH_LOST') }}
+              </td>
+              <td class="px-6 py-4 text-right">
+                <game-status-badge
+                  v-if="user.gameStatus && user.id !== authStore.user?.id"
+                  :user-game-status="user.gameStatus"
+                  :user-id="user.id"
+                  :status="user?.profile?.status"
+                />
+              </td>
+            </tr>
+            <tr v-else class="text-gray-200 bg-none" v-for="(user, index) in users">
+              <th
+                scope="row"
+                :key="user.id"
+                class="w-4 px-1 py-1 text-xl font-bold text-gray-200 whitespace-nowrap dark:text-white"
+              >
+                {{ index + 1 }}
+              </th>
+              <td class="px-6 py-4">
+                <button @click="(_) => pushToUserProfile(user.id, $router)">
+                  <avatar-badge :user-id="user.id" :user="user" />
+                </button>
+              </td>
+              <td class="px-6 py-4">
+                <button
+                  @click="(_) => pushToUserProfile(user.id, $router)"
+                  class="w-48 line-clamp-1"
+                >
+                  {{ user.username }}
+                </button>
+              </td>
+              <td class="px-6 py-4">
+                {{
+                  getCountByEvent(user?.gameHistories, 'MATCH_WON') +
+                  getCountByEvent(user?.gameHistories, 'MATCH_LOST')
+                }}
+              </td>
+              <td class="px-6 py-4">
+                {{ getCountByEvent(user?.gameHistories, 'MATCH_WON') }}
+              </td>
+              <td class="px-6 py-4">
+                {{ getCountByEvent(user?.gameHistories, 'MATCH_LOST') }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </v-card>
 </template>
 
@@ -50,9 +116,16 @@ import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 import useGameStore from '@/stores/GameStore'
 import { GameEvent, GameHistory } from '@/interfaces/User'
+import { pushToUserProfile } from '@/utils/router'
 
 export default defineComponent({
   name: 'LeaderBoardView',
+  props: {
+    isTopPlayers: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: { GameStatusBadge, AvatarBadge },
   setup() {
     const userStore = useUserStore()
@@ -68,6 +141,11 @@ export default defineComponent({
     return {
       users: [] as UserWithScore[],
       loading: false
+    }
+  },
+  computed: {
+    topPlayers(): UserWithScore[] {
+      return this.users.slice(0, 3)
     }
   },
   async beforeMount() {
@@ -91,7 +169,8 @@ export default defineComponent({
         }
       })
       this.loading = false
-    }
+    },
+    pushToUserProfile
   }
 })
 </script>

@@ -1,9 +1,5 @@
 <template>
-  <button
-    :disabled="notification.status === 'READ'"
-    class="relative block w-full p-4 hover:bg-[#01051e] cursor-pointer"
-    @click="handleRead"
-  >
+  <button class="relative block w-full p-4 hover:bg-[#01051e] cursor-pointer" @click="handleRead">
     <div class="flex gap-4 w-full relative">
       <div :class="[notification.status === 'READ' ? 'opacity-75' : 'opacity-100']">
         <avatar-badge :user-id="notification.referenceId"></avatar-badge>
@@ -15,7 +11,7 @@
             notification.status === 'READ' ? 'text-gray-400/50' : ''
           ]"
         >
-          {{ notification.title }}
+          Demande d'amitié
         </p>
         <p
           :class="[
@@ -41,16 +37,7 @@ import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import { Notification } from '@/utils/notificationSocket'
 import useNotificationStore from '@/stores/NotificationStore'
 
-// Friend request
-// {
-//   // userId: number, // current user, user receiving the notification
-//   type: NotificationType.FRIEND_REQUEST,
-//   title: `Demande d'amitié`,
-//   message: message,
-//   referenceId: sourceUserId,
-// }
-
-const { isShort, notification } = defineProps({
+const props = defineProps({
   notification: {
     type: Object as PropType<Notification>,
     required: true
@@ -62,19 +49,17 @@ const { isShort, notification } = defineProps({
 })
 
 const router = useRouter()
-
 const notificationStore = useNotificationStore()
-const handleDelete = (e: Event) => {
-  e.preventDefault()
-  notificationStore.deleteNotification(notification.id)
-}
-
-const handleRead = (e: Event) => {
-  e.preventDefault()
-  notificationStore.markNotificationAsRead(notification.id)
-  router.push({
+// const handleDelete = () => {
+//   notificationStore.deleteNotification(props.notification.id)
+// }
+const handleRead = async () => {
+  if (props.notification.status !== 'READ'){
+    await notificationStore.markNotificationAsRead(props.notification.id)
+  }
+  await router.push({
     name: 'user-profile',
-    params: { userId: notification.referenceId }
+    params: { userId: props.notification.referenceId }
   })
 }
 </script>

@@ -16,7 +16,6 @@ export default defineComponent({
     syncConfigThemeWithVuetifyTheme()
     const { global } = useTheme()
     const color = global.current.value.colors.primary
-
     const notificationStore = useNotificationStore()
     const authStore = useAuthStore()
     const roomsStore = useRoomsStore()
@@ -27,6 +26,11 @@ export default defineComponent({
       roomsStore,
       notificationStore
     }
+  },
+  created() {
+    window.addEventListener('storage', () => {
+      this.authStore.storageUpdated()
+    })
   },
   computed: {
     rgbPrimary(): string | null {

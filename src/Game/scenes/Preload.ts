@@ -61,7 +61,7 @@ export default class Preload extends Scene {
   update() {
     if (this.load.progress === 1) {
       if (this.monitor.state === GAME_STATE.Play || this.monitor.state === GAME_STATE.Pause) {
-        this.scene.start('PongScene', this.sceneData)
+        this.scene.start('PongGame', this.sceneData)
       } else {
         this.monitor.sendGameState(GAME_STATE.Menu)
         this.scene.start('Menu', this.sceneData)

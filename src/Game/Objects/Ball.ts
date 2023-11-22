@@ -23,7 +23,7 @@ export class Ball {
     let key = 'ball'
     switch (theme) {
       case Theme.Arcade:
-        key = 'arcade-ball'
+        key = 'ball'
         break
       case Theme.Soccer:
         key = 'soccer_ball'
@@ -38,9 +38,20 @@ export class Ball {
     this.ball.setCircle(BALL_RADIUS)
     this.ball.setDisplaySize(BALL_DIAMETER, BALL_DIAMETER)
     this.ball.setMaxVelocity(400, 400)
+
+    if (this.theme === Theme.Arcade) {
+      const particles = scene.add.particles(0, 0, 'star', {
+        speed: { min: 10, max: 80 },
+        scale: { start: 0.4, end: 0.05 },
+        lifespan: 400,
+        blendMode: 'ADD'
+      })
+      particles.startFollow(this.ball)
+    }
+
     // offset for the ball to be in the middle of the physic body
-    if (this.theme !== Theme.Classic) {
-      // this.ball.setOffset(4, 4)
+    if (this.theme !== Theme.Soccer) {
+      this.ball.setOffset(4, 4)
     } else {
       this.ball.setOffset(12, 12) // sprite size is 64
     }
@@ -112,7 +123,7 @@ export class Ball {
     }
   }
   update() {
-    if (this.theme !== Theme.Classic) {
+    if (this.theme === Theme.Soccer) {
       this.updateBallAnimation()
     }
   }

@@ -11,6 +11,9 @@ import axios from '@/utils/axios'
 import { Profile, User } from '@/interfaces/User'
 import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
 import { isAxiosError } from 'axios'
+import useUserStore, { BlockedStatus } from '@/stores/UserStore'
+import { parse } from 'path'
+
 export interface JoinRoom {
   userId: number
   password?: string
@@ -39,11 +42,11 @@ export const rolePrint: Array<{
   color?: string
   bgClass?: string
 }> = [
-  { role: ChatMemberRole.OWNER, printRole: 'Big Boss', color: 'success' },
-  { role: ChatMemberRole.ADMIN, printRole: 'Administrateur', bgClass: 'info' },
-  { role: ChatMemberRole.USER, printRole: 'Utilisateur', color: 'dark' },
-  { role: ChatMemberRole.BAN, printRole: 'Ban', color: 'danger' }
-]
+    { role: ChatMemberRole.OWNER, printRole: 'Big Boss', color: 'success' },
+    { role: ChatMemberRole.ADMIN, printRole: 'Administrateur', bgClass: 'info' },
+    { role: ChatMemberRole.USER, printRole: 'Utilisateur', color: 'dark' },
+    { role: ChatMemberRole.BAN, printRole: 'Ban', color: 'danger' }
+  ]
 
 const useRoomsStore = defineStore({
   id: 'roomsStore',
@@ -52,11 +55,15 @@ const useRoomsStore = defineStore({
     rooms: ChatRoomWithMembers[]
     publicRooms: ChatRoomWithMembers[]
     socketManager: ChatSocket | null
-    currentReadRoomId: number | null
+    currentRoomId: number | null // id of the room that the user is currently reading
+    currentRoomStatus: { state: boolean; role: ChatMemberRole | null; room?: ChatRoom } // current room status
     currentRoomMembers: MemberRoomWithUserProfiles[]
     currentRoomMessages: ChatMessage[]
+    currentRoomBlockedStatus: { userId: number; status: BlockedStatus }[]
     searchTerm: string
     contactTyping: Map<number, number>
+    isLeftNavOpen: boolean
+    isRightNavOpen: boolean
     roomsMembersTyping: Map<number, { senderId: number; username: string; timestamp: number }>
   } => {
     return {
@@ -65,14 +72,18 @@ const useRoomsStore = defineStore({
       publicRooms: [],
       searchTerm: '',
       socketManager: null,
-      currentReadRoomId: null,
+      currentRoomId: null,
+      currentRoomStatus: { state: false, role: null },
       currentRoomMembers: [],
       currentRoomMessages: [],
+      currentRoomBlockedStatus: [],
       contactTyping: new Map<number, number>(),
       roomsMembersTyping: new Map<
         number,
         { senderId: number; username: string; timestamp: number }
-      >()
+      >(),
+      isLeftNavOpen: false,
+      isRightNavOpen: false
     }
   },
   getters: {
@@ -91,7 +102,7 @@ const useRoomsStore = defineStore({
         return room.name.toLowerCase().includes(term)
       })
     },
-    AllPublic(): ChatRoomWithMembers[] {
+    allPublic(): ChatRoomWithMembers[] {
       return this.publicRooms
     },
     publicButNotJoined(): ChatRoomWithMembers[] {
@@ -111,15 +122,19 @@ const useRoomsStore = defineStore({
       })
     },
     currentRoom(): ChatRoomWithMembers | null {
-      return (
-        this.rooms.find((room: ChatRoomWithMembers) => room.id === this.currentReadRoomId) ?? null
-      )
+      return this.rooms.find((room: ChatRoomWithMembers) => room.id === this.currentRoomId) ?? null
+    },
+    getCurrentRoomStatus(): { state: boolean; role: ChatMemberRole | null; room?: ChatRoom } {
+      return this.currentRoomStatus
     },
     getCurrentRoomMembers(): MemberRoomWithUserProfiles[] {
       return this.currentRoomMembers
     },
     getCurrentRoomMessages(): ChatMessage[] {
       return this.currentRoomMessages
+    },
+    getCurrentRoomBlockedStatus(): { userId: number; status: BlockedStatus }[] {
+      return this.currentRoomBlockedStatus
     },
     getSearchTerm(): string {
       return this.searchTerm
@@ -129,6 +144,12 @@ const useRoomsStore = defineStore({
     },
     getRoomMembersTyping(): Map<number, { senderId: number; username: string; timestamp: number }> {
       return this.roomsMembersTyping
+    },
+    getIsLeftNavOpen(): boolean {
+      return this.isLeftNavOpen
+    },
+    getIsRightNavOpen(): boolean {
+      return this.isRightNavOpen
     }
   },
   actions: {
@@ -139,7 +160,7 @@ const useRoomsStore = defineStore({
       this.socketManager = ChatSocket.getInstance(
         userId,
         (message: ChatMessage) => {
-          if (message.chatroomId === this.currentReadRoomId) {
+          if (message.chatroomId === this.currentRoomId) {
             this.currentRoomMessages.push(message)
           }
         },
@@ -147,15 +168,15 @@ const useRoomsStore = defineStore({
           messageStore.handleReceivedMessage(message)
         },
         (error: string) => {
-          console.log(error)
+          console.log('message packet not sent')
         },
         (error: string) => {
-          console.log(error)
+          console.log('chat socket connection error', error)
         },
         (roomId: number) => {
           // if room is the current room, reload members
-          if (roomId === this.currentReadRoomId) {
-            this.setCurrentRoom(roomId)
+          if (roomId === this.currentRoomId) {
+            this.selectRoom(roomId)
           }
         },
         (typingInfo: { senderId: number; roomId: number; username: string; timestamp: number }) => {
@@ -193,7 +214,7 @@ const useRoomsStore = defineStore({
       try {
         const { data } = await axios.post<ChatRoomWithMembers>('/chat/create-room', info)
         this.rooms.unshift(data)
-        await this.setCurrentRoom(data.id)
+        await this.selectRoom(data.id)
         return 'success'
       } catch (error) {
         console.error(error)
@@ -204,38 +225,24 @@ const useRoomsStore = defineStore({
       let errorMessage = `Vous n'êtes pas autorisé à rejoindre cette salle`
       try {
         const { data } = await axios.post<ChatRoomMember>(`/chat/join-room/${roomId}`, info)
+        await this.selectRoom(data.chatroomId)
         await this.getAllMyRooms()
         return data
       } catch (error) {
         if (isAxiosError(error)) {
-          const status = error.response?.status
-          if (status === 401 || status === 403 || status === 404) {
-            errorMessage =
-              error.response?.data.message ?? `Vous n'êtes pas autorisé à rejoindre cette salle`
-          }
+          errorMessage =
+            error.response?.data.message ?? `Vous n'êtes pas autorisé à rejoindre cette salle`
         }
       }
       return errorMessage
     },
-    // Get current role if member of room or null if not a member
-    async checkRoomRole(
-      roomId: number
-    ): Promise<{ state: boolean; role: ChatMemberRole | null; room?: ChatRoom }> {
-      try {
-        const { data } = await axios.get<{
-          state: boolean
-          role: ChatMemberRole | null
-          room?: ChatRoom
-        }>(`/chat/room-role/${roomId}`)
-        return data
-      } catch (error) {
-        console.error(error)
-      }
-      return { state: false, role: null }
-    },
-    async leaveRoom(roomId: number): Promise<'success' | 'failed'> {
+    async quitRoom(roomId: number): Promise<'success' | 'failed'> {
       try {
         await axios.get(`/chat/leave-room/${roomId}`)
+        //effacer la room si elle est vide
+        if (this.currentRoomMembers.length === 1) {
+          await axios.delete<ChatRoom>(`/chat/delete-room/${roomId}`)
+        }
         // Mise à jour du store après avoir quitté la salle
         this.rooms = this.rooms.filter((room) => room.id !== roomId)
         return 'success'
@@ -247,14 +254,14 @@ const useRoomsStore = defineStore({
     async deleteRoom(roomId: number): Promise<'success' | 'failed'> {
       try {
         // if is current room, set current room to next in array or to null
-        if (this.currentReadRoomId === roomId) {
+        if (this.currentRoomId === roomId) {
           const index = this.rooms.findIndex((room) => room.id === roomId)
           if (index !== -1) {
             const nextRoom = this.rooms[index + 1] ?? this.rooms[index - 1] ?? null
             if (nextRoom) {
-              await this.setCurrentRoom(nextRoom.id)
+              await this.selectRoom(nextRoom.id)
             } else {
-              this.currentReadRoomId = null
+              this.currentRoomId = null
             }
           }
         }
@@ -268,17 +275,16 @@ const useRoomsStore = defineStore({
     },
     async changeMemberRole(
       roomId: number,
-      userId: number,
-      newRole: ChatMemberRole,
-      existingRole: ChatMemberRole,
-      expireAt?: number // timestamp for the end of BAN role if needed
+      member: ChatRoomMember,
+      promoteTo: ChatMemberRole,
+      expireAt?: number // timestamp for the end of MUTED role if needed
     ): Promise<'success' | 'failed'> {
       try {
-        // only owner can't change his role
-        if (existingRole === ChatMemberRole.OWNER) {
+        // cannot chnage role of owner
+        if (member.role === ChatMemberRole.OWNER) {
           return 'failed'
         }
-        await axios.post(`/chat/promote/${roomId}`, { userId, role: newRole, expireAt })
+        await axios.post(`/chat/promote/${roomId}`, { userId: member.memberId, role: promoteTo, expireAt })
         this.sendReloadRoomMembers(roomId)
         return 'success'
       } catch (error) {
@@ -302,54 +308,45 @@ const useRoomsStore = defineStore({
         return 'failed'
       }
     },
-    /*
-     * Set the current room to read, only if user is a member of the room
-     * @param roomId the id of the room to read
-     * @returns 'success' if success, string if error
-     * The current room is the room that the user is currently reading
-     * This will also load the members of the room
-     */
-    async setCurrentRoom(roomId: number): Promise<'success' | 'error'> {
+
+    async selectRoom(roomId: number): Promise<void> {
+      const usersStore = useUserStore()
+      this.currentRoomId = roomId
+      this.currentRoomStatus = await this.checkRoomRole(roomId)
+      this.currentRoomMembers = []
+      this.currentRoomMembers = await this.getRoomMembersData(roomId)
+      this.currentRoomBlockedStatus = await usersStore.checkBlockedForMany(
+        this.currentRoomMembers.map((member) => member.member.id)
+      )
+      this.currentRoomMessages = []
+    },
+    async checkRoomRole(
+      roomId: number
+    ): Promise<{ state: boolean; role: ChatMemberRole | null; room?: ChatRoom }> {
       try {
-        // Clear previous room's state if changing rooms
-        if (this.currentReadRoomId !== roomId) {
-          this.currentRoomMembers = []
-        }
-        const members = await this.getRoomMembersData(roomId)
-        if (Array.isArray(members)) {
-          this.currentRoomMembers = members
-          this.currentReadRoomId = roomId
-          this.currentRoomMessages = []
-          this.listenToRoom(roomId)
-          return 'success'
-        } else {
-          return 'error'
-        }
+        const { data } = await axios.get<{
+          state: boolean
+          role: ChatMemberRole | null
+          room?: ChatRoom
+        }>(`/chat/room-role/${roomId}`)
+        return data
       } catch (error) {
         console.error(error)
-        return 'error'
       }
+      return { state: false, role: null }
     },
-    async getRoomMembersData(roomId: number): Promise<MemberRoomWithUserProfiles[] | string> {
-      let errorMessage = `Vous n'êtes pas autorisé à voir les membres de cette salle`
+    async getRoomMembersData(roomId: number): Promise<MemberRoomWithUserProfiles[]> {
       try {
         const { data } = await axios.get<MemberRoomWithUserProfiles[]>(`/chat/room/${roomId}`)
         return data
       } catch (error) {
-        if (isAxiosError(error)) {
-          if (error.response?.status === 401 || error.response?.status === 403) {
-            errorMessage =
-              error.response.data.message ??
-              `Vous n'êtes pas autorisé à voir les membres de cette salle`
-          }
-        }
+        return []
       }
-      return errorMessage
     },
     async reloadCurrentRoomMembers(): Promise<'success' | 'failed'> {
-      if (!this.currentReadRoomId) return 'failed'
+      if (!this.currentRoomId) return 'failed'
       try {
-        const members = await this.getRoomMembersData(this.currentReadRoomId)
+        const members = await this.getRoomMembersData(this.currentRoomId)
         if (Array.isArray(members)) {
           this.currentRoomMembers = members
           return 'success'
@@ -363,17 +360,15 @@ const useRoomsStore = defineStore({
     },
     async loadCurrentRoomMessages(info: { skip: number; take: number }): Promise<void> {
       const { skip, take } = info
-      if (!this.currentReadRoomId) return
+      if (!this.currentRoomId) return
       try {
-        const { data } = await axios.get<ChatMessage[]>(
-          `/chat/messages/${this.currentReadRoomId}`,
-          {
-            params: {
-              skip,
-              take
-            }
+        const { data } = await axios.get<ChatMessage[]>(`/chat/messages/${this.currentRoomId}`, {
+          params: {
+            skip,
+            take
           }
-        )
+        })
+        this.listenToRoom(this.currentRoomId)
         this.currentRoomMessages = data
       } catch (error) {
         console.error('Failed to load room messages:', error)
@@ -419,7 +414,35 @@ const useRoomsStore = defineStore({
     disconnect() {
       this.socketManager?.disconnect()
       this.socketManager = null
-    }
+    },
+    toggleLeftNav() {
+      this.isLeftNavOpen = !this.isLeftNavOpen
+    },
+    toggleRightNav() {
+      this.isRightNavOpen = !this.isRightNavOpen
+    },
+
+    /**
+     * @name kickMember
+     * @description kick a member from a room
+     * @param roomId the id of the room
+     * @param userId the id of the user to kick
+     * @returns 'success' if success, 'failed' if failed
+    */
+    async kickMember(roomId: number, memberId: number): Promise<'success' | 'failed'> {
+      try {
+        await axios.post(`/chat/remove-member/${roomId}`, {
+          roomId,
+          userId: memberId
+        }),
+          // Mise à jour du store après avoir kické un membre
+          this.currentRoomMembers = this.currentRoomMembers.filter((member) => member.memberId !== memberId)
+        return 'success'
+      } catch (error) {
+        console.error(error)
+        return 'failed'
+      }
+    },
   }
 })
 

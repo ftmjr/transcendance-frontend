@@ -43,6 +43,7 @@ const useAuthStore = defineStore({
     const user = JSON.parse(localStorage.getItem('__user__') ?? 'null') as
       | (User & { profile: Profile })
       | null
+    const now = new Date().getTime()
     return {
       token,
       user,
@@ -51,7 +52,8 @@ const useAuthStore = defineStore({
         message: ''
       },
       isRefreshingToken: false,
-      timer: null
+      timer: null,
+      now
     }
   },
   getters: {
@@ -61,11 +63,12 @@ const useAuthStore = defineStore({
       }
       return null
     },
-    isExpired() {
+    isExpired(): boolean {
       if (this.token) {
         const decoded = decodeJWT(this.token)
         if (decoded) {
-          return decoded.exp < Date.now() / 1000
+          const now = this.now
+          return decoded.exp * 1000 <= now
         }
       }
       return false
@@ -126,14 +129,38 @@ const useAuthStore = defineStore({
     setToken(token: string) {
       this.token = token
       localStorage.setItem('__token__', token)
+      if (this.timer) {
+        clearInterval(this.timer)
+      }
+      this.timer = setInterval(() => {
+        this.now = new Date().getTime()
+      }, 10000) // 10 seconds before token expiration check
+    },
+    async refreshToken(): Promise<string> {
+      const { data } = await axios.get('/auth/refresh', {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      const { accessToken } = data as { accessToken: string }
+      this.setToken(accessToken)
+      return accessToken
     },
     removeToken() {
-      this.token = null
       localStorage.removeItem('__token__')
+      this.token = null
     },
     removeUser() {
-      this.user = null
       localStorage.removeItem('__user__')
+      this.user = null
+    },
+    storageUpdated() {
+      // check if token is still present in local storage
+      const token = localStorage.getItem('__token__')
+      if (!token) {
+        // token is not present, logout
+        this.logout()
+      }
     },
     async login(credentials: { username: string; password: string }): Promise<boolean> {
       this.error = { state: false, message: '' }
@@ -161,10 +188,6 @@ const useAuthStore = defineStore({
       try {
         this.removeUser()
         this.removeToken()
-        if (this.timer) {
-          clearInterval(this.timer)
-          this.timer = null
-        }
         await axios.get('auth/logout')
       } catch (error) {
         if (isAxiosError(error)) {
@@ -217,36 +240,6 @@ const useAuthStore = defineStore({
         this.error = { state: false, message: 'Failed to refresh user data' }
       }
     },
-    /**
-     * @name refreshToken
-     * @description Refresh token
-     * @returns
-     * @memberof AuthStore
-     */
-    async refreshToken(): Promise<string | null> {
-      this.error = { state: false, message: '' }
-      try {
-        if (!this.token) return null
-        const { data } = await axios.get('/auth/refresh', {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        const { accessToken } = data as { accessToken: string }
-        this.setToken(accessToken)
-        return accessToken
-      } catch (error) {
-        if (isAxiosError(error)) {
-          if (error.response && error.response.status === 401) {
-            this.error = { state: true, message: error.response.data.message }
-          }
-        } else {
-          this.error = { state: true, message: 'Failed to refresh token' }
-        }
-        await this.logout()
-      }
-      return null
-    },
     async generate2FAQrCode(): Promise<string | null> {
       this.error = { state: false, message: '' }
       try {
@@ -291,7 +284,6 @@ const useAuthStore = defineStore({
         const { data } = await axios.post('auth/2fa/authenticate', {
           twoFactorAuthenticationCode: totpCode
         })
-        await this.refreshToken()
         return data as boolean
       } catch (error) {
         this.error = { state: true, message: `Can't validate OTP code` }
@@ -343,22 +335,6 @@ const useAuthStore = defineStore({
         }
         return false
       }
-    },
-    activateRefreshTokenTimer() {
-      // check first if current token is valid
-      if (this.isExpired) return
-      if (this.timer) {
-        clearInterval(this.timer)
-        this.timer = null
-      }
-      this.timer = setInterval(
-        async () => {
-          this.isRefreshingToken = true
-          await this.refreshToken()
-          this.isRefreshingToken = false
-        },
-        1000 * 60 * 30 // 30 minutes refresh
-      )
     },
     /**
      * @name updateUsername
@@ -426,7 +402,6 @@ const useAuthStore = defineStore({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async changeMyStatus(value: Status): Promise<'success' | 'error'> {
       try {
-        // @ TODO: update user status, to be done later
         return 'success'
       } catch (e) {
         return 'error'

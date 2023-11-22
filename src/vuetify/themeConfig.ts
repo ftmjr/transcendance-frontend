@@ -9,7 +9,7 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
     title: 'Pong',
     // @ts-expect-error img prop is not defined in type
-    logo: h('img', { src: '/src/assets/logo.png' }, null),
+    logo: h('img', { src: '/logo.png' }, null),
     contentWidth: ContentWidth.Boxed,
     contentLayoutNav: AppContentLayoutNav.Vertical,
     overlayNavFromBreakpoint: breakpointsVuetify.sm + 16,

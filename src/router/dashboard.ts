@@ -2,11 +2,13 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import HomeView from '@/views/HomeView.vue'
 import usersRoutes from '@/router/users'
 import DirectMessagesView from '@/views/Dm/DirectMessagesMainView.vue'
-import ChatWindowView from '@/views/Chat/ChatWindowView.vue'
 import Notifications from '@/views/Notifications.vue'
 import LeaderboardView from '@/views/LeaderboardView.vue'
 import { RouteRecordRaw } from 'vue-router'
-import GameView from '@/views/GameView.vue'
+import GameView from '@/views/Game/GameView.vue'
+import ChatHome from '@/views/Chat/ChatRooms.vue'
+import waitingRoom from '@/views/Game/WaitingRoom.vue'
+import Watching from '@/views/Game/Watching.vue'
 
 const dashboardRoutes: RouteRecordRaw = {
   path: '/',
@@ -19,6 +21,32 @@ const dashboardRoutes: RouteRecordRaw = {
       meta: {
         requiresAuth: true,
         title: 'Dashboard'
+      }
+    },
+    {
+      path: 'watching/:gameId?',
+      name: 'watch-game',
+      component: Watching,
+      props: (route) => {
+        const gameId = route.params.gameId ? parseInt(route.params.gameId.toString()) : undefined
+        return {
+          gameId
+        }
+      },
+      meta: {
+        requiresAuth: true,
+        layoutWrapperClasses: 'layout-content-height-fixed',
+        title: 'Watch Game'
+      }
+    },
+    {
+      path: 'waiting-room',
+      name: 'waiting-room',
+      component: waitingRoom,
+      meta: {
+        requiresAuth: true,
+        layoutWrapperClasses: 'layout-content-height-fixed',
+        title: 'Waiting Room'
       }
     },
     {
@@ -40,35 +68,13 @@ const dashboardRoutes: RouteRecordRaw = {
       }
     },
     {
-      path: 'waiting-room/:gameId?',
-      name: 'waiting-room',
-      component: GameView,
-      props: (route) => {
-        const gameId = route.params.gameId ? parseInt(route.params.gameId.toString()) : undefined
-        return {
-          gameId,
-          waitingRoom: true,
-          isPlayer: true
-        }
-      },
-      meta: {
-        requiresAuth: true,
-        layoutWrapperClasses: 'layout-content-height-fixed',
-        title: 'Waiting Room'
-      }
-    },
-    {
       path: 'game/:gameId?',
       name: 'game',
       component: GameView,
       props: (route) => {
-        const waitingRoom = route.query.waitingRoom ? route.query.waitingRoom == 'true' : false
-        const isPlayer = route.query.isPlayer ? route.query.isPlayer === 'true' : true
         const gameId = route.params.gameId ? parseInt(route.params.gameId.toString()) : undefined
         return {
-          gameId,
-          waitingRoom: waitingRoom,
-          isPlayer: isPlayer
+          gameId
         }
       },
       meta: {
@@ -80,7 +86,7 @@ const dashboardRoutes: RouteRecordRaw = {
     {
       path: 'chat/:roomId?',
       name: 'chat',
-      component: ChatWindowView,
+      component: ChatHome,
       props: (route) => {
         const roomId = route.params.roomId ? parseInt(route.params.roomId.toString()) : undefined
         return {

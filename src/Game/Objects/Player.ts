@@ -41,15 +41,13 @@ export class Player {
     this.paddle.setBounce(0, 1.2)
     this.paddle.setImmovable(true)
     this.paddle.setPushable(false)
-    const space = isHost ? 50 : 1284
-    this.usernameText = this.scene.add.text(space, 375, info.username, {
-      fontFamily: 'Courier New',
-      fontSize: 12,
-      color: '#ffffff'
+    const space = isHost ? 100 : 1234
+    this.usernameText = this.scene.add.text(space, 30, info.username, {
+      fontFamily: 'Arial',
+      fontSize: 14,
+      color: (info.userId === scene.currentUser.userId) ? '#f26a4b' : '#ffffff'
     })
-    // rotate to be on top of the paddle
-    this.usernameText.rotation = -Math.PI / 2
-    this.usernameText.setOrigin(0.5, 1)
+    this.usernameText.setOrigin(0, 0)
     this.usernameText.setDepth(1)
   }
 
@@ -79,13 +77,12 @@ export class Player {
       this.updateLocalPlayer()
     }
     this.applyDeceleration()
-    this.usernameText.setY(this.paddle.y)
   }
 
   updateLocalPlayer() {
-    if (this.scene.cursorkeys?.up.isDown) {
+    if (this.scene.cursorKeys?.up.isDown) {
       this.sendPaddlePositionToServer(PAD_DIRECTION.up)
-    } else if (this.scene.cursorkeys?.down.isDown) {
+    } else if (this.scene.cursorKeys?.down.isDown) {
       this.sendPaddlePositionToServer(PAD_DIRECTION.down)
     }
   }

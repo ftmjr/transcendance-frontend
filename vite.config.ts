@@ -44,6 +44,7 @@ export default defineConfig({
     ],
   },
   build: {
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         entryFileNames: `[name].js`,
@@ -55,6 +56,7 @@ export default defineConfig({
           vuetify: ['vuetify']
         }
       }
-    }
+    },
+    emptyOutDir: false,
   }
 })

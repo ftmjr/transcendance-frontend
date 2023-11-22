@@ -1,18 +1,30 @@
 <template>
-  <div
-    class="p-2 my-2"
-    :class="
-      topBar
-        ? 'text-slate-100'
-        : 'bg-slate-600/50 rounded-lg hover:bg-slate-800/50 cursor-pointer transition ease-in-out delay-150'
-    "
-  >
-    <p class="flex gap-2 items-center">
-      <VAvatar v-if="room.avatar" :size="42" :image="room.avatar" />
-      <span class="font-weight-semibold text-high-emphasis"> {{ shortName(room.name) }} </span>
-      <span class="text-disabled"> • {{ room.members.length }} Membre(s) </span>
-      <VIcon v-if="room.password" :size="16" class="text-red-600"> tabler-lock </VIcon>
-    </p>
+  <div class="px-2">
+    <div
+      class="p-2 my-2"
+      :class="
+        topBar
+          ? 'text-slate-100'
+          : 'bg-slate-600/50 rounded-lg hover:bg-slate-800/50 cursor-pointer transition ease-in-out delay-150'
+      "
+    >
+      <div class="flex items-center gap-2">
+        <VAvatar v-if="room.avatar" :size="42" :image="room.avatar" />
+        <div class="flex flex-col">
+          <span class="block">
+            <span class="font-weight-semibold text-high-emphasis line-clamp-1">
+              {{ shortName(room.name) }}
+            </span>
+          </span>
+          <span class="block">
+            <span class="text-xs text-disabled"> • {{ room.members.length }} Membre(s) </span>
+          </span>
+        </div>
+        <span>
+          <v-icon v-if="room.password" :size="16" class="text-red-600"> tabler-lock </v-icon>
+        </span>
+      </div>
+    </div>
   </div>
 </template>
 

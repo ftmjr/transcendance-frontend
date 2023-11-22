@@ -8,8 +8,8 @@
         </VCol>
       </div>
     </div>
-    <div class="flex flex-row py-8 flex-wrap">
-      <div v-for="meta in userListStatsMeta" :key="meta.title" class="basis-1/2 p-2">
+    <div class="flex flex-row flex-wrap py-8">
+      <div v-for="meta in userListStatsMeta" :key="meta.title" class="p-2 basis-1/2">
         <VCard>
           <VCardText class="flex justify-space-between">
             <div>
@@ -21,7 +21,7 @@
               </div>
               <span>{{ meta.subtitle }}</span>
             </div>
-            <VAvatar rounded variant="tonal" :color="meta.color" :icon="meta.icon" />
+            <v-avatar rounded variant="tonal" :color="meta.color" :icon="meta.icon" />
           </VCardText>
         </VCard>
       </div>
@@ -38,8 +38,67 @@
         </VCol>
       </VRow>
     </div>
+    <div>
+      <div class="flex gap-4 my-8 overflow-scroll hide-scrollbar">
+        <div
+          class="flex flex-row items-center w-auto h-32 gap-4 p-4 border rounded-md max-w-64 grow-0 shrink-0"
+          :key="friend.id"
+          v-for="(friend, index) in userStore.contacts"
+        >
+          <v-avatar
+            @click="(_) => pushToUserProfile(friend.id, $router)"
+            rounded
+            size="96"
+            class="w-full h-32 cursor-pointer"
+          >
+            <VImg
+              class="w-full h-full"
+              v-if="friend.profile?.avatar"
+              :src="friend.profile?.avatar"
+            />
+            <VIcon v-else color="primary" icon="tabler-user" />
+          </v-avatar>
+          <div class="flex flex-col gap-4">
+            <button
+              @click="(_) => pushToUserProfile(friend.id, $router)"
+              class="text-base text-left font-weight-bold line-clamp-1"
+            >
+              {{ friend.profile?.name }} {{ friend.profile?.lastname }}
+            </button>
+            <div class="flex flex-col gap-2">
+              <game-status-badge
+                v-if="gameStatus[index] && friend.profile.status"
+                :status="friend.profile.status"
+                :user-id="friend.id"
+                :user-game-status="gameStatus[index]"
+              />
+              <div class="flex flex-row items-center gap-4">
+                <status-badge
+                  v-if="friend.id !== 0"
+                  :user-id="friend.id"
+                  :value="friend.profile?.status"
+                  class="w-16"
+                />
+                <button
+                  @click="(_) => pushToDmWithUser(friend.id, $router)"
+                  class="flex items-center justify-center w-8 h-8 p-2 border rounded-md bg-green-400/50"
+                >
+                  <v-icon size="16" icon="mdi-chat"></v-icon>
+                </button>
+                <button
+                  @click=""
+                  class="flex items-center justify-center w-8 h-8 p-2 border rounded-md bg-yellow"
+                >
+                  <v-icon size="16" icon="mdi-goal"></v-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="my-16">
-      <friends v-if="authStore.getUser" />
+      <leader-board-view :isTopPlayers="true" />
     </div>
   </div>
 </template>
@@ -50,17 +109,31 @@ import useAuthStore from '@/stores/AuthStore'
 import useUserStore from '@/stores/UserStore'
 import TopChatCard from '@/components/chatRooms/TopsChatCard.vue'
 import PlayerSimpleStats from '@/components/profile/PlayerSimpleStats.vue'
-import Friends from '@/components/profile/Friends.vue'
 import Greetings from '@/components/profile/Greetings.vue'
+import useMessageStore from '@/stores/MessageStore'
+import { pushToUserProfile, pushToDmWithUser } from '@/utils/router'
+import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
+import StatusBadge from '@/components/profile/StatusBadge.vue'
+import useGameStore, { GameSession } from '@/stores/GameStore'
+import LeaderBoardView from './LeaderboardView.vue'
 
 export default defineComponent({
-  components: { PlayerSimpleStats, TopChatCard, Friends, Greetings },
+  components: {
+    PlayerSimpleStats,
+    TopChatCard,
+    Greetings,
+    GameStatusBadge,
+    StatusBadge,
+    LeaderBoardView
+  },
   setup() {
     const authStore = useAuthStore()
     const coalition = authStore.getCoalition
     const colorClasses = [`bg-[${coalition.color}]`, 'bg-opacity-30']
     const userStore = useUserStore()
-    return { authStore, colorClasses, userStore }
+    const messageStore = useMessageStore()
+    const gameStore = useGameStore()
+    return { authStore, colorClasses, userStore, messageStore, gameStore }
   },
   data() {
     const userListStatsMeta: Array<{
@@ -101,7 +174,8 @@ export default defineComponent({
     ]
     return {
       userListStatsMeta,
-      totalUser: 0
+      totalUser: 0,
+      gameStatus: [] as Array<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }>
     }
   },
   beforeMount() {
@@ -115,7 +189,17 @@ export default defineComponent({
       this.userListStatsMeta[2].stats = this.userStore.getStats.averageGamesPerUser
       this.userListStatsMeta[3].stats = this.userStore.getStats.totalGamesPlayed
       this.totalUser = this.userStore.getStats.totalUsers
+    },
+    pushToUserProfile,
+    pushToDmWithUser,
+    async fetchAllGameStatus() {
+      const ids = this.userStore.contacts.map((contact) => contact.id)
+      this.gameStatus = await this.gameStore.getUsersGameStatus(ids)
     }
+  },
+  async mounted() {
+    await this.userStore.loadAllMyFriends()
+    await this.fetchAllGameStatus()
   }
 })
 </script>

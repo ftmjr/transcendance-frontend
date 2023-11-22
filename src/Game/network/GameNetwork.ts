@@ -37,7 +37,9 @@ export enum GAME_EVENTS {
   reloadPlayersList = 'reloadPlayersList',
   reloadViewersList = 'reloadViewersList',
   GameObjectState = 'gameObjectState',
-  PlayerLeft = 'player-left'
+  PlayerLeft = 'player-left',
+  ViewerLoadScore = 'viewer-load-score',
+  BallPaddleCollision = 'ball-paddle-collision'
 }
 
 export interface ListenEvents {
@@ -51,10 +53,15 @@ export interface ListenEvents {
     roomId: number
     data: Array<{ userId: number; score: number }>
   }) => void
+  [GAME_EVENTS.ViewerLoadScore]: (received: {
+    roomId: number
+    data: Array<{ userId: number; score: number }>
+  }) => void
   [GAME_EVENTS.PadMoved]: (received: { roomId: number; data: PaddleEngineData }) => void
   [GAME_EVENTS.BallServed]: (received: { roomId: number; data: BallData }) => void
   [GAME_EVENTS.BallMoved]: (received: { roomId: number; data: BallData }) => void
   [GAME_EVENTS.GameObjectState]: (received: { roomId: number; data: GameStateDataPacket }) => void
+  [GAME_EVENTS.BallPaddleCollision]: (received: { roomId: number; data: number }) => void
   [GAME_EVENTS.PlayerLeft]: (received: { roomId: number; data: GameUser }) => void
 }
 
@@ -76,39 +83,46 @@ export interface EmitEvents {
 }
 
 export class GameNetwork {
-  public socket: Socket<ListenEvents, EmitEvents> | undefined
-  // roomId is the gameSessionId, or gameId. If 0 then there is no gameSessionId
+  private static instance: GameNetwork
+  socket: Socket<ListenEvents, EmitEvents> | undefined
   public roomId: number = 0
   private joinedGame = false
 
-  constructor(public user: GameUser) {
+  private constructor(public user: GameUser) {
     try {
       this.socket = io('/game', { path: '/socket.io' })
     } catch (e) {
-      console.error(e)
+      this.joinedGame = false
+      this.roomId = 0
+    }
+  }
+  connect() {
+    try {
+      this.socket = io('/game', { path: '/socket.io' })
+    } catch (e) {
+      this.joinedGame = false
+      this.roomId = 0
     }
   }
 
-  get isOperational() {
+  get isOperational(): boolean {
     if (!this.socket) return false
-    return this.socket.connected && this.joinedGame
+    return this.socket?.connected && this.joinedGame
   }
 
-  connectToGame(roomId: number, userType: GameUserType) {
-    if (this.socket) {
-      this.disconnect()
+  public static getInstance(user: GameUser) {
+    if (!GameNetwork.instance) {
+      GameNetwork.instance = new GameNetwork(user)
     }
-    try {
-      this.socket = io('/game', { path: '/socket.io' })
-    } catch (e) {
-      console.error(e)
-    } finally {
-      this.socket?.emit(GAME_EVENTS.JoinGame, { roomId, user: this.user, userType }, (res) => {
-        const { worked, roomId } = res
-        this.roomId = roomId
-        this.joinedGame = worked
-      })
-    }
+    return GameNetwork.instance
+  }
+
+  public connectToGame(roomId: number, userType: GameUserType) {
+    this.socket?.emit(GAME_EVENTS.JoinGame, { roomId, user: this.user, userType }, (res) => {
+      const { worked, roomId } = res
+      this.roomId = roomId
+      this.joinedGame = worked
+    })
   }
 
   // all send events functions here
@@ -160,6 +174,7 @@ export class GameNetwork {
   }
   onGameMonitorStateChanged(callback: (state: GAME_STATE) => void) {
     this.socket?.on(GAME_EVENTS.GameMonitorStateChanged, (data) => {
+      console.log('state recieved')
       callback(data.data)
     })
   }
@@ -194,6 +209,11 @@ export class GameNetwork {
       callback(received.data)
     })
   }
+  onViewerLoadScore(callback: (score: Array<{ userId: number; score: number }>) => void) {
+    this.socket?.on(GAME_EVENTS.ViewerLoadScore, (received) => {
+      callback(received.data)
+    })
+  }
   onPadMoved(callback: (data: PaddleEngineData) => void) {
     this.socket?.on(GAME_EVENTS.PadMoved, (received) => {
       callback(received.data)
@@ -201,6 +221,11 @@ export class GameNetwork {
   }
   onBallServed(callback: (data: BallData) => void) {
     this.socket?.on(GAME_EVENTS.BallServed, (received) => {
+      callback(received.data)
+    })
+  }
+  onBallPaddleCollision(callback: (paddleUserId: number) => void) {
+    this.socket?.on(GAME_EVENTS.BallPaddleCollision, (received) => {
       callback(received.data)
     })
   }
@@ -218,7 +243,17 @@ export class GameNetwork {
   }
 
   disconnect() {
-    this.socket?.disconnect()
+    if (this.socket) {
+      this.socket.disconnect()
+    }
+    this.roomId = 0
     this.joinedGame = false
+  }
+
+  reconnect() {
+    if (!this.socket) this.connect()
+    if (this.socket?.disconnected) {
+      this.socket.connect()
+    }
   }
 }
