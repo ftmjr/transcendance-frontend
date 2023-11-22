@@ -8,18 +8,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType } from 'vue'
 import { Notification, NotificationTitle, NotificationType } from '@/utils/notificationSocket'
 import FriendRequest from '@/components/notifications/friend/FriendRequest.vue'
 import FriendRequestAccepted from '@/components/notifications/friend/FriendRequestAccepted.vue'
 import FriendRequestRejected from '@/components/notifications/friend/FriendRequestRejected.vue'
 import GameInvitation from '@/components/notifications/game/GameInvitation.vue'
-import GameInvitationRejected from "@/components/notifications/game/GameInvitationRejected.vue";
-import JoinedGame from "@/components/notifications/game/JoinedGame.vue";
-import MemberJoinedChatRoom from "@/components/notifications/chat/MemberJoinedChatRoom.vue";
-import PromotedInRoom from "@/components/notifications/chat/PromotedInRoom.vue";
-import PrivateChatInvitation from "@/components/notifications/chat/PrivateChatInvitation.vue";
-import RemovedFromChat from "@/components/notifications/chat/RemovedFromChat.vue";
+import GameInvitationRejected from '@/components/notifications/game/GameInvitationRejected.vue'
+import JoinedGame from '@/components/notifications/game/JoinedGame.vue'
+import MemberJoinedChatRoom from '@/components/notifications/chat/MemberJoinedChatRoom.vue'
+import PromotedInRoom from '@/components/notifications/chat/PromotedInRoom.vue'
+import PrivateChatInvitation from '@/components/notifications/chat/PrivateChatInvitation.vue'
+import RemovedFromChat from '@/components/notifications/chat/RemovedFromChat.vue'
 
 export default defineComponent({
   components: {

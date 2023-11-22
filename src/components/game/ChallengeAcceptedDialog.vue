@@ -1,14 +1,14 @@
 <template>
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="auto">
-      <v-card>
-        <v-card-title class="text-h5"> Votre Adversaire a accepté le défi ! </v-card-title>
+      <v-card :loading="loading">
+        <v-card-title class="text-h5"> Un defi est en cours !, la partie est lancée</v-card-title>
         <v-card-text>
           {{ notification.message }}
         </v-card-text>
         <v-card-text>
-          Vous allez être redirigé vers la page de jeu. si vous ne voulez pas jouer, vous pouvez
-          abandonner. Acceptez-vous le défi ?
+          Vous allez être redirigé vers la page de jeu. Vous pouvez aussi abandonner le défi, mais
+          vous perdrez la partie.
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { Notification as NotificationT } from '@/utils/notificationSocket'
+import { RealTimeNotification } from '@/utils/notificationSocket'
 import useGameStore from '@/stores/GameStore'
 import useNotificationStore from '@/stores/NotificationStore'
 
@@ -34,12 +34,12 @@ export default defineComponent({
       required: true
     },
     notification: {
-      type: Object as PropType<NotificationT>,
+      type: Object as PropType<RealTimeNotification>,
       required: true
     }
   },
   emits: ['update:showDialog'],
-  setup(props) {
+  setup() {
     const gameStore = useGameStore()
     const notificationStore = useNotificationStore()
     return {
@@ -65,16 +65,18 @@ export default defineComponent({
   methods: {
     async acceptChallenge() {
       this.loading = true
-      await this.notificationStore.markNotificationAsRead(this.notification.id)
       await this.gameStore.getAllGameSessions()
-      this.$router.push({ name: 'game', params: { gameId: this.notification.referenceId } })
       this.loading = false
+      if (this.notification.gameId) {
+        this.$router.push({ name: 'game', params: { gameId: this.notification.gameId } })
+      }
       this.dialog = false
     },
     async refuseChallenge() {
       this.loading = true
-      await this.notificationStore.markNotificationAsRead(this.notification.id)
-      await this.gameStore.quitGameSession(this.notification.referenceId)
+      if (this.notification.gameId) {
+        await this.gameStore.quitGameSession(this.notification.gameId)
+      }
       this.loading = false
       this.dialog = false
     }

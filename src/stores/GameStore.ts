@@ -73,14 +73,12 @@ const useGameStore = defineStore({
   id: 'games',
   state: (): {
     currentGameSession: GameSession | undefined
-    currentWatchingGameSession: GameSession | undefined
     myGameSessions: GameSession[]
     endedGames: number[]
     gameNetwork: GameNetwork | undefined
   } => {
     return {
       currentGameSession: undefined,
-      currentWatchingGameSession: undefined,
       myGameSessions: [],
       endedGames: [],
       gameNetwork: undefined
@@ -90,14 +88,8 @@ const useGameStore = defineStore({
     isPlaying(): boolean {
       return !!this.currentGameSession
     },
-    isWatching(): boolean {
-      return !!this.currentWatchingGameSession
-    },
     canStartGame(): boolean {
-      return !this.currentGameSession && !this.currentWatchingGameSession
-    },
-    canStartWatching(): boolean {
-      return !this.currentGameSession && !this.currentWatchingGameSession
+      return !this.currentGameSession
     },
     currentGameId(): number | undefined {
       return this.currentGameSession?.gameId
@@ -110,9 +102,6 @@ const useGameStore = defineStore({
     },
     getCurrentGameSession(): GameSession | undefined {
       return this.currentGameSession
-    },
-    getCurrentWatchingGameSession(): GameSession | undefined {
-      return this.currentWatchingGameSession
     },
     isPlayingWithQueList(): boolean {
       return this.currentGameSession?.type === GameSessionType.QueListGame
@@ -143,7 +132,7 @@ const useGameStore = defineStore({
         this.myGameSessions = []
       }
     },
-    async setCurrentGameSession(gameId: number) {
+    setCurrentGameSession(gameId: number) {
       const gameSession = this.myGameSessions.find((session) => session.gameId === gameId)
       if (gameSession) {
         this.currentGameSession = gameSession
@@ -251,24 +240,6 @@ const useGameStore = defineStore({
       } catch (e) {
         return []
       }
-    },
-    //  viewing a game
-    async startViewingGame(gameId: number): Promise<'preparing' | string> {
-      try {
-        if (this.currentWatchingGameSession) return 'Vous regardez deja une partie'
-        const { data } = await axios.get<GameSession>(`/watch-game/:${gameId}`, {
-          headers: { Accept: 'application/json' }
-        })
-        this.currentWatchingGameSession = data
-        return 'preparing'
-      } catch (error) {
-        if (isAxiosError(error)) {
-          if (error.response && (error.response.status === 400 || error.response.status === 404)) {
-            return error.response.data.message ?? 'Impossible de rejoindre la partie'
-          }
-        }
-      }
-      return 'Impossible de rejoindre la partie'
     },
 
     // accept or reject game challenge

@@ -29,6 +29,10 @@
     <template #footer>
       <FooterSection />
     </template>
+    <ChallengeAcceptedDialog
+      :notification="challengeNotification"
+      :show-dialog="showChallengeAcceptedDialog"
+    />
   </VerticalNavLayout>
 </template>
 
@@ -54,6 +58,7 @@ import {
 } from '@/utils/notificationSocket'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
+import ChallengeAcceptedDialog from '@/components/game/ChallengeAcceptedDialog.vue'
 
 const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
 const { width: windowWidth } = useWindowSize()
@@ -68,15 +73,17 @@ const router = useRouter()
 
 gameStore.initSocket()
 const showChallengeAcceptedDialog = ref(false)
+const challengeNotification = ref<RealTimeNotification>(null as unknown as RealTimeNotification)
 const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotification) => {
   if (
     notification.type === RealTimeNotificationType.Game &&
     notification.title === RealTimeNotificationTitle.GameStarted
   ) {
-    if (!authStore.getUser?.id) return;
-    if (!notification.userId) return;
+    challengeNotification.value = notification
+    if (!authStore.getUser?.id) return
+    if (!notification.userId) return
     if (notification.userId === authStore.getUser.id) {
-      showChallengeAcceptedDialog.value = false;
+      showChallengeAcceptedDialog.value = false
     }
   }
 }

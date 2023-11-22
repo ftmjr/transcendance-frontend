@@ -2,23 +2,42 @@
   <v-container fluid>
     <v-row align="center" justify="center">
       <v-col cols="12" md="8">
-        <v-card color="secondary">
+        <v-card color="secondary" :loading="loading">
           <v-card-title class="text-h5"> Bienvenue dans la salle d'attente </v-card-title>
+          <v-card-item>
+            <v-card-text>
+              <v-table>
+                <template v-slot:top>
+                  <thead>
+                    <tr>
+                      <th class="text-left">Joeur</th>
+                    </tr>
+                  </thead>
+                </template>
+                <tbody>
+                  <tr v-for="player in queList" :key="player.userId">
+                    <td>{{ player.username }}</td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </v-card-text>
+          </v-card-item>
           <div v-if="!gameStore.getCurrentGameSession" class="flex justify-center">
-            <p class="w-1/2 text-center">
-              Voulez-vous rejoindre une fille d'attente pour jouer à Pong avec un autre joueur ?
+            <p>
+              Vous êtes dans la salle d'attente. Vous pouvez rejoindre une file d'attente pour jouer
+              à Pong avec un autre joueur. Si vous quittez cette page, vous quitterez la file
+              d'attente.
             </p>
             <VIcon icon="medical-icon:i-waiting-area" :size="128" />
           </div>
           <div v-else class="flex justify-center">
-            <p class="w-1/2 text-center">Vous avez deja une session de jeu en cours</p>
+            <p class="w-1/2 text-center">Oh, Vous avez deja une session de jeu en cours</p>
             <VIcon color="orange" :size="128">tabler:device-gamepad-2</VIcon>
           </div>
           <v-card-actions>
             <v-btn
-              v-if="!gameStore.getCurrentGameSession"
               :loading="loading"
-              :disabled="loading"
+              :disabled="!gameStore.getCurrentGameSession || loading"
               color="primary"
               variant="elevated"
               @click="joinQueue"
@@ -29,7 +48,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <NotificationPopUp v-model:visible="showErrorPopUp" :message="popUpMessage" />
+    <NotificationPopUp v-model:visible="showPopUp" :message="popUpMessage" color="success" />
   </v-container>
 </template>
 
@@ -38,7 +57,8 @@ import { defineComponent } from 'vue'
 import useGameStore, { GameSessionQResponse } from '@/stores/GameStore'
 import useNotificationStore from '@/stores/NotificationStore'
 import NotificationPopUp from '@/components/notifications/NotificationPopUp.vue'
-import { NotificationType } from '@/utils/notificationSocket'
+import { RealTimeNotificationTitle, RealTimeNotificationType } from '@/utils/notificationSocket'
+import useAuthStore from '@/stores/AuthStore'
 
 export default defineComponent({
   components: { NotificationPopUp },
@@ -46,17 +66,20 @@ export default defineComponent({
   setup() {
     const gameStore = useGameStore()
     const notificationStore = useNotificationStore()
+    const authStore = useAuthStore()
     return {
+      authStore,
       gameStore,
       notificationStore
     }
   },
   data() {
     return {
-      showErrorPopUp: false,
+      showPopUp: false,
       popUpMessage: '',
       loading: false,
-      queuResponse: null as unknown as GameSessionQResponse
+      queResponse: null as unknown as GameSessionQResponse,
+      queList: [] as { userId: number; username: string; avatar: string }[]
     }
   },
   watch: {
@@ -66,7 +89,7 @@ export default defineComponent({
       },
       immediate: true
     },
-    'notificationStore.allNotifications': {
+    'notificationStore.allRealTimeNotifications': {
       handler() {
         this.checkIfGameMatched()
       },
@@ -75,11 +98,10 @@ export default defineComponent({
   },
   async beforeMount() {
     await this.gameStore.getAllGameSessions()
+    await this.loadCurrentWaitingRoom()
   },
   async beforeUnmount() {
-    if (this.queuResponse) {
-      await this.gameStore.quitQueList()
-    }
+    await this.gameStore.quitQueList()
   },
   methods: {
     async checkIfAlreadyInGame() {
@@ -99,27 +121,39 @@ export default defineComponent({
       } else {
         this.loading = true
         const qResponse = await this.gameStore.enterInQueList()
-        this.queuResponse = qResponse
+        await this.loadCurrentWaitingRoom()
+        this.queResponse = qResponse
         if (qResponse.gameSession) {
           this.$router.push({ name: 'game', params: { gameId: qResponse.gameSession?.gameId } })
         } else {
           this.popUpMessage = `Vous êtes dans la file d'attente.`
-          this.showErrorPopUp = true
+          this.showPopUp = true
         }
         this.loading = false
       }
     },
-    async checkIfGameMatched() {
-      console.log(this.notificationStore.allNotifications)
-      if (this.notificationStore.allNotifications.length > 0) {
-        const notification = this.notificationStore.allNotifications[0]
+    checkIfGameMatched() {
+      if (this.queResponse) {
+        if (this.notificationStore.allRealTimeNotifications.length === 0) return
+        const lastNotification = this.notificationStore.allRealTimeNotifications[0]
+        if (!this.authStore.getUser) return
         if (
-          notification.type === NotificationType.GAME_EVENT &&
-          notification.title === 'Game Matched'
+          lastNotification &&
+          lastNotification.type === RealTimeNotificationType.GameWaitingQue &&
+          lastNotification.title === RealTimeNotificationTitle.GameMatched &&
+          lastNotification.userId === this.authStore.getUser.id
         ) {
-          this.$router.push({ name: 'game', params: { gameId: notification.referenceId } })
+          this.$router.push({
+            name: 'game',
+            params: { gameId: lastNotification.gameId }
+          })
         }
       }
+    },
+    async loadCurrentWaitingRoom() {
+      this.loading = true
+      this.queList = await this.gameStore.getCurrentQueList()
+      this.loading = false
     }
   }
 })

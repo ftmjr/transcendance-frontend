@@ -1,11 +1,11 @@
 <template>
   <button
-      :disabled="notification.status === 'READ'"
-      :class="[
+    :disabled="notification.status === 'READ'"
+    :class="[
       'relative block w-full p-4 hover:bg-[#01051e] cursor-pointer',
       notification.status === 'READ' ? 'opacity-75' : 'opacity-100'
     ]"
-      @click.prevent="handleRead"
+    @click.prevent="handleRead"
   >
     <div class="relative flex w-full gap-4">
       <div>
@@ -17,15 +17,15 @@
           {{ notification.message }}
         </p>
         <button
-            @click.prevent.stop="handleShowRoom"
-            class="px-8 py-2 text-xs border rounded-md cursor-pointer border-gray-50/10 bg-green-700/50 hover:bg-green-700/60 text-gary-500 disabled:bg-gray-800/50 disabled:opacity-50"
+          @click.prevent.stop="handleShowRoom"
+          class="px-8 py-2 text-xs border rounded-md cursor-pointer border-gray-50/10 bg-green-700/50 hover:bg-green-700/60 text-gary-500 disabled:bg-gray-800/50 disabled:opacity-50"
         >
           voir la room
         </button>
       </div>
       <div
-          v-if="notification.status !== 'READ'"
-          class="absolute right-0 z-50 w-2 h-2 -translate-y-1/2 rounded-full top-1/2 bg-green-400/50"
+        v-if="notification.status !== 'READ'"
+        class="absolute right-0 z-50 w-2 h-2 -translate-y-1/2 rounded-full top-1/2 bg-green-400/50"
       ></div>
     </div>
   </button>
@@ -37,8 +37,8 @@ import { useRouter } from 'vue-router'
 import { Notification } from '@/utils/notificationSocket'
 import useNotificationStore from '@/stores/NotificationStore'
 
-const notificationStore = useNotificationStore();
-const router = useRouter();
+const notificationStore = useNotificationStore()
+const router = useRouter()
 
 const props = defineProps({
   notification: {
@@ -54,10 +54,9 @@ const handleRead = async () => {
   await notificationStore.markNotificationAsRead(props.notification.id)
 }
 const handleShowRoom = async () => {
-  await handleRead();
-  await router.push({ name: 'chat', params: { id: props.notification?.referenceId } });
+  await handleRead()
+  await router.push({ name: 'chat', params: { id: props.notification?.referenceId } })
 }
 </script>
 
 <style scoped></style>
-

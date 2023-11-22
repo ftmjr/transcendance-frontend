@@ -1,17 +1,6 @@
 <template>
   <div class="h-full">
-    <template v-if="!loading">
-      <div v-if="gameStore.isPlayingWithQueList">
-        <VSnackbar
-          v-model="showIsInQueList"
-          :timeout="3000"
-          closable
-          location="right"
-          color="primary"
-        >
-          Vous Jouez dans la file d'attente, veuillez patienter...
-        </VSnackbar>
-      </div>
+    <template v-if="!loading && gameStore.isPlaying">
       <v-alert
         v-model="alertGameAlreadyJoined"
         border="start"
@@ -25,12 +14,17 @@
         va etre chargée. Quand la partie sera terminée, vous serez redirigé vers la page de
         résultat.
       </v-alert>
-      <GamePlayer v-if="player" :room-id="roomId" :player="player" :theme="theme" />
+      <GamePlayer
+        v-if="player && gameStore.currentGameId"
+        :room-id="gameStore.currentGameId"
+        :player="player"
+        :theme="theme"
+      />
     </template>
     <div v-else-if="loading" class="h-full flex items-center justify-center">
       <v-progress-circular indeterminate color="deep-purple-accent-4" />
     </div>
-    <div class="flex justify-center" v-if="!gameStore.isPlaying && !gameStore.isWatching">
+    <div class="flex justify-center" v-if="!gameStore.isPlaying">
       <p class="w-1/2 text-center">Aucune partie en cours</p>
       <VIcon color="orange" :size="128">tabler:device-gamepad-2</VIcon>
     </div>
@@ -66,23 +60,12 @@ export default defineComponent({
     return {
       loading: false,
       error: null as unknown as string,
-      alertGameAlreadyJoined: false,
-      showIsInQueList: true
+      alertGameAlreadyJoined: false
     }
   },
   computed: {
-    roomId(): number | undefined {
-      if (this.gameStore.getCurrentGameSession) {
-        return this.gameStore.getCurrentGameSession.gameId
-      }
-      if (this.gameStore.getCurrentWatchingGameSession) {
-        return this.gameStore.getCurrentWatchingGameSession.gameId
-      }
-      return undefined
-    },
     player(): (GameUser & { userType: GameUserType }) | undefined {
       if (this.gameStore.getCurrentGameSession) {
-        // check if current user is in participants
         const user = this.gameStore.getCurrentGameSession.participants.find(
           (user) => user.userId === this.authStore.getUser?.id
         )
@@ -95,38 +78,17 @@ export default defineComponent({
           }
         }
       }
-      if (this.gameStore.getCurrentWatchingGameSession) {
-        const user = this.gameStore.getCurrentWatchingGameSession.observers.find(
-          (user) => user.userId === this.authStore.getUser?.id
-        )
-        if (user) {
-          return {
-            userId: user.userId,
-            username: user.username,
-            avatar: this.authStore.getProfile?.avatar ?? '',
-            userType: GameUserType.Viewer
-          }
-        }
-      }
       return undefined
     },
     theme(): Theme {
       if (this.gameStore.getCurrentGameSession) {
         return this.gameStore.getCurrentGameSession.rules.theme ?? Theme.Classic
       }
-      if (this.gameStore.getCurrentWatchingGameSession) {
-        return this.gameStore.getCurrentWatchingGameSession.rules.theme ?? Theme.Classic
-      }
       return Theme.Classic
     }
   },
   watch: {
     'gameStore.getCurrentGameSession': {
-      handler() {
-        this.moveToCurrentGame()
-      }
-    },
-    'gameStore.getCurrentWatchingGameSession': {
       handler() {
         this.moveToCurrentGame()
       },
@@ -137,34 +99,27 @@ export default defineComponent({
     this.loading = true
     await this.gameStore.getAllGameSessions()
     if (!this.gameId) {
-      this.startAgainstBot()
+      await this.startAgainstBot()
+    } else {
+      this.gameStore.setCurrentGameSession(this.gameId)
     }
     this.loading = false
   },
   beforeUnmount() {
-    if (this.roomId && this.roomId === this.gameId) {
-      if (this.player) {
-        if (this.player.userType === GameUserType.Player) {
-          this.gameStore.quitCurrentGameSession(this.roomId)
-        }
-      }
+    if (this.gameId) {
+      this.gameStore.quitGameSession(this.gameId)
     }
   },
   methods: {
     moveToCurrentGame() {
       if (this.gameStore.getCurrentGameSession) {
+        // get players username and set it as title of page
+        const title = `${this.gameStore.getCurrentGameSession.participants[0].username} vs ${this.gameStore.getCurrentGameSession.participants[1].username}`
+        document.title = `PONG - ${title} | Transcendance`
         if (this.gameId !== this.gameStore.getCurrentGameSession.gameId) {
           this.$router.push({
             name: 'game',
             params: { gameId: this.gameStore.getCurrentGameSession.gameId }
-          })
-        }
-      }
-      if (this.gameStore.getCurrentWatchingGameSession) {
-        if (this.gameId !== this.gameStore.getCurrentWatchingGameSession.gameId) {
-          this.$router.push({
-            name: 'game',
-            params: { gameId: this.gameStore.getCurrentWatchingGameSession.gameId }
           })
         }
       }
