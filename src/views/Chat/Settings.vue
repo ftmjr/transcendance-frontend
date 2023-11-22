@@ -33,77 +33,76 @@
               <div class="p-4">
                 <v-sheet width="300" class="mx-auto">
                   <h2 class="mb-4 text-sm font-bold">Paramètres</h2>
-                  <v-form
-                    validate-on="submit lazy"
-                    @submit.prevent="upateRoomInfos"
-                    v-show="isOwner"
-                  >
-                    <div class="flex flex-col gap-4">
-                      <div class="flex gap-4">
-                        <VAvatar
-                          v-if="roomsStore.getCurrentRoomStatus.room.avatar"
-                          :size="42"
-                          :image="roomsStore.getCurrentRoomStatus.room.avatar"
-                        />
-                        <v-file-input
-                          :disabled="loading || !isOwner"
-                          label="Choisir une image"
-                          prepend-icon="mdi-camera"
-                          variant="solo-filled"
-                        ></v-file-input>
-                      </div>
-                      <VSelect
-                        :disabled="loading || !isOwner"
-                        v-model="type"
-                        :items="typeList"
-                        item-title="text"
-                        item-value="value"
-                        label="Type de la salle"
-                        outlined
-                        dense
-                        class="mt-4"
+                  <v-form validate-on="submit lazy" @submit.prevent="upateRoomInfos" v-if="isOwner">
+                    <div class="flex gap-4">
+                      <VAvatar
+                        v-if="roomsStore.getCurrentRoomStatus.room.avatar"
+                        :size="42"
+                        :image="roomsStore.getCurrentRoomStatus.room.avatar"
                       />
-                      <div>
-                        <v-text-field
-                          :disabled="loading || !isOwner || !askPassword"
-                          v-model="oldPassword"
-                          label="Ancien mot de passe"
-                          placeholder="Entrez l'ancien mot de passe"
-                          outlined
-                          dense
-                          :rules="rules.oldPassword"
-                          class="mt-4"
-                        />
-                        <v-text-field
-                          :disabled="loading || !isOwner || !askPassword"
-                          v-model="password"
-                          label="Mot de passe"
-                          placeholder="Entrez le mot de passe"
-                          outlined
-                          dense
-                          :rules="rules.password"
-                          class="mt-4"
-                        />
-                        <v-text-field
-                          :disabled="loading || !isOwner || !askPassword"
-                          v-model="passwordConfirmation"
-                          label="Confirmation du mot de passe"
-                          placeholder="Confirmez le mot de passe"
-                          outlined
-                          dense
-                          :rules="rules.passwordConfirmation"
-                          class="mt-4"
-                        />
-                      </div>
-                      <v-btn
+                      <v-file-input
                         :disabled="loading || !isOwner"
-                        :loading="loading"
-                        type="submit"
-                        block
-                        class="mt-2"
-                        text="Mettre à jour"
-                      ></v-btn>
+                        label="Choisir une image"
+                        prepend-icon="mdi-camera"
+                        variant="solo-filled"
+                      ></v-file-input>
                     </div>
+                    <VSelect
+                      :disabled="loading || !isOwner"
+                      v-model="type"
+                      :items="typeList"
+                      item-title="text"
+                      item-value="value"
+                      label="Type de la salle"
+                      outlined
+                      dense
+                      class="mt-4"
+                    />
+                    <div>
+                      <v-text-field
+                        :disabled="loading"
+                        v-if="type !== 'PUBLIC'"
+                        v-model="oldPassword"
+                        label="Ancien mot de passe"
+                        placeholder=""
+                        class="mt-4"
+                        dense
+                        :rules="rules.oldPassword"
+                        type="password"
+                      />
+                      <v-text-field
+                        v-if="type !== 'PUBLIC'"
+                        :disabled="loading"
+                        v-model="password"
+                        label="Nouveau Mot de passe"
+                        placeholder=""
+                        :rules="rules.password"
+                        outlined
+                        type="password"
+                        class="mt-4"
+                        dense
+                      />
+                      <v-text-field
+                        v-if="type !== 'PUBLIC'"
+                        :disabled="loading"
+                        v-model="passwordConfirmation"
+                        label="Cofirmer le mot de passe"
+                        placeholder=""
+                        outlined
+                        class="mt-4"
+                        dense
+                        :rules="rules.passwordConfirmation"
+                        type="password"
+                      />
+                    </div>
+                    <v-btn
+                      :disabled="loading || !isOwner"
+                      :loading="loading"
+                      type="submit"
+                      block
+                      class="mt-2"
+                      text="Mettre à jour"
+                    ></v-btn>
                   </v-form>
 
                   <v-divider class="my-4"></v-divider>
@@ -228,15 +227,15 @@ export default defineComponent({
       return [
         {
           text: 'Publique',
-          value: type.PUBLIC
+          value: RoomType.PUBLIC
         },
         {
           text: 'Protégée',
-          value: type.PROTECTED
+          value: RoomType.PROTECTED
         },
         {
           text: 'Privée',
-          value: type.PRIVATE
+          value: RoomType.PRIVATE
         }
       ]
     }
