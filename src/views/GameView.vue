@@ -40,7 +40,7 @@
 <script lang="ts">
 import { defineAsyncComponent, defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import useGameStore, {GameSession} from '@/stores/GameStore'
+import useGameStore, { GameSession } from '@/stores/GameStore'
 import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
 import { Theme } from '@/Game/scenes/Boot'
 
@@ -137,7 +137,7 @@ export default defineComponent({
     this.loading = true
     await this.gameStore.getAllGameSessions()
     if (!this.gameId) {
-      this.startAgainstBot();
+      this.startAgainstBot()
     }
     this.loading = false
   },
@@ -172,12 +172,11 @@ export default defineComponent({
     async startAgainstBot() {
       const response = await this.gameStore.startGameAgainstBot()
       if (typeof response !== 'string') {
-        const session = response as GameSession;
+        const session = response as GameSession
         this.$router.push({
           name: 'bot-game',
           params: { gameId: session.gameId }
         })
-
       }
     }
   }

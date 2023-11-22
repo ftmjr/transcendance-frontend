@@ -21,7 +21,7 @@ export enum NotificationTitle {
   MemberJoinedChatRoom = 'Member Joined Chat Room', // new member joined the chat room
   RemovedFromChatRoom = 'Removed From Chat Room', // player kicked from a chat room
   PromotedToAdmin = 'Promoted To Admin', // player promoted to admin in a chat room
-  PrivateChatInvitation = 'Private Chat Invitation', // player invited another player to a join
+  PrivateChatInvitation = 'Private Chat Invitation' // player invited another player to a join
 }
 
 // Notification Types for real time notifications
@@ -29,7 +29,7 @@ export enum RealTimeNotificationType {
   Game = 'Game',
   GameWaitingQue = 'GameWaitingQue',
   ChatRoom = 'ChatRoom',
-  PrivateMessage = 'PrivateMessage',
+  PrivateMessage = 'PrivateMessage'
 }
 
 export enum RealTimeNotificationTitle {
@@ -44,7 +44,7 @@ export enum RealTimeNotificationTitle {
   ChatRoomSettingsUpdated = 'Chat Room Settings Updated', // chat room settings updated
   NewMpMessage = 'New Mp-Message', // first message between two contacts
   BlockedContactMessage = 'Blocked Contact', // One of the contacts blocked or unblocked the other
-  BrokenFriendship = 'Broken Friendship', // One of the contacts unfriended the other, or blocked
+  BrokenFriendship = 'Broken Friendship' // One of the contacts unfriended the other, or blocked
 }
 
 export interface Notification {
@@ -61,16 +61,16 @@ export interface Notification {
 }
 
 export interface RealTimeNotification {
-  mode: 'general' | 'private';
-  sourceUserId?: number;
-  userId?: number;
-  roomId?: number;
-  gameId?: number;
-  waitingGameId?: number;
-  type: RealTimeNotificationType;
-  title: RealTimeNotificationTitle;
-  message: string;
-  timestamp: number;
+  mode: 'general' | 'private'
+  sourceUserId?: number
+  userId?: number
+  roomId?: number
+  gameId?: number
+  waitingGameId?: number
+  type: RealTimeNotificationType
+  title: RealTimeNotificationTitle
+  message: string
+  timestamp: number
 }
 
 interface ListenEvents {

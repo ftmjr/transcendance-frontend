@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onBeforeUnmount, watch, ref } from 'vue'
+import { onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
@@ -47,7 +47,11 @@ import NotificationButton from '@/components/navbar/NotificationButton.vue'
 import useGameStore from '@/stores/GameStore'
 import useAuthStore from '@/stores/AuthStore'
 import useNotificationStore from '@/stores/NotificationStore'
-import { Notification as NotificationT, NotificationType } from '@/utils/notificationSocket'
+import {
+  RealTimeNotification,
+  RealTimeNotificationTitle,
+  RealTimeNotificationType
+} from '@/utils/notificationSocket'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
 
@@ -62,11 +66,18 @@ const gameStore = useGameStore()
 const usersStore = useUserStore()
 const router = useRouter()
 
-gameStore.initSocket();
+gameStore.initSocket()
 const showChallengeAcceptedDialog = ref(false)
-const checkIfNewNotificationIsANewGameChallenge = (notification: NotificationT) => {
-  if (notification.type === NotificationType.GAME_EVENT && notification.title === 'Game Started') {
-    showChallengeAcceptedDialog.value = true
+const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotification) => {
+  if (
+    notification.type === RealTimeNotificationType.Game &&
+    notification.title === RealTimeNotificationTitle.GameStarted
+  ) {
+    if (!authStore.getUser?.id) return;
+    if (!notification.userId) return;
+    if (notification.userId === authStore.getUser.id) {
+      showChallengeAcceptedDialog.value = false;
+    }
   }
 }
 
@@ -75,7 +86,7 @@ watch(
   () => authStore.isLocked,
   (isLocked) => {
     if (isLocked) {
-      gameStore.disconnectSocket();
+      gameStore.disconnectSocket()
       router.push({ name: 'locked-screen' })
     }
   }
@@ -83,7 +94,7 @@ watch(
 
 // watch if new notification is a new game challenge
 watch(
-  () => notificationStore.allNotifications,
+  () => notificationStore.allRealTimeNotifications,
   (notifications) => {
     if (notifications.length > 0) {
       checkIfNewNotificationIsANewGameChallenge(notifications[0])

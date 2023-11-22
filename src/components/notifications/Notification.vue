@@ -9,10 +9,17 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { Notification, NotificationTitle, NotificationType } from "@/utils/notificationSocket";
-import FriendRequest from "@/components/notifications/friend/FriendRequest.vue";
-import FriendRequestAccepted from "@/components/notifications/friend/FriendRequestAccepted.vue";
-import FriendRequestRejected from "@/components/notifications/friend/FriendRequestRejected.vue";
+import { Notification, NotificationTitle, NotificationType } from '@/utils/notificationSocket'
+import FriendRequest from '@/components/notifications/friend/FriendRequest.vue'
+import FriendRequestAccepted from '@/components/notifications/friend/FriendRequestAccepted.vue'
+import FriendRequestRejected from '@/components/notifications/friend/FriendRequestRejected.vue'
+import GameInvitation from '@/components/notifications/game/GameInvitation.vue'
+import GameInvitationRejected from "@/components/notifications/game/GameInvitationRejected.vue";
+import JoinedGame from "@/components/notifications/game/JoinedGame.vue";
+import MemberJoinedChatRoom from "@/components/notifications/chat/MemberJoinedChatRoom.vue";
+import PromotedInRoom from "@/components/notifications/chat/PromotedInRoom.vue";
+import PrivateChatInvitation from "@/components/notifications/chat/PrivateChatInvitation.vue";
+import RemovedFromChat from "@/components/notifications/chat/RemovedFromChat.vue";
 
 export default defineComponent({
   components: {
@@ -50,11 +57,11 @@ export default defineComponent({
     getComponentForFriends() {
       switch (this.notification.title) {
         case NotificationTitle.FriendRequest:
-          return FriendRequest;
+          return FriendRequest
         case NotificationTitle.FriendRequestAccepted:
-          return FriendRequestAccepted;
+          return FriendRequestAccepted
         case NotificationTitle.FriendRequestRejected:
-          return FriendRequestRejected;
+          return FriendRequestRejected
         default:
           return null
       }
@@ -62,9 +69,9 @@ export default defineComponent({
     getComponentForGameInvitation() {
       switch (this.notification.title) {
         case NotificationTitle.GameInvitation:
-          return GameInvitation;
+          return GameInvitation
         case NotificationTitle.GameInvitationRejected:
-          return GameInvitationRejected;
+          return GameInvitationRejected
         default:
           return null
       }
@@ -72,7 +79,7 @@ export default defineComponent({
     getComponentForGameEvent() {
       switch (this.notification.title) {
         case NotificationTitle.JoinedGame:
-          return JoinedGame;
+          return JoinedGame
         default:
           return null
       }
@@ -80,13 +87,13 @@ export default defineComponent({
     getComponentForChat() {
       switch (this.notification.title) {
         case NotificationTitle.PrivateChatInvitation:
-          return PrivateChatInvitation;
+          return PrivateChatInvitation
         case NotificationTitle.MemberJoinedChatRoom:
-          return MemberJoinedChatRoom;
+          return MemberJoinedChatRoom
         case NotificationTitle.RemovedFromChatRoom:
-          return RemovedFromChatRoom;
+          return RemovedFromChat
         case NotificationTitle.PromotedToAdmin:
-          return PromotedToAdmin;
+          return PromotedInRoom
         default:
           return null
       }

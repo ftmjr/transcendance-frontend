@@ -1,25 +1,25 @@
 <template>
   <button
-    :disabled="notification.status === 'READ'"
-    :class="[
+      :disabled="notification.status === 'READ'"
+      :class="[
       'relative block w-full p-4 hover:bg-[#01051e] cursor-pointer',
       notification.status === 'READ' ? 'opacity-75' : 'opacity-100'
     ]"
-    @click="handleRead"
+      @click.prevent="handleRead"
   >
     <div class="relative flex w-full gap-4">
       <div>
-        <v-icon class="text-2xl" color="orange">tabler:eye</v-icon>
+        <v-icon class="text-2xl" color="error">mdi-forum</v-icon>
       </div>
       <div class="flex-col flex-1 pr-4">
-        <p :class="['text-left text-sm fomt-semiBold']">A Rejoins</p>
+        <p :class="['text-left text-sm fomt-semiBold']">Vous n'etes plus membre</p>
         <p :class="['text-left text-xs text-gray-500/75']">
           {{ notification.message }}
         </p>
       </div>
       <div
-        v-if="notification.status !== 'READ'"
-        class="absolute right-0 z-50 w-2 h-2 -translate-y-1/2 rounded-full top-1/2 bg-green-400/50"
+          v-if="notification.status !== 'READ'"
+          class="absolute right-0 z-50 w-2 h-2 -translate-y-1/2 rounded-full top-1/2 bg-green-400/50"
       ></div>
     </div>
   </button>
@@ -27,10 +27,12 @@
 
 <script setup lang="ts">
 import { PropType } from 'vue'
+import { useRouter } from 'vue-router'
 import { Notification } from '@/utils/notificationSocket'
 import useNotificationStore from '@/stores/NotificationStore'
 
-const notificationStore = useNotificationStore()
+const notificationStore = useNotificationStore();
+const router = useRouter();
 
 const props = defineProps({
   notification: {
@@ -48,3 +50,4 @@ const handleRead = () => {
 </script>
 
 <style scoped></style>
+

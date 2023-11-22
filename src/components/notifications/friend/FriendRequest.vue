@@ -52,14 +52,14 @@ const props = defineProps({
   }
 })
 
-const router = useRouter();
-const notificationStore = useNotificationStore();
+const router = useRouter()
+const notificationStore = useNotificationStore()
 // const handleDelete = () => {
 //   notificationStore.deleteNotification(props.notification.id)
 // }
-const handleRead = () => {
-  notificationStore.markNotificationAsRead(props.notification.id)
-  router.push({
+const handleRead = async () => {
+  await notificationStore.markNotificationAsRead(props.notification.id)
+  await router.push({
     name: 'user-profile',
     params: { userId: props.notification.referenceId }
   })
