@@ -31,7 +31,8 @@ export default defineComponent({
   },
   data() {
     return {
-      gameMonitor: null as unknown as Monitor
+      gameMonitor: null as unknown as Monitor,
+      game: null as unknown as Game
     }
   },
   mounted() {
@@ -71,7 +72,8 @@ export default defineComponent({
     game.scene.add('Boot', Boot, true, dataInit)
   },
   beforeUnmount() {
-    this.gameMonitor?.quitGame()
+    this.gameMonitor?.quitGame();
+    if (this.game) this.game.destroy(true);
   },
   methods: {
     moveToHistory() {

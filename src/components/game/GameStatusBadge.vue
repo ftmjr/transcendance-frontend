@@ -24,19 +24,14 @@
         <span>Indisponible</span>
       </span>
     </v-chip>
-
     <v-btn
-      v-if="userGameStatus.gameSession"
+      v-if="localGameStatus && localGameStatus.gameSession"
       size="small"
       color="deep-purple accent-4"
       :to="{
-        name: 'game',
+        name: 'watch-game',
         params: {
-          gameId: userGameStatus.gameSession.gameId
-        },
-        query: {
-          waitingRoom: 'false',
-          isPlayer: 'false'
+          gameId: localGameStatus.gameSession.gameId
         }
       }"
     >
@@ -49,7 +44,7 @@
       v-else-if="liveStatus === 'Online'"
       :status="liveStatus"
       :user-id="userId"
-      :user-game-status="userGameStatus"
+      :user-game-status="localGameStatus"
     />
   </div>
 </template>
@@ -60,6 +55,8 @@ import useGameStore, { GameSession } from '@/stores/GameStore'
 import { Status } from '@/interfaces/User'
 import ChallengeModal from '@/components/game/ChallengeModal.vue'
 import useUserStore from '@/stores/UserStore'
+import useNotificationStore from '@/stores/NotificationStore'
+import { RealTimeNotificationType } from '@/utils/notificationSocket'
 
 const props = defineProps({
   userId: {
@@ -82,6 +79,7 @@ const props = defineProps({
 const usersStore = useUserStore()
 const loading = ref(false)
 const gameStore = useGameStore()
+const notificationStore = useNotificationStore()
 
 const localGameStatus = ref<{
   status: 'playing' | 'inQueue' | 'free'
@@ -114,6 +112,19 @@ watch(liveStatus, async (newStatus) => {
     localGameStatus.value = { status: 'free', gameSession: undefined }
   } else {
     await updateLocalGameStatus(props.userId)
+  }
+})
+
+watch(notificationStore.allRealTimeNotifications, async (newNotifications) => {
+  if (newNotifications.length === 0) return
+  const lastNotification = newNotifications[0]
+  if (
+    lastNotification.type === RealTimeNotificationType.GameWaitingQue ||
+    lastNotification.type === RealTimeNotificationType.Game
+  ) {
+    if (lastNotification.userId === props.userId || lastNotification.sourceUserId === props.userId) {
+      await updateLocalGameStatus(props.userId)
+    }
   }
 })
 </script>

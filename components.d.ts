@@ -7,7 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AddedToRoom: typeof import('./src/components/notifications/chat/AddedToRoom.vue')['default']
+    AddedToRoom: typeof import('./src/components/notifications/chat/MemberJoinedChatRoom.vue')['default']
     AvatarBadge: typeof import('./src/components/profile/AvatarBadge.vue')['default']
     Awards: typeof import('./src/components/profile/Awards.vue')['default']
     ChallengeModal: typeof import('./src/components/game/ChallengeModal.vue')['default']
@@ -19,9 +19,9 @@ declare module 'vue' {
     FriendRequestBox: typeof import('./src/components/profile/FriendRequestBox.vue')['default']
     Friends: typeof import('./src/components/profile/Friends.vue')['default']
     GameChallengeAccepted: typeof import('./src/components/notifications/game/GameChallengeAccepted.vue')['default']
-    GameChallengeRejected: typeof import('./src/components/notifications/game/GameChallengeRejected.vue')['default']
+    GameChallengeRejected: typeof import('./src/components/notifications/game/GameInvitationRejected.vue')['default']
     GameInvitation: typeof import('./src/components/notifications/game/GameInvitation.vue')['default']
-    GameJoined: typeof import('./src/components/notifications/game/GameJoined.vue')['default']
+    GameJoined: typeof import('./src/components/notifications/game/JoinedGame.vue')['default']
     GamePaused: typeof import('./src/components/notifications/game/GamePaused.vue')['default']
     GameResumed: typeof import('./src/components/notifications/game/GameResumed.vue')['default']
     GameStatusBadge: typeof import('./src/components/game/GameStatusBadge.vue')['default']
@@ -39,7 +39,7 @@ declare module 'vue' {
     ProfileHeader: typeof import('./src/components/profile/ProfileHeader.vue')['default']
     RequestAccepted: typeof import('./src/components/notifications/friend/RequestAccepted.vue')['default']
     RequestRejected: typeof import('./src/components/notifications/friend/RequestRejected.vue')['default']
-    RoomAdministrator: typeof import('./src/components/notifications/chat/RoomAdministrator.vue')['default']
+    RoomAdministrator: typeof import('./src/components/notifications/chat/PromotedInRoom.vue')['default']
     RoomCard: typeof import('./src/components/chatRooms/RoomCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

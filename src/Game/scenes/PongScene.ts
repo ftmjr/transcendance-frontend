@@ -1,9 +1,9 @@
-import { Scene } from 'phaser'
-import { Ball } from '@/Game/Objects/Ball'
-import { PADDLE_HEIGHT, Player, PlayerType } from '@/Game/Objects/Player'
-import { SceneInitData, Theme } from '@/Game/scenes/Boot'
-import Monitor, { GAME_STATE } from '@/Game/network/Monitor'
-import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
+import { Scene } from "phaser";
+import { Ball } from "@/Game/Objects/Ball";
+import { PADDLE_HEIGHT, Player, PlayerType } from "@/Game/Objects/Player";
+import { SceneInitData, Theme } from "@/Game/scenes/Boot";
+import Monitor, { GAME_STATE } from "@/Game/network/Monitor";
+import { GameUser, GameUserType } from "@/Game/network/GameNetwork";
 
 export type ScoreBoard = { digit1: Phaser.GameObjects.Image; digit2: Phaser.GameObjects.Image }
 export default class PongScene extends Scene {
@@ -21,7 +21,7 @@ export default class PongScene extends Scene {
   private playerOneScoreText!: Phaser.GameObjects.BitmapText
   private playerTwoScoreText!: Phaser.GameObjects.BitmapText
   private scoreRoutineOn = false
-  private soundConfig: Phaser.Types.Sound.SoundConfig = { mute: false, volume: 0.5 }
+  private soundConfig: Phaser.Types.Sound.SoundConfig = { mute: false, volume: 0.3 }
   constructor() {
     super('PongGame')
   }
@@ -57,10 +57,12 @@ export default class PongScene extends Scene {
     }
     this.monitor._phaserGameMonitorStateChangedRoutine = (state) => {
       if (state === GAME_STATE.Ended) {
-        this.scene.start('Menu', {
-          currentUser: this.currentUser,
-          theme: this.theme,
-          gameMonitor: this.monitor
+        this.time.delayedCall(200, () => {
+          this.scene.start('Menu', {
+            currentUser: this.currentUser,
+            theme: this.theme,
+            gameMonitor: this.monitor
+          })
         })
       }
     }
@@ -75,9 +77,14 @@ export default class PongScene extends Scene {
       const message = this.add.bitmapText(667, 375, 'atari', 'Player Left')
       message.setOrigin(0.5, 0.5)
       message.setDepth(2)
-      this.time.delayedCall(200, () => {
+      this.time.delayedCall(500, () => {
         message?.destroy()
+        // quit the game
+        this.monitor.quitAndMoveToHistory()
       })
+    }
+    this.monitor._phaserBallPaddleCollisionRoutine = (paddleUserId) => {
+      this.paddleBallCollisionRoutine(paddleUserId)
     }
   }
 
@@ -208,12 +215,23 @@ export default class PongScene extends Scene {
   private scoredRoutine() {
     this.scoreRoutineOn = true
     const goal = this.add.image(667, 375, 'text_goal')
-    goal.setDepth(2)
+    goal.setDepth(2);
+    this.sound.play("goal_sound", this.soundConfig);
     this.time.delayedCall(500, () => {
       goal.destroy()
       this.scoreRoutineOn = false
     })
+    // shake the camera
+    this.cameras.main.shake(400, 0.03)
     this.ball.newPosition({ x: 667, y: 375 }, { x: 0, y: 0 })
+  }
+
+  private paddleBallCollisionRoutine(_paddleUserId: number) {
+    if (this.theme !== Theme.Soccer){
+      this.sound.play('pad_hit_sound', this.soundConfig);
+    } else {
+      this.sound.play('pad_hit_soccer_sound', this.soundConfig);
+    }
   }
 
   update() {

@@ -2,6 +2,21 @@
     "section1": {
         "files": [
             {
+                "url": "/pong/audio/goal.wav",
+                "type": "audio",
+                "key": "goal_sound"
+            },
+            {
+                "url": "/pong/audio/paddle_hit.wav",
+                "type": "audio",
+                "key": "pad_hit_sound"
+            },
+            {
+                "url": "/pong/audio/paddle_hit_soccer.wav",
+                "type": "audio",
+                "key": "pad_hit_soccer_sound"
+            },
+            {
                 "url": "/pong/ui/B1.png",
                 "type": "image",
                 "key": "B1"

@@ -97,6 +97,7 @@ export interface AuthState {
   }
   isRefreshingToken: boolean
   timer: NodeJS.Timeout | null
+  now: number
 }
 export interface RegisterBody {
   lastName: string

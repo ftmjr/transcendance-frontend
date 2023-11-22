@@ -1,5 +1,6 @@
 <template>
   <component
+    v-if="component"
     :is="component"
     :notification="notification"
     :is-short="isShort"
@@ -9,49 +10,21 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { Notification, NotificationType } from '@/utils/notificationSocket'
+import { Notification, NotificationTitle, NotificationType } from '@/utils/notificationSocket'
 import FriendRequest from '@/components/notifications/friend/FriendRequest.vue'
-import FriendRequestAccepted from '@/components/notifications/friend/RequestAccepted.vue'
-import FriendRequestRejected from '@/components/notifications/friend/RequestRejected.vue'
-import AddedToRoom from '@/components/notifications/chat/AddedToRoom.vue'
-import RoomAdministrator from '@/components/notifications/chat/RoomAdministrator.vue'
-import GameChallengeAccepted from '@/components/notifications/game/GameChallengeAccepted.vue'
+import FriendRequestAccepted from '@/components/notifications/friend/FriendRequestAccepted.vue'
+import FriendRequestRejected from '@/components/notifications/friend/FriendRequestRejected.vue'
 import GameInvitation from '@/components/notifications/game/GameInvitation.vue'
-import GamePaused from '@/components/notifications/game/GamePaused.vue'
-import GameResumed from '@/components/notifications/game/GameResumed.vue'
-import GameChallengeRejected from '@/components/notifications/game/GameChallengeRejected.vue'
+import GameInvitationRejected from '@/components/notifications/game/GameInvitationRejected.vue'
 import JoinedGame from '@/components/notifications/game/JoinedGame.vue'
-
-// NotificationType.GAME_INVITE
-//
-// 'Game Invite'
-// 'Game Invite Rejected'
-// 'Challenge Accepted'
-// NotificationType.GAME_EVENT
-//
-// 'Joined Game'
-// NotificationType.FRIEND_REQUEST
-//
-// Demande d'amitié
-// Demande d'ami acceptée
-// Demande d'ami refusée
-// NotificationType.PRIVATE_MESSAGE
-//
-// 'Added to Chat'
-// 'Chat Room Destroyed'
-// 'Promoted in Chat Room'
-// 'Removed from Chat Room'
+import MemberJoinedChatRoom from '@/components/notifications/chat/MemberJoinedChatRoom.vue'
+import PromotedInRoom from '@/components/notifications/chat/PromotedInRoom.vue'
+import PrivateChatInvitation from '@/components/notifications/chat/PrivateChatInvitation.vue'
+import RemovedFromChat from '@/components/notifications/chat/RemovedFromChat.vue'
 
 export default defineComponent({
   components: {
-    FriendRequest,
-    FriendRequestAccepted,
-    FriendRequestRejected,
-    AddedToRoom,
-    RoomAdministrator,
-    GameChallengeAccepted,
-    GameInvitation,
-    GamePaused
+    // List all components that can be used in notifications
   },
   props: {
     notification: {
@@ -84,35 +57,29 @@ export default defineComponent({
   methods: {
     getComponentForFriends() {
       switch (this.notification.title) {
-        case `Demande d'ami acceptée`:
-          return FriendRequestAccepted
-        case `Demande d'ami refusée`:
-          return FriendRequestRejected
-        case `Demande d'amitié`:
+        case NotificationTitle.FriendRequest:
           return FriendRequest
+        case NotificationTitle.FriendRequestAccepted:
+          return FriendRequestAccepted
+        case NotificationTitle.FriendRequestRejected:
+          return FriendRequestRejected
         default:
           return null
       }
     },
     getComponentForGameInvitation() {
       switch (this.notification.title) {
-        case 'Challenge Accepted':
-          return GameChallengeAccepted
-        case 'Game Invite Rejected':
-          return GameChallengeRejected
-        case 'Game Invite':
+        case NotificationTitle.GameInvitation:
           return GameInvitation
+        case NotificationTitle.GameInvitationRejected:
+          return GameInvitationRejected
         default:
           return null
       }
     },
     getComponentForGameEvent() {
       switch (this.notification.title) {
-        case 'Game Resumed':
-          return GameResumed
-        case 'Game Paused':
-          return GamePaused
-        case 'Joined Game':
+        case NotificationTitle.JoinedGame:
           return JoinedGame
         default:
           return null
@@ -120,10 +87,14 @@ export default defineComponent({
     },
     getComponentForChat() {
       switch (this.notification.title) {
-        case 'Room Administrator':
-          return RoomAdministrator
-        case 'Added to Chat':
-          return AddedToRoom
+        case NotificationTitle.PrivateChatInvitation:
+          return PrivateChatInvitation
+        case NotificationTitle.MemberJoinedChatRoom:
+          return MemberJoinedChatRoom
+        case NotificationTitle.RemovedFromChatRoom:
+          return RemovedFromChat
+        case NotificationTitle.PromotedToAdmin:
+          return PromotedInRoom
         default:
           return null
       }
