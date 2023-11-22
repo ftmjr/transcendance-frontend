@@ -27,11 +27,12 @@
     </RouterView>
 
     <template #footer>
-      <ChallengeAcceptedDialog
+      <NotificationPopUp
         v-if="challengeNotification"
-        :notification="challengeNotification"
-        v-model:show-dialog="showChallengeAcceptedDialog"
-      />:
+        v-model:visible="showChallengePopUp"
+        :snackbar-msg="challengeNotification.message"
+        color="success"
+      />
       <FooterSection />
     </template>
   </VerticalNavLayout>
@@ -59,7 +60,7 @@ import {
 } from '@/utils/notificationSocket'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
-import ChallengeAcceptedDialog from '@/components/game/ChallengeAcceptedDialog.vue'
+import NotificationPopUp from "@/components/notifications/NotificationPopUp.vue";
 
 const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
 const { width: windowWidth } = useWindowSize()
@@ -73,10 +74,9 @@ const usersStore = useUserStore()
 const router = useRouter()
 
 gameStore.initSocket()
-const showChallengeAcceptedDialog = ref(false)
+const showChallengePopUp = ref(false)
 const challengeNotification = ref<RealTimeNotification>(null as unknown as RealTimeNotification)
 const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotification) => {
-  console.log(notification, 'notification')
   if (
     notification.type === RealTimeNotificationType.Game &&
     notification.title === RealTimeNotificationTitle.GameStarted
@@ -85,7 +85,10 @@ const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotific
     if (!authStore.getUser?.id) return
     if (!notification.userId) return
     if (notification.userId === authStore.getUser.id) {
-      showChallengeAcceptedDialog.value = true
+      showChallengePopUp.value = true;
+      if (notification.gameId) {
+        router.push({ name: 'game', params: { gameId: notification.gameId } })
+      }
     }
   }
 }
@@ -96,7 +99,7 @@ const lock = computed(() => {
 // watch if is locked and move him to locked page
 watch(lock, (isLocked) => {
   if (isLocked) {
-    router.push({ name: 'auth-lock' })
+    router.push({ name: 'locked-screen' })
   }
 })
 

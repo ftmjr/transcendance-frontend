@@ -11,7 +11,7 @@
           vous perdrez la partie.
         </v-card-text>
         <v-card-actions>
-          <v-btn color="error" variant="outlined" @click="refuseChallenge"> Abandonner </v-btn>
+          <v-btn color="error" variant="outlined" @click="abandon"> Abandonner </v-btn>
           <v-btn color="success" variant="elevated" @click="acceptChallenge"> Jouer </v-btn>
         </v-card-actions>
       </v-card>
@@ -71,7 +71,7 @@ export default defineComponent({
       }
       this.dialog = false
     },
-    async refuseChallenge() {
+    async abandon() {
       this.loading = true
       if (this.notification.gameId) {
         await this.gameStore.quitGameSession(this.notification.gameId)

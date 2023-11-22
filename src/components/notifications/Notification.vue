@@ -1,5 +1,6 @@
 <template>
   <component
+    v-if="component"
     :is="component"
     :notification="notification"
     :is-short="isShort"

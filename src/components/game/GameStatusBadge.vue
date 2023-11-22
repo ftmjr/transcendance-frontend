@@ -117,12 +117,14 @@ watch(liveStatus, async (newStatus) => {
 
 watch(notificationStore.allRealTimeNotifications, async (newNotifications) => {
   if (newNotifications.length === 0) return
-  const lastNotification = newNotifications[newNotifications.length - 1]
+  const lastNotification = newNotifications[0]
   if (
     lastNotification.type === RealTimeNotificationType.GameWaitingQue ||
     lastNotification.type === RealTimeNotificationType.Game
   ) {
-    await updateLocalGameStatus(props.userId)
+    if (lastNotification.userId === props.userId || lastNotification.sourceUserId === props.userId) {
+      await updateLocalGameStatus(props.userId)
+    }
   }
 })
 </script>

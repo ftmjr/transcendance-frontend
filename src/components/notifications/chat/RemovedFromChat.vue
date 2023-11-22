@@ -27,12 +27,10 @@
 
 <script setup lang="ts">
 import { PropType } from 'vue'
-import { useRouter } from 'vue-router'
 import { Notification } from '@/utils/notificationSocket'
 import useNotificationStore from '@/stores/NotificationStore'
 
 const notificationStore = useNotificationStore()
-const router = useRouter()
 
 const props = defineProps({
   notification: {

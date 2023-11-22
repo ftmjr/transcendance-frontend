@@ -54,7 +54,9 @@ const notificationStore = useNotificationStore()
 //   notificationStore.deleteNotification(props.notification.id)
 // }
 const handleRead = async () => {
-  await notificationStore.markNotificationAsRead(props.notification.id)
+  if (props.notification.status !== 'READ'){
+    await notificationStore.markNotificationAsRead(props.notification.id)
+  }
   await router.push({
     name: 'user-profile',
     params: { userId: props.notification.referenceId }
