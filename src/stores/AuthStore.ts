@@ -137,7 +137,6 @@ const useAuthStore = defineStore({
       }, 10000) // 10 seconds before token expiration check
     },
     async refreshToken(): Promise<string> {
-      console.log('refreshing token')
       const { data } = await axios.get('/auth/refresh', {
         headers: {
           'Content-Type': 'application/json'

@@ -40,11 +40,11 @@ axiosInstance.interceptors.response.use(
       !originalRequest._retry
     ) {
       originalRequest._retry = true
-      const access_token = await authStore.refreshToken()
+      const access_token = await authStore.refreshToken();
       axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token
       return axiosInstance(originalRequest)
     }
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
 )
 

@@ -21,7 +21,7 @@ export default class PongScene extends Scene {
   private playerOneScoreText!: Phaser.GameObjects.BitmapText
   private playerTwoScoreText!: Phaser.GameObjects.BitmapText
   private scoreRoutineOn = false
-  private soundConfig: Phaser.Types.Sound.SoundConfig = { mute: false, volume: 0.5 }
+  private soundConfig: Phaser.Types.Sound.SoundConfig = { mute: false, volume: 0.3 }
   constructor() {
     super('PongGame')
   }
@@ -57,10 +57,12 @@ export default class PongScene extends Scene {
     }
     this.monitor._phaserGameMonitorStateChangedRoutine = (state) => {
       if (state === GAME_STATE.Ended) {
-        this.scene.start('Menu', {
-          currentUser: this.currentUser,
-          theme: this.theme,
-          gameMonitor: this.monitor
+        this.time.delayedCall(200, () => {
+          this.scene.start('Menu', {
+            currentUser: this.currentUser,
+            theme: this.theme,
+            gameMonitor: this.monitor
+          })
         })
       }
     }
@@ -224,8 +226,7 @@ export default class PongScene extends Scene {
     this.ball.newPosition({ x: 667, y: 375 }, { x: 0, y: 0 })
   }
 
-  private paddleBallCollisionRoutine(paddleUserId: number) {
-    console.log('hit', paddleUserId);
+  private paddleBallCollisionRoutine(_paddleUserId: number) {
     if (this.theme !== Theme.Soccer){
       this.sound.play('pad_hit_sound', this.soundConfig);
     } else {

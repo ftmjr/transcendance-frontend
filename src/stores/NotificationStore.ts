@@ -46,7 +46,6 @@ const useNotificationStore = defineStore({
         },
         (realTimeNotification) => {
           this.realTimeNotifications.unshift(realTimeNotification)
-          console.log(realTimeNotification)
         }
       )
     },
