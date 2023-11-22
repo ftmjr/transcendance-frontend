@@ -37,7 +37,9 @@ export enum GAME_EVENTS {
   reloadPlayersList = 'reloadPlayersList',
   reloadViewersList = 'reloadViewersList',
   GameObjectState = 'gameObjectState',
-  PlayerLeft = 'player-left'
+  PlayerLeft = 'player-left',
+  ViewerLoadScore = 'viewer-load-score',
+  BallPaddleCollision = 'ball-paddle-collision'
 }
 
 export interface ListenEvents {
@@ -51,10 +53,15 @@ export interface ListenEvents {
     roomId: number
     data: Array<{ userId: number; score: number }>
   }) => void
+  [GAME_EVENTS.ViewerLoadScore]: (received: {
+    roomId: number
+    data: Array<{ userId: number; score: number }>
+  }) => void
   [GAME_EVENTS.PadMoved]: (received: { roomId: number; data: PaddleEngineData }) => void
   [GAME_EVENTS.BallServed]: (received: { roomId: number; data: BallData }) => void
   [GAME_EVENTS.BallMoved]: (received: { roomId: number; data: BallData }) => void
   [GAME_EVENTS.GameObjectState]: (received: { roomId: number; data: GameStateDataPacket }) => void
+  [GAME_EVENTS.BallPaddleCollision]: (received: { roomId: number; data: number }) => void
   [GAME_EVENTS.PlayerLeft]: (received: { roomId: number; data: GameUser }) => void
 }
 
@@ -201,6 +208,11 @@ export class GameNetwork {
       callback(received.data)
     })
   }
+  onViewerLoadScore(callback: (score: Array<{ userId: number; score: number }>) => void) {
+    this.socket?.on(GAME_EVENTS.ViewerLoadScore, (received) => {
+      callback(received.data)
+    })
+  }
   onPadMoved(callback: (data: PaddleEngineData) => void) {
     this.socket?.on(GAME_EVENTS.PadMoved, (received) => {
       callback(received.data)
@@ -208,6 +220,11 @@ export class GameNetwork {
   }
   onBallServed(callback: (data: BallData) => void) {
     this.socket?.on(GAME_EVENTS.BallServed, (received) => {
+      callback(received.data)
+    })
+  }
+  onBallPaddleCollision(callback: (paddleUserId: number) => void) {
+    this.socket?.on(GAME_EVENTS.BallPaddleCollision, (received) => {
       callback(received.data)
     })
   }

@@ -45,7 +45,7 @@ export class Player {
     this.usernameText = this.scene.add.text(space, 30, info.username, {
       fontFamily: 'Arial',
       fontSize: 14,
-      color: '#ffffff'
+      color: (info.userId === scene.currentUser.userId) ? '#f26a4b' : '#ffffff'
     })
     this.usernameText.setOrigin(0, 0)
     this.usernameText.setDepth(1)
