@@ -87,13 +87,18 @@ export class NotificationSocket {
   private static instance: NotificationSocket
   socket: Socket<ListenEvents, EmitEvents> | undefined
   public operational: boolean = false
-  private constructor(userId: number, onNotification: (data: Notification) => void) {
+  private constructor(
+    userId: number,
+    onNotification: (data: Notification) => void,
+    onRealTimeNotification: (data: RealTimeNotification) => void
+  ) {
     try {
       this.socket = io('/notification', { path: '/socket.io' })
       this.socket.on('connect', () => {
         this.socket?.emit('join', userId.toString())
       })
       this.socket.on('notification', onNotification)
+      this.socket.on('realtime-notification', onRealTimeNotification)
     } catch (e) {
       console.error(e)
     } finally {
@@ -102,10 +107,15 @@ export class NotificationSocket {
   }
   public static getInstance(
     userId: number,
-    onNotification: (data: Notification) => void
+    onNotification: (data: Notification) => void,
+    onRealTimeNotification: (data: RealTimeNotification) => void
   ): NotificationSocket {
     if (!NotificationSocket.instance) {
-      NotificationSocket.instance = new NotificationSocket(userId, onNotification)
+      NotificationSocket.instance = new NotificationSocket(
+        userId,
+        onNotification,
+        onRealTimeNotification
+      )
     }
     return NotificationSocket.instance
   }

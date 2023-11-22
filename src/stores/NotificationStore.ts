@@ -39,9 +39,16 @@ const useNotificationStore = defineStore({
   actions: {
     async init(userId: number) {
       await this.getNotifications()
-      this.socketManager = NotificationSocket.getInstance(userId, (notification) => {
-        this.notifications.unshift(notification)
-      })
+      this.socketManager = NotificationSocket.getInstance(
+        userId,
+        (notification) => {
+          this.notifications.unshift(notification)
+        },
+        (realTimeNotification) => {
+          this.realTimeNotifications.unshift(realTimeNotification)
+          console.log(realTimeNotification)
+        }
+      )
     },
     disconnect() {
       this.socketManager?.disconnect()

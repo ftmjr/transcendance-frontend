@@ -113,7 +113,6 @@ export class GameNetwork {
   public connectToGame(roomId: number, userType: GameUserType) {
     this.socket?.emit(GAME_EVENTS.JoinGame, { roomId, user: this.user, userType }, (res) => {
       const { worked, roomId } = res
-      console.log('join game response', res)
       this.roomId = roomId
       this.joinedGame = worked
     })

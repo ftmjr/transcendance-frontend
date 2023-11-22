@@ -7,7 +7,14 @@ const axiosInstance = axios.create({
   // other config here
 })
 
-const notRefreshableRoutes = ['/auth/login', '/auth/refresh']
+const notRefreshableRoutes = [
+  'auth/login',
+  'auth/signup',
+  'auth/refresh',
+  'auth/signup',
+  'auth/updatePassword',
+  'auth/2fa/authenticate'
+]
 // Request interceptor
 axiosInstance.interceptors.request.use(
   async (config) => {

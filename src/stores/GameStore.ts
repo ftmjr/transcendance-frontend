@@ -176,11 +176,7 @@ const useGameStore = defineStore({
       try {
         await axios.post<WaitingGameSession>('/game/start', {
           againstBot: false,
-          opponent: {
-            maxScore: rules.maxScore,
-            maxTime: rules.maxTime,
-            theme: rules.theme
-          },
+          opponent: userId,
           rules
         })
         return 'challenge'
@@ -211,7 +207,7 @@ const useGameStore = defineStore({
         return 'success'
       } catch (error) {
         if (isAxiosError(error)) {
-          if (error.response && (error.response.status === 403 || error.response.status === 401)) {
+          if (error.response && (error.response.status === 400 || error.response.status === 404)) {
             return error.response.data.message ?? 'Une erreur est survenue'
           }
         }

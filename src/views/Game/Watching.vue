@@ -85,7 +85,7 @@ export default defineComponent({
   async beforeMount() {
     this.loading = true
     await this.getCurrentGameSessionState()
-    if (this.gameState && this.gameState !== GAME_STATE.Ended) {
+    if (this.gameState !== GAME_STATE.Ended && this.gameState !== undefined) {
       await this.startViewingGame(this.gameId)
     }
     this.loading = false
@@ -100,7 +100,7 @@ export default defineComponent({
     },
     async startViewingGame(gameId: number) {
       try {
-        const { data } = await axios.get<GameSession>(`/watch-game/:${gameId}`, {
+        const { data } = await axios.get<GameSession>(`/game/watch-game/${gameId}`, {
           headers: { Accept: 'application/json' }
         })
         this.gameSession = data

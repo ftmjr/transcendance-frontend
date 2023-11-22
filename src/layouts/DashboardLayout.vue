@@ -27,17 +27,18 @@
     </RouterView>
 
     <template #footer>
+      <ChallengeAcceptedDialog
+        v-if="challengeNotification"
+        :notification="challengeNotification"
+        v-model:show-dialog="showChallengeAcceptedDialog"
+      />:
       <FooterSection />
     </template>
-    <ChallengeAcceptedDialog
-      :notification="challengeNotification"
-      :show-dialog="showChallengeAcceptedDialog"
-    />
   </VerticalNavLayout>
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
@@ -75,6 +76,7 @@ gameStore.initSocket()
 const showChallengeAcceptedDialog = ref(false)
 const challengeNotification = ref<RealTimeNotification>(null as unknown as RealTimeNotification)
 const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotification) => {
+  console.log(notification, 'notification')
   if (
     notification.type === RealTimeNotificationType.Game &&
     notification.title === RealTimeNotificationTitle.GameStarted
@@ -83,31 +85,27 @@ const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotific
     if (!authStore.getUser?.id) return
     if (!notification.userId) return
     if (notification.userId === authStore.getUser.id) {
-      showChallengeAcceptedDialog.value = false
+      showChallengeAcceptedDialog.value = true
     }
   }
 }
 
+const lock = computed(() => {
+  return authStore.isLocked
+})
 // watch if is locked and move him to locked page
-watch(
-  () => authStore.isLocked,
-  (isLocked) => {
-    if (isLocked) {
-      gameStore.disconnectSocket()
-      router.push({ name: 'locked-screen' })
-    }
+watch(lock, (isLocked) => {
+  if (isLocked) {
+    router.push({ name: 'auth-lock' })
   }
-)
+})
 
 // watch if new notification is a new game challenge
-watch(
-  () => notificationStore.allRealTimeNotifications,
-  (notifications) => {
-    if (notifications.length > 0) {
-      checkIfNewNotificationIsANewGameChallenge(notifications[0])
-    }
+watch(notificationStore.allRealTimeNotifications, (notifications) => {
+  if (notifications.length > 0) {
+    checkIfNewNotificationIsANewGameChallenge(notifications[0])
   }
-)
+})
 
 // a beforeMount hook would be better
 onBeforeMount(() => {
