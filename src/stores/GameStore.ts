@@ -136,6 +136,8 @@ const useGameStore = defineStore({
       const gameSession = this.myGameSessions.find((session) => session.gameId === gameId)
       if (gameSession) {
         this.currentGameSession = gameSession
+        const userStore = useUserStore();
+        userStore.statusSocketManager?.updateMyStatus(Status.Busy)
       }
     },
     async getGameSessionState(gameId: number): Promise<GAME_STATE | undefined> {
@@ -153,10 +155,9 @@ const useGameStore = defineStore({
         headers: { Accept: 'application/json' },
         data: { gameId }
       })
-      this.currentGameSession = undefined
-      await this.getAllGameSessions()
-      const userStore = useUserStore()
-      userStore.statusSocketManager?.updateMyStatus(Status.Online)
+      this.currentGameSession = undefined;
+      const userStore = useUserStore();
+      userStore.statusSocketManager?.updateMyStatus(Status.Online);
     },
     async startGameAgainstBot(): Promise<GameSession | string> {
       try {
