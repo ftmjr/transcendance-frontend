@@ -223,7 +223,7 @@ export default defineComponent({
       if (!hashedPass) return false
       return hashedPass.length > 0
     },
-    typeList(): { text: string; value: type }[] {
+    typeList(): { text: string; value: RoomType }[] {
       return [
         {
           text: 'Publique',
