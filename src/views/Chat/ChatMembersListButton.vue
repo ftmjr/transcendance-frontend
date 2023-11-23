@@ -42,7 +42,7 @@
 
           <v-card>
             <v-list class="py-4">
-              <v-list-item v-if="amTheOwner || (amAnAdmin && !isOwner)">
+              <v-list-item v-if="amTheOwner || (amAnAdmin && !isOwner && !isAdmin)">
                 <div class="flex flex-col gap-3">
                   <mute-player
                     :state-of-is-muted="isMuted"

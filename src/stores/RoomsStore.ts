@@ -218,8 +218,8 @@ const useRoomsStore = defineStore({
         return 'success'
       } catch (error) {
         console.error(error)
+        return 'failed'
       }
-      return 'failed'
     },
     async joinRoom(roomId: number, info: JoinRoom): Promise<ChatRoomMember | string> {
       let errorMessage = `Vous n'êtes pas autorisé à rejoindre cette salle`
@@ -306,6 +306,29 @@ const useRoomsStore = defineStore({
       } catch (error) {
         console.error(error)
         return 'failed'
+      }
+    },
+
+    /**
+     * @name updateAvatar
+     * @param avatar
+     * @description Update avatar
+     * @returns
+     */
+    async updateAvatar(avatar: File): Promise<'success' | 'error'> {
+      try {
+        const formData = new FormData()
+        formData.append('file', avatar)
+        formData.append('roomId', this.currentRoomId + "")
+        const { data } = await axios.post<Profile>('/files/chatRoomAvatar', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        // set the avatar to the new one received from the server
+        return 'success'
+      } catch (e) {
+        return 'error'
       }
     },
 

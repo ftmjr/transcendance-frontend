@@ -40,6 +40,9 @@
             </perfect-scrollbar>
           </div>
         </div>
+        <div class="h-1/2 hide-scrollbar">
+          <invite-users />
+        </div>
       </div>
     </div>
   </div>
@@ -51,6 +54,7 @@ import ChatMembersListButton from './ChatMembersListButton.vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import useRoomsStore from '@/stores/RoomsStore'
 import { RoomType } from '@/utils/chatSocket'
+import InviteUsers from './InviteUser.vue'
 
 defineProps({
   isLoading: {
