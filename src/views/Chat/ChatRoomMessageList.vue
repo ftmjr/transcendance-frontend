@@ -120,11 +120,11 @@ export default defineComponent({
       )
     },
     isBan(): boolean {
-      if (!this.me) return true
+      if (!this.me) return false
       return this.me.role === ChatMemberRole.BAN
     },
     isMuted(): boolean {
-      if (!this.me) return true
+      // if (!this.me) return true
       return this.me.role === ChatMemberRole.MUTED
     },
     isOwner(): boolean {
