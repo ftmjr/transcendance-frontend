@@ -85,7 +85,7 @@
                   size="small"
                   color="purple"
                   variant="tonal"
-                  :to="{ name: 'dm', params: { friendId: friend.id } }"
+                  :to="{ name: 'dm', params: { contactId: friend.id } }"
                 >
                   <span class="flex gap-2">
                     <VIcon left> mdi-chat </VIcon>

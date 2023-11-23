@@ -35,6 +35,6 @@ export const pushToUserProfile = async (userId: number, router: Router) => {
  */
 export const pushToDmWithUser = async (userId: number, router: Router) => {
   try {
-    await router.push({ name: 'dm', params: { friendId: userId } })
+    await router.push({ name: 'dm', params: { contactId: userId } })
   } catch (error) {}
 }
