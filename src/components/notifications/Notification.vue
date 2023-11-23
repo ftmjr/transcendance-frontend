@@ -1,7 +1,7 @@
 <template>
   <component
-    v-if="component"
     :is="component"
+    v-if="component"
     :notification="notification"
     :is-short="isShort"
     @mark-as-read="$emit('markAsRead', notification.id)"

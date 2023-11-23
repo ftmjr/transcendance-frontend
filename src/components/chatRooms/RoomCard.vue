@@ -9,7 +9,11 @@
       "
     >
       <div class="flex items-center gap-2">
-        <VAvatar v-if="room.avatar" :size="42" :image="room.avatar" />
+        <VAvatar
+          v-if="room.avatar"
+          :size="42"
+          :image="room.avatar"
+        />
         <div class="flex flex-col">
           <span class="block">
             <span class="font-weight-semibold text-high-emphasis line-clamp-1">
@@ -21,7 +25,11 @@
           </span>
         </div>
         <span>
-          <v-icon v-if="room.password" :size="16" class="text-red-600"> tabler-lock </v-icon>
+          <v-icon
+            v-if="room.password"
+            :size="16"
+            class="text-red-600"
+          > tabler-lock </v-icon>
         </span>
       </div>
     </div>

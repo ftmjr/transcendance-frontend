@@ -20,11 +20,14 @@
         </v-btn>
         <span> Membres </span>
       </div>
-      <div class="flex-1 h-full" :class="[!isMember && 'blur-sm pointer-events-none']">
+      <div
+        class="flex-1 h-full"
+        :class="[!isMember && 'blur-sm pointer-events-none']"
+      >
         <div class="relative h-1/2 hide-scrollbar">
           <span
             class="absolute z-10 w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-[#262A46]/0 to-[80%] to-[#262A46]"
-          ></span>
+          />
           <div class="relative z-0 w-full h-full shrink-0 grow-0">
             <perfect-scrollbar
               tag="ul"
@@ -34,7 +37,11 @@
               }"
               class="h-full pb-16 grow-0 srink-0 hide-scrollbar"
             >
-              <li class="block px-2 py-2" v-for="m in roomStore.getCurrentRoomMembers" :key="m.id">
+              <li
+                v-for="m in roomStore.getCurrentRoomMembers"
+                :key="m.id"
+                class="block px-2 py-2"
+              >
                 <chat-members-list-button :member="m" />
               </li>
             </perfect-scrollbar>

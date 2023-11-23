@@ -12,36 +12,47 @@
           </caption>
           <thead class="text-xs uppercase border-b rounded-md text-gray-50 bg-none">
             <tr>
-              <th class="px-1 py-1 text-center">Pos</th>
-              <th class="px-6 py-3 text-center">Avatar</th>
-              <th class="px-6 py-3 text-center">Username</th>
-              <th class="px-6 py-3 text-center">Total</th>
-              <th class="px-6 py-3 text-center">Victoires</th>
-              <th class="px-6 py-3 text-center">Défaites</th>
+              <th class="px-1 py-1 text-center">
+                Pos
+              </th>
+              <th class="px-6 py-3 text-center">
+                Avatar
+              </th>
+              <th class="px-6 py-3 text-center">
+                Username
+              </th>
+              <th class="px-6 py-3 text-center">
+                Total
+              </th>
+              <th class="px-6 py-3 text-center">
+                Victoires
+              </th>
+              <th class="px-6 py-3 text-center">
+                Défaites
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody v-if="isTopPlayers">
             <tr
-              v-if="isTopPlayers"
-              class="text-gray-200 bg-none"
               v-for="(user, index) in topPlayers"
+              :key="user.id"
+              class="text-gray-200 bg-none"
             >
-              <td
-                scope="row"
-                :key="user.id"
-                class="w-10 px-1 py-1 text-xl font-bold text-gray-200 whitespace-nowrap"
-              >
+              <td class="w-10 px-1 py-1 text-xl font-bold text-gray-200 whitespace-nowrap">
                 {{ index + 1 }}
               </td>
               <td class="px-6 py-4">
-                <button class="mx-auto" @click="(_) => pushToUserProfile(user.id, $router)">
-                  <avatar-badge :user-id="user.id" :user="user" />
+                <button
+                  class="mx-auto"
+                  @click.stop.prevent="pushToUserProfile(user.id, $router)"
+                >
+                  <avatar-badge :user-id="user.id" />
                 </button>
               </td>
               <td class="px-6 py-4">
                 <button
-                  @click="(_) => pushToUserProfile(user.id, $router)"
                   class="w-48 line-clamp-1"
+                  @click="(_) => pushToUserProfile(user.id, $router)"
                 >
                   {{ user.username }}
                 </button>
@@ -49,7 +60,7 @@
               <td class="px-6 py-4">
                 {{
                   getCountByEvent(user?.gameHistories, 'MATCH_WON') +
-                  getCountByEvent(user?.gameHistories, 'MATCH_LOST')
+                    getCountByEvent(user?.gameHistories, 'MATCH_LOST')
                 }}
               </td>
               <td class="px-6 py-4">
@@ -67,23 +78,27 @@
                 />
               </td>
             </tr>
-            <tr v-else class="text-gray-200 bg-none" v-for="(user, index) in users">
+          </tbody>
+          <tbody v-else>
+            <tr
+              v-for="(user, index) in users"
+              :key="user.id"
+              class="text-gray-200 bg-none"
+            >
               <th
-                scope="row"
-                :key="user.id"
                 class="w-4 px-1 py-1 text-xl font-bold text-gray-200 whitespace-nowrap dark:text-white"
               >
                 {{ index + 1 }}
               </th>
               <td class="px-6 py-4">
                 <button @click="(_) => pushToUserProfile(user.id, $router)">
-                  <avatar-badge :user-id="user.id" :user="user" />
+                  <avatar-badge :user-id="user.id" />
                 </button>
               </td>
               <td class="px-6 py-4">
                 <button
-                  @click="(_) => pushToUserProfile(user.id, $router)"
                   class="w-48 line-clamp-1"
+                  @click="(_) => pushToUserProfile(user.id, $router)"
                 >
                   {{ user.username }}
                 </button>
@@ -91,7 +106,7 @@
               <td class="px-6 py-4">
                 {{
                   getCountByEvent(user?.gameHistories, 'MATCH_WON') +
-                  getCountByEvent(user?.gameHistories, 'MATCH_LOST')
+                    getCountByEvent(user?.gameHistories, 'MATCH_LOST')
                 }}
               </td>
               <td class="px-6 py-4">
@@ -120,13 +135,13 @@ import { pushToUserProfile } from '@/utils/router'
 
 export default defineComponent({
   name: 'LeaderBoardView',
+  components: { GameStatusBadge, AvatarBadge },
   props: {
     isTopPlayers: {
       type: Boolean,
       default: false
     }
   },
-  components: { GameStatusBadge, AvatarBadge },
   setup() {
     const userStore = useUserStore()
     const authStore = useAuthStore()

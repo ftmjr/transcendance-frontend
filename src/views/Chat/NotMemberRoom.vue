@@ -11,7 +11,10 @@
         :active="isLeftSidebarOpenLocal"
         @click="isLeftSidebarOpenLocal = !isLeftSidebarOpenLocal"
       >
-        <VIcon size="24" icon="tabler-menu-2" />
+        <VIcon
+          size="24"
+          icon="tabler-menu-2"
+        />
       </VBtn>
     </div>
     <VDivider class="my-1" />
@@ -21,7 +24,10 @@
           {{ room.name }}
         </span>
         <div>
-          <VChip label class="me-2">
+          <VChip
+            label
+            class="me-2"
+          >
             {{ room.type }}
           </VChip>
         </div>
@@ -35,8 +41,8 @@
             dense
             :type="passwordVisibility ? 'text' : 'password'"
             :append-inner-icon="passwordVisibility ? 'tabler-eye-off' : 'tabler-eye'"
-            @click:append-inner="passwordVisibility = !passwordVisibility"
             placeholder="Mot de passe, de la salle de discussion"
+            @click:append-inner="passwordVisibility = !passwordVisibility"
           />
           <VBtn
             color="white"
@@ -51,10 +57,18 @@
         </div>
       </div>
       <div class="basis-full md:basis-1/4 h-full py-4">
-        <img v-if="room.avatar" :src="room.avatar" class="rounded object-cover h-full w-full" />
+        <img
+          v-if="room.avatar"
+          :src="room.avatar"
+          class="rounded object-cover h-full w-full"
+        >
       </div>
     </div>
-    <NotificationPopUp v-model:visible="popUpVisible" color="error" :snackbar-msg="errorMessage" />
+    <NotificationPopUp
+      v-model:visible="popUpVisible"
+      color="error"
+      :snackbar-msg="errorMessage"
+    />
   </div>
 </template>
 

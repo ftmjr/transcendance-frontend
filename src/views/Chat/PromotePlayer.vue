@@ -8,15 +8,15 @@
       item-title="text"
       item-value="value"
       variant="outlined"
-    ></v-select>
+    />
 
     <v-btn
       :disabled="memberRole === role || canNotPromote || isLoading"
-      @click="tryToMute"
       color="primary"
       text
       size="large"
       class="text-xs"
+      @click="tryToMute"
     >
       Promouvoir
     </v-btn>

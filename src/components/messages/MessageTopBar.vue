@@ -9,18 +9,23 @@
       :active="isLeftSidebarOpen"
       @click.stop.prevent="isLeftSidebarOpen = !isLeftSidebarOpen"
     >
-      <v-icon size="24" icon="tabler-menu-2" />
+      <v-icon
+        size="24"
+        icon="tabler-menu-2"
+      />
     </v-btn>
     <template v-if="messageStore.conversationWith">
-      <div class="flex cursor-pointer align-center" @click.stop="showProfile">
+      <div
+        class="flex cursor-pointer align-center"
+        @click.stop="showProfile"
+      >
         <avatar-badge
           :user-id="messageStore.conversationWith.id"
           :user="messageStore.conversationWith"
           :show-name="true"
         />
         <span class="pl-2 text-sm text-primary line-clamp-1">
-          @{{ messageStore.conversationWith.username }}</span
-        >
+          @{{ messageStore.conversationWith.username }}</span>
       </div>
       <v-chip
         v-show="blockedStatus !== 'none'"
@@ -34,11 +39,22 @@
       <div class="flex items-center">
         <game-status-badge :user-id="messageStore.conversationWith.id" />
       </div>
-      <VBtn variant="text" color="default" icon size="small">
-        <v-icon size="22" icon="tabler-dots-vertical" />
+      <VBtn
+        variant="text"
+        color="default"
+        icon
+        size="small"
+      >
+        <v-icon
+          size="22"
+          icon="tabler-dots-vertical"
+        />
         <v-menu activator="parent">
           <v-list>
-            <VListItem prepend-icon="tabler-eye" @click.stop="showProfile">
+            <VListItem
+              prepend-icon="tabler-eye"
+              @click.stop="showProfile"
+            >
               <VListItemTitle> Voir le profil</VListItemTitle>
             </VListItem>
             <VListItem

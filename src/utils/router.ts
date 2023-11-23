@@ -5,7 +5,7 @@
  * @lastModif 2023-11-16
  */
 
-import { useRouter, Router } from 'vue-router'
+import { Router } from 'vue-router'
 
 /**
  * @name: pushToUserProfile

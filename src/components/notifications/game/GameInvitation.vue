@@ -9,25 +9,32 @@
   >
     <div class="relative flex w-full gap-4">
       <div :class="[isAlreadyPlayed || !isValid ? 'opacity-75' : 'opacity-100']">
-        <v-icon class="text-2xl" color="orange">tabler:device-gamepad-2</v-icon>
+        <v-icon
+          class="text-2xl"
+          color="orange"
+        >
+          tabler:device-gamepad-2
+        </v-icon>
       </div>
       <div class="flex-col flex-1 pr-4">
-        <p :class="['text-left text-sm fomt-semiBold']">Invitation Challenge</p>
+        <p :class="['text-left text-sm fomt-semiBold']">
+          Invitation Challenge
+        </p>
         <p :class="['text-left text-xs text-gray-500/75']">
           {{ notification.message }}
         </p>
         <div class="flex gap-2 mt-4">
           <button
             :disabled="isAlreadyPlayed || !isValid"
-            @click.prevent="handleAcceptChallenge"
             class="px-8 py-2 text-xs border rounded-md cursor-pointer border-gray-50/10 bg-green-700/50 hover:bg-green-700/60 text-gary-500 disabled:bg-gray-800/50 disabled:opacity-50"
+            @click.prevent="handleAcceptChallenge"
           >
             Accepter
           </button>
           <button
             :disabled="isAlreadyPlayed || !isValid"
-            @click.prevent="handleRejectChallenge"
             class="px-8 py-2 text-xs border rounded-md cursor-pointer border-gray-50/10 bg-red-700/50 hover:bg-red-700/60 text-gary-500 disabled:bg-gray-800/50 disabled:opacity-50"
+            @click.prevent="handleRejectChallenge"
           >
             Refuser
           </button>
@@ -37,7 +44,7 @@
         v-if="notification.status !== 'READ'"
         class="absolute right-0 z-50 w-2 h-2 -translate-y-1/2 rounded-full top-1/2"
         :class="isAlreadyPlayed ? 'bg-red-400/50' : 'bg-green-400/50'"
-      ></div>
+      />
     </div>
   </button>
 </template>

@@ -2,11 +2,11 @@
   <div class="flex items-center justify-end gap-6">
     <v-btn
       :disabled="isLoading"
-      @click="handleUpdateKick"
       color="primary"
       text
       size="large"
       class="text-xs"
+      @click="handleUpdateKick"
     >
       Sortir de force
     </v-btn>

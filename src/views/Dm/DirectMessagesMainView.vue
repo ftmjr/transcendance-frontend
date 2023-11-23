@@ -24,9 +24,19 @@
         v-if="!!messageStore.conversationWith"
         v-model:is-left-sidebar-open="isLeftSidebarOpen"
       />
-      <div v-else class="flex items-center justify-center h-full flex-column">
-        <VAvatar :size="109" class="mb-6 elevation-3 bg-surface">
-          <VIcon :size="50" class="rounded-0 text-high-emphasis" icon="tabler-message" />
+      <div
+        v-else
+        class="flex items-center justify-center h-full flex-column"
+      >
+        <VAvatar
+          :size="109"
+          class="mb-6 elevation-3 bg-surface"
+        >
+          <VIcon
+            :size="50"
+            class="rounded-0 text-high-emphasis"
+            icon="tabler-message"
+          />
         </VAvatar>
         <p
           class="px-6 py-1 mb-0 text-lg font-weight-medium elevation-3 rounded-xl text-high-emphasis bg-surface"

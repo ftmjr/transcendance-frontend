@@ -27,11 +27,6 @@ export default defineComponent({
       notificationStore
     }
   },
-  created() {
-    window.addEventListener('storage', () => {
-      this.authStore.storageUpdated()
-    })
-  },
   computed: {
     rgbPrimary(): string | null {
       const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
@@ -46,6 +41,11 @@ export default defineComponent({
         ? `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}`
         : null
     }
+  },
+  created() {
+    window.addEventListener('storage', () => {
+      this.authStore.storageUpdated()
+    })
   },
   beforeMount() {
     if (this.authStore.isLoggedIn && this.authStore.getUser?.id) {

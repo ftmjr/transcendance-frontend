@@ -11,7 +11,10 @@
         :avatar-variant="isActive ? 'outlined' : 'tonal'"
         :size="32"
       />
-      <span class="font-weight-medium line-clamp-1" :class="{ 'font-weight-bold': isActive }">
+      <span
+        class="font-weight-medium line-clamp-1"
+        :class="{ 'font-weight-bold': isActive }"
+      >
         {{ contact.profile.name.split(' ').shift() }} {{ contact.profile.lastname }}
       </span>
     </div>
@@ -22,10 +25,17 @@
       >
         {{ lastMessage.text }}
       </span>
-      <p v-else-if="isTyping" class="w-full ml-16 -mt-2 text-xs font-light shrink-0">
+      <p
+        v-else-if="isTyping"
+        class="w-full ml-16 -mt-2 text-xs font-light shrink-0"
+      >
         {{ contact.profile.name.split(' ').shift() }}
         <span class="pr-1">est en train d'écrire</span>
-        <v-icon :size="12" color="primary" icon="svg-spinners:3-dots-bounce" />
+        <v-icon
+          :size="12"
+          color="primary"
+          icon="svg-spinners:3-dots-bounce"
+        />
       </p>
     </div>
   </li>

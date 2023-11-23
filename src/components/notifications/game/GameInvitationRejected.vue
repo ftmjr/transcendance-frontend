@@ -9,10 +9,17 @@
   >
     <div class="relative flex w-full gap-4">
       <div>
-        <v-icon class="text-2xl" color="red">tabler:device-gamepad-2</v-icon>
+        <v-icon
+          class="text-2xl"
+          color="red"
+        >
+          tabler:device-gamepad-2
+        </v-icon>
       </div>
       <div class="flex-col flex-1 pr-4">
-        <p :class="['text-left text-sm fomt-semiBold']">Challenge Rejetter</p>
+        <p :class="['text-left text-sm fomt-semiBold']">
+          Challenge Rejetter
+        </p>
         <p :class="['text-left text-xs text-gray-500/75']">
           {{ notification.message }}
         </p>
@@ -20,7 +27,7 @@
       <div
         v-if="notification.status !== 'READ'"
         class="absolute right-0 z-50 w-2 h-2 -translate-y-1/2 rounded-full top-1/2 bg-green-400/50"
-      ></div>
+      />
     </div>
   </button>
 </template>
