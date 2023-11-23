@@ -60,7 +60,7 @@ import {
 } from '@/utils/notificationSocket'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
-import NotificationPopUp from "@/components/notifications/NotificationPopUp.vue";
+import NotificationPopUp from '@/components/notifications/NotificationPopUp.vue'
 
 const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
 const { width: windowWidth } = useWindowSize()
@@ -85,7 +85,7 @@ const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotific
     if (!authStore.getUser?.id) return
     if (!notification.userId) return
     if (notification.userId === authStore.getUser.id) {
-      showChallengePopUp.value = true;
+      showChallengePopUp.value = true
       if (notification.gameId) {
         router.push({ name: 'game', params: { gameId: notification.gameId } })
       }
@@ -110,7 +110,6 @@ watch(notificationStore.allRealTimeNotifications, (notifications) => {
   }
 })
 
-// a beforeMount hook would be better
 onBeforeMount(() => {
   if (authStore.isLoggedIn && authStore.getUser?.id) {
     if (!notificationStore.socketOperational) {
@@ -122,13 +121,14 @@ onBeforeMount(() => {
     if (!usersStore.socketOperational) {
       usersStore.initStatusSocket(authStore.getUser.id)
     }
-    gameStore.getAllGameSessions()
   }
 })
 
 onBeforeUnmount(() => {
   if (!authStore.isLoggedIn) {
     usersStore.disconnectStatusSocket()
+    notificationStore.disconnect()
+    roomsStore.disconnect()
   }
 })
 </script>
