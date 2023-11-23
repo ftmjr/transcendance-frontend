@@ -90,7 +90,7 @@ export default defineComponent({
         case NotificationTitle.PrivateChatInvitation:
           return PrivateChatInvitation
         case NotificationTitle.MemberJoinedChatRoom:
-          return MemberJoinedChatRoom
+          return MemberJoinedChatRoom;
         case NotificationTitle.RemovedFromChatRoom:
           return RemovedFromChat
         case NotificationTitle.PromotedToAdmin:
