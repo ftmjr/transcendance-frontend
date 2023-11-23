@@ -2,27 +2,24 @@
   <div class="flex flex-col w-full h-full">
     <div class="border-b border-gray-50 flex-0">
       <message-top-bar
-        :is-left-sidebar-open="isLeftSidebarOpen"
-        :user-game-status="gameStatus"
-        :friendship-status="friendShip"
-        :is-blocked="isUserBlocked"
-        @update:is-left-sidebar-open="(val) => $emit('update:isLeftSidebarOpen', val)"
-        @blocked="refreshContact"
+        :friendship-status="friendShipStatus"
+        :blocked-status="blockedStatus"
+        :loading-status="loadingStatus"
       />
       <VDivider class="d-md-none" />
     </div>
-    <template v-if="conversationWith && !loading">
+    <template v-if="messageStore.conversationWith && !loading">
       <div class="flex-1 w-full overflow-scroll hide-scrollbar">
         <div class="flex flex-col w-full h-full gap-4 hide-scrollbar">
           <PerfectScrollbar
+            id="messages-log"
+            ref="MessagesLogScroller"
             tag="ul"
             :options="{
               wheelPropagation: false,
               suppressScrollX: true
             }"
             class="h-full"
-            ref="MessagesLogScroller"
-            id="messages-log"
           >
             <ul>
               <li
@@ -30,13 +27,15 @@
                 :key="index"
                 class="p-2"
                 :class="
-                  msgGrp.senderId !== conversationWith.id ? 'self-end text-right' : 'self-start'
+                  msgGrp.senderId !== messageStore.conversationWith.id
+                    ? 'self-end text-right'
+                    : 'self-start'
                 "
               >
                 <p
                   class="relative message inline-flex flex-col px-6 min-w-[75px] py-2 border shadow-sm rounded-xl drop-shadow-md after:content-[''] after:h-4 after:absolute after:top-full after:translate-x-full after:w-4 after:-z-10 after:-translate-y-1/4"
                   :class="
-                    msgGrp.senderId !== conversationWith.id
+                    msgGrp.senderId !== messageStore.conversationWith.id
                       ? 'text-left mr-0 ml-auto bg-[#1a1f3c] after:bg-[#1a1f3c]'
                       : 'text-left bg-[#343851] after:bg-[#343851]'
                   "
@@ -56,18 +55,17 @@
               </li>
               <li class="p-2" :class="'self-start text-left text-sm px-6 h-8'">
                 <p v-if="isTyping" class="font-light">
-                  {{ conversationWith.profile.name.split(' ').shift() }}
+                  {{ messageStore.conversationWith.profile.name.split(' ').shift() }}
                   <span class="pr-1">est en train d'écrire</span>
                   <v-icon :size="12" color="primary" icon="svg-spinners:3-dots-bounce" />
                 </p>
               </li>
             </ul>
 
-            <div class="w-full h-4 shrink-0 grow-0"></div>
+            <div class="w-full h-4 shrink-0 grow-0" />
           </PerfectScrollbar>
         </div>
       </div>
-
       <div class="border rounded-md shadow-lg flex-0 drop-shadow-lg">
         <VForm @submit.prevent="sendMessage">
           <VTextField
@@ -76,13 +74,11 @@
             variant="solo"
             placeholder="Ecrivez votre message..."
             density="default"
-            autofocus
-            @keypress="handleUserTyping"
+            :autofocus="true"
+            @keyup="handleUserTyping"
           >
-            <!-- @input="() => handleInput()" -->
-            <!-- @keyup="sendIsTyping" -->
             <template #append-inner>
-              <VBtn @click.stop.prevent="sendMessage" rounded>
+              <VBtn rounded @click.stop.prevent="sendMessage">
                 <svg
                   class="w-4 h-4 text-current fill-current"
                   xmlns="http://www.w3.org/2000/svg"
@@ -109,14 +105,12 @@ import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
 import { defineComponent } from 'vue'
 import { Profile, User } from '@/interfaces/User'
 import MessageTopBar from '@/components/messages/MessageTopBar.vue'
-import useAuthStore from '@/stores/AuthStore'
 import { formatDate } from '@/vuetify/@core/utils/formatters'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import useGameStore, { GameSession } from '@/stores/GameStore'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore, { BlockedStatus, FriendshipStatus } from '@/stores/UserStore'
-
-import { timeStamp } from 'console'
+import useNotificationStore from '@/stores/NotificationStore'
+import { RealTimeNotification, RealTimeNotificationTitle } from '@/utils/notificationSocket'
 
 interface MessageGroup {
   senderId: number
@@ -128,49 +122,34 @@ export default defineComponent({
     MessageTopBar,
     PerfectScrollbar
   },
-  props: {
-    isLeftSidebarOpen: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['update:isLeftSidebarOpen'],
   setup() {
-    const authStore = useAuthStore()
     const messageStore = useMessageStore()
     const roomsStore = useRoomsStore()
-    const gameStore = useGameStore()
     const usersStore = useUserStore()
+    const notificationStore = useNotificationStore()
     return {
       messageStore,
-      authStore,
-      gameStore,
       roomsStore,
-      usersStore
+      usersStore,
+      notificationStore
     }
   },
   data() {
     return {
       loading: false,
+      loadingStatus: false,
       take: 400,
       skip: 0,
       mpContent: '',
-      gameStatus: {
-        status: 'free',
-        gameSession: undefined
-      } as { status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession },
-      friendShip: FriendshipStatus.Friends as FriendshipStatus,
+      friendShipStatus: FriendshipStatus.None as FriendshipStatus,
+      blockedStatus: BlockedStatus.None as BlockedStatus,
       isTyping: false,
-      isUserBlocked: false,
-      lastInteraction: undefined as Number | undefined
+      lastInteraction: null as unknown as number
     }
   },
   computed: {
-    conversationWith(): (User & { profile: Profile }) | null {
-      return this.messageStore.currentContact
-    },
     messages(): PrivateMessage[] {
-      return this.messageStore.currentConversationMessages
+      return this.messageStore.currentContactMessages
     },
     messagesByTime(): PrivateMessage[] {
       return this.messages.slice().sort((a, b) => {
@@ -207,15 +186,21 @@ export default defineComponent({
       })
       return _msgGroups
     },
-    chatLogPS(): PerfectScrollbar {
-      return this.$refs.MessagesLogScroller as PerfectScrollbar
-    },
     canWrite(): boolean {
-      if (!this.messageStore.currentContact) return false
-      return !this.isUserBlocked
+      if (!this.messageStore.conversationWith) return false
+      return this.blockedStatus === BlockedStatus.None
     }
   },
   watch: {
+    'messageStore.conversationWith': {
+      handler(value: (User & { profile: Profile }) | null) {
+        if (!value) return
+        this.fetchFriendShipState()
+        this.loadPrivateMessages(value.id)
+      },
+      deep: true,
+      immediate: true
+    },
     messages: {
       handler() {
         this.$nextTick(() => {
@@ -224,20 +209,10 @@ export default defineComponent({
       },
       deep: true
     },
-    'messageStore.currentContact': {
-      handler(value: (User & { profile: Profile }) | null) {
-        if (!value) return
-        this.loadPrivateMessages(value.id)
-        this.fetchAllStatus(value.id)
-        this.lastInteraction = undefined
-      },
-      deep: true,
-      immediate: true
-    },
     'roomsStore.getContactTyping': {
       handler() {
-        if (!this.conversationWith) return
-        const lastTime = this.roomsStore.getContactTyping.get(this.conversationWith.id)
+        if (!this.messageStore.conversationWith) return
+        const lastTime = this.roomsStore.getContactTyping.get(this.messageStore.conversationWith.id)
         if (!lastTime) return false
         const now = new Date().getTime()
         this.isTyping = now - lastTime < 3000
@@ -250,7 +225,6 @@ export default defineComponent({
         this.$nextTick(() => {
           this.scrollToBottomInChatLog()
         })
-        // return the value to false if changed to true after 3 seconds
         if (!value) return
         setTimeout(() => {
           this.isTyping = false
@@ -258,13 +232,45 @@ export default defineComponent({
       },
       deep: true,
       immediate: true
+    },
+    'notificationStore.allRealTimeNotifications': {
+      handler(value: RealTimeNotification[]) {
+        if (value.length === 0) return
+        this.checkAndRefreshFriendShip(value[0])
+      },
+      deep: true
     }
   },
+  mounted() {
+    this.scrollToBottomInChatLog()
+  },
   methods: {
-    refreshContact() {
-      if (!this.conversationWith) return
-      this.fetchAllStatus(this.conversationWith.id)
-      this.messageStore.sendUserReload(this.conversationWith.id)
+    async fetchFriendShipState() {
+      if (!this.messageStore.conversationWith) {
+        this.friendShipStatus = FriendshipStatus.None
+        this.blockedStatus = BlockedStatus.BlockedBy
+        return
+      }
+      this.loadingStatus = true
+      const contactId = this.messageStore.conversationWith.id
+      const checkFriend = await this.usersStore.checkFriendShip(contactId)
+      this.friendShipStatus = checkFriend.status
+      this.blockedStatus = await this.usersStore.checkBlocked(contactId)
+      this.loadingStatus = false
+    },
+    checkAndRefreshFriendShip(notification: RealTimeNotification) {
+      if (!this.messageStore.conversationWith) return
+      if (
+        notification.title === RealTimeNotificationTitle.BlockedContactMessage ||
+        notification.title === RealTimeNotificationTitle.BrokenFriendship
+      ) {
+        if (
+          notification.sourceUserId === this.messageStore.conversationWith.id ||
+          notification.userId === this.messageStore.conversationWith.id
+        ) {
+          this.fetchFriendShipState()
+        }
+      }
     },
     async loadPrivateMessages(id: number) {
       this.loading = true
@@ -279,11 +285,11 @@ export default defineComponent({
       })
     },
     async sendMessage() {
-      if (!this.conversationWith) return
-      if (this.loading) return
+      if (this.loading || !this.messageStore.conversationWith) return
       if (!this.mpContent.trim()) return
       this.loading = true
-      this.messageStore.sendPrivateMessage(this.conversationWith.id, this.mpContent.trim())
+      const id = this.messageStore.conversationWith.id
+      this.messageStore.sendPrivateMessage(id, this.mpContent.trim())
       this.mpContent = ''
       this.loading = false
       this.$nextTick(() => {
@@ -292,21 +298,12 @@ export default defineComponent({
     },
     async handleUserTyping() {
       const now = new Date().getTime()
-      if (!this.conversationWith) return
+      if (!this.messageStore.conversationWith) return
+      const id = this.messageStore.conversationWith.id
       if (this.lastInteraction && now - (this.lastInteraction as number) > 50) {
-        this.messageStore.sendUserTyping(this.conversationWith.id)
+        this.messageStore.sendUserTyping(id)
         this.lastInteraction = now
       } else this.lastInteraction = now
-    },
-    async doneTyping() {},
-    async fetchAllStatus(id: number) {
-      this.loading = true
-      const blockStatus = await this.usersStore.checkBlocked(id)
-      this.isUserBlocked = blockStatus !== BlockedStatus.None
-      this.gameStatus = await this.gameStore.getUserGameStatus(id)
-      const friendTest = await this.usersStore.checkFriendShip(id)
-      this.friendShip = friendTest.status
-      this.loading = false
     },
     scrollToBottomInChatLog() {
       const el = this.$refs.MessagesLogScroller?.$el as HTMLElement
@@ -315,14 +312,12 @@ export default defineComponent({
       }
     },
     scrollToTopInChatLog() {
-      const scrollEl = this.chatLogPS?.$el
-      if (!scrollEl) return
-      scrollEl.scrollTop = 0
+      const el = this.$refs.MessagesLogScroller?.$el as HTMLElement
+      if (el) {
+        el.scrollTop = el.scrollHeight
+      }
     },
     formatDate
-  },
-  mounted() {
-    this.scrollToBottomInChatLog()
   }
 })
 </script>

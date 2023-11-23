@@ -1,16 +1,18 @@
 import { defineStore } from 'pinia'
 import type { Profile, User } from '@/interfaces/User'
 import axios from '@/utils/axios'
-import useUserStore from '@/stores/UserStore'
+import useUserStore, { ShortUserProfile } from '@/stores/UserStore'
 import { ChatSocket } from '@/utils/chatSocket'
 import { isAxiosError } from 'axios'
 
 export interface MessageState {
-  conversationsUsers: Array<User & { profile: Profile }>
+  currentContactId: number
+  currentContact: ShortUserProfile | undefined
+  conversationsUsers: Array<ShortUserProfile>
   searchTerm: string
-  currentConversationUser: number | null
   socketManager: ChatSocket | null
   messages: Map<number, PrivateMessage[]>
+  isLeftSidebarOpen: boolean
 }
 
 export interface MPData {
@@ -29,20 +31,31 @@ export interface PrivateMessage {
 const useMessageStore = defineStore({
   id: 'message',
   state: (): MessageState => ({
+    currentContactId: 0,
+    currentContact: undefined,
     conversationsUsers: [],
-    currentConversationUser: null,
     searchTerm: '',
     socketManager: null,
-    messages: new Map<number, PrivateMessage[]>()
+    messages: new Map<number, PrivateMessage[]>(),
+    isLeftSidebarOpen: false
   }),
   getters: {
-    conversesWithContacts(): Array<User & { profile: Profile }> {
-      if (!this.searchTerm.trim()) {
-        return this.conversationsUsers
-      }
+    isSidebarOpen(): boolean {
+      return this.isLeftSidebarOpen
+    },
+    currentContactMessages(): PrivateMessage[] {
+      return this.messages.get(this.currentContactId) || []
+    },
+    conversationWith(): ShortUserProfile | undefined {
+      return this.currentContact
+    },
+    getSearchTerm(): string {
+      return this.searchTerm
+    },
+    conversationsUsersFiltered(): Array<ShortUserProfile> {
+      if (!this.searchTerm.trim()) return this.conversationsUsers
       const term = this.searchTerm.toLowerCase()
       return this.conversationsUsers.filter((user) => {
-        // Check username, email, and profile name and lastname
         return (
           user.username.toLowerCase().includes(term) ||
           user.email.toLowerCase().includes(term) ||
@@ -51,58 +64,56 @@ const useMessageStore = defineStore({
         )
       })
     },
-    getSearchTerm(): string {
-      return this.searchTerm
-    },
-    currentContactId(): number | null {
-      return this.currentConversationUser
-    },
-    currentContact(): (User & { profile: Profile }) | null {
-      if (this.currentContactId) {
-        const current = this.conversesWithContacts.find(
-          (user: User) => user.id === this.currentContactId
-        )
-        if (current) return current
-      }
-      return null
-    },
     contacts(): Array<User & { profile: Profile }> {
       const userStore = useUserStore()
       return userStore.contacts
     },
     contactsWithoutConversations(): Array<User & { profile: Profile }> {
       return this.contacts.filter((contact: User) => {
-        return !this.conversationsUsers.some((user: User) => user.id === contact.id)
+        return !this.conversationsUsers.some((user) => user.id === contact.id)
       })
-    },
-    currentConversationMessages(): PrivateMessage[] {
-      if (!this.currentConversationUser) {
-        return []
-      }
-      return this.messages.get(this.currentConversationUser) || []
     }
   },
   actions: {
+    setSidebarOpen(isOpen: boolean) {
+      this.isLeftSidebarOpen = isOpen
+    },
     setSearchTerm(term: string) {
       this.searchTerm = term
     },
     setSocketManager(socketManager: ChatSocket) {
       this.socketManager = socketManager
     },
-    setCurrentConversationWith(userId: number) {
-      const foundUser = this.conversationsUsers.find((user) => user.id === userId)
+    async setCurrentConversationWith(contactId?: number) {
+      const foundUser = this.conversationsUsers.find((user) => user.id === this.currentContactId)
       if (foundUser) {
-        this.currentConversationUser = foundUser.id
-      } else {
-        // check if user is in contacts
-        const contactFound = this.contacts.find((user) => user.id === userId)
-        if (contactFound) {
-          this.conversationsUsers.unshift(contactFound)
-          this.currentConversationUser = contactFound.id
+        this.currentContact = foundUser
+        this.currentContactId = foundUser.id
+      }
+      const userStore = useUserStore()
+      const contacts = userStore.contacts
+      const contactFound = contacts.find((user) => user.id === this.currentContactId)
+      if (contactFound) {
+        this.conversationsUsers.unshift(contactFound)
+        this.currentContact = contactFound
+        this.currentContactId = contactFound.id
+      }
+      if (!contactId || contactId === 0) {
+        // set current contact to the first one in the list of conversations
+        const firstContact = this.conversationsUsers[0]
+        if (firstContact) {
+          this.currentContact = firstContact
+          this.currentContactId = firstContact.id
         }
+        return undefined // no contactId provided and no conversationsUsers
+      }
+      const shortProfile = await userStore.getShortUserProfile(contactId)
+      if (shortProfile) {
+        this.currentContact = shortProfile
+        this.currentContactId = shortProfile.id
       }
     },
-    // on mounted
+
     async getUniqueConversations() {
       try {
         const { data } = await axios.get<Array<User & { profile: Profile }>>('/messages', {
@@ -114,10 +125,8 @@ const useMessageStore = defineStore({
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response) {
-            console.error('Failed to load conversations:', error.response.data.message)
+            console.log('Failed to load conversations:', error.response.data.message)
           }
-        } else {
-          console.error('Failed to load conversations:')
         }
       }
     },
@@ -128,7 +137,6 @@ const useMessageStore = defineStore({
     }): Promise<void> {
       const { userTwoId, skip, take } = info
       try {
-        this.currentConversationUser = userTwoId
         const { data } = await axios.get(`/messages/${userTwoId}`, {
           params: {
             skip,
@@ -136,9 +144,7 @@ const useMessageStore = defineStore({
           }
         })
         this.messages.set(userTwoId, data)
-      } catch (error) {
-        console.error('Failed to load all private messages:', error)
-      }
+      } catch (e) {}
     },
     async sendPrivateMessageViaHttp(message: MPData): Promise<PrivateMessage | null> {
       try {
@@ -166,17 +172,20 @@ const useMessageStore = defineStore({
       this.socketManager.reloadMpConversation(receiverId)
     },
     async handleReceivedMessage(message: PrivateMessage) {
-      const userId =
+      const contactId =
         message.senderId === this.socketManager?.userId ? message.receiverId : message.senderId
-      const userMessages = this.messages.get(userId) || []
-      let prepareToReloadConversation = false
-      if (userMessages.length === 0) {
-        prepareToReloadConversation = true
-      }
-      userMessages.push(message)
-      this.messages.set(userId, userMessages)
-      if (prepareToReloadConversation) {
-        await this.getUniqueConversations()
+      // we check if the contact among the conversationsUsers
+      const foundUser = this.conversationsUsers.find((user) => user.id === contactId)
+      if (!foundUser) {
+        // we add him to the conversationsUsers
+        const userStore = useUserStore()
+        const shortProfile = await userStore.getShortUserProfile(contactId)
+        if (shortProfile) {
+          this.conversationsUsers.unshift(shortProfile)
+        }
+        const userMessages = this.messages.get(contactId) || []
+        userMessages.push(message)
+        this.messages.set(contactId, userMessages)
       }
     },
     getLastMessageBetween(userId: number): PrivateMessage | null {
@@ -184,13 +193,7 @@ const useMessageStore = defineStore({
       if (userMessages.length === 0) {
         return null
       }
-      return userMessages[0]
-    },
-    reloadConversation(userId: number) {
-      if (this.currentContactId === userId) {
-        this.currentConversationUser = null
-        this.currentConversationUser = userId
-      }
+      return userMessages[userMessages.length - 1]
     }
   }
 })

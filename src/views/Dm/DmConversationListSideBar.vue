@@ -38,24 +38,18 @@
       </span>
     </li>
     <message-contact
-      v-for="contact in messageStore.conversesWithContacts"
+      v-for="contact in messageStore.conversationsUsersFiltered"
       :key="contact.id"
       class="mb-2"
       :contact="contact"
-      @click="showMessages(contact.id)"
-    >
-      <template #firstMessage>
-        <span class="w-full ml-16 -mt-2 text-xs font-light text-disabled shrink-0 line-clamp-1">
-          {{ messageStore.getLastMessageBetween(contact.id)?.text }}
-        </span>
-      </template>
-    </message-contact>
-
+      :show-last-message="true"
+      @click.prevent="showMessages(contact.id)"
+    />
     <span
-      v-show="messageStore.conversesWithContacts.length === 0"
+      v-show="messageStore.conversationsUsersFiltered.length === 0"
       class="no-chat-items-text text-disabled"
     >
-      Aucune Conversation
+      Aucune Conversation <span v-show="search.length">pour `{{ search }}`</span>
     </span>
     <li class="my-4">
       <span class="text-xl chat-contact-header text-primary font-weight-medium"> Amis </span>
@@ -65,7 +59,7 @@
       :key="contact.id"
       class="mb-2"
       :contact="contact"
-      @click="showMessages(contact.id)"
+      @click.prevent="showMessages(contact.id)"
     />
   </PerfectScrollbar>
 </template>
@@ -78,7 +72,6 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import MessageContact from '@/components/messages/MessageContact.vue'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import useUserStore from '@/stores/UserStore'
-import { Profile, User } from '@/interfaces/User'
 import useRoomsStore from '@/stores/RoomsStore'
 
 export default defineComponent({

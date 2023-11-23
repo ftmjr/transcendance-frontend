@@ -48,6 +48,9 @@ const useNotificationStore = defineStore({
           this.realTimeNotifications.unshift(realTimeNotification)
         }
       )
+      if (!this.socketManager.operational) {
+        this.socketManager.connect()
+      }
     },
     disconnect() {
       this.socketManager?.disconnect()

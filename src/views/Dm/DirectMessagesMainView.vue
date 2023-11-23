@@ -5,8 +5,8 @@
   >
     <v-navigation-drawer
       v-model="isLeftSidebarOpen"
-      absolute
-      touchless
+      :absolute="true"
+      :touchless="true"
       location="start"
       width="370"
       :temporary="$vuetify.display.smAndDown"
@@ -21,17 +21,17 @@
     </v-navigation-drawer>
     <VMain class="chat-content-container">
       <contact-direct-message
-        v-if="!!messageStore.currentContact"
+        v-if="!!messageStore.conversationWith"
         v-model:is-left-sidebar-open="isLeftSidebarOpen"
       />
       <div v-else class="flex items-center justify-center h-full flex-column">
-        <VAvatar size="109" class="mb-6 elevation-3 bg-surface">
-          <VIcon size="50" class="rounded-0 text-high-emphasis" icon="tabler-message" />
+        <VAvatar :size="109" class="mb-6 elevation-3 bg-surface">
+          <VIcon :size="50" class="rounded-0 text-high-emphasis" icon="tabler-message" />
         </VAvatar>
         <p
           class="px-6 py-1 mb-0 text-lg font-weight-medium elevation-3 rounded-xl text-high-emphasis bg-surface"
           :class="[{ 'cursor-pointer': $vuetify.display.smAndDown }]"
-          @click="startConversation"
+          @click.prevent.stop="openLeftSide"
         >
           Commencez une conversation
         </p>
@@ -56,9 +56,10 @@ export default defineComponent({
     DmConversationListSideBar
   },
   props: {
-    friendId: {
+    contactId: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     }
   },
   setup() {
@@ -83,7 +84,7 @@ export default defineComponent({
   watch: {
     $route(to, from) {
       if (to.name === 'dm') {
-        const id = to.params.friendId
+        const id = to.params.contactId
         if (id) {
           this.setConversation(Number(id))
         }
@@ -92,41 +93,32 @@ export default defineComponent({
     'messageStore.currentContact': {
       handler(value) {
         if (value) {
-          document.title = `${value.profile?.name} - Message | Transcendence`
+          document.title = `${value.profile.name} - Message | Transcendence`
         }
       },
       immediate: true
     }
   },
-  created() {
-    this.userStore.loadAllMyFriends()
-  },
   async beforeMount() {
+    this.loading = true
+    await this.userStore.loadAllMyFriends()
     await this.messageStore.getUniqueConversations()
-    if (this.friendId) {
-      await this.setConversation(this.friendId)
-    }
+    await this.setConversation(this.contactId)
+    this.loading = false
   },
   methods: {
-    async setConversation(friendId?: number) {
+    async setConversation(contactId?: number) {
       this.loading = true
-      if (friendId) {
-        await this.messageStore.setCurrentConversationWith(friendId)
-      }
+      await this.messageStore.setCurrentConversationWith(contactId)
       this.loading = false
     },
     showMyProfile() {
-      this.$router.push({
-        name: 'me'
-      })
+      this.$router.push({ name: 'me', params: { tab: 'profile' } })
     },
     async openChatOfContact(id: number) {
-      await this.$router.push({
-        name: 'dm',
-        params: { friendId: id }
-      })
+      await this.$router.push({ name: 'dm', params: { contactId: id } })
     },
-    startConversation() {
+    openLeftSide() {
       if (this.vuetifyDisplays.mdAndUp) return
       this.isLeftSidebarOpen = true
     }
