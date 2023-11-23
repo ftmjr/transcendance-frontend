@@ -1,14 +1,8 @@
 <template>
   <VCard :loading="loading" color="transparent" class="border-none">
     <h2 class="text-4xl uppercase font-bold mb-8">Vos amis</h2>
-    <VRow>
-      <VCol
-        v-if="userStore.contacts.length"
-        v-for="(friend, index) in userStore.contacts"
-        :key="friend.id"
-        cols="12"
-        md="6"
-      >
+    <VRow v-if="userStore.contacts.length">
+      <VCol v-for="(friend, index) in userStore.contacts" :key="friend.id" cols="12" md="6">
         <div class="bg-slate-700/30 rounded-lg mx-1 mt-8">
           <div class="flex items-center justify-center">
             <VAvatar rounded size="120" class="user-profile-avatar">
@@ -81,7 +75,9 @@
           </div>
         </div>
       </VCol>
-      <VCol v-else cols="12">
+    </VRow>
+    <VRow v-else>
+      <VCol cols="12">
         <div class="flex flex-col items-center justify-center gap-4">
           <VIcon size="100" color="primary" icon="mdi-account-multiple" />
           <p class="text-xl font-semibold">Vous n'avez pas encore d'amis</p>
@@ -117,8 +113,8 @@ export default defineComponent({
     }
   },
   computed: {},
-  mounted() {
-    this.fetchFriends()
+  async beforeMount() {
+    await this.fetchFriends()
   },
   methods: {
     async fetchFriends() {
