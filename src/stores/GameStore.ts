@@ -271,14 +271,14 @@ const useGameStore = defineStore({
     },
     async rejectGameChallenge(challengeId: number): Promise<void> {
       try {
-        await axios.post('/game/reject-invitation', { challengeId })
+        await axios.delete('/game/reject-invitation', {
+          headers: { Accept: 'application/json' },
+          data: { challengeId }
+        })
       } catch (error) {
         if (isAxiosError(error)) {
           if (
-            error.response &&
-            (error.response.status === 403 ||
-              error.response.status === 401 ||
-              error.response.status === 404)
+            error.response && (error.response.status === 400 || error.response.status === 404)
           ) {
             console.log(error.response.data.message ?? 'Impossible de rejeter la partie')
           }

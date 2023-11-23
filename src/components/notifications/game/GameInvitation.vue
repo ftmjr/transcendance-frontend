@@ -19,10 +19,17 @@
         <div class="flex gap-2 mt-4">
           <button
             :disabled="isAlreadyPlayed || !isValid"
-            @click="handleAcceptChallenge"
+            @click.prevent="handleAcceptChallenge"
             class="px-8 py-2 text-xs border rounded-md cursor-pointer border-gray-50/10 bg-green-700/50 hover:bg-green-700/60 text-gary-500 disabled:bg-gray-800/50 disabled:opacity-50"
           >
             Accepter
+          </button>
+          <button
+            :disabled="isAlreadyPlayed || !isValid"
+            @click.prevent="handleRejectChallenge"
+            class="px-8 py-2 text-xs border rounded-md cursor-pointer border-gray-50/10 bg-red-700/50 hover:bg-red-700/60 text-gary-500 disabled:bg-gray-800/50 disabled:opacity-50"
+          >
+            Refuser
           </button>
         </div>
       </div>
@@ -71,11 +78,14 @@ const checkChallengeStatus = async () => {
 }
 const handleRead = () => {
   loading.value = true
-  notificationStore.markNotificationAsRead(props.notification.id)
+  if (props.notification.status !== 'READ') {
+    notificationStore.markNotificationAsRead(props.notification.id)
+  }
   loading.value = false
 }
 
 const handleAcceptChallenge = async () => {
+  handleRead();
   if (isValid.value && !isAlreadyPlayed.value) {
     loading.value = true
     const r = await gameStore.acceptGameChallenge(props.notification.referenceId)
@@ -86,6 +96,16 @@ const handleAcceptChallenge = async () => {
     } else {
       await router.push({ name: 'game', params: { id: r.gameId } })
     }
+  }
+}
+
+const handleRejectChallenge = async () => {
+  handleRead();
+  if (isValid.value && !isAlreadyPlayed.value) {
+    loading.value = true
+    await gameStore.rejectGameChallenge(props.notification.referenceId);
+    await checkChallengeStatus();
+    loading.value = false
   }
 }
 

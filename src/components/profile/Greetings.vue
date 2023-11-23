@@ -53,7 +53,7 @@
 </template>
 <script setup lang="ts">
 import useAuthStore from '@/stores/AuthStore'
-import { ref, Ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
@@ -78,59 +78,54 @@ type DateObject = {
   seconds: number | string
 }
 const now = new Date()
-const dateObject = ref<DateObject>({
+let dateObject = ref<DateObject>({
   now,
   hours: now.getHours(),
   minutes: now.getMinutes(),
   seconds: now.getSeconds()
 })
 
-const getDate = (dateObject: Ref<DateObject>) => {
-  dateObject.value['now'] = new Date()
+const getDate = (dateObject: DateObject) => {
+  dateObject['now'] = new Date()
   return dateObject
 }
-const getHours = (dateObject: Ref<DateObject>) => {
-  dateObject.value['hours'] = dateObject.value.now.getHours()
+const getHours = (dateObject: DateObject) => {
+  dateObject['hours'] = dateObject.now.getHours()
   return dateObject
 }
-const getMinutes = (dateObject: Ref<DateObject>) => {
-  dateObject.value['minutes'] = dateObject.value.now.getMinutes()
+const getMinutes = (dateObject: DateObject) => {
+  dateObject['minutes'] = dateObject.now.getMinutes()
   return dateObject
 }
-const getSeconds = (dateObject: Ref<DateObject>) => {
-  dateObject.value['seconds'] = dateObject.value.now.getSeconds()
+const getSeconds = (dateObject: DateObject) => {
+  dateObject['seconds'] = dateObject.now.getSeconds()
   return dateObject
 }
-const formatTime = (dateObject: Ref<DateObject>) => {
-  const { hours, minutes, seconds } = dateObject.value
-  if (+hours < 10) dateObject.value['hours'] = `0${hours}`
-  if (+minutes < 10) dateObject.value['minutes'] = `0${minutes}`
-  if (+seconds < 10) dateObject.value['seconds'] = `0${seconds}`
+const formatTime = (dateObject: DateObject) => {
+  const { hours, minutes, seconds } = dateObject
+  if (+hours < 10) dateObject['hours'] = `0${hours}`
+  if (+minutes < 10) dateObject['minutes'] = `0${minutes}`
+  if (+seconds < 10) dateObject['seconds'] = `0${seconds}`
   return dateObject
 }
 
-const compose =
-  (...fns: Function[]) =>
-  (x: any) =>
-    fns.reduceRight((y, f) => f(y), x)
+const compose = (...fns: Array<(dateObject: DateObject) => DateObject>) => (dateObject: DateObject) => fns.reduceRight((acc, fn) => fn(acc), dateObject)
 
 const makeDate = compose(formatTime, getSeconds, getMinutes, getHours, getDate)
-let timer: NodeJS.Timer | null = null
+let timer: NodeJS.Timeout | null = null
 
-const getUserPosLonLat = async () => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
-      console.log(position)
-    })
-  }
-}
+// const getUserPosLonLat = async () => {
+//   if (navigator.geolocation) {
+//     navigator.geolocation.getCurrentPosition((position) => {
+//       console.log(position)
+//     })
+//   }
+// }
 
 onMounted(() => {
   timer = setInterval(() => {
-    dateObject.value = makeDate(dateObject)
+    dateObject.value = makeDate(dateObject.value)
   }, 1000)
-
-  getUserPosLonLat()
 })
 
 onBeforeUnmount(() => {

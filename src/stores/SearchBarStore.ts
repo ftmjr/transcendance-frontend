@@ -62,13 +62,13 @@ const useSearchBarStore = defineStore({
       {
         icon: 'noto-v1:game-die',
         title: 'Jeur contre le bot',
-        url: { name: 'game' },
+        url: { name: 'bot-game' },
         category: 'Jeu'
       },
       {
         icon: 'medical-icon:i-waiting-area',
         title: 'Rejoindre une file pour jouer',
-        url: { name: 'game', query: { waitingRoom: true } },
+        url: { name: 'waiting-room' },
         category: 'Jeu'
       },
       {
