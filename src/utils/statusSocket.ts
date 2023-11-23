@@ -66,4 +66,13 @@ export class StatusSocket {
     }
     this.operational = false
   }
+
+  reconnect() {
+    if (this.socket) {
+      if (!this.socket.connected) {
+        this.socket.connect()
+      }
+    }
+    this.operational = true
+  }
 }

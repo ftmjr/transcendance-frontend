@@ -61,7 +61,7 @@ export default defineComponent({
       loading: false,
       error: null as unknown as string,
       alertGameAlreadyJoined: false,
-      timer: null as unknown as NodeJS.Timeout,
+      timer: null as unknown as NodeJS.Timeout
     }
   },
   computed: {
@@ -98,10 +98,10 @@ export default defineComponent({
   },
   async beforeMount() {
     this.loading = true
-    this.startTokenRefresher();
-    await this.gameStore.getAllGameSessions();
+    this.startTokenRefresher()
+    await this.gameStore.getAllGameSessions()
     if (!this.gameId) {
-      await this.startAgainstBot();
+      await this.startAgainstBot()
     } else {
       this.gameStore.setCurrentGameSession(this.gameId)
     }
@@ -111,7 +111,7 @@ export default defineComponent({
     if (this.gameId) {
       this.gameStore.quitGameSession(this.gameId)
     }
-    clearInterval(this.timer);
+    clearInterval(this.timer)
   },
   methods: {
     moveToCurrentGame() {
@@ -138,10 +138,13 @@ export default defineComponent({
       }
     },
     startTokenRefresher() {
-      this.timer = setInterval(async () => {
-        await this.authStore.refreshToken();
-      }, 1000 * 60 * 6) // 6 minutes in ms during game
-    },
+      this.timer = setInterval(
+        async () => {
+          await this.authStore.refreshToken()
+        },
+        1000 * 60 * 6
+      ) // 6 minutes in ms during game
+    }
   }
 })
 </script>

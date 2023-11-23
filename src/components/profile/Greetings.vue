@@ -109,7 +109,10 @@ const formatTime = (dateObject: DateObject) => {
   return dateObject
 }
 
-const compose = (...fns: Array<(dateObject: DateObject) => DateObject>) => (dateObject: DateObject) => fns.reduceRight((acc, fn) => fn(acc), dateObject)
+const compose =
+  (...fns: Array<(dateObject: DateObject) => DateObject>) =>
+  (dateObject: DateObject) =>
+    fns.reduceRight((acc, fn) => fn(acc), dateObject)
 
 const makeDate = compose(formatTime, getSeconds, getMinutes, getHours, getDate)
 let timer: NodeJS.Timeout | null = null

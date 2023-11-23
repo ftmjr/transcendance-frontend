@@ -7,24 +7,23 @@
           <v-table class="p-4 rounded-md">
             <template v-slot:top>
               <thead>
-              <tr>
-                <th class="text-left">Joeur</th>
-              </tr>
+                <tr>
+                  <th class="text-left">Joeur</th>
+                </tr>
               </thead>
             </template>
             <tbody>
-            <tr v-for="player in queList" :key="player.userId">
-              <td>{{ player.username }}</td>
-            </tr>
+              <tr v-for="player in queList" :key="player.userId">
+                <td>{{ player.username }}</td>
+              </tr>
             </tbody>
           </v-table>
         </v-card-text>
       </v-card-item>
       <div v-if="gameStore.getCurrentGameSession === undefined" class="flex justify-center">
         <p>
-          Vous êtes dans la salle d'attente. Vous pouvez rejoindre une file d'attente pour jouer
-          à Pong avec un autre joueur. Si vous quittez cette page, vous quitterez la file
-          d'attente.
+          Vous êtes dans la salle d'attente. Vous pouvez rejoindre une file d'attente pour jouer à
+          Pong avec un autre joueur. Si vous quittez cette page, vous quitterez la file d'attente.
         </p>
         <VIcon icon="medical-icon:i-waiting-area" :size="128" />
       </div>
@@ -87,8 +86,8 @@ export default defineComponent({
     },
     'notificationStore.allRealTimeNotifications': {
       handler() {
-        this.checkWaitingQue();
-        this.checkIfGameMatched();
+        this.checkWaitingQue()
+        this.checkIfGameMatched()
       },
       deep: true
     }
@@ -151,11 +150,8 @@ export default defineComponent({
       if (this.notificationStore.allRealTimeNotifications.length === 0) return
       const lastNotification = this.notificationStore.allRealTimeNotifications[0]
       if (!this.authStore.getUser) return
-      if (
-        lastNotification &&
-        lastNotification.type === RealTimeNotificationType.GameWaitingQue
-      ) {
-        await this.loadCurrentWaitingRoom();
+      if (lastNotification && lastNotification.type === RealTimeNotificationType.GameWaitingQue) {
+        await this.loadCurrentWaitingRoom()
       }
     },
     async loadCurrentWaitingRoom() {

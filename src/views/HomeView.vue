@@ -10,7 +10,7 @@
     </div>
     <div class="flex flex-row flex-wrap py-8">
       <div v-for="meta in userListStatsMeta" :key="meta.title" class="p-2 basis-1/2">
-        <VCard>
+        <VCard :loading="loadingStats">
           <VCardText class="flex justify-space-between">
             <div>
               <span>{{ meta.title }}</span>
@@ -41,29 +41,25 @@
     <div>
       <div class="flex gap-4 my-8 overflow-scroll hide-scrollbar">
         <div
-          class="flex flex-row items-center w-auto h-32 gap-4 p-4 border rounded-md max-w-64 grow-0 shrink-0"
-          :key="friend.id"
           v-for="(friend, index) in userStore.contacts"
+          :key="friend.id"
+          class="flex flex-row items-center w-auto h-32 gap-4 p-4 border rounded-md max-w-64 grow-0 shrink-0"
         >
           <v-avatar
-            @click="(_) => pushToUserProfile(friend.id, $router)"
             rounded
             size="96"
             class="w-full h-32 cursor-pointer"
+            @click.prevent="pushToUserProfile(friend.id, $router)"
           >
-            <VImg
-              class="w-full h-full"
-              v-if="friend.profile?.avatar"
-              :src="friend.profile?.avatar"
-            />
+            <VImg v-if="friend.profile.avatar" class="w-full h-full" :src="friend.profile.avatar" />
             <VIcon v-else color="primary" icon="tabler-user" />
           </v-avatar>
           <div class="flex flex-col gap-4">
             <button
-              @click="(_) => pushToUserProfile(friend.id, $router)"
               class="text-base text-left font-weight-bold line-clamp-1"
+              @click.prevent="pushToUserProfile(friend.id, $router)"
             >
-              {{ friend.profile?.name }} {{ friend.profile?.lastname }}
+              {{ friend.profile.name }} {{ friend.profile.lastname }}
             </button>
             <div class="flex flex-col gap-2">
               <game-status-badge
@@ -76,20 +72,19 @@
                 <status-badge
                   v-if="friend.id !== 0"
                   :user-id="friend.id"
-                  :value="friend.profile?.status"
+                  :value="friend.profile.status"
                   class="w-16"
                 />
                 <button
-                  @click="(_) => pushToDmWithUser(friend.id, $router)"
                   class="flex items-center justify-center w-8 h-8 p-2 border rounded-md bg-green-400/50"
+                  @click.prevent="pushToDmWithUser(friend.id, $router)"
                 >
-                  <v-icon size="16" icon="mdi-chat"></v-icon>
+                  <v-icon size="16" icon="mdi-chat" />
                 </button>
                 <button
-                  @click=""
                   class="flex items-center justify-center w-8 h-8 p-2 border rounded-md bg-yellow"
                 >
-                  <v-icon size="16" icon="mdi-goal"></v-icon>
+                  <v-icon size="16" icon="mdi-goal" />
                 </button>
               </div>
             </div>
@@ -98,7 +93,7 @@
       </div>
     </div>
     <div class="my-16">
-      <leader-board-view :isTopPlayers="true" />
+      <leader-board-view :is-top-players="true" />
     </div>
   </div>
 </template>
@@ -175,20 +170,28 @@ export default defineComponent({
     return {
       userListStatsMeta,
       totalUser: 0,
-      gameStatus: [] as Array<{ status: 'playing' | 'inQueue' | 'free'; gameSession?: GameSession }>
+      gameStatus: [] as Array<{
+        status: 'playing' | 'inQueue' | 'free'
+        gameSession?: GameSession
+      }>,
+      loadingStats: false
     }
   },
-  beforeMount() {
-    this.loadStats()
+  async beforeMount() {
+    await this.loadStats()
+    await this.userStore.loadAllMyFriends()
+    await this.fetchAllGameStatus()
   },
   methods: {
     async loadStats() {
+      this.loadingStats = true
       await this.userStore.getAppStatistics()
       this.userListStatsMeta[0].stats = this.userStore.getStats.totalUsers
       this.userListStatsMeta[1].stats = this.userStore.getStats.activeUsers
       this.userListStatsMeta[2].stats = this.userStore.getStats.averageGamesPerUser
       this.userListStatsMeta[3].stats = this.userStore.getStats.totalGamesPlayed
       this.totalUser = this.userStore.getStats.totalUsers
+      this.loadingStats = false
     },
     pushToUserProfile,
     pushToDmWithUser,
@@ -196,10 +199,6 @@ export default defineComponent({
       const ids = this.userStore.contacts.map((contact) => contact.id)
       this.gameStatus = await this.gameStore.getUsersGameStatus(ids)
     }
-  },
-  async mounted() {
-    await this.userStore.loadAllMyFriends()
-    await this.fetchAllGameStatus()
   }
 })
 </script>

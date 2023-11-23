@@ -72,8 +72,8 @@ export default defineComponent({
     game.scene.add('Boot', Boot, true, dataInit)
   },
   beforeUnmount() {
-    this.gameMonitor?.quitGame();
-    if (this.game) this.game.destroy(true);
+    this.gameMonitor?.quitGame()
+    if (this.game) this.game.destroy(true)
   },
   methods: {
     moveToHistory() {

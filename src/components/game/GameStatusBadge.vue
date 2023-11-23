@@ -68,6 +68,7 @@ const props = defineProps({
       status: 'playing' | 'inQueue' | 'free'
       gameSession?: GameSession
     }>,
+    required: false,
     default: () => ({ status: 'free', gameSession: undefined })
   },
   status: {
@@ -122,7 +123,10 @@ watch(notificationStore.allRealTimeNotifications, async (newNotifications) => {
     lastNotification.type === RealTimeNotificationType.GameWaitingQue ||
     lastNotification.type === RealTimeNotificationType.Game
   ) {
-    if (lastNotification.userId === props.userId || lastNotification.sourceUserId === props.userId) {
+    if (
+      lastNotification.userId === props.userId ||
+      lastNotification.sourceUserId === props.userId
+    ) {
       await updateLocalGameStatus(props.userId)
     }
   }

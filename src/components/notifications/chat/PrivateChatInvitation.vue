@@ -51,7 +51,7 @@ const props = defineProps({
   }
 })
 const handleRead = async () => {
-  if (props.notification.status === 'READ') return;
+  if (props.notification.status === 'READ') return
   await notificationStore.markNotificationAsRead(props.notification.id)
 }
 const handleShowRoom = async () => {

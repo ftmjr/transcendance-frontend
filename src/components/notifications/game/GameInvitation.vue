@@ -85,7 +85,7 @@ const handleRead = () => {
 }
 
 const handleAcceptChallenge = async () => {
-  handleRead();
+  handleRead()
   if (isValid.value && !isAlreadyPlayed.value) {
     loading.value = true
     const r = await gameStore.acceptGameChallenge(props.notification.referenceId)
@@ -100,11 +100,11 @@ const handleAcceptChallenge = async () => {
 }
 
 const handleRejectChallenge = async () => {
-  handleRead();
+  handleRead()
   if (isValid.value && !isAlreadyPlayed.value) {
     loading.value = true
-    await gameStore.rejectGameChallenge(props.notification.referenceId);
-    await checkChallengeStatus();
+    await gameStore.rejectGameChallenge(props.notification.referenceId)
+    await checkChallengeStatus()
     loading.value = false
   }
 }

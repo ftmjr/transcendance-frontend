@@ -164,6 +164,13 @@ export class ChatSocket {
     this.operational = false
   }
 
+  connect() {
+    if (this.socket) {
+      this.socket.connect()
+    }
+    this.operational = true
+  }
+
   sendMessage(roomId: number, content: string) {
     if (this.socket && this.operational) {
       this.socket.emit('sendMessage', {
