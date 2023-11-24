@@ -65,7 +65,7 @@ export default class PongScene extends Scene {
       }
     }
     this.monitor._phaserNewScoreRoutine = (scores, withEffect) => {
-      if (this.monitor.state !== GAME_STATE.Play) return;
+      if (this.monitor.state !== GAME_STATE.Play) return
       this.updatedScoreBoard(scores)
       if (withEffect) this.scoredRoutine()
     }

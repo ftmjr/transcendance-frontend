@@ -64,7 +64,7 @@ export default defineComponent({
   data() {
     return {
       isTyping: false,
-      lastMessage: null as PrivateMessage | null,
+      lastMessage: null as PrivateMessage | null
     }
   },
   computed: {
@@ -73,7 +73,7 @@ export default defineComponent({
     },
     canShowLastMessage() {
       return this.showLastMessage && !this.isTyping
-    },
+    }
   },
   watch: {
     'roomsStore.getContactTyping': {

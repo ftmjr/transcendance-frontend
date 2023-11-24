@@ -24,7 +24,7 @@ export default class Boot extends Scene {
 
   init(data: SceneInitData) {
     this.sceneData = data
-    data.gameMonitor.cleanAllPhaserRoutines();
+    data.gameMonitor.cleanAllPhaserRoutines()
     if (
       this.game.device.os.iOS ||
       this.game.device.os.android ||

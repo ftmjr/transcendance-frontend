@@ -210,8 +210,8 @@ const useMessageStore = defineStore({
       let maxIndex = 0
       for (let i = 1; i < userMessages.length; i++) {
         if (userMessages[i].timestamp > maxTimestamp) {
-            maxTimestamp = userMessages[i].timestamp
-            maxIndex = i
+          maxTimestamp = userMessages[i].timestamp
+          maxIndex = i
         }
       }
       return userMessages[maxIndex]

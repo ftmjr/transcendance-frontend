@@ -129,9 +129,9 @@ const useRoomsStore = defineStore({
       return this.currentRoomStatus.room?.type === RoomType.PRIVATE
     },
     isPasswordProtected(): boolean {
-      if (!this.currentRoomStatus.room) return false;
-      if (!this.currentRoomStatus.room.password) return false;
-      return this.currentRoomStatus.room.password.trim().length > 0;
+      if (!this.currentRoomStatus.room) return false
+      if (!this.currentRoomStatus.room.password) return false
+      return this.currentRoomStatus.room.password.trim().length > 0
     },
     roomMembers(): MemberRoomWithUserProfiles[] {
       return this.currentRoomMembers
@@ -396,18 +396,18 @@ const useRoomsStore = defineStore({
     },
     async updateRoom(roomId: number, info: UpdateRoomData): Promise<'success' | 'failed' | string> {
       try {
-        const { data } = await axios.patch<ChatRoomWithMembers>(`/chat/update-room-info`, info);
-        const roomIndex = this.rooms.findIndex((room) => room.id === roomId);
+        const { data } = await axios.patch<ChatRoomWithMembers>(`/chat/update-room-info`, info)
+        const roomIndex = this.rooms.findIndex((room) => room.id === roomId)
         if (roomIndex !== -1) {
-          this.rooms.splice(roomIndex, 1, data);
+          this.rooms.splice(roomIndex, 1, data)
         }
-        return 'success';
+        return 'success'
       } catch (e) {
         if (isAxiosError(e)) {
-          return e.response?.data.message ?? 'failed';
+          return e.response?.data.message ?? 'failed'
         }
       }
-      return 'failed';
+      return 'failed'
     },
     // main function work for any valid room and return details about it
     async checkRoomRole(
@@ -560,13 +560,13 @@ const useRoomsStore = defineStore({
       }
     },
     async inviteUser(roomId: number, userId: number): Promise<'success' | 'failed'> {
-        try {
-            const data = { roomId: roomId, userId: userId }
-            await axios.post(`/chat/invite`, data)
-            return 'success'
-        } catch (error) {
-            return 'failed'
-        }
+      try {
+        const data = { roomId: roomId, userId: userId }
+        await axios.post(`/chat/invite`, data)
+        return 'success'
+      } catch (error) {
+        return 'failed'
+      }
     }
   }
 })
