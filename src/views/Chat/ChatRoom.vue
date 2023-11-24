@@ -34,11 +34,11 @@
         />
       </div>
       <template v-else>
-        <chat-room-message-list v-if="roomStore.getCurrentRoomStatus.state === true" />
-        <chat-room-join v-else-if="roomStore.getCurrentRoomStatus.state === false" />
+        <chat-room-message-list v-if="roomStore.isMemberOfRoom" />
+        <chat-room-join v-else-if="!roomStore.isMemberOfRoom && roomStore.currentRoom" />
         <template v-else>
           <div
-            v-if="roomStore.isLeftNavOpen === false"
+            v-if="!roomStore.isLeftNavOpen"
             class="flex items-center justify-center h-full flex-column"
           >
             <VAvatar

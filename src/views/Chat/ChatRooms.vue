@@ -13,8 +13,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import useRoomsStore, { ChatRoomWithMembers } from '@/stores/RoomsStore'
+import useRoomsStore  from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
+import { ChatRoom as ChatRoomT } from "@/utils/chatSocket";
 import ChatLeftNav from './ChatLeftNav.vue'
 import ChatRightNav from './ChatRightNav.vue'
 import ChatRoom from './ChatRoom.vue'
@@ -28,6 +29,7 @@ export default defineComponent({
   props: {
     roomId: {
       type: Number,
+      required: false,
       default: undefined
     }
   },
@@ -51,14 +53,14 @@ export default defineComponent({
     }
   },
   watch: {
-    $route(to, from) {
-      if (to.name === 'chat') {
-        const id = to.params.roomId
-        this.accessRoom(id)
-      }
+    roomId: {
+      handler(value) {
+        this.accessRoom(value)
+      },
+      immediate: true
     },
     'roomsStore.currentRoom': {
-      handler(value: ChatRoomWithMembers | null) {
+      handler(value: ChatRoomT | undefined) {
         if (value) {
           document.title = `${value.name} - Room | Transcendence`
         }
@@ -67,14 +69,18 @@ export default defineComponent({
     }
   },
   async beforeMount() {
-    await this.roomsStore.fetchPublicRooms()
-    await this.accessRoom(this.roomId)
+    this.loading = true
+    await this.roomsStore.getAllMyRooms();
+    await this.roomsStore.fetchPublicRooms();
+    this.loading = false
+    if (this.roomId) {
+      await this.accessRoom(this.roomId)
+    }
   },
   methods: {
     async accessRoom(roomId?: number) {
       if (!roomId) return
       this.loading = true
-      await this.roomsStore.getAllMyRooms()
       await this.roomsStore.selectRoom(roomId)
       this.loading = false
     },

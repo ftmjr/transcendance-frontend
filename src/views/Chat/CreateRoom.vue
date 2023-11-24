@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span> Créer un chat </span>
+    <span>Créer un chat</span>
     <v-menu
       v-model="menu"
       transition="scale-transition"
@@ -22,8 +22,7 @@
           />
         </v-btn>
       </template>
-
-      <v-card class="">
+      <v-card>
         <v-list>
           <v-list-item>
             <div class="p-4">
@@ -34,16 +33,8 @@
                 <h2 class="mb-4 text-sm font-bold">
                   Création de room
                 </h2>
-                <v-form @submit.prevent="tryToUpateRooInfos">
+                <v-form @submit.prevent="createRoom">
                   <div class="flex flex-col gap-4">
-                    <div class="flex gap-4">
-                      <span class="w-12 h-12 border rounded-full" />
-                      <v-file-input
-                        label="Choisir une image"
-                        prepend-icon="mdi-camera"
-                        variant="solo-filled"
-                      />
-                    </div>
                     <v-text-field
                       v-model="name"
                       :rules="rules.name"
@@ -68,10 +59,9 @@
                     <v-btn
                       :loading="loading"
                       type="submit"
-                      block
+                      :block="true"
                       class="mt-2"
                       text="Créer"
-                      @click="createRoom"
                     />
                   </div>
                 </v-form>
@@ -88,9 +78,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, defineEmits } from 'vue'
+import { ref, reactive } from 'vue'
 import NotificationPopUp from '@/components/notifications/NotificationPopUp.vue'
-import useRoomsStore, { CreateRoom } from '@/stores/RoomsStore'
+import useRoomsStore from '@/stores/RoomsStore'
 import useAuthStore from '@/stores/AuthStore'
 import { RoomType } from '@/utils/chatSocket'
 
@@ -98,17 +88,13 @@ const roomStore = useRoomsStore()
 const authStore = useAuthStore()
 const menu = ref(false)
 const emit = defineEmits(['close'])
-
 const showErrorPopUp = ref(false)
 const name = ref('room name')
-const isPrivateRoom = ref(false)
-const password = ref('********')
-const confirmPassword = ref('********')
+const password = ref('')
+const confirmPassword = ref('')
 
 const typeList: RoomType[] = [RoomType.PUBLIC, RoomType.PROTECTED, RoomType.PRIVATE]
-
 const type = ref(typeList[0])
-
 const loading = ref(false)
 const rules = reactive({
   name: [
@@ -133,7 +119,6 @@ const rules = reactive({
     (v: string) => v === password.value || 'Les mots de passe ne correspondent pas'
   ]
 })
-
 const forbiddenWords = [
   'con',
   'connard',
@@ -157,16 +142,6 @@ const checkBadWord = (str: string) => {
   return false
 }
 
-const tryToUpateRooInfos = async (e: Event) => {
-  e.preventDefault()
-  try {
-  } catch (error) {
-    console.log(error)
-  } finally {
-    loading.value = false
-  }
-}
-
 const resetForm = () => {
   name.value = ''
   type.value = RoomType.PUBLIC
@@ -176,9 +151,9 @@ const resetForm = () => {
   return
 }
 
-const createRoom = async (e: Event) => {
+const createRoom = async () => {
   loading.value = true
-  const result = await roomStore.createRoom(<CreateRoom>{
+  const result = await roomStore.createRoom({
     name: name.value,
     ownerId: authStore.getUser?.id ?? 1,
     type: type.value,
@@ -188,7 +163,7 @@ const createRoom = async (e: Event) => {
         : undefined
   })
   if (result === 'success') {
-    resetForm()
+    resetForm();
     loading.value = false
     emit('close')
     return
