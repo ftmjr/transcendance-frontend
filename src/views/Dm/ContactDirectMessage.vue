@@ -5,6 +5,7 @@
         :friendship-status="friendShipStatus"
         :blocked-status="blockedStatus"
         :loading-status="loadingStatus"
+        @update-friendship-status="fetchFriendShipState"
       />
       <VDivider class="d-md-none" />
     </div>
@@ -272,7 +273,7 @@ export default defineComponent({
     async fetchFriendShipState() {
       if (!this.messageStore.conversationWith) {
         this.friendShipStatus = FriendshipStatus.None
-        this.blockedStatus = BlockedStatus.BlockedBy
+        this.blockedStatus = BlockedStatus.None
         return
       }
       this.loadingStatus = true
@@ -282,7 +283,7 @@ export default defineComponent({
       this.blockedStatus = await this.usersStore.checkBlocked(contactId)
       this.loadingStatus = false
     },
-    checkAndRefreshFriendShip(notification: RealTimeNotification) {
+    async checkAndRefreshFriendShip(notification: RealTimeNotification) {
       if (!this.messageStore.conversationWith) return
       if (
         notification.title === RealTimeNotificationTitle.BlockedContactMessage ||
@@ -292,7 +293,7 @@ export default defineComponent({
           notification.sourceUserId === this.messageStore.conversationWith.id ||
           notification.userId === this.messageStore.conversationWith.id
         ) {
-          this.fetchFriendShipState()
+          await this.fetchFriendShipState();
         }
       }
     },

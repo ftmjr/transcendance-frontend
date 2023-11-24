@@ -22,7 +22,6 @@
     <VMain class="chat-content-container">
       <contact-direct-message
         v-if="!!messageStore.conversationWith"
-        v-model:is-left-sidebar-open="isLeftSidebarOpen"
       />
       <div
         v-else
@@ -92,32 +91,49 @@ export default defineComponent({
     }
   },
   watch: {
-    $route(to, from) {
-      if (to.name === 'dm') {
-        const id = to.params.contactId
-        if (id) {
-          this.setConversation(Number(id))
-        }
-      }
-    },
     'messageStore.currentContact': {
       handler(value) {
         if (value) {
           document.title = `${value.profile.name} - Message | Transcendence`
         }
       },
+    },
+    contactId: {
+      handler(value) {
+        this.setConversation(value)
+      },
       immediate: true
+    },
+    'messageStore.isSidebarOpen': {
+      handler(value) {
+        if (value !== this.isLeftSidebarOpen){
+          this.isLeftSidebarOpen = value
+        }
+      },
+    },
+    isLeftSidebarOpen: {
+      handler(value) {
+        if (value !== this.messageStore.isSidebarOpen){
+          this.messageStore.setSidebarOpen(value)
+        }
+      },
     }
   },
   async beforeMount() {
     this.loading = true
     await this.userStore.loadAllMyFriends()
-    await this.messageStore.getUniqueConversations()
-    await this.setConversation(this.contactId)
+    await this.messageStore.getUniqueConversations();
+    if (this.contactId) {
+      await this.setConversation(this.contactId);
+    }
     this.loading = false
+  },
+  beforeUnmount() {
+    this.messageStore.resetCurrentConversationWith();
   },
   methods: {
     async setConversation(contactId?: number) {
+      if (!contactId || this.messageStore.currentContact?.id === contactId) return;
       this.loading = true
       await this.messageStore.setCurrentConversationWith(contactId)
       this.loading = false

@@ -8,7 +8,7 @@ import { isAxiosError } from 'axios'
 export interface MessageState {
   currentContactId: number
   currentContact: ShortUserProfile | undefined
-  conversationsUsers: Array<ShortUserProfile>
+  conversationsUsers: ShortUserProfile[]
   searchTerm: string
   socketManager: ChatSocket | null
   messages: Map<number, PrivateMessage[]>
@@ -32,7 +32,7 @@ const useMessageStore = defineStore({
   id: 'message',
   state: (): MessageState => ({
     currentContactId: 0,
-    currentContact: undefined,
+    currentContact: undefined as ShortUserProfile | undefined,
     conversationsUsers: [],
     searchTerm: '',
     socketManager: null,
@@ -84,36 +84,42 @@ const useMessageStore = defineStore({
     setSocketManager(socketManager: ChatSocket) {
       this.socketManager = socketManager
     },
-    async setCurrentConversationWith(contactId?: number) {
-      const foundUser = this.conversationsUsers.find((user) => user.id === this.currentContactId)
+    async setCurrentConversationWith(contactId: number) {
+      const foundUser = this.conversationsUsers.find((user) => user.id === contactId)
       if (foundUser) {
         this.currentContact = foundUser
         this.currentContactId = foundUser.id
+        return;
       }
-      const userStore = useUserStore()
-      const contacts = userStore.contacts
-      const contactFound = contacts.find((user) => user.id === this.currentContactId)
+      const contactFound = this.contacts.find((user) => user.id === contactId)
       if (contactFound) {
-        this.conversationsUsers.unshift(contactFound)
-        this.currentContact = contactFound
-        this.currentContactId = contactFound.id
-      }
-      if (!contactId || contactId === 0) {
-        // set current contact to the first one in the list of conversations
-        const firstContact = this.conversationsUsers[0]
-        if (firstContact) {
-          this.currentContact = firstContact
-          this.currentContactId = firstContact.id
+        // add it to conversation   only if not already in
+        const found = this.conversationsUsers.find((user) => user.id === contactFound.id)
+        if (!found) {
+          this.conversationsUsers.unshift(contactFound);
         }
-        return undefined // no contactId provided and no conversationsUsers
+        this.currentContact = { ...contactFound }
+        this.currentContactId = contactFound.id
+        return;
       }
-      const shortProfile = await userStore.getShortUserProfile(contactId)
-      if (shortProfile) {
-        this.currentContact = shortProfile
-        this.currentContactId = shortProfile.id
+      const userStore = useUserStore();
+      try {
+        const shortProfile = await userStore.getShortUserProfile(contactId)
+        if (shortProfile) {
+          this.currentContact = { ...shortProfile }
+          this.currentContactId = shortProfile.id
+          this.conversationsUsers.unshift(shortProfile);
+        }
+      } catch (e) {
+        this.currentContact = undefined
+        this.currentContactId = 0
       }
     },
-
+    // called at unMount
+    async resetCurrentConversationWith() {
+      this.currentContact = undefined;
+      this.currentContactId = 0;
+    },
     async getUniqueConversations() {
       try {
         const { data } = await axios.get<Array<User & { profile: Profile }>>('/messages', {
@@ -121,13 +127,19 @@ const useMessageStore = defineStore({
             'Content-Type': 'application/json'
           }
         })
-        this.conversationsUsers = data
+        if (Array.isArray(data)) {
+          // set new conversation users without loosing reactivity
+          this.conversationsUsers = data
+        } else {
+          this.conversationsUsers.splice(0, this.conversationsUsers.length);
+        }
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response) {
             console.log('Failed to load conversations:', error.response.data.message)
           }
         }
+        this.conversationsUsers.splice(0, this.conversationsUsers.length);
       }
     },
     async getPrivateMessageBetween(info: {
