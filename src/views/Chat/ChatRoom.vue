@@ -55,6 +55,7 @@ import useAuthStore from '@/stores/AuthStore'
 import RoomSettings from './Settings.vue'
 import ChatRoomMessageList from '@/views/Chat/ChatRoomMessageList.vue'
 import ChatRoomJoin from '@/views/Chat/ChatRoomJoin.vue'
+import useNotificationStore from '@/stores/NotificationStore'
 
 export default defineComponent({
   components: { ChatRoomJoin, ChatRoomMessageList, RoomSettings },
@@ -67,9 +68,11 @@ export default defineComponent({
   setup() {
     const authStore = useAuthStore()
     const roomStore = useRoomsStore()
+    const notificationStore = useNotificationStore()
     return {
       authStore,
-      roomStore
+      roomStore,
+      notificationStore
     }
   }
 })

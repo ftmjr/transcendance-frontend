@@ -19,6 +19,8 @@ import { ChatRoom as ChatRoomT } from '@/utils/chatSocket'
 import ChatLeftNav from './ChatLeftNav.vue'
 import ChatRightNav from './ChatRightNav.vue'
 import ChatRoom from './ChatRoom.vue'
+import { RealTimeNotification, RealTimeNotificationTitle } from '@/utils/notificationSocket'
+import useNotificationStore from '@/stores/NotificationStore'
 
 export default defineComponent({
   components: {
@@ -37,10 +39,12 @@ export default defineComponent({
     const authStore = useAuthStore()
     const roomsStore = useRoomsStore()
     const userStore = useUserStore()
+    const notificationStore = useNotificationStore()
     return {
       authStore,
       roomsStore,
-      userStore
+      userStore,
+      notificationStore
     }
   },
   data() {
@@ -66,6 +70,16 @@ export default defineComponent({
         }
       },
       immediate: true
+    },
+    'notificationStore.allRealTimeNotifications': {
+      handler(value: RealTimeNotification[]) {
+        if (value.length === 0) return
+        this.checkAndRefreshRoom(value[0])
+        this.checkAndRefreshStatus(value[0])
+        this.checkAndRefreshMembers(value[0])
+      },
+      deep: true,
+      immediate: true
     }
   },
   async beforeMount() {
@@ -86,6 +100,46 @@ export default defineComponent({
     },
     changeRoom(roomId: number) {
       this.$router.push({ name: 'chat', params: { roomId: roomId } })
+    },
+    async checkAndRefreshRoom(notification: RealTimeNotification) {
+      if (
+        notification.title === RealTimeNotificationTitle.ChatRoomSettingsUpdated ||
+        notification.title === RealTimeNotificationTitle.ChatRoomDeleted
+      ) {
+        await this.roomsStore.getAllMyRooms()
+        await this.roomsStore.fetchPublicRooms()
+        if (!this.roomsStore.currentRoom) return
+        if (notification.roomId === this.roomsStore.currentRoom.id) {
+          this.loading = true
+          // will re select the room, loading all datas again, and settings
+          await this.roomsStore.selectRoom(this.roomsStore.currentRoom.id)
+          this.loading = false
+        }
+      }
+    },
+    async checkAndRefreshMembers(notification: RealTimeNotification) {
+      if (!this.roomsStore.currentRoom) return
+      if (notification.title === RealTimeNotificationTitle.NewRolesInChatRoom) {
+        if (notification.roomId === this.roomsStore.currentRoom.id) {
+          await this.roomsStore.reloadCurrentRoomMembers()
+        }
+      }
+    },
+    async checkAndRefreshStatus(notification: RealTimeNotification) {
+      if (
+        notification.title === RealTimeNotificationTitle.BlockedContactMessage ||
+        notification.title === RealTimeNotificationTitle.BrokenFriendship
+      ) {
+        if (
+          notification.sourceUserId === this.roomsStore.userId ||
+          notification.userId === this.roomsStore.userId
+        ) {
+          // we fetch all blocked status for all members
+          if (this.roomsStore.roomMembers.length > 0) {
+            await this.roomsStore.setBlockedStatusForMembers(this.roomsStore.roomMembers)
+          }
+        }
+      }
     }
   }
 })

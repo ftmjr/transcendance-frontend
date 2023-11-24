@@ -13,7 +13,7 @@
           :key="`message-group-${index}-${msgGrp.senderId}`"
           :class="msgGrp.senderId === roomStore.userId ? 'self-end' : 'self-start'"
         >
-          <message :is-sender="msgGrp.senderId === roomStore.userId" :msg-group="msgGrp" />
+          <chat-message :is-sender="msgGrp.senderId === roomStore.userId" :msg-group="msgGrp" />
         </li>
         <li v-if="isTypingUserName" class="pb-4 font-weight-medium">
           <p>
@@ -78,17 +78,17 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import Message from '@/views/Chat/Message.vue'
+import ChatMessage from '@/views/Chat/ChatMessage.vue'
 import useRoomsStore from '@/stores/RoomsStore'
 import useAuthStore from '@/stores/AuthStore'
-import { ChatMessage, ChatRoomMember } from '@/utils/chatSocket'
+import { ChatMessage as ChatMessageT, ChatRoomMember } from '@/utils/chatSocket'
 
 interface ChatMessageGroup {
   senderId: number
   messages: Array<{ id: number; message: string; time: string }>
 }
 export default defineComponent({
-  components: { PerfectScrollbar, Message },
+  components: { PerfectScrollbar, ChatMessage },
   setup() {
     const authStore = useAuthStore()
     const roomStore = useRoomsStore()
@@ -110,9 +110,6 @@ export default defineComponent({
     }
   },
   computed: {
-    chatLogPS(): PerfectScrollbar {
-      return this.$refs.MessagesLogScroller as PerfectScrollbar
-    },
     me(): ChatRoomMember | undefined {
       return this.roomStore.roomMembers.find((member) => member.member.id === this.roomStore.userId)
     },
@@ -124,10 +121,10 @@ export default defineComponent({
       if (!this.me) return false
       return !this.roomStore.isBanned && !this.roomStore.isMuted
     },
-    messages(): ChatMessage[] {
+    messages(): ChatMessageT[] {
       return this.roomStore.getCurrentRoomMessages
     },
-    messagesByTime(): ChatMessage[] {
+    messagesByTime(): ChatMessageT[] {
       return this.messages.slice().sort((a, b) => {
         return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
       })
@@ -141,7 +138,7 @@ export default defineComponent({
         senderId: msgSenderId,
         messages: []
       }
-      messages.forEach((msg: ChatMessage, index) => {
+      messages.forEach((msg: ChatMessageT, index) => {
         if (msgSenderId === msg.userId) {
           msgGroup.messages.push({ id: msg.id, message: msg.content, time: msg.timestamp })
         } else {

@@ -66,9 +66,6 @@ export default defineComponent({
     }
   },
   computed: {
-    ChatMemberRole() {
-      return ChatMemberRole
-    },
     sender(): MemberRoomWithUserProfiles | undefined {
       return this.roomStore.roomMembers.find(
         (member) => member.member.id === this.msgGroup.senderId

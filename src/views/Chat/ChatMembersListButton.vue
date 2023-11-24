@@ -89,7 +89,7 @@ import BanPlayer from '@/views/Chat/BanPlayer.vue'
 import KickPlayer from '@/views/Chat/KickPlayer.vue'
 import PromotePlayer from '@/views/Chat/PromotePlayer.vue'
 import useRoomsStore, { MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
-import { pushToUserProfile, pushToDmWithUser } from '@/utils/router'
+import { pushToDmWithUser, pushToUserProfile } from '@/utils/router'
 import { ChatMemberRole } from '@/utils/chatSocket'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 import FriendRequestBox from '@/components/profile/FriendRequestBox.vue'
@@ -129,8 +129,7 @@ export default defineComponent({
     me(): MemberRoomWithUserProfiles | undefined {
       const roomMembers = this.roomStore.roomMembers
       if (!roomMembers) return undefined
-      const me = roomMembers.find((member) => member.memberId === this.roomStore.userId)
-      return me
+      return roomMembers.find((member) => member.memberId === this.roomStore.userId)
     },
     amAnAdmin(): boolean {
       if (!this.me) return false
