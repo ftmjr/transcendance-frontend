@@ -36,11 +36,10 @@ export type MemberRoomWithUserProfiles = ChatRoomMember & {
 }
 
 export interface UpdateRoomData {
-  name: string
+  roomId: number
   type: RoomType
   oldPassword?: string
   password?: string
-  passwordConfirmation?: string
 }
 
 export const rolePrint: Array<{
@@ -392,9 +391,20 @@ const useRoomsStore = defineStore({
         return 'failed'
       }
     },
-    async updateRoom(roomId: number, data: UpdateRoomData): Promise<'success' | 'failed' | string> {
-      // TODO: code to update the room
-      return 'success'
+    async updateRoom(roomId: number, info: UpdateRoomData): Promise<'success' | 'failed' | string> {
+      try {
+        const { data } = await axios.patch<ChatRoomWithMembers>(`/chat/update-room-info`, info);
+        const roomIndex = this.rooms.findIndex((room) => room.id === roomId);
+        if (roomIndex !== -1) {
+          this.rooms.splice(roomIndex, 1, data);
+        }
+        return 'success';
+      } catch (e) {
+        if (isAxiosError(e)) {
+          return e.response?.data.message ?? 'failed';
+        }
+      }
+      return 'failed';
     },
     // main function work for any valid room and return details about it
     async checkRoomRole(
