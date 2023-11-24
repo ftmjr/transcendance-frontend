@@ -83,9 +83,9 @@ export default defineComponent({
     },
     theme(): Theme {
       if (this.gameStore.getCurrentGameSession) {
-        return this.gameStore.getCurrentGameSession.rules.theme ?? Theme.Arcade
+        return this.gameStore.getCurrentGameSession.rules.theme ?? Theme.Classic
       }
-      return Theme.Arcade
+      return Theme.Classic
     }
   },
   watch: {

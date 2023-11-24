@@ -26,7 +26,7 @@ export default defineComponent({
     theme: {
       type: String as PropType<Theme>,
       required: true,
-      default: () => Theme.Arcade
+      default: () => Theme.Classic
     }
   },
   data() {
