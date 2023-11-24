@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="member"
-    class="w-full p-2 text-center rounded-md cursor:pointer hover:bg-darkBlue/50"
-  >
+  <div v-if="member" class="w-full p-2 text-center rounded-md cursor:pointer hover:bg-darkBlue/50">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
         <button
@@ -18,40 +15,13 @@
           />
         </button>
         <span class="flex items-center gap-2">
-          <v-icon
-            v-if="isOwner"
-            :size="16"
-            color="primary"
-          >
-            tabler-crown
-          </v-icon>
-          <v-icon
-            v-else-if="isAdmin"
-            :size="16"
-            color="secondary"
-          >
-            tabler-shield-check
-          </v-icon>
-          <v-icon
-            v-else-if="isMuted"
-            :size="16"
-            color="gray"
-          >
-            tabler-user-minus
-          </v-icon>
-          <v-icon
-            v-else-if="isBan"
-            :size="16"
-            color="gray"
-          >
-            tabler-user-x
-          </v-icon>
+          <v-icon v-if="isOwner" :size="16" color="primary"> tabler-crown </v-icon>
+          <v-icon v-else-if="isAdmin" :size="16" color="secondary"> tabler-shield-check </v-icon>
+          <v-icon v-else-if="isMuted" :size="16" color="gray"> tabler-user-minus </v-icon>
+          <v-icon v-else-if="isBan" :size="16" color="gray"> tabler-user-x </v-icon>
         </span>
       </div>
-      <div
-        v-if="!amTheMember"
-        class="flex items-center gap-2"
-      >
+      <div v-if="!amTheMember" class="flex items-center gap-2">
         <v-btn
           icon
           title="envoyer un message"
@@ -60,33 +30,13 @@
           class="text-gray-400"
           @click.prevent.stop="pushToDmWithUser(member.id, $router)"
         >
-          <v-icon
-            :size="16"
-            class=""
-            title="Envoyer un message"
-          >
-            lets-icons:chat-light
-          </v-icon>
+          <v-icon :size="16" class="" title="Envoyer un message"> lets-icons:chat-light </v-icon>
         </v-btn>
 
-        <v-menu
-          v-model="menu"
-          class=""
-          :close-on-content-click="false"
-          location="end"
-        >
+        <v-menu v-model="menu" class="" :close-on-content-click="false" location="end">
           <template #activator="{ props }">
-            <button
-              class="w-full p-2 text-left"
-              icon
-              v-bind="props"
-            >
-              <v-icon
-                class="text-red-600"
-                :size="16"
-              >
-                ri:user-settings-line
-              </v-icon>
+            <button class="w-full p-2 text-left" icon v-bind="props">
+              <v-icon class="text-red-600" :size="16"> ri:user-settings-line </v-icon>
             </button>
           </template>
 
@@ -107,10 +57,7 @@
                         :user-id="member.memberId"
                       />
                     </div>
-                    <kick-player
-                      :room-id="member.chatroomId"
-                      :user-id="member.memberId"
-                    />
+                    <kick-player :room-id="member.chatroomId" :user-id="member.memberId" />
                   </div>
                 </div>
               </v-list-item>

@@ -2,16 +2,16 @@
   <v-btn
     :disabled="isLoading"
     color="primary"
-    text
     size="large"
     class="w-full text-xs"
-    @click="handleUpdateIsBanned"
+    @click.prevent="handleUpdateIsBanned"
   >
     {{ banned ? 'Débannir' : 'Bannir' }}
+    <VIcon v-if="failed" color="red" :size="12"> tabler-alert-triangle </VIcon>
   </v-btn>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import useRoomsStore from '@/stores/RoomsStore'
 import { ChatMemberRole } from '@/utils/chatSocket'
 
@@ -34,21 +34,19 @@ const props = defineProps({
 
 const isLoading = ref(false)
 const banned = ref(props.stateOfIsBanned)
+const failed = ref(false)
 
-const handleUpdateIsBanned = async (e: Event) => {
-  e.preventDefault()
+const handleUpdateIsBanned = async () => {
   try {
     isLoading.value = true
-    const member = roomsStore.getCurrentRoomMembers.find(
-      (member) => member.memberId === props.userId
-    )
+    const member = roomsStore.roomMembers.find((member) => member.memberId === props.userId)
     if (!member) return
-
     const newRole = banned.value ? ChatMemberRole.USER : ChatMemberRole.BAN
     await roomsStore.changeMemberRole(props.roomId, member, newRole)
     isLoading.value = false
+    failed.value = false
   } catch (error) {
-    console.log(error)
+    failed.value = true
   } finally {
     isLoading.value = false
   }

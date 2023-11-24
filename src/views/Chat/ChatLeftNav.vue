@@ -49,7 +49,7 @@
             >
               <room-card :room="room" />
             </li>
-            <li class="h-16"></li>
+            <li class="h-16" />
           </perfect-scrollbar>
         </div>
         <div class="relative w-full h-1/2 shrink-0 grow-0">
@@ -80,7 +80,7 @@
             >
               <room-card :room="room" />
             </li>
-            <li class="h-16"></li>
+            <li class="h-16" />
           </perfect-scrollbar>
         </div>
       </div>

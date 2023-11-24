@@ -1,9 +1,6 @@
 <template>
   <div class="h-full">
-    <div
-      class="w-full h-full overflow-sroll"
-      :class="canRead ? '' : 'blur-sm'"
-    >
+    <div class="w-full h-full overflow-sroll" :class="canRead ? '' : 'blur-sm'">
       <perfect-scrollbar
         id="messages-log"
         ref="MessagesLogScroller"
@@ -16,15 +13,9 @@
           :key="`message-group-${index}-${msgGrp.senderId}`"
           :class="msgGrp.senderId === roomStore.userId ? 'self-end' : 'self-start'"
         >
-          <message
-            :is-sender="msgGrp.senderId === roomStore.userId"
-            :msg-group="msgGrp"
-          />
+          <message :is-sender="msgGrp.senderId === roomStore.userId" :msg-group="msgGrp" />
         </li>
-        <li
-          v-if="isTypingUserName"
-          class="pb-4 font-weight-medium"
-        >
+        <li v-if="isTypingUserName" class="pb-4 font-weight-medium">
           <p>
             <span class="text-primary">{{ isTypingUserName }}</span> est en train d'écrire...
           </p>
@@ -35,10 +26,7 @@
     <div
       class="absolute w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-[#262A46]/0 to-[80%] to-[#262A46]"
     >
-      <form
-        action=""
-        class="flex items-center justify-center w-full h-full"
-      >
+      <form action="" class="flex items-center justify-center w-full h-full">
         <div class="w-full h-[40px] relative">
           <div
             v-if="me && roomStore.isMuted"
@@ -55,9 +43,7 @@
             v-if="me && roomStore.isBanned"
             class="absolute left-0 z-50 flex items-center justify-center w-full h-full -top-5"
           >
-            <p class="text-xs text-primary">
-              Vous avez été banni de ce salon
-            </p>
+            <p class="text-xs text-primary">Vous avez été banni de ce salon</p>
           </div>
           <VForm @submit.prevent="sendMessage">
             <VTextField
@@ -78,11 +64,7 @@
                   icon
                   @click="sendMessage"
                 >
-                  <v-icon
-                    color="primary"
-                    size="16"
-                    icon="mingcute:send-fill"
-                  />
+                  <v-icon color="primary" size="16" icon="mingcute:send-fill" />
                 </v-btn>
               </template>
             </VTextField>
@@ -132,9 +114,7 @@ export default defineComponent({
       return this.$refs.MessagesLogScroller as PerfectScrollbar
     },
     me(): ChatRoomMember | undefined {
-      return this.roomStore.roomMembers.find(
-        (member) => member.member.id === this.roomStore.userId
-      )
+      return this.roomStore.roomMembers.find((member) => member.member.id === this.roomStore.userId)
     },
     canRead(): boolean {
       if (!this.me) return false
@@ -188,7 +168,7 @@ export default defineComponent({
       handler(value: number) {
         if (!value) return
         if (!this.roomStore.isMemberOfRoom && !this.roomStore.isPublic) return
-        this.fetchMessages();
+        this.fetchMessages()
       },
       immediate: true
     },
@@ -196,7 +176,7 @@ export default defineComponent({
       handler() {
         if (!this.roomStore.currentRoom) return
         const lastTypingUserInRoom = this.roomStore.getRoomMembersTyping.get(
-            this.roomStore.currentRoom.id
+          this.roomStore.currentRoom.id
         )
         if (!lastTypingUserInRoom) return
         const now = new Date().getTime()
@@ -258,18 +238,6 @@ export default defineComponent({
       if (!this.authStore.getUser) return
       this.roomStore.sendUserIsTypingInRoom(this.me.chatroomId, this.authStore.getUser.username)
     },
-    scrollToBottomInChatLog() {
-      const el = this.$refs.MessagesLogScroller?.$el as HTMLElement
-      if (el) {
-        el.scrollTop = el.scrollHeight
-      }
-    },
-    scrollToTopInChatLog() {
-      const el = this.$refs.MessagesLogScroller?.$el as HTMLElement
-      if (el) {
-        el.scrollTop = 0
-      }
-    },
     getTimeRemaining() {
       const now = Date.now()
       const timeDifference = this.expiresAt - now
@@ -300,6 +268,18 @@ export default defineComponent({
         }
 
         this.canWriteAt = rtn
+      }
+    },
+    scrollToBottomInChatLog() {
+      const el = this.$refs.MessagesLogScroller?.$el as HTMLElement
+      if (el) {
+        el.scrollTop = el.scrollHeight
+      }
+    },
+    scrollToTopInChatLog() {
+      const el = this.$refs.MessagesLogScroller?.$el as HTMLElement
+      if (el) {
+        el.scrollTop = 0
       }
     }
   }

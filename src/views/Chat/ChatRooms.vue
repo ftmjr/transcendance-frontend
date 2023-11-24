@@ -13,9 +13,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
-import useRoomsStore  from '@/stores/RoomsStore'
+import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
-import { ChatRoom as ChatRoomT } from "@/utils/chatSocket";
+import { ChatRoom as ChatRoomT } from '@/utils/chatSocket'
 import ChatLeftNav from './ChatLeftNav.vue'
 import ChatRightNav from './ChatRightNav.vue'
 import ChatRoom from './ChatRoom.vue'
@@ -70,8 +70,8 @@ export default defineComponent({
   },
   async beforeMount() {
     this.loading = true
-    await this.roomsStore.getAllMyRooms();
-    await this.roomsStore.fetchPublicRooms();
+    await this.roomsStore.getAllMyRooms()
+    await this.roomsStore.fetchPublicRooms()
     this.loading = false
     if (this.roomId) {
       await this.accessRoom(this.roomId)

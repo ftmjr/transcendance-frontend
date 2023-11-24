@@ -9,41 +9,20 @@
       offset="10px -20px"
     >
       <template #activator="{ props }">
-        <v-btn
-          icon
-          color="transparent"
-          class="w-full p-2 text-left"
-          v-bind="props"
-        >
-          <v-icon
-            color="primary"
-            icon="ic:round-add"
-            size="24"
-          />
+        <v-btn icon color="transparent" class="w-full p-2 text-left" v-bind="props">
+          <v-icon color="primary" icon="ic:round-add" size="24" />
         </v-btn>
       </template>
       <v-card>
         <v-list>
           <v-list-item>
             <div class="p-4">
-              <v-sheet
-                width="300"
-                class="mx-auto"
-              >
-                <h2 class="mb-4 text-sm font-bold">
-                  Création de room
-                </h2>
+              <v-sheet width="300" class="mx-auto">
+                <h2 class="mb-4 text-sm font-bold">Création de room</h2>
                 <v-form @submit.prevent="createRoom">
                   <div class="flex flex-col gap-4">
-                    <v-text-field
-                      v-model="name"
-                      :rules="rules.name"
-                      label="nom"
-                    />
-                    <v-select
-                      v-model="type"
-                      :items="typeList"
-                    />
+                    <v-text-field v-model="name" :rules="rules.name" label="nom" />
+                    <v-select v-model="type" :items="typeList" />
                     <v-text-field
                       v-model="password"
                       :disabled="type === RoomType.PUBLIC"
@@ -68,6 +47,7 @@
                 <NotificationPopUp
                   v-model:visible="showErrorPopUp"
                   message="Impossible de créer la salle de discussion"
+                  color="error"
                 />
               </v-sheet>
             </div>
@@ -163,7 +143,7 @@ const createRoom = async () => {
         : undefined
   })
   if (result === 'success') {
-    resetForm();
+    resetForm()
     loading.value = false
     emit('close')
     return
