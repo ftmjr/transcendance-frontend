@@ -9,11 +9,7 @@
       </div>
     </div>
     <div class="flex flex-row flex-wrap py-8">
-      <div
-        v-for="meta in userListStatsMeta"
-        :key="meta.title"
-        class="p-2 basis-1/2"
-      >
+      <div v-for="meta in userListStatsMeta" :key="meta.title" class="p-2 basis-1/2">
         <VCard :loading="loadingStats">
           <VCardText class="flex justify-space-between">
             <div>
@@ -25,12 +21,7 @@
               </div>
               <span>{{ meta.subtitle }}</span>
             </div>
-            <v-avatar
-              rounded
-              variant="tonal"
-              :color="meta.color"
-              :icon="meta.icon"
-            />
+            <v-avatar rounded variant="tonal" :color="meta.color" :icon="meta.icon" />
           </VCardText>
         </VCard>
       </div>
@@ -60,16 +51,8 @@
             class="w-full h-32 cursor-pointer"
             @click.prevent="pushToUserProfile(friend.id, $router)"
           >
-            <VImg
-              v-if="friend.profile.avatar"
-              class="w-full h-full"
-              :src="friend.profile.avatar"
-            />
-            <VIcon
-              v-else
-              color="primary"
-              icon="tabler-user"
-            />
+            <VImg v-if="friend.profile.avatar" class="w-full h-full" :src="friend.profile.avatar" />
+            <VIcon v-else color="primary" icon="tabler-user" />
           </v-avatar>
           <div class="flex flex-col gap-4">
             <button
@@ -96,18 +79,12 @@
                   class="flex items-center justify-center w-8 h-8 p-2 border rounded-md bg-green-400/50"
                   @click.prevent="pushToDmWithUser(friend.id, $router)"
                 >
-                  <v-icon
-                    size="16"
-                    icon="mdi-chat"
-                  />
+                  <v-icon size="16" icon="mdi-chat" />
                 </button>
                 <button
                   class="flex items-center justify-center w-8 h-8 p-2 border rounded-md bg-yellow"
                 >
-                  <v-icon
-                    size="16"
-                    icon="mdi-goal"
-                  />
+                  <v-icon size="16" icon="mdi-goal" />
                 </button>
               </div>
             </div>

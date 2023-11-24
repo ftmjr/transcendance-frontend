@@ -4,30 +4,14 @@
       <h5 class="text-h5 text-center font-semibold mb-1">
         Salut, {{ authStore.getProfile?.name }}
       </h5>
-      <VAvatar
-        rounded
-        size="120"
-        class="mx-auto"
-      >
-        <VImg
-          v-if="authStore.getProfile?.avatar"
-          :src="authStore.getProfile.avatar"
-        />
-        <VIcon
-          v-else
-          color="primary"
-          icon="tabler-user"
-        />
+      <VAvatar rounded size="120" class="mx-auto">
+        <VImg v-if="authStore.getProfile?.avatar" :src="authStore.getProfile.avatar" />
+        <VIcon v-else color="primary" icon="tabler-user" />
       </VAvatar>
       <p class="text-center font-light">
         Votre session est actuellement bloqué, pour des raisons de sécurité
       </p>
-      <VBtn
-        variant="text"
-        @click="unlock"
-      >
-        Débloquer
-      </VBtn>
+      <VBtn variant="text" @click="unlock"> Débloquer </VBtn>
     </VCardText>
   </div>
 </template>

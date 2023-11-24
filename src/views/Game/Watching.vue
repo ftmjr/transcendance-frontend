@@ -1,21 +1,10 @@
 <template>
   <div class="h-full">
     <template v-if="!loading && gameSession">
-      <GamePlayer
-        v-if="viewer"
-        :room-id="gameId"
-        :player="viewer"
-        :theme="theme"
-      />
+      <GamePlayer v-if="viewer" :room-id="gameId" :player="viewer" :theme="theme" />
     </template>
-    <div
-      v-else-if="loading"
-      class="h-full flex items-center justify-center"
-    >
-      <v-progress-circular
-        indeterminate
-        color="deep-purple-accent-4"
-      />
+    <div v-else-if="loading" class="h-full flex items-center justify-center">
+      <v-progress-circular indeterminate color="deep-purple-accent-4" />
     </div>
     <v-alert
       v-else
@@ -28,9 +17,7 @@
       <template v-if="error">
         {{ error }}
       </template>
-      <template v-else>
-        La partie est terminée, est deja terminé, ou n'existe pas.
-      </template>
+      <template v-else> La partie est terminée, est deja terminé, ou n'existe pas. </template>
     </v-alert>
   </div>
 </template>

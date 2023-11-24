@@ -21,28 +21,12 @@
         :theme="theme"
       />
     </template>
-    <div
-      v-else-if="loading"
-      class="h-full flex items-center justify-center"
-    >
-      <v-progress-circular
-        indeterminate
-        color="deep-purple-accent-4"
-      />
+    <div v-else-if="loading" class="h-full flex items-center justify-center">
+      <v-progress-circular indeterminate color="deep-purple-accent-4" />
     </div>
-    <div
-      v-if="!gameStore.isPlaying"
-      class="flex justify-center"
-    >
-      <p class="w-1/2 text-center">
-        Aucune partie en cours
-      </p>
-      <VIcon
-        color="orange"
-        :size="128"
-      >
-        tabler:device-gamepad-2
-      </VIcon>
+    <div v-if="!gameStore.isPlaying" class="flex justify-center">
+      <p class="w-1/2 text-center">Aucune partie en cours</p>
+      <VIcon color="orange" :size="128"> tabler:device-gamepad-2 </VIcon>
     </div>
   </div>
 </template>

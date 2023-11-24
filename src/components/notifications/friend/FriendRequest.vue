@@ -1,8 +1,5 @@
 <template>
-  <button
-    class="relative block w-full p-4 hover:bg-[#01051e] cursor-pointer"
-    @click="handleRead"
-  >
+  <button class="relative block w-full p-4 hover:bg-[#01051e] cursor-pointer" @click="handleRead">
     <div class="flex gap-4 w-full relative">
       <div :class="[notification.status === 'READ' ? 'opacity-75' : 'opacity-100']">
         <avatar-badge :user-id="notification.referenceId" />
