@@ -174,7 +174,6 @@ export class GameNetwork {
   }
   onGameMonitorStateChanged(callback: (state: GAME_STATE) => void) {
     this.socket?.on(GAME_EVENTS.GameMonitorStateChanged, (data) => {
-      console.log('state recieved')
       callback(data.data)
     })
   }
