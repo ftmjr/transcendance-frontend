@@ -15,8 +15,6 @@ export default class PongScene extends Scene {
   public cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys | undefined
   public escKey: Phaser.Input.Keyboard.Key | undefined
   public QKey: Phaser.Input.Keyboard.Key | undefined
-  private leftLine!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
-  private rightLine!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
   private scoreImages!: { player1: ScoreBoard; player2: ScoreBoard }
   private playerOneScoreText!: Phaser.GameObjects.BitmapText
   private playerTwoScoreText!: Phaser.GameObjects.BitmapText
