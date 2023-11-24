@@ -56,7 +56,7 @@ const handleRead = async () => {
 }
 const handleShowRoom = async () => {
   await handleRead()
-  await router.push({ name: 'chat', params: { id: props.notification?.referenceId } })
+  await router.push({ name: 'chat', params: { roomId: props.notification?.referenceId } })
 }
 </script>
 

@@ -195,6 +195,7 @@ const useRoomsStore = defineStore({
             const messages = this.messages.get(message.chatroomId)
             if (messages) {
               messages.push(message)
+              this.messages.set(message.chatroomId, messages)
             } else {
               this.messages.set(message.chatroomId, [message])
             }
