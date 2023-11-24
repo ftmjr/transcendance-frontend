@@ -21,7 +21,7 @@ export default class PongScene extends Scene {
   private playerOneScoreText!: Phaser.GameObjects.BitmapText
   private playerTwoScoreText!: Phaser.GameObjects.BitmapText
   private scoreRoutineOn = false
-  private soundConfig: Phaser.Types.Sound.SoundConfig = { mute: false, volume: 0.3 }
+  private soundConfig: Phaser.Types.Sound.SoundConfig = { mute: false, volume: 0.2 }
   constructor() {
     super('PongGame')
   }
