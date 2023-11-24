@@ -89,26 +89,26 @@ const useMessageStore = defineStore({
       if (foundUser) {
         this.currentContact = foundUser
         this.currentContactId = foundUser.id
-        return;
+        return
       }
       const contactFound = this.contacts.find((user) => user.id === contactId)
       if (contactFound) {
         // add it to conversation   only if not already in
         const found = this.conversationsUsers.find((user) => user.id === contactFound.id)
         if (!found) {
-          this.conversationsUsers.unshift(contactFound);
+          this.conversationsUsers.unshift(contactFound)
         }
         this.currentContact = { ...contactFound }
         this.currentContactId = contactFound.id
-        return;
+        return
       }
-      const userStore = useUserStore();
+      const userStore = useUserStore()
       try {
         const shortProfile = await userStore.getShortUserProfile(contactId)
         if (shortProfile) {
           this.currentContact = { ...shortProfile }
           this.currentContactId = shortProfile.id
-          this.conversationsUsers.unshift(shortProfile);
+          this.conversationsUsers.unshift(shortProfile)
         }
       } catch (e) {
         this.currentContact = undefined
@@ -117,8 +117,8 @@ const useMessageStore = defineStore({
     },
     // called at unMount
     async resetCurrentConversationWith() {
-      this.currentContact = undefined;
-      this.currentContactId = 0;
+      this.currentContact = undefined
+      this.currentContactId = 0
     },
     async getUniqueConversations() {
       try {
@@ -131,7 +131,7 @@ const useMessageStore = defineStore({
           // set new conversation users without loosing reactivity
           this.conversationsUsers = data
         } else {
-          this.conversationsUsers.splice(0, this.conversationsUsers.length);
+          this.conversationsUsers.splice(0, this.conversationsUsers.length)
         }
       } catch (error) {
         if (isAxiosError(error)) {
@@ -139,7 +139,7 @@ const useMessageStore = defineStore({
             console.log('Failed to load conversations:', error.response.data.message)
           }
         }
-        this.conversationsUsers.splice(0, this.conversationsUsers.length);
+        this.conversationsUsers.splice(0, this.conversationsUsers.length)
       }
     },
     async getPrivateMessageBetween(info: {

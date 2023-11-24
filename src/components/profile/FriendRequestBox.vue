@@ -133,7 +133,7 @@ import {
   NotificationType,
   RealTimeNotification,
   RealTimeNotificationTitle
-} from "@/utils/notificationSocket";
+} from '@/utils/notificationSocket'
 import useMessageStore from '@/stores/MessageStore'
 
 export default defineComponent({
@@ -211,14 +211,14 @@ export default defineComponent({
     async checkAndRefreshFriendShip(notification: RealTimeNotification) {
       if (!this.messageStore.conversationWith) return
       if (
-          notification.title === RealTimeNotificationTitle.BlockedContactMessage ||
-          notification.title === RealTimeNotificationTitle.BrokenFriendship
+        notification.title === RealTimeNotificationTitle.BlockedContactMessage ||
+        notification.title === RealTimeNotificationTitle.BrokenFriendship
       ) {
         if (
-            notification.sourceUserId === this.messageStore.conversationWith.id ||
-            notification.userId === this.messageStore.conversationWith.id
+          notification.sourceUserId === this.messageStore.conversationWith.id ||
+          notification.userId === this.messageStore.conversationWith.id
         ) {
-          await this.fetchFriendShipState();
+          await this.fetchFriendShipState()
         }
       }
     },

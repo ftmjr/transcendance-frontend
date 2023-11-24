@@ -61,7 +61,8 @@
       v-show="messageStore.conversationsUsersFiltered.length === 0"
       class="no-chat-items-text text-disabled"
     >
-      Aucune Conversation <span v-show="search.length">pour `{{ search }}` dans {{nbOfConversation}}</span>
+      Aucune Conversation
+      <span v-show="search.length">pour `{{ search }}` dans {{ nbOfConversation }}</span>
     </span>
     <li class="my-4">
       <span class="text-xl chat-contact-header text-primary font-weight-medium"> Amis </span>
@@ -83,7 +84,7 @@ import useMessageStore from '@/stores/MessageStore'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import MessageContact from '@/components/messages/MessageContact.vue'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
-import useUserStore from "@/stores/UserStore";
+import useUserStore from '@/stores/UserStore'
 import useRoomsStore from '@/stores/RoomsStore'
 
 export default defineComponent({
@@ -108,7 +109,7 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      nbOfConversation: 0,
+      nbOfConversation: 0
     }
   },
   computed: {
@@ -119,7 +120,7 @@ export default defineComponent({
       set(value: string) {
         this.messageStore.setSearchTerm(value)
       }
-    },
+    }
   },
   watch: {
     'messageStore.conversationsUsers': {

@@ -122,7 +122,7 @@ export default defineComponent({
     const messageStore = useMessageStore()
     return {
       messageStore,
-      usersStore,
+      usersStore
     }
   },
   computed: {
@@ -141,14 +141,14 @@ export default defineComponent({
       await this.usersStore.blockUser(this.messageStore.conversationWith.id)
       this.$nextTick(() => {
         this.$emit('updateFriendshipStatus')
-      });
+      })
     },
     async unblockContact() {
       if (!this.messageStore.conversationWith) return
       await this.usersStore.unblockUser(this.messageStore.conversationWith.id)
       this.$nextTick(() => {
         this.$emit('updateFriendshipStatus')
-      });
+      })
     },
     async showProfile() {
       if (!this.messageStore.conversationWith) return

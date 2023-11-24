@@ -20,9 +20,7 @@
       />
     </v-navigation-drawer>
     <VMain class="chat-content-container">
-      <contact-direct-message
-        v-if="!!messageStore.conversationWith"
-      />
+      <contact-direct-message v-if="!!messageStore.conversationWith" />
       <div
         v-else
         class="flex items-center justify-center h-full flex-column"
@@ -96,7 +94,7 @@ export default defineComponent({
         if (value) {
           document.title = `${value.profile.name} - Message | Transcendence`
         }
-      },
+      }
     },
     contactId: {
       handler(value) {
@@ -106,34 +104,34 @@ export default defineComponent({
     },
     'messageStore.isSidebarOpen': {
       handler(value) {
-        if (value !== this.isLeftSidebarOpen){
+        if (value !== this.isLeftSidebarOpen) {
           this.isLeftSidebarOpen = value
         }
-      },
+      }
     },
     isLeftSidebarOpen: {
       handler(value) {
-        if (value !== this.messageStore.isSidebarOpen){
+        if (value !== this.messageStore.isSidebarOpen) {
           this.messageStore.setSidebarOpen(value)
         }
-      },
+      }
     }
   },
   async beforeMount() {
     this.loading = true
     await this.userStore.loadAllMyFriends()
-    await this.messageStore.getUniqueConversations();
+    await this.messageStore.getUniqueConversations()
     if (this.contactId) {
-      await this.setConversation(this.contactId);
+      await this.setConversation(this.contactId)
     }
     this.loading = false
   },
   beforeUnmount() {
-    this.messageStore.resetCurrentConversationWith();
+    this.messageStore.resetCurrentConversationWith()
   },
   methods: {
     async setConversation(contactId?: number) {
-      if (!contactId || this.messageStore.currentContact?.id === contactId) return;
+      if (!contactId || this.messageStore.currentContact?.id === contactId) return
       this.loading = true
       await this.messageStore.setCurrentConversationWith(contactId)
       this.loading = false

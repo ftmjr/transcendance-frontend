@@ -293,7 +293,7 @@ export default defineComponent({
           notification.sourceUserId === this.messageStore.conversationWith.id ||
           notification.userId === this.messageStore.conversationWith.id
         ) {
-          await this.fetchFriendShipState();
+          await this.fetchFriendShipState()
         }
       }
     },

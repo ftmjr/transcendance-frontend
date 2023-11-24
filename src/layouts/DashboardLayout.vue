@@ -122,21 +122,21 @@ watch(notificationStore.allRealTimeNotifications, (notifications) => {
 
 // watch for route changes and refresh the token
 const notRefreshableRoutes = [
-    'auth',
-    'reset-password',
-    'two-factors',
-    'two-factors-verify',
-    'locked-screen',
-    'oauth-auth',
-    'waiting-room'
+  'auth',
+  'reset-password',
+  'two-factors',
+  'two-factors-verify',
+  'locked-screen',
+  'oauth-auth',
+  'waiting-room'
 ]
 watch(router.currentRoute, async (to, from) => {
   // if route is not refreshable, return
-  if (notRefreshableRoutes.includes(to.name as string)) return;
+  if (notRefreshableRoutes.includes(to.name as string)) return
   // if user is not logged in, return
-  if (!authStore.isLoggedIn) return;
+  if (!authStore.isLoggedIn) return
   // now refresh
-  await authStore.refreshToken();
+  await authStore.refreshToken()
 })
 
 onBeforeMount(() => {

@@ -13,7 +13,6 @@ import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
 import { isAxiosError } from 'axios'
 import useUserStore, { BlockedStatus } from '@/stores/UserStore'
 
-
 export interface JoinRoom {
   userId: number
   password?: string
