@@ -128,7 +128,12 @@ import useUserStore, {
 } from '@/stores/UserStore'
 import useAuthStore from '@/stores/AuthStore'
 import useNotificationStore from '@/stores/NotificationStore'
-import { Notification, NotificationType } from '@/utils/notificationSocket'
+import {
+  Notification,
+  NotificationType,
+  RealTimeNotification,
+  RealTimeNotificationTitle
+} from "@/utils/notificationSocket";
 import useMessageStore from '@/stores/MessageStore'
 
 export default defineComponent({
@@ -186,6 +191,13 @@ export default defineComponent({
           this.fetchFriendShipState()
         }
       }
+    },
+    'notificationStore.allRealTimeNotifications': {
+      handler(value: RealTimeNotification[]) {
+        if (value.length === 0) return
+        this.checkAndRefreshFriendShip(value[0])
+      },
+      deep: true
     }
   },
   methods: {
@@ -195,6 +207,20 @@ export default defineComponent({
       this.state = await this.userStore.checkFriendShip(this.friendId)
       this.blockStatus = await this.userStore.checkBlocked(this.friendId)
       this.loading = false
+    },
+    async checkAndRefreshFriendShip(notification: RealTimeNotification) {
+      if (!this.messageStore.conversationWith) return
+      if (
+          notification.title === RealTimeNotificationTitle.BlockedContactMessage ||
+          notification.title === RealTimeNotificationTitle.BrokenFriendship
+      ) {
+        if (
+            notification.sourceUserId === this.messageStore.conversationWith.id ||
+            notification.userId === this.messageStore.conversationWith.id
+        ) {
+          await this.fetchFriendShipState();
+        }
+      }
     },
     async beFriendRequest() {
       await this.userStore.askFriendRequest(this.friendId)

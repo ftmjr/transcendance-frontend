@@ -3,6 +3,7 @@
     v-if="contact"
     class="flex flex-col px-2 pb-2 rounded-lg cursor-pointer hover:bg-darkBlue"
     :class="{ 'bg-darkBlue/50': isActive }"
+    @click.stop="showThisConversation"
   >
     <div class="flex items-center gap-2 p-2">
       <avatar-badge
@@ -61,6 +62,7 @@ export default defineComponent({
       default: false
     }
   },
+  emits: ['openChatOfContact'],
   setup() {
     const messageStore = useMessageStore()
     const roomsStore = useRoomsStore()
@@ -106,6 +108,11 @@ export default defineComponent({
       },
       deep: true,
       immediate: true
+    }
+  },
+  methods: {
+    showThisConversation() {
+      this.$emit('openChatOfContact', this.contact.id)
     }
   }
 })

@@ -28,12 +28,20 @@
           @{{ messageStore.conversationWith.username }}</span>
       </div>
       <v-chip
-        v-show="blockedStatus !== 'none'"
+        v-if="blockedStatus !== 'none'"
         class="ml-2"
         append-icon="tabler-lock"
         color="error"
       >
-        Bloqué
+        <template v-if="blockedStatus === 'mutual'">
+          Mutuellement bloquer
+        </template>
+        <template v-else-if="blockedStatus === 'blocked'">
+          Vous avez bloquer
+        </template>
+        <template v-else-if="blockedStatus === 'blockedBy'">
+          Vous a bloquer
+        </template>
       </v-chip>
       <VSpacer />
       <div class="flex items-center">
@@ -64,6 +72,13 @@
             >
               <VListItemTitle>Bloquer</VListItemTitle>
             </VListItem>
+            <VListItem
+              v-else-if="blockedStatus === 'blocked' || blockedStatus === 'blockedBy'"
+              prepend-icon="tabler-ban"
+              @click.stop="unblockContact"
+            >
+              <VListItemTitle>Debloquer le contact</VListItemTitle>
+            </VListItem>
           </v-list>
         </v-menu>
       </VBtn>
@@ -93,7 +108,7 @@ export default defineComponent({
     blockedStatus: {
       type: String as PropType<BlockedStatus>,
       required: true,
-      default: BlockedStatus.Blocked
+      default: BlockedStatus.None
     },
     loadingStatus: {
       type: Boolean,
@@ -101,12 +116,13 @@ export default defineComponent({
       default: false
     }
   },
+  emits: ['updateFriendshipStatus'],
   setup() {
     const usersStore = useUserStore()
     const messageStore = useMessageStore()
     return {
       messageStore,
-      usersStore
+      usersStore,
     }
   },
   computed: {
@@ -123,6 +139,16 @@ export default defineComponent({
     async blockContact() {
       if (!this.messageStore.conversationWith) return
       await this.usersStore.blockUser(this.messageStore.conversationWith.id)
+      this.$nextTick(() => {
+        this.$emit('updateFriendshipStatus')
+      });
+    },
+    async unblockContact() {
+      if (!this.messageStore.conversationWith) return
+      await this.usersStore.unblockUser(this.messageStore.conversationWith.id)
+      this.$nextTick(() => {
+        this.$emit('updateFriendshipStatus')
+      });
     },
     async showProfile() {
       if (!this.messageStore.conversationWith) return
