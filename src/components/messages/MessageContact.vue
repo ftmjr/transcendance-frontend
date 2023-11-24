@@ -63,7 +63,8 @@ export default defineComponent({
   },
   data() {
     return {
-      isTyping: false
+      isTyping: false,
+      lastMessage: null as PrivateMessage | null,
     }
   },
   computed: {
@@ -73,9 +74,6 @@ export default defineComponent({
     canShowLastMessage() {
       return this.showLastMessage && !this.isTyping
     },
-    lastMessage(): PrivateMessage | null {
-      return this.messageStore.getLastMessageBetween(this.contact.id)
-    }
   },
   watch: {
     'roomsStore.getContactTyping': {
@@ -85,6 +83,13 @@ export default defineComponent({
         if (!lastTime) return false
         const now = new Date().getTime()
         this.isTyping = now - lastTime < 3000
+      },
+      deep: true,
+      immediate: true
+    },
+    'messageStore.messages': {
+      handler() {
+        this.lastMessage = this.messageStore.getLastMessageBetween(this.contact.id)
       },
       deep: true,
       immediate: true
