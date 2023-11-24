@@ -37,7 +37,11 @@
               }"
               class="h-full pb-16 grow-0 srink-0 hide-scrollbar"
             >
-              <li v-for="member in roomStore.roomMembers" :key="member.id" class="block px-2 py-2">
+              <li
+                v-for="member in roomStore.roomMembers"
+                :key="member.id"
+                class="block px-2 py-2"
+              >
                 <chat-members-list-button :member="member" />
               </li>
             </perfect-scrollbar>

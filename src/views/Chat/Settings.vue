@@ -40,11 +40,11 @@
                     validate-on="submit lazy"
                     @submit.prevent="updateRoomInfos"
                   >
-                    <VCardText class="flex">
+                    <VCardText class="flex flex-col items-center gap-1">
                       <VAvatar
                         v-if="roomsStore.currentRoom.avatar"
                         rounded
-                        :size="80"
+                        :size="100"
                         :image="roomsStore.currentRoom.avatar"
                       />
                       <v-file-input
@@ -54,11 +54,14 @@
                         :single-line="true"
                         :disabled="loading"
                         density="compact"
-                        label="Avatar salon"
+                        color="secondary"
+                        variant="solo"
+                        label="avatar"
+                        :prepend-icon="loading ? 'mdi-loading mdi-spin' : 'mdi-upload'"
                       >
                         <template #selection="{ fileNames }">
                           <template v-for="fileName in fileNames" :key="fileName">
-                            <v-chip size="small" label color="primary" class="me-2">
+                            <v-chip size="small" label color="primary">
                               {{ fileName }}
                             </v-chip>
                           </template>

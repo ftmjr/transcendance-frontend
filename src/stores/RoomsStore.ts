@@ -129,7 +129,9 @@ const useRoomsStore = defineStore({
       return this.currentRoomStatus.room?.type === RoomType.PRIVATE
     },
     isPasswordProtected(): boolean {
-      return this.currentRoomStatus.room?.password !== ''
+      if (!this.currentRoomStatus.room) return false;
+      if (!this.currentRoomStatus.room.password) return false;
+      return this.currentRoomStatus.room.password.trim().length > 0;
     },
     roomMembers(): MemberRoomWithUserProfiles[] {
       return this.currentRoomMembers
@@ -555,6 +557,15 @@ const useRoomsStore = defineStore({
       } catch (error) {
         return 'failed'
       }
+    },
+    async inviteUser(roomId: number, userId: number): Promise<'success' | 'failed'> {
+        try {
+            const data = { roomId: roomId, userId: userId }
+            await axios.post(`/chat/invite`, data)
+            return 'success'
+        } catch (error) {
+            return 'failed'
+        }
     }
   }
 })

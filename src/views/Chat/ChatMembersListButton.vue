@@ -28,7 +28,7 @@
           :size="16"
           color="transparent"
           class="text-gray-400"
-          @click.prevent.stop="pushToDmWithUser(member.id, $router)"
+          @click.prevent.stop="pushToDmWithUser(member.memberId, $router)"
         >
           <v-icon :size="16" class="" title="Envoyer un message"> lets-icons:chat-light </v-icon>
         </v-btn>
