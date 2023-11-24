@@ -21,7 +21,7 @@
           <v-icon>iconamoon:close</v-icon>
         </v-btn>
       </div>
-      <div class="flex-1">
+      <div class="flex-1 h-full">
         <div class="relative w-full border-b h-1/2 shrink-0 grow-0">
           <span
             class="absolute z-10 w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-[#262A46]/0 to-[80%] to-[#262A46]"
@@ -49,9 +49,10 @@
             >
               <room-card :room="room" />
             </li>
+            <li class="h-16"></li>
           </perfect-scrollbar>
         </div>
-        <div class="w-full h-1/2 shrink-0 grow-0">
+        <div class="relative w-full h-1/2 shrink-0 grow-0">
           <span
             class="absolute z-10 w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-[#262A46]/0 to-[80%] to-[#262A46]"
           />
@@ -79,6 +80,7 @@
             >
               <room-card :room="room" />
             </li>
+            <li class="h-16"></li>
           </perfect-scrollbar>
         </div>
       </div>

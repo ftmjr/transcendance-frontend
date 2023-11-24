@@ -38,7 +38,7 @@
       >
         <div class="w-full h-[40px] relative">
           <div
-            v-if="isMuted"
+            v-if="me && isMuted"
             class="absolute left-0 z-50 flex items-center justify-center w-full h-full -top-5"
           >
             <p class="text-xs text-primary">
@@ -49,7 +49,7 @@
             </p>
           </div>
           <div
-            v-if="isBan"
+            v-if="me && isBan"
             class="absolute left-0 z-50 flex items-center justify-center w-full h-full -top-5"
           >
             <p class="text-xs text-primary">
@@ -135,7 +135,7 @@ export default defineComponent({
       )
     },
     isBan(): boolean {
-      if (!this.me) return true
+      if (!this.me) return false
       return this.me.role === ChatMemberRole.BAN
     },
     isMuted(): boolean {

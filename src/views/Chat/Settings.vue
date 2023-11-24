@@ -64,6 +64,7 @@
                       />
                       <v-file-input
                         :disabled="loading || !isOwner"
+                        v-model="file"
                         label="Choisir une image"
                         prepend-icon="mdi-camera"
                         variant="solo-filled"
@@ -172,6 +173,7 @@ export default defineComponent({
     name: '',
     roomDescription: '',
     type: RoomType.PUBLIC as RoomType,
+    file: null,
     oldPassword: '',
     password: '',
     passwordConfirmation: '',
@@ -300,6 +302,15 @@ export default defineComponent({
         this.showErrorPopUp = true
       }
       this.loading = false
+    },
+    async handleSubmit() {
+      if (this.file) {
+        const data = await this.roomsStore.updateAvatar(this.file)
+        if (data) {
+          //
+        }
+      }
+      //
     }
   }
 })
