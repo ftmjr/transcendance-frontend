@@ -77,10 +77,7 @@ const { width: windowWidth } = useWindowSize()
 const { layoutAttrs, injectSkinClasses } = useSkins()
 injectSkinClasses()
 const authStore = useAuthStore()
-const roomsStore = useRoomsStore()
 const notificationStore = useNotificationStore()
-const gameStore = useGameStore()
-const usersStore = useUserStore()
 const router = useRouter()
 
 const showChallengePopUp = ref(false)
@@ -101,16 +98,6 @@ const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotific
     }
   }
 }
-
-const lock = computed(() => {
-  return authStore.isLocked
-})
-// watch if is locked and move him to locked page
-watch(lock, (isLocked) => {
-  if (isLocked) {
-    router.push({ name: 'locked-screen' })
-  }
-})
 
 // watch if new notification is a new game challenge
 watch(notificationStore.allRealTimeNotifications, (notifications) => {
@@ -139,31 +126,6 @@ watch(router.currentRoute, async (to, from) => {
   await authStore.refreshToken()
 })
 
-onBeforeMount(() => {
-  if (authStore.isLoggedIn && authStore.getUser?.id) {
-    if (!notificationStore.socketOperational) {
-      notificationStore.init(authStore.getUser.id)
-    }
-    if (!gameStore.socketOperational) {
-      gameStore.initSocket()
-    }
-    if (!roomsStore.socketOperational) {
-      roomsStore.init(authStore.getUser.id)
-    }
-    if (!usersStore.socketOperational) {
-      usersStore.initStatusSocket(authStore.getUser.id)
-    }
-  }
-})
-
-onBeforeUnmount(() => {
-  if (!authStore.isLoggedIn) {
-    usersStore.disconnectStatusSocket()
-    notificationStore.disconnect()
-    roomsStore.disconnect()
-    gameStore.disconnectSocket()
-  }
-})
 </script>
 
 <style lang="scss">

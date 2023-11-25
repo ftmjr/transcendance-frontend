@@ -5,6 +5,8 @@ import { useThemeConfig } from '@core/composable/useThemeConfig'
 import useNotificationStore from '@/stores/NotificationStore'
 import useAuthStore from '@/stores/AuthStore'
 import useRoomsStore from '@/stores/RoomsStore'
+import useGameStore from "@/stores/GameStore";
+import useUserStore from "@/stores/UserStore";
 export default defineComponent({
   setup() {
     const {
@@ -19,11 +21,15 @@ export default defineComponent({
     const notificationStore = useNotificationStore()
     const authStore = useAuthStore()
     const roomsStore = useRoomsStore()
+    const gameStore = useGameStore()
+    const usersStore = useUserStore()
     return {
       isAppRtl,
       color,
       authStore,
       roomsStore,
+      gameStore,
+      usersStore,
       notificationStore
     }
   },
@@ -42,20 +48,70 @@ export default defineComponent({
         : null
     }
   },
+  watch:{
+    'authStore.isLoggedIn':{
+      handler(value){
+        if (value) {
+          this.connectAllSockets()
+        }else{
+          this.disconnectAllSocket()
+        }
+      },
+      immediate:true
+    },
+    'authStore.isLocked':{
+      handler(value){
+        if (value) {
+          this.$router.push({ name: 'locked-screen' });
+        }
+      },
+      immediate:true
+    },
+    'authStore.closeToExpire':{
+      handler(value){
+        if (value && this.authStore.isLoggedIn) {
+          this.authStore.refreshToken()
+        }
+      },
+      immediate:true
+    },
+  },
   created() {
     window.addEventListener('storage', () => {
       this.authStore.storageUpdated()
     })
   },
   beforeMount() {
-    if (this.authStore.isLoggedIn && this.authStore.getUser?.id) {
-      if (!this.notificationStore.socketOperational) {
-        this.notificationStore.init(this.authStore.getUser.id)
+    this.connectAllSockets();
+  },
+  beforeUnmount() {
+    this.disconnectAllSocket();
+  },
+  methods:{
+    connectAllSockets(){
+      if (this.authStore.isLoggedIn && this.authStore.getUser?.id) {
+        if (!this.usersStore.socketOperational) {
+          this.usersStore.initStatusSocket(this.authStore.getUser.id)
+        }
+        if (!this.notificationStore.socketOperational) {
+          this.notificationStore.init(this.authStore.getUser.id)
+        }
+        if (!this.roomsStore.socketOperational) {
+          this.roomsStore.init(this.authStore.getUser.id)
+        }
+        if (!this.gameStore.socketOperational) {
+          this.gameStore.initSocket()
+        }
       }
-      if (!this.roomsStore.socketOperational) {
-        this.roomsStore.init(this.authStore.getUser.id)
+    },
+    disconnectAllSocket(){
+      if (!this.authStore.isLoggedIn) {
+        this.usersStore.disconnectStatusSocket()
+        this.notificationStore.disconnect()
+        this.roomsStore.disconnect()
+        this.gameStore.disconnectSocket()
       }
-    }
+    },
   }
 })
 </script>
