@@ -124,12 +124,20 @@ const useGameStore = defineStore({
     },
     async getAllGameSessions() {
       try {
-        const { data } = await axios.get<GameSession[]>('/game/sessions', {
+        const { data } = await axios.get<GameSession[] | string>('/game/sessions', {
           headers: { Accept: 'application/json' }
         })
-        this.myGameSessions = data
+        if (Array.isArray(data)){
+          this.myGameSessions = data
+        } else {
+          this.myGameSessions = []
+        }
       } catch (e) {
-        this.myGameSessions = []
+        if (isAxiosError(e)) {
+          if (e.response && e.response.status === 404) {
+            this.myGameSessions = []
+          }
+        }
       }
     },
     setCurrentGameSession(gameId: number) {
@@ -151,13 +159,17 @@ const useGameStore = defineStore({
       }
     },
     async quitGameSession(gameId: number): Promise<void> {
-      await axios.delete(`/game/sessions`, {
-        headers: { Accept: 'application/json' },
-        data: { gameId }
-      })
-      this.currentGameSession = undefined
-      const userStore = useUserStore()
-      userStore.statusSocketManager?.updateMyStatus(Status.Online)
+      try {
+        const userStore = useUserStore()
+        userStore.statusSocketManager?.updateMyStatus(Status.Online)
+        this.currentGameSession = undefined
+        await axios.delete(`/game/sessions`, {
+          headers: { Accept: 'application/json' },
+          data: { gameId }
+        })
+      } catch (e) {
+        // nothing
+      }
     },
     async startGameAgainstBot(): Promise<GameSession | string> {
       try {
@@ -204,7 +216,9 @@ const useGameStore = defineStore({
     },
     async quitQueList(): Promise<'success' | string> {
       try {
-        await axios.get('/game/quit-waiting-queue')
+        await axios.get<string>('/game/quit-waiting-queue', {
+          headers: { Accept: 'application/json' }
+        })
         return 'success'
       } catch (error) {
         if (isAxiosError(error)) {
@@ -235,8 +249,9 @@ const useGameStore = defineStore({
         )
         return data
       } catch (e) {
-        return []
+        // nothing
       }
+      return []
     },
 
     // accept or reject game challenge
