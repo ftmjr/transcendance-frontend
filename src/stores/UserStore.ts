@@ -402,11 +402,11 @@ const useUserStore = defineStore({
       searchTerm: string
       currentPage: number
       perPage: number
-    }): Promise<User[]> {
+    }): Promise<Array<User & { profile: Profile }>> {
       const { currentPage, perPage, searchTerm } = params
       const skip = (currentPage - 1) * perPage
       try {
-        const { data } = await axios.get<User[]>('users/search', {
+        const { data } = await axios.get<Array<User & { profile: Profile }>>('users/search', {
           params: {
             query: searchTerm,
             skip: skip ?? 0,

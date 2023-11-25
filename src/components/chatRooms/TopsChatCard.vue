@@ -120,7 +120,7 @@ export default defineComponent({
       return VIcon
     },
     topRooms(): ChatRoomWithMembers[] {
-      const publicRoom = this.roomsStore.allPublic
+      const publicRoom = this.roomsStore.publicRooms
       return publicRoom.slice(0, 3)
     }
   },

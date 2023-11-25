@@ -46,6 +46,7 @@ export default defineComponent({
       gameMonitor,
       theme: this.theme
     }
+    gameMonitor.cleanAllPhaserRoutines()
     this.gameMonitor = gameMonitor
     const game = new Game({
       type: WEBGL,

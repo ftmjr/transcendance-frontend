@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
 import { User } from '@/interfaces/User'
+import { RouteLocationRaw } from 'vue-router'
 
 export interface Suggestion {
   icon: string
   title: string
-  url: { name: string; params?: object; query?: object }
+  url: RouteLocationRaw
 }
 
 interface SuggestionGroupContent extends Suggestion {
@@ -19,7 +20,7 @@ export interface SuggestionGroup {
 
 export type SearchItem = {
   id: number | string
-  url: { name: string; params?: object; query?: object }
+  url: RouteLocationRaw
   icon: string
   title: string
   category: string
