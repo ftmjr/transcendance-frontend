@@ -105,6 +105,10 @@ const useGameStore = defineStore({
     },
     isPlayingWithQueList(): boolean {
       return this.currentGameSession?.type === GameSessionType.QueListGame
+    },
+    socketOperational(): boolean {
+      if (!this.gameNetwork) return false;
+      return this.gameNetwork.socket?.connected ?? false;
     }
   },
   actions: {

@@ -209,7 +209,7 @@ export default class Monitor {
   }
 
   disconnectNetwork() {
-    this.gameNetwork.disconnect()
+    // this.gameNetwork.disconnect()
   }
 
   public getPlayer1(): GameUser | undefined {

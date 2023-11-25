@@ -73,7 +73,6 @@ const gameStore = useGameStore()
 const usersStore = useUserStore()
 const router = useRouter()
 
-gameStore.initSocket()
 const showChallengePopUp = ref(false)
 const challengeNotification = ref<RealTimeNotification>(null as unknown as RealTimeNotification)
 const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotification) => {
@@ -140,6 +139,9 @@ onBeforeMount(() => {
     if (!notificationStore.socketOperational) {
       notificationStore.init(authStore.getUser.id)
     }
+    if (!gameStore.socketOperational) {
+      gameStore.initSocket();
+    }
     if (!roomsStore.socketOperational) {
       roomsStore.init(authStore.getUser.id)
     }
@@ -154,6 +156,7 @@ onBeforeUnmount(() => {
     usersStore.disconnectStatusSocket()
     notificationStore.disconnect()
     roomsStore.disconnect()
+    gameStore.disconnectSocket()
   }
 })
 </script>
