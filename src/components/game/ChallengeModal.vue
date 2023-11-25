@@ -130,7 +130,7 @@ import useGameStore, { GameSession } from '@/stores/GameStore'
 import { Status } from '@/interfaces/User'
 import { Theme } from '@/Game/scenes/Boot'
 
-const props = defineProps({
+const localProps = defineProps({
   userGameStatus: {
     type: Object as PropType<{
       status: 'playing' | 'inQueue' | 'free'
@@ -176,7 +176,7 @@ const gameRulesFields = reactive({
 // if user is playing or in queue, we can't challenge him
 // if user is free, we can challenge him if status is online
 const canBeChallenged = computed(() => {
-  return props.userGameStatus?.status === 'free' && props.status === Status.Online
+  return localProps.userGameStatus?.status === 'free' && localProps.status === Status.Online
 })
 
 const color = computed<string>(() => {
@@ -200,7 +200,7 @@ const decrement = () => {
 
 const startChallenge = async () => {
   isDialogLoading.value = true
-  const r = await gameStore.challengeAPlayer(props.userId as number, gameRulesFields)
+  const r = await gameStore.challengeAPlayer(localProps.userId as number, gameRulesFields)
   isDialogLoading.value = false
   if (r !== 'challenge') {
     isDialogError.value = true
