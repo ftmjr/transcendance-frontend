@@ -134,7 +134,7 @@ export class GameNetwork {
   }
   sendPadMove(data: PadMovedData) {
     const roomId = this.roomId
-    if (this.isOperational) {
+    if (this.socket) {
       this.socket?.emit(GAME_EVENTS.PadMoved, { roomId, data })
     }
   }
@@ -148,10 +148,8 @@ export class GameNetwork {
 
   sendBallServe(data: BallData) {
     const roomId = this.roomId
-    console.log('trying to ball serve')
-    if (this.isOperational) {
-      console.log('emit ball served to room:', roomId, 'with data:', data)
-      this.socket?.emit(GAME_EVENTS.BallServed, { roomId, data })
+    if (this.socket) {
+      this.socket.emit(GAME_EVENTS.BallServed, { roomId, data })
     }
   }
 

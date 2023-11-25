@@ -494,7 +494,7 @@ const useRoomsStore = defineStore({
         })
         this.rooms = data
       } catch (error) {
-        console.error(error)
+        // console.log(error)
       }
     },
     // start listening to a room via socket

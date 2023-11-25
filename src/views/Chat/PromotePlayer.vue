@@ -13,7 +13,7 @@
     <v-btn
       :disabled="memberRole === role || canNotPromote || isLoading"
       color="primary"
-      text
+      variant="text"
       size="large"
       class="text-xs"
       @click="tryToMute"
@@ -68,14 +68,14 @@ const tryToMute = async (e: Event) => {
 
     isLoading.value = true
 
-    const member = roomsStore.getCurrentRoomMembers.find(
+    const member = roomsStore.roomMembers.find(
       (member) => member.memberId === props.userId
     )
     if (!member) return
     await roomsStore.changeMemberRole(props.roomId, member, role.value)
     isLoading.value = false
   } catch (error) {
-    console.log(error)
+    console.info(error)
     isLoading.value = false
   }
 }

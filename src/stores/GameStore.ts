@@ -1,4 +1,3 @@
-// src/stores/GameStore.ts
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
 import useAuthStore from '@/stores/AuthStore'
@@ -297,7 +296,7 @@ const useGameStore = defineStore({
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response && (error.response.status === 400 || error.response.status === 404)) {
-            console.log(error.response.data.message ?? 'Impossible de rejeter la partie')
+            console.info(error.response.data.message ?? 'Impossible de rejeter la partie')
           }
         }
       }
@@ -346,7 +345,7 @@ const useGameStore = defineStore({
         })
         return data
       } catch (e) {
-        console.log('failed to get user game history')
+        console.info('failed to get user game history')
       }
       return []
     }

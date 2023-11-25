@@ -70,9 +70,8 @@ export default defineComponent({
   data() {
     return {}
   },
-  mounted() {
+  beforeMount() {
     this.reloadNotifications()
-    console.log(this.notificationStore.allNotifications)
   },
   methods: {
     markAsRead(notificationId: number) {

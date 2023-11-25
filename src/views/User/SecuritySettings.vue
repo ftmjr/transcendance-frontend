@@ -212,14 +212,14 @@ export default defineComponent({
       },
       rules: {
         required: (value: number) => !!value || 'Ce champ est requis',
-        min: (v) => v.length >= 6 || 'Minimum 6 caractères',
+        min: (v: string) => v.length >= 6 || 'Minimum 6 caractères',
         match: () => {
           return (
             this.passwordFields.newPassword === this.passwordFields.confirmPassword ||
             'Les mots de passe ne correspondent pas'
           )
         },
-        upperCase: (v) => /[A-Z]/.test(v) || 'Doit contenir au moins une lettre majuscule'
+        upperCase: (v: string) => /[A-Z]/.test(v) || 'Doit contenir au moins une lettre majuscule'
       },
       allowTwoFactorDisable: false
     }
@@ -254,7 +254,7 @@ export default defineComponent({
       this.loadingSessions = false
     },
     async disconnectSession(session: Session) {
-      console.log('try disconnecting session', session)
+      console.info('try disconnecting session', session)
     },
     async changePassword() {
       const worked = await this.authStore.updatePassword(this.passwordFields)
@@ -268,7 +268,7 @@ export default defineComponent({
           confirmPassword: ''
         }
       } else {
-        this.infoMsg = this.authStore.getAuthError.message
+        this.infoMsg = this.authStore.getError.message
         this.infoColor = 'error'
         this.isInfoBarVisible = true
       }

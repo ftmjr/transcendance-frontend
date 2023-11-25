@@ -181,7 +181,7 @@ const useSearchBarStore = defineStore({
         )
         return [header, ...users]
       } catch (error) {
-        console.error(error)
+        // console.error(error)
       }
       return []
     },
