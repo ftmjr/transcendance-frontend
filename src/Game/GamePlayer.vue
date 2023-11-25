@@ -73,6 +73,7 @@ export default defineComponent({
     game.scene.add('Boot', Boot, true, dataInit)
   },
   beforeUnmount() {
+    this.gameMonitor.cleanAllPhaserRoutines()
     this.gameMonitor?.quitGame()
     if (this.game) this.game.destroy(true)
   },
