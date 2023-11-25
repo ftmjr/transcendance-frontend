@@ -25,7 +25,7 @@
         <div class="relative w-full border-b h-1/2 shrink-0 grow-0">
           <span
             class="absolute z-10 w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-[#262A46]/0 to-[80%] to-[#262A46]"
-          ></span>
+          />
           <perfect-scrollbar
             tag="ul"
             :options="{ wheelPropagation: true }"
@@ -42,7 +42,11 @@
                 Vous n'avez rejoins aucune salle de discussion.
               </span>
             </li>
-            <li v-for="room in roomsStore.filteredRooms" :key="room.id" @click="showRoom(room.id)">
+            <li
+              v-for="room in roomsStore.filteredRooms"
+              :key="room.id"
+              @click="showRoom(room.id)"
+            >
               <room-card :room="room" />
             </li>
             <li class="h-16"></li>
@@ -51,7 +55,7 @@
         <div class="relative w-full h-1/2 shrink-0 grow-0">
           <span
             class="absolute z-10 w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-[#262A46]/0 to-[80%] to-[#262A46]"
-          ></span>
+          />
           <perfect-scrollbar
             tag="ul"
             :options="{ wheelPropagation: true }"
@@ -69,7 +73,11 @@
                 <template v-if="search.length"> pour `{{ search }}`</template>
               </span>
             </li>
-            <li v-for="room in roomsStore.filteredPublic" :key="room.id" @click="showRoom(room.id)">
+            <li
+              v-for="room in roomsStore.filteredPublic"
+              :key="room.id"
+              @click="showRoom(room.id)"
+            >
               <room-card :room="room" />
             </li>
             <li class="h-16"></li>

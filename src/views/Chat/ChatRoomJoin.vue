@@ -1,5 +1,8 @@
 <template>
-  <div class="relative h-full mt-4" v-if="room">
+  <div
+    v-if="room"
+    class="relative h-full mt-4"
+  >
     <div
       v-if="canViewMessagesList"
       class="absolute left-0 z-10 w-full h-full -top-[40px]"
@@ -14,13 +17,20 @@
             {{ room.name }}
           </span>
           <div class="my-4">
-            <VChip label class="me-2">
+            <VChip
+              label
+              class="me-2"
+            >
               {{ room.type }}
             </VChip>
           </div>
         </div>
         <div class="py-4 w-72 h-72">
-          <img v-if="room.avatar" :src="room.avatar" class="object-cover w-full h-full rounded" />
+          <img
+            v-if="room.avatar"
+            :src="room.avatar"
+            class="object-cover w-full h-full rounded"
+          >
         </div>
       </div>
       <v-divider class="mx-auto w-72" />
@@ -34,8 +44,8 @@
           dense
           :type="passwordVisibility ? 'text' : 'password'"
           :append-inner-icon="passwordVisibility ? 'tabler-eye-off' : 'tabler-eye'"
-          @click:append-inner="passwordVisibility = !passwordVisibility"
           placeholder="Mot de passe, de la salle de discussion"
+          @click:append-inner="passwordVisibility = !passwordVisibility"
         />
         <VBtn
           color="primary"
@@ -50,7 +60,11 @@
         </VBtn>
       </div>
     </div>
-    <NotificationPopUp v-model:visible="popUpVisible" color="error" :snackbar-msg="errorMessage" />
+    <NotificationPopUp
+      v-model:visible="popUpVisible"
+      color="error"
+      :snackbar-msg="errorMessage"
+    />
   </div>
 </template>
 

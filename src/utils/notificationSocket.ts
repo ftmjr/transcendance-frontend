@@ -133,4 +133,13 @@ export class NotificationSocket {
     }
     this.operational = false
   }
+
+  connect() {
+    if (this.socket) {
+      if (this.socket.disconnected) {
+        this.socket.connect()
+      }
+    }
+    this.operational = true
+  }
 }

@@ -1,5 +1,8 @@
 <template>
-  <div id="Game-player" ref="player" />
+  <div
+    id="Game-player"
+    ref="player"
+  />
 </template>
 
 <script lang="ts">
@@ -72,8 +75,8 @@ export default defineComponent({
     game.scene.add('Boot', Boot, true, dataInit)
   },
   beforeUnmount() {
-    this.gameMonitor?.quitGame();
-    if (this.game) this.game.destroy(true);
+    this.gameMonitor?.quitGame()
+    if (this.game) this.game.destroy(true)
   },
   methods: {
     moveToHistory() {

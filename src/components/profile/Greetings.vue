@@ -14,19 +14,29 @@
       <div>
         <div class="flex flex-col justify-between gap-4 md:flex-row">
           <div>
-            <p v-if="dateObject.hours" class="font-thin text-7xl">
+            <p
+              v-if="dateObject.hours"
+              class="font-thin text-7xl"
+            >
               {{ `${dateObject.hours}:${dateObject.minutes}:${dateObject.seconds}` }}
             </p>
           </div>
           <div class="">
-            <p class="">Partie Rapide</p>
+            <p class="">
+              Partie Rapide
+            </p>
             <div class="flex gap-2">
               <button
                 class="inline-block px-4 py-2 text-sm border rounded-md bg-none hover:bg-orange/10"
                 @click.prevent="goToPlayWithBot"
               >
                 <span class="flex items-center gap-1">
-                  <v-avatar rounded variant="tonal" color="orange" icon="mdi-gamepad-circle-up" />
+                  <v-avatar
+                    rounded
+                    variant="tonal"
+                    color="orange"
+                    icon="mdi-gamepad-circle-up"
+                  />
                   <span>Contre l'IA</span>
                 </span>
               </button>
@@ -34,14 +44,24 @@
                 class="inline-block px-4 py-2 text-sm border rounded-md bg-none hover:bg-cyan-400/10"
                 @click.prevent="goToWaitingRoom"
               >
-                <v-avatar rounded variant="tonal" color="cyan" icon="medical-icon:i-waiting-area" />
+                <v-avatar
+                  rounded
+                  variant="tonal"
+                  color="cyan"
+                  icon="medical-icon:i-waiting-area"
+                />
                 <span> Salle d'attente </span>
               </button>
               <button
                 class="inline-block px-4 py-2 text-sm border rounded-md bg-none hover:bg-yellow-400/10"
                 @click.prevent="challenge"
               >
-                <v-avatar rounded variant="tonal" color="yellow" icon="mdi-goal" />
+                <v-avatar
+                  rounded
+                  variant="tonal"
+                  color="yellow"
+                  icon="mdi-goal"
+                />
                 <span> Challenger </span>
               </button>
             </div>
@@ -109,7 +129,10 @@ const formatTime = (dateObject: DateObject) => {
   return dateObject
 }
 
-const compose = (...fns: Array<(dateObject: DateObject) => DateObject>) => (dateObject: DateObject) => fns.reduceRight((acc, fn) => fn(acc), dateObject)
+const compose =
+  (...fns: Array<(dateObject: DateObject) => DateObject>) =>
+  (dateObject: DateObject) =>
+    fns.reduceRight((acc, fn) => fn(acc), dateObject)
 
 const makeDate = compose(formatTime, getSeconds, getMinutes, getHours, getDate)
 let timer: NodeJS.Timeout | null = null

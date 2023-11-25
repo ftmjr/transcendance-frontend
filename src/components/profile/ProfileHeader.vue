@@ -1,13 +1,31 @@
 <template>
   <VCard v-if="info">
-    <VImg :src="info.coalition?.cover_url" :cover="true" max-height="12rem" />
+    <VImg
+      :src="info.coalition?.cover_url"
+      :cover="true"
+      max-height="12rem"
+    />
     <VCardText class="flex flex-col gap-2 md:flex-row md:justify-between">
       <div class="flex">
-        <VAvatar rounded size="120" class="mx-auto user-profile-avatar -mb-6">
-          <VImg v-if="info.avatar" :src="info.avatar" />
-          <VIcon v-else color="primary" icon="tabler-user" />
+        <VAvatar
+          rounded
+          size="120"
+          class="mx-auto user-profile-avatar -mb-6"
+        >
+          <VImg
+            v-if="info.avatar"
+            :src="info.avatar"
+          />
+          <VIcon
+            v-else
+            color="primary"
+            icon="tabler-user"
+          />
         </VAvatar>
-        <CoalitionFlag :color="info.coalition?.color" :image="info.coalition?.image_url" />
+        <CoalitionFlag
+          :color="info.coalition?.color"
+          :image="info.coalition?.image_url"
+        />
       </div>
       <div class="w-full">
         <h6 class="sm:text-center md:text-left text-h6 font-weight-semibold">
@@ -15,7 +33,11 @@
         </h6>
         <div class="flex justify-center md:flex-col gap-2 flex-grow-1">
           <span class="flex">
-            <VIcon size="20" icon="game-icons:space-suit" :color="info.coalition?.color" />
+            <VIcon
+              size="20"
+              icon="game-icons:space-suit"
+              :color="info.coalition?.color"
+            />
             <span class="text-lg font-weight-semibold text-primary">{{ info?.username }}</span>
           </span>
           <v-tooltip
@@ -23,17 +45,31 @@
             bottom
           >
             <template #activator="{ props }">
-              <span class="flex items-center" v-bind="props">
-                <VIcon size="20" icon="tabler-calendar" class="me-2" />
+              <span
+                class="flex items-center"
+                v-bind="props"
+              >
+                <VIcon
+                  size="20"
+                  icon="tabler-calendar"
+                  class="me-2"
+                />
                 <span class="text-body-1">{{ showDateFormated(info?.joiningDate) }}</span>
               </span>
             </template>
           </v-tooltip>
-          <StatusBadge v-if="id !== 0" :value="info.status" :user-id="id" />
+          <StatusBadge
+            v-if="id !== 0"
+            :value="info.status"
+            :user-id="id"
+          />
         </div>
       </div>
       <div>
-        <FriendRequestBox v-if="id !== 0" :friend-id="id" />
+        <FriendRequestBox
+          v-if="id !== 0"
+          :friend-id="id"
+        />
       </div>
     </VCardText>
   </VCard>

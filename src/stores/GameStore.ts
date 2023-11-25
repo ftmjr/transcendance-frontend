@@ -136,7 +136,7 @@ const useGameStore = defineStore({
       const gameSession = this.myGameSessions.find((session) => session.gameId === gameId)
       if (gameSession) {
         this.currentGameSession = gameSession
-        const userStore = useUserStore();
+        const userStore = useUserStore()
         userStore.statusSocketManager?.updateMyStatus(Status.Busy)
       }
     },
@@ -155,9 +155,9 @@ const useGameStore = defineStore({
         headers: { Accept: 'application/json' },
         data: { gameId }
       })
-      this.currentGameSession = undefined;
-      const userStore = useUserStore();
-      userStore.statusSocketManager?.updateMyStatus(Status.Online);
+      this.currentGameSession = undefined
+      const userStore = useUserStore()
+      userStore.statusSocketManager?.updateMyStatus(Status.Online)
     },
     async startGameAgainstBot(): Promise<GameSession | string> {
       try {
@@ -277,9 +277,7 @@ const useGameStore = defineStore({
         })
       } catch (error) {
         if (isAxiosError(error)) {
-          if (
-            error.response && (error.response.status === 400 || error.response.status === 404)
-          ) {
+          if (error.response && (error.response.status === 400 || error.response.status === 404)) {
             console.log(error.response.data.message ?? 'Impossible de rejeter la partie')
           }
         }

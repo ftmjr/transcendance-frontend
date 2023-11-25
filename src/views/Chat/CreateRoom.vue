@@ -2,15 +2,24 @@
   <div>
     <span> Créer un chat </span>
     <v-menu
-      transition="scale-transition"
       v-model="menu"
+      transition="scale-transition"
       :close-on-content-click="false"
       location="end top"
       offset="10px -20px"
     >
-      <template v-slot:activator="{ props }">
-        <v-btn icon color="transparent" class="w-full p-2 text-left" v-bind="props">
-          <v-icon color="primary" icon="ic:round-add" size="24" />
+      <template #activator="{ props }">
+        <v-btn
+          icon
+          color="transparent"
+          class="w-full p-2 text-left"
+          v-bind="props"
+        >
+          <v-icon
+            color="primary"
+            icon="ic:round-add"
+            size="24"
+          />
         </v-btn>
       </template>
 
@@ -18,40 +27,52 @@
         <v-list>
           <v-list-item>
             <div class="p-4">
-              <v-sheet width="300" class="mx-auto">
-                <h2 class="mb-4 text-sm font-bold">Création de room</h2>
+              <v-sheet
+                width="300"
+                class="mx-auto"
+              >
+                <h2 class="mb-4 text-sm font-bold">
+                  Création de room
+                </h2>
                 <v-form @submit.prevent="tryToUpateRooInfos">
                   <div class="flex flex-col gap-4">
                     <div class="flex gap-4">
-                      <span class="w-12 h-12 border rounded-full"></span>
+                      <span class="w-12 h-12 border rounded-full" />
                       <v-file-input
                         label="Choisir une image"
                         prepend-icon="mdi-camera"
                         variant="solo-filled"
-                      ></v-file-input>
+                      />
                     </div>
-                    <v-text-field v-model="name" :rules="rules.name" label="nom"></v-text-field>
-                    <v-select v-model="type" :items="typeList"></v-select>
                     <v-text-field
-                      :disabled="type === RoomType.PUBLIC"
+                      v-model="name"
+                      :rules="rules.name"
+                      label="nom"
+                    />
+                    <v-select
+                      v-model="type"
+                      :items="typeList"
+                    />
+                    <v-text-field
                       v-model="password"
+                      :disabled="type === RoomType.PUBLIC"
                       :rules="rules.password"
                       label="mot de passe"
-                    ></v-text-field>
+                    />
                     <v-text-field
-                      :disabled="type === RoomType.PUBLIC"
                       v-model="confirmPassword"
+                      :disabled="type === RoomType.PUBLIC"
                       :rules="rules.passwordConfirmation"
                       label="Verifiez le mot de passe"
-                    ></v-text-field>
+                    />
                     <v-btn
-                      @click="createRoom"
                       :loading="loading"
                       type="submit"
                       block
                       class="mt-2"
                       text="Créer"
-                    ></v-btn>
+                      @click="createRoom"
+                    />
                   </div>
                 </v-form>
                 <NotificationPopUp

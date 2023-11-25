@@ -6,36 +6,78 @@
       icon
       size="small"
       class="d-md-none me-3"
-      @click="isLeftSidebarOpenLocal = true"
+      :active="isLeftSidebarOpen"
+      @click.stop.prevent="isLeftSidebarOpen = !isLeftSidebarOpen"
     >
-      <v-icon size="24" icon="tabler-menu-2" />
+      <v-icon
+        size="24"
+        icon="tabler-menu-2"
+      />
     </v-btn>
-    <template v-if="contact">
-      <div class="flex cursor-pointer align-center" @click="showProfile">
-        <avatar-badge :user-id="contact.id" :user="contact" :show-name="true" />
-        <span class="pl-2 text-sm text-primary line-clamp-1"> @{{ contact.username }}</span>
+    <template v-if="messageStore.conversationWith">
+      <div
+        class="flex cursor-pointer align-center"
+        @click.stop="showProfile"
+      >
+        <avatar-badge
+          :user-id="messageStore.conversationWith.id"
+          :user="messageStore.conversationWith"
+          :show-name="true"
+        />
+        <span class="pl-2 text-sm text-primary line-clamp-1">
+          @{{ messageStore.conversationWith.username }}</span>
       </div>
-      <v-chip class="ml-2" v-if="isBlocked" append-icon="tabler-lock" color="error">
-        Bloqué
+      <v-chip
+        v-if="blockedStatus !== 'none'"
+        class="ml-2"
+        append-icon="tabler-lock"
+        color="error"
+      >
+        <template v-if="blockedStatus === 'mutual'">
+          Mutuellement bloquer
+        </template>
+        <template v-else-if="blockedStatus === 'blocked'">
+          Vous avez bloquer
+        </template>
+        <template v-else-if="blockedStatus === 'blockedBy'">
+          Vous a bloquer
+        </template>
       </v-chip>
       <VSpacer />
       <div class="flex items-center">
-        <game-status-badge
-          v-if="contact.profile"
-          :status="contact.profile.status"
-          :user-id="contact.id"
-          :user-game-status="userGameStatus"
-        />
+        <game-status-badge :user-id="messageStore.conversationWith.id" />
       </div>
-      <VBtn variant="text" color="default" icon size="small">
-        <v-icon size="22" icon="tabler-dots-vertical" />
+      <VBtn
+        variant="text"
+        color="default"
+        icon
+        size="small"
+      >
+        <v-icon
+          size="22"
+          icon="tabler-dots-vertical"
+        />
         <v-menu activator="parent">
           <v-list>
-            <VListItem prepend-icon="tabler-eye" @click="showProfile">
+            <VListItem
+              prepend-icon="tabler-eye"
+              @click.stop="showProfile"
+            >
               <VListItemTitle> Voir le profil</VListItemTitle>
             </VListItem>
-            <VListItem v-if="!isBlocked" prepend-icon="tabler-ban" @click="blockContact">
+            <VListItem
+              v-if="blockedStatus === 'none'"
+              prepend-icon="tabler-ban"
+              @click.stop="blockContact"
+            >
               <VListItemTitle>Bloquer</VListItemTitle>
+            </VListItem>
+            <VListItem
+              v-else-if="blockedStatus === 'blocked' || blockedStatus === 'blockedBy'"
+              prepend-icon="tabler-ban"
+              @click.stop="unblockContact"
+            >
+              <VListItemTitle>Debloquer le contact</VListItemTitle>
             </VListItem>
           </v-list>
         </v-menu>
@@ -46,13 +88,10 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import useUserStore from '@/stores/UserStore'
-import type { User } from '@/interfaces/User'
+import useMessageStore from '@/stores/MessageStore'
+import useUserStore, { BlockedStatus, FriendshipStatus } from '@/stores/UserStore'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
-import { GameSession } from '@/stores/GameStore'
-import { Profile } from '@/interfaces/User'
-import useMessageStore from '@/stores/MessageStore'
 
 export default defineComponent({
   name: 'MessageTopBar',
@@ -61,60 +100,62 @@ export default defineComponent({
     AvatarBadge
   },
   props: {
-    isLeftSidebarOpen: {
-      type: Boolean,
-      required: true
-    },
-    userGameStatus: {
-      type: Object as PropType<{
-        status: 'playing' | 'inQueue' | 'free'
-        gameSession?: GameSession
-      }>,
-      required: true
-    },
     friendshipStatus: {
-      type: String as PropType<'friend' | 'pending' | 'none'>,
-      required: true
-    },
-    isBlocked: {
-      type: Boolean,
+      type: String as PropType<FriendshipStatus>,
       required: true,
+      default: FriendshipStatus.None
+    },
+    blockedStatus: {
+      type: String as PropType<BlockedStatus>,
+      required: true,
+      default: BlockedStatus.None
+    },
+    loadingStatus: {
+      type: Boolean,
+      required: false,
       default: false
     }
   },
-  emits: ['update:isLeftSidebarOpen', 'blocked'],
+  emits: ['updateFriendshipStatus'],
   setup() {
     const usersStore = useUserStore()
     const messageStore = useMessageStore()
     return {
-      usersStore,
-      messageStore
+      messageStore,
+      usersStore
     }
   },
   computed: {
-    isLeftSidebarOpenLocal: {
+    isLeftSidebarOpen: {
       get(): boolean {
-        return this.isLeftSidebarOpen
+        return this.messageStore.isSidebarOpen
       },
       set(value: boolean) {
-        this.$emit('update:isLeftSidebarOpen', value)
+        this.messageStore.setSidebarOpen(value)
       }
-    },
-    contact(): (User & { profile: Profile }) | null {
-      return this.messageStore.currentContact
     }
   },
   methods: {
     async blockContact() {
-      if (!this.contact) return
-      const ret = await this.usersStore.blockUser(this.contact.id)
-      if (ret) this.$emit('blocked')
+      if (!this.messageStore.conversationWith) return
+      await this.usersStore.blockUser(this.messageStore.conversationWith.id)
+      this.$nextTick(() => {
+        this.$emit('updateFriendshipStatus')
+      })
+    },
+    async unblockContact() {
+      if (!this.messageStore.conversationWith) return
+      await this.usersStore.unblockUser(this.messageStore.conversationWith.id)
+      this.$nextTick(() => {
+        this.$emit('updateFriendshipStatus')
+      })
     },
     async showProfile() {
-      if (!this.contact) return
+      if (!this.messageStore.conversationWith) return
+      await this.usersStore.blockUser(this.messageStore.conversationWith.id)
       this.$router.push({
         name: 'user-profile',
-        params: { userId: this.contact.id }
+        params: { userId: this.messageStore.conversationWith.id }
       })
     }
   }

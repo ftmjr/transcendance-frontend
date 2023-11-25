@@ -21,12 +21,28 @@
         :theme="theme"
       />
     </template>
-    <div v-else-if="loading" class="h-full flex items-center justify-center">
-      <v-progress-circular indeterminate color="deep-purple-accent-4" />
+    <div
+      v-else-if="loading"
+      class="h-full flex items-center justify-center"
+    >
+      <v-progress-circular
+        indeterminate
+        color="deep-purple-accent-4"
+      />
     </div>
-    <div class="flex justify-center" v-if="!gameStore.isPlaying">
-      <p class="w-1/2 text-center">Aucune partie en cours</p>
-      <VIcon color="orange" :size="128">tabler:device-gamepad-2</VIcon>
+    <div
+      v-if="!gameStore.isPlaying"
+      class="flex justify-center"
+    >
+      <p class="w-1/2 text-center">
+        Aucune partie en cours
+      </p>
+      <VIcon
+        color="orange"
+        :size="128"
+      >
+        tabler:device-gamepad-2
+      </VIcon>
     </div>
   </div>
 </template>
@@ -61,7 +77,7 @@ export default defineComponent({
       loading: false,
       error: null as unknown as string,
       alertGameAlreadyJoined: false,
-      timer: null as unknown as NodeJS.Timeout,
+      timer: null as unknown as NodeJS.Timeout
     }
   },
   computed: {
@@ -98,10 +114,10 @@ export default defineComponent({
   },
   async beforeMount() {
     this.loading = true
-    this.startTokenRefresher();
-    await this.gameStore.getAllGameSessions();
+    this.startTokenRefresher()
+    await this.gameStore.getAllGameSessions()
     if (!this.gameId) {
-      await this.startAgainstBot();
+      await this.startAgainstBot()
     } else {
       this.gameStore.setCurrentGameSession(this.gameId)
     }
@@ -111,7 +127,7 @@ export default defineComponent({
     if (this.gameId) {
       this.gameStore.quitGameSession(this.gameId)
     }
-    clearInterval(this.timer);
+    clearInterval(this.timer)
   },
   methods: {
     moveToCurrentGame() {
@@ -138,10 +154,13 @@ export default defineComponent({
       }
     },
     startTokenRefresher() {
-      this.timer = setInterval(async () => {
-        await this.authStore.refreshToken();
-      }, 1000 * 60 * 6) // 6 minutes in ms during game
-    },
+      this.timer = setInterval(
+        async () => {
+          await this.authStore.refreshToken()
+        },
+        1000 * 60 * 6
+      ) // 6 minutes in ms during game
+    }
   }
 })
 </script>

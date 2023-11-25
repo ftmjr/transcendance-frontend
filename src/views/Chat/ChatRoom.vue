@@ -3,27 +3,35 @@
     <div class="w-full border-b h-14 text-primary">
       <div class="flex items-center justify-between w-full h-full">
         <v-btn
-          @click="roomStore.toggleLeftNav()"
           icon
           color="transparent"
           class="inline-block lg:hidden"
+          @click="roomStore.toggleLeftNav()"
         >
-          <v-icon icon="ion:menu"></v-icon>
+          <v-icon icon="ion:menu" />
         </v-btn>
         <room-settings />
         <v-btn
-          @click="roomStore.toggleRightNav"
           icon
           color="transparent"
           class="inline-block md:hidden"
+          @click="roomStore.toggleRightNav"
         >
           <v-icon>heroicons:user-group-solid</v-icon>
         </v-btn>
       </div>
     </div>
     <div class="relative flex-1 w-full pb-0 overflow-hidden">
-      <div v-if="isLoading" class="flex items-center justify-center h-full">
-        <v-progress-circular :size="70" :width="7" color="sky" indeterminate />
+      <div
+        v-if="isLoading"
+        class="flex items-center justify-center h-full"
+      >
+        <v-progress-circular
+          :size="70"
+          :width="7"
+          color="sky"
+          indeterminate
+        />
       </div>
       <template v-else>
         <chat-room-message-list v-if="roomStore.getCurrentRoomStatus.state === true" />
@@ -33,8 +41,15 @@
             v-if="roomStore.isLeftNavOpen === false"
             class="flex items-center justify-center h-full flex-column"
           >
-            <VAvatar size="109" class="mb-6 elevation-3 bg-surface">
-              <VIcon size="50" class="rounded-0 text-high-emphasis" icon="tabler-message" />
+            <VAvatar
+              size="109"
+              class="mb-6 elevation-3 bg-surface"
+            >
+              <VIcon
+                size="50"
+                class="rounded-0 text-high-emphasis"
+                icon="tabler-message"
+              />
             </VAvatar>
             <p
               class="px-6 py-1 mb-0 text-lg font-weight-medium elevation-3 rounded-xl text-high-emphasis bg-surface"

@@ -217,9 +217,9 @@ const useUserStore = defineStore({
         return 'error'
       }
     },
-    async unFriend(frienId: number): Promise<'success' | 'error'> {
+    async unFriend(friendId: number): Promise<'success' | 'error'> {
       try {
-        await axios.delete(`/friends/${frienId}`)
+        await axios.delete(`/friends/${friendId}`)
         await this.loadAllMyFriends()
         return 'success'
       } catch (e) {
@@ -341,7 +341,7 @@ const useUserStore = defineStore({
       }
       return null
     },
-    async getShortUserProfile(userId: number): Promise<ShortUserProfile | null> {
+    async getShortUserProfile(userId: number): Promise<ShortUserProfile> {
       try {
         if (userId === -1) return roomWaiting
         if (userId === 0) return aiProfile
@@ -436,6 +436,9 @@ const useUserStore = defineStore({
       this.statusSocketManager = StatusSocket.getInstance(userId, (data: ReceivedStatusUpdate) => {
         this.usersStatus.set(data.userId, data.status)
       })
+      if (!this.statusSocketManager.operational) {
+        this.statusSocketManager.reconnect()
+      }
     },
     disconnectStatusSocket() {
       if (this.statusSocketManager) {

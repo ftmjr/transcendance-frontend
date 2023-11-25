@@ -12,7 +12,6 @@ import { Profile, User } from '@/interfaces/User'
 import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
 import { isAxiosError } from 'axios'
 import useUserStore, { BlockedStatus } from '@/stores/UserStore'
-import { parse } from 'path'
 
 export interface JoinRoom {
   userId: number
@@ -42,11 +41,11 @@ export const rolePrint: Array<{
   color?: string
   bgClass?: string
 }> = [
-    { role: ChatMemberRole.OWNER, printRole: 'Big Boss', color: 'success' },
-    { role: ChatMemberRole.ADMIN, printRole: 'Administrateur', bgClass: 'info' },
-    { role: ChatMemberRole.USER, printRole: 'Utilisateur', color: 'dark' },
-    { role: ChatMemberRole.BAN, printRole: 'Ban', color: 'danger' }
-  ]
+  { role: ChatMemberRole.OWNER, printRole: 'Big Boss', color: 'success' },
+  { role: ChatMemberRole.ADMIN, printRole: 'Administrateur', bgClass: 'info' },
+  { role: ChatMemberRole.USER, printRole: 'Utilisateur', color: 'dark' },
+  { role: ChatMemberRole.BAN, printRole: 'Ban', color: 'danger' }
+]
 
 const useRoomsStore = defineStore({
   id: 'roomsStore',
@@ -183,13 +182,16 @@ const useRoomsStore = defineStore({
           this.roomsMembersTyping.set(typingInfo.roomId, typingInfo)
         },
         (senderId: number) => {
-          messageStore.reloadConversation(senderId)
+          // no more
         },
         (senderId: number, timestamp: number) => {
           this.contactTyping.set(senderId, timestamp)
         }
       )
       if (!this.socketManager) return
+      if (!this.socketManager.operational) {
+        this.socketManager.connect()
+      }
       messageStore.setSocketManager(this.socketManager as ChatSocket)
     },
     setSearchTerm(term: string) {
@@ -284,7 +286,11 @@ const useRoomsStore = defineStore({
         if (member.role === ChatMemberRole.OWNER) {
           return 'failed'
         }
-        await axios.post(`/chat/promote/${roomId}`, { userId: member.memberId, role: promoteTo, expireAt })
+        await axios.post(`/chat/promote/${roomId}`, {
+          userId: member.memberId,
+          role: promoteTo,
+          expireAt
+        })
         this.sendReloadRoomMembers(roomId)
         return 'success'
       } catch (error) {
@@ -451,7 +457,7 @@ const useRoomsStore = defineStore({
      * @param roomId the id of the room
      * @param userId the id of the user to kick
      * @returns 'success' if success, 'failed' if failed
-    */
+     */
     async kickMember(roomId: number, memberId: number): Promise<'success' | 'failed'> {
       try {
         await axios.post(`/chat/remove-member/${roomId}`, {
@@ -459,13 +465,15 @@ const useRoomsStore = defineStore({
           userId: memberId
         }),
           // Mise à jour du store après avoir kické un membre
-          this.currentRoomMembers = this.currentRoomMembers.filter((member) => member.memberId !== memberId)
+          (this.currentRoomMembers = this.currentRoomMembers.filter(
+            (member) => member.memberId !== memberId
+          ))
         return 'success'
       } catch (error) {
         console.error(error)
         return 'failed'
       }
-    },
+    }
   }
 })
 

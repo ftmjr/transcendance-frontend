@@ -10,20 +10,33 @@
           :size="42"
           :image="roomsStore.getCurrentRoomStatus.room.avatar"
         />
-        <h2 v-if="alreadyMember">{{ roomsStore.getCurrentRoomStatus.room.name }}</h2>
-        <h2 v-else>Rejoindre {{ roomsStore.getCurrentRoomStatus.room.name }}</h2>
+        <h2 v-if="alreadyMember">
+          {{ roomsStore.getCurrentRoomStatus.room.name }}
+        </h2>
+        <h2 v-else>
+          Rejoindre {{ roomsStore.getCurrentRoomStatus.room.name }}
+        </h2>
       </div>
       <v-menu
         v-if="alreadyMember && !isMuted && !isBanned"
-        transition="scale-transition"
         v-model="menu"
+        transition="scale-transition"
         :close-on-content-click="false"
         location="end top"
         offset="10px -20px"
       >
-        <template v-slot:activator="{ props }">
-          <v-btn icon color="transparent" class="w-full p-2 text-left" v-bind="props">
-            <v-icon color="primary" icon="tabler:settings" size="24" />
+        <template #activator="{ props }">
+          <v-btn
+            icon
+            color="transparent"
+            class="w-full p-2 text-left"
+            v-bind="props"
+          >
+            <v-icon
+              color="primary"
+              icon="tabler:settings"
+              size="24"
+            />
           </v-btn>
         </template>
 
@@ -31,9 +44,18 @@
           <v-list>
             <v-list-item>
               <div class="p-4">
-                <v-sheet width="300" class="mx-auto">
-                  <h2 class="mb-4 text-sm font-bold">Paramètres</h2>
-                  <v-form validate-on="submit lazy" @submit.prevent="upateRoomInfos" v-if="isOwner">
+                <v-sheet
+                  width="300"
+                  class="mx-auto"
+                >
+                  <h2 class="mb-4 text-sm font-bold">
+                    Paramètres
+                  </h2>
+                  <v-form
+                    v-if="isOwner"
+                    validate-on="submit lazy"
+                    @submit.prevent="upateRoomInfos"
+                  >
                     <div class="flex gap-4">
                       <VAvatar
                         v-if="roomsStore.getCurrentRoomStatus.room.avatar"
@@ -46,11 +68,11 @@
                         label="Choisir une image"
                         prepend-icon="mdi-camera"
                         variant="solo-filled"
-                      ></v-file-input>
+                      />
                     </div>
                     <VSelect
-                      :disabled="loading || !isOwner"
                       v-model="type"
+                      :disabled="loading || !isOwner"
                       :items="typeList"
                       item-title="text"
                       item-value="value"
@@ -61,9 +83,9 @@
                     />
                     <div>
                       <v-text-field
-                        :disabled="loading"
                         v-if="type !== 'PUBLIC'"
                         v-model="oldPassword"
+                        :disabled="loading"
                         label="Ancien mot de passe"
                         placeholder=""
                         class="mt-4"
@@ -73,8 +95,8 @@
                       />
                       <v-text-field
                         v-if="type !== 'PUBLIC'"
+                        v-model="password"
                         :disabled="loading"
-                        v-model="passwordConfirmation"
                         label="Nouveau Mot de passe"
                         placeholder=""
                         :rules="rules.password"
@@ -85,8 +107,8 @@
                       />
                       <v-text-field
                         v-if="type !== 'PUBLIC'"
-                        :disabled="loading"
                         v-model="passwordConfirmation"
+                        :disabled="loading"
                         label="Cofirmer le mot de passe"
                         placeholder=""
                         outlined
@@ -103,19 +125,19 @@
                       block
                       class="mt-2"
                       text="Mettre à jour"
-                    ></v-btn>
+                    />
                   </v-form>
 
-                  <v-divider class="my-4"></v-divider>
+                  <v-divider class="my-4" />
                   <v-btn
-                    :disabled="loading"
                     v-show="!isMuted"
-                    @click="quitRoom"
+                    :disabled="loading"
                     type="button"
                     block
                     class="mt-2"
                     text="Quittez la salle"
-                  ></v-btn>
+                    @click="quitRoom"
+                  />
                 </v-sheet>
               </div>
             </v-list-item>

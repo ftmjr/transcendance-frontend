@@ -1,5 +1,8 @@
 <template>
-  <div class="w-full p-2 text-center rounded-md cursor:pointer hover:bg-darkBlue/50" v-if="member">
+  <div
+    v-if="member"
+    class="w-full p-2 text-center rounded-md cursor:pointer hover:bg-darkBlue/50"
+  >
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
         <button
@@ -15,28 +18,67 @@
           />
         </button>
         <span class="flex items-center gap-2">
-          <v-icon v-if="isOwner" :size="16" color="primary"> tabler-crown </v-icon>
-          <v-icon v-else-if="isAdmin" :size="16" color="secondary"> tabler-shield-check </v-icon>
-          <v-icon v-else-if="isMuted" :size="16" color="gray"> tabler-user-minus </v-icon>
-          <v-icon v-else-if="isBan" :size="16" color="gray"> tabler-user-x </v-icon>
+          <v-icon
+            v-if="isOwner"
+            :size="16"
+            color="primary"
+          > tabler-crown </v-icon>
+          <v-icon
+            v-else-if="isAdmin"
+            :size="16"
+            color="secondary"
+          > tabler-shield-check </v-icon>
+          <v-icon
+            v-else-if="isMuted"
+            :size="16"
+            color="gray"
+          > tabler-user-minus </v-icon>
+          <v-icon
+            v-else-if="isBan"
+            :size="16"
+            color="gray"
+          > tabler-user-x </v-icon>
         </span>
       </div>
-      <div class="flex items-center gap-2" v-if="!amTheMember">
+      <div
+        v-if="!amTheMember"
+        class="flex items-center gap-2"
+      >
         <v-btn
-          @click.prevent="(_) => pushToDmWithUser(member.id, $router)"
           icon
           title="envoyer un message"
           :size="16"
           color="transparent"
           class="text-gray-400"
+          @click.prevent="(_) => pushToDmWithUser(member.id, $router)"
         >
-          <v-icon :size="16" class="" title="Envoyer un message">lets-icons:chat-light</v-icon>
+          <v-icon
+            :size="16"
+            class=""
+            title="Envoyer un message"
+          >
+            lets-icons:chat-light
+          </v-icon>
         </v-btn>
 
-        <v-menu class="" v-model="menu" :close-on-content-click="false" location="end">
-          <template v-slot:activator="{ props }">
-            <button class="w-full p-2 text-left" icon v-bind="props">
-              <v-icon class="text-red-600" :size="16">ri:user-settings-line</v-icon>
+        <v-menu
+          v-model="menu"
+          class=""
+          :close-on-content-click="false"
+          location="end"
+        >
+          <template #activator="{ props }">
+            <button
+              class="w-full p-2 text-left"
+              icon
+              v-bind="props"
+            >
+              <v-icon
+                class="text-red-600"
+                :size="16"
+              >
+                ri:user-settings-line
+              </v-icon>
             </button>
           </template>
 
@@ -57,11 +99,14 @@
                         :user-id="member.memberId"
                       />
                     </div>
-                    <kick-player :room-id="member.chatroomId" :user-id="member.memberId" />
+                    <kick-player
+                      :room-id="member.chatroomId"
+                      :user-id="member.memberId"
+                    />
                   </div>
                 </div>
               </v-list-item>
-              <v-divider v-if="(amAnAdmin && !isAdmin && !isOwner) || amTheOwner"></v-divider>
+              <v-divider v-if="(amAnAdmin && !isAdmin && !isOwner) || amTheOwner" />
               <v-list-item v-if="amTheOwner">
                 <promote-player
                   :member-role="member.role"
@@ -69,7 +114,7 @@
                   :user-id="member.memberId"
                 />
               </v-list-item>
-              <v-divider v-if="(amAnAdmin && !isAdmin && !isOwner) || amTheOwner"></v-divider>
+              <v-divider v-if="(amAnAdmin && !isAdmin && !isOwner) || amTheOwner" />
               <div class="flex flex-col items-start gap-2 p-6 justify-normal">
                 <game-status-badge :user-id="member.memberId" />
                 <friend-request-box :friend-id="member.memberId" />

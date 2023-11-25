@@ -1,11 +1,11 @@
 <template>
   <v-btn
     :disabled="isLoading"
-    @click="handleUpdateIsBanned"
     color="primary"
     text
     size="large"
     class="w-full text-xs"
+    @click="handleUpdateIsBanned"
   >
     {{ banned ? 'Débannir' : 'Bannir' }}
   </v-btn>

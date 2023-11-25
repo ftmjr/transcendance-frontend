@@ -1,9 +1,14 @@
 <template>
-  <VCard :loading="loading" color="transparent" class="border-none">
-    <h2 class="text-4xl uppercase font-bold mb-8">Vos amis</h2>
-    <VRow>
+  <VCard
+    :loading="loading"
+    color="transparent"
+    class="border-none"
+  >
+    <h2 class="text-4xl uppercase font-bold mb-8">
+      Vos amis
+    </h2>
+    <VRow v-if="userStore.contacts.length">
       <VCol
-        v-if="userStore.contacts.length"
         v-for="(friend, index) in userStore.contacts"
         :key="friend.id"
         cols="12"
@@ -11,9 +16,20 @@
       >
         <div class="bg-slate-700/30 rounded-lg mx-1 mt-8">
           <div class="flex items-center justify-center">
-            <VAvatar rounded size="120" class="user-profile-avatar">
-              <VImg v-if="friend.profile?.avatar" :src="friend.profile?.avatar" />
-              <VIcon v-else color="primary" icon="tabler-user" />
+            <VAvatar
+              rounded
+              size="120"
+              class="user-profile-avatar"
+            >
+              <VImg
+                v-if="friend.profile?.avatar"
+                :src="friend.profile?.avatar"
+              />
+              <VIcon
+                v-else
+                color="primary"
+                icon="tabler-user"
+              />
             </VAvatar>
           </div>
           <div class="relative -top-12">
@@ -69,7 +85,7 @@
                   size="small"
                   color="purple"
                   variant="tonal"
-                  :to="{ name: 'dm', params: { friendId: friend.id } }"
+                  :to="{ name: 'dm', params: { contactId: friend.id } }"
                 >
                   <span class="flex gap-2">
                     <VIcon left> mdi-chat </VIcon>
@@ -81,11 +97,21 @@
           </div>
         </div>
       </VCol>
-      <VCol v-else cols="12">
+    </VRow>
+    <VRow v-else>
+      <VCol cols="12">
         <div class="flex flex-col items-center justify-center gap-4">
-          <VIcon size="100" color="primary" icon="mdi-account-multiple" />
-          <p class="text-xl font-semibold">Vous n'avez pas encore d'amis</p>
-          <p class="text-lg font-semibold">Ajoutez des amis pour jouer avec eux</p>
+          <VIcon
+            size="100"
+            color="primary"
+            icon="mdi-account-multiple"
+          />
+          <p class="text-xl font-semibold">
+            Vous n'avez pas encore d'amis
+          </p>
+          <p class="text-lg font-semibold">
+            Ajoutez des amis pour jouer avec eux
+          </p>
         </div>
       </VCol>
     </VRow>
@@ -117,8 +143,8 @@ export default defineComponent({
     }
   },
   computed: {},
-  mounted() {
-    this.fetchFriends()
+  async beforeMount() {
+    await this.fetchFriends()
   },
   methods: {
     async fetchFriends() {

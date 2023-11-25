@@ -1,24 +1,39 @@
 <template>
   <div class="flex gap-2 items-center">
-    <v-chip v-if="userGameStatus.status === 'playing'" color="green" class="flex gap-2">
+    <v-chip
+      v-if="userGameStatus.status === 'playing'"
+      color="green"
+      class="flex gap-2"
+    >
       <span class="flex gap-2">
         <v-icon left> tabler:device-gamepad </v-icon>
         <span> Dans une partie </span>
       </span>
     </v-chip>
-    <v-chip v-else-if="userGameStatus.status === 'inQueue'" color="orange">
+    <v-chip
+      v-else-if="userGameStatus.status === 'inQueue'"
+      color="orange"
+    >
       <span class="flex gap-2">
         <v-icon left> ic:baseline-timer </v-icon>
         <span> En attente </span>
       </span>
     </v-chip>
-    <v-chip v-else-if="liveStatus === 'Online'" color="blue" class="rounded-md">
+    <v-chip
+      v-else-if="liveStatus === 'Online'"
+      color="blue"
+      class="rounded-md"
+    >
       <span class="flex gap-2">
         <v-icon left> mdi-account-check-outline </v-icon>
         <span> Peut jouer </span>
       </span>
     </v-chip>
-    <v-chip v-else color="error" class="rounded-md">
+    <v-chip
+      v-else
+      color="error"
+      class="rounded-md"
+    >
       <span class="flex gap-2">
         <v-icon left>tabler:device-gamepad</v-icon>
         <span>Indisponible</span>
@@ -68,6 +83,7 @@ const props = defineProps({
       status: 'playing' | 'inQueue' | 'free'
       gameSession?: GameSession
     }>,
+    required: false,
     default: () => ({ status: 'free', gameSession: undefined })
   },
   status: {
@@ -122,7 +138,10 @@ watch(notificationStore.allRealTimeNotifications, async (newNotifications) => {
     lastNotification.type === RealTimeNotificationType.GameWaitingQue ||
     lastNotification.type === RealTimeNotificationType.Game
   ) {
-    if (lastNotification.userId === props.userId || lastNotification.sourceUserId === props.userId) {
+    if (
+      lastNotification.userId === props.userId ||
+      lastNotification.sourceUserId === props.userId
+    ) {
       await updateLocalGameStatus(props.userId)
     }
   }

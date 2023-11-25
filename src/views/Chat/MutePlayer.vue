@@ -1,22 +1,23 @@
 <template>
   <div class="flex items-center gap-6">
     <v-select
-      :disabled="isMuted || isLoading"
       v-model="delay"
+      :disabled="isMuted || isLoading"
       label="Select"
       :items="delayList"
       variant="outlined"
       class="w-32"
-    ></v-select>
+    />
     <v-btn
       :disabled="isMuted || isLoading"
-      @click="tryToMute"
       color="primary"
       text
       size="large"
       class="text-xs"
-      >Mute</v-btn
+      @click="tryToMute"
     >
+      Mute
+    </v-btn>
   </div>
 </template>
 <script setup lang="ts">

@@ -1,5 +1,9 @@
 <template>
-  <VerticalNavLayout :nav-items="navItems" v-bind="layoutAttrs" class="">
+  <VerticalNavLayout
+    :nav-items="navItems"
+    v-bind="layoutAttrs"
+    class=""
+  >
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="flex items-center justify-between h-100">
         <VBtn
@@ -11,7 +15,10 @@
           size="small"
           @click="toggleVerticalOverlayNavActive(true)"
         >
-          <VIcon icon="tabler-menu-2" size="24" />
+          <VIcon
+            icon="tabler-menu-2"
+            size="24"
+          />
         </VBtn>
         <NavSearchBar class="ms-lg-n3" />
         <VSpacer />
@@ -21,7 +28,10 @@
     </template>
 
     <RouterView v-slot="{ Component }">
-      <Transition :name="appRouteTransition" mode="out-in">
+      <Transition
+        :name="appRouteTransition"
+        mode="out-in"
+      >
         <Component :is="Component" />
       </Transition>
     </RouterView>
@@ -60,7 +70,7 @@ import {
 } from '@/utils/notificationSocket'
 import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore from '@/stores/UserStore'
-import NotificationPopUp from "@/components/notifications/NotificationPopUp.vue";
+import NotificationPopUp from '@/components/notifications/NotificationPopUp.vue'
 
 const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
 const { width: windowWidth } = useWindowSize()
@@ -85,7 +95,7 @@ const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotific
     if (!authStore.getUser?.id) return
     if (!notification.userId) return
     if (notification.userId === authStore.getUser.id) {
-      showChallengePopUp.value = true;
+      showChallengePopUp.value = true
       if (notification.gameId) {
         router.push({ name: 'game', params: { gameId: notification.gameId } })
       }
@@ -110,7 +120,25 @@ watch(notificationStore.allRealTimeNotifications, (notifications) => {
   }
 })
 
-// a beforeMount hook would be better
+// watch for route changes and refresh the token
+const notRefreshableRoutes = [
+  'auth',
+  'reset-password',
+  'two-factors',
+  'two-factors-verify',
+  'locked-screen',
+  'oauth-auth',
+  'waiting-room'
+]
+watch(router.currentRoute, async (to, from) => {
+  // if route is not refreshable, return
+  if (notRefreshableRoutes.includes(to.name as string)) return
+  // if user is not logged in, return
+  if (!authStore.isLoggedIn) return
+  // now refresh
+  await authStore.refreshToken()
+})
+
 onBeforeMount(() => {
   if (authStore.isLoggedIn && authStore.getUser?.id) {
     if (!notificationStore.socketOperational) {
@@ -122,13 +150,14 @@ onBeforeMount(() => {
     if (!usersStore.socketOperational) {
       usersStore.initStatusSocket(authStore.getUser.id)
     }
-    gameStore.getAllGameSessions()
   }
 })
 
 onBeforeUnmount(() => {
   if (!authStore.isLoggedIn) {
     usersStore.disconnectStatusSocket()
+    notificationStore.disconnect()
+    roomsStore.disconnect()
   }
 })
 </script>

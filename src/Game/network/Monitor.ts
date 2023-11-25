@@ -153,8 +153,9 @@ export default class Monitor {
       this.updateTimestampHistory(timestamp)
     })
     this.gameNetwork.onBallPaddleCollision((paddleUserId) => {
-      if (this._phaserBallPaddleCollisionRoutine) this._phaserBallPaddleCollisionRoutine(paddleUserId)
-    });
+      if (this._phaserBallPaddleCollisionRoutine)
+        this._phaserBallPaddleCollisionRoutine(paddleUserId)
+    })
   }
 
   cleanAllPhaserRoutines() {
@@ -174,23 +175,23 @@ export default class Monitor {
   }
 
   public sendPadMove(data: PadMovedData) {
-    if (this.currentUser.userType !== GameUserType.Player) return;
+    if (this.currentUser.userType !== GameUserType.Player) return
     if (this.state !== GAME_STATE.Play) return
     this.gameNetwork.sendPadMove(data)
   }
 
   public sendIaPadSpeed(velocity: number) {
     if (this.state !== GAME_STATE.Play) return
-    if (this.currentUser.userType !== GameUserType.Player) return;
+    if (this.currentUser.userType !== GameUserType.Player) return
     // only send when we are the host
     if (this.hostId !== this.currentUser.userId) return
     this.gameNetwork.sendIaPadSpeed(velocity)
   }
 
   public serveBall() {
-    if (this.state !== GAME_STATE.Play) return;
+    if (this.state !== GAME_STATE.Play) return
     // only send when it's a player
-    if (this.currentUser.userType !== GameUserType.Player) return;
+    if (this.currentUser.userType !== GameUserType.Player) return
     this.gameNetwork.sendBallServe({
       userId: this.currentUser.userId,
       position: { x: 667, y: 375 },

@@ -100,15 +100,15 @@ const dashboardRoutes: RouteRecordRaw = {
       }
     },
     {
-      path: 'dm/:friendId?',
+      path: 'dm/:contactId?',
       name: 'dm',
       component: DirectMessagesView,
       props: (route) => {
-        const friendId = route.params.friendId
-          ? parseInt(route.params.friendId.toString())
+        const contactId = route.params.contactId
+          ? parseInt(route.params.contactId.toString())
           : undefined
         return {
-          friendId
+          contactId
         }
       },
       meta: {

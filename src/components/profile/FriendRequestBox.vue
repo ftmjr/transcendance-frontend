@@ -1,5 +1,9 @@
 <template>
-  <VCard :loading="loading" color="transparent" variant="flat">
+  <VCard
+    :loading="loading"
+    color="transparent"
+    variant="flat"
+  >
     <div class="flex items-center justify-center gap-4">
       <div
         v-if="
@@ -13,7 +17,11 @@
           variant="outlined"
           @click="unFriend"
         >
-          <VIcon size="20" start icon="tabler-user-minus" />
+          <VIcon
+            size="20"
+            start
+            icon="tabler-user-minus"
+          />
           Supprimer des amis
         </VBtn>
         <!-- CANCEL FRIEND REQUEST -->
@@ -24,17 +32,39 @@
           size="small"
           @click="cancelFriendRequest"
         >
-          <VIcon size="20" start icon="tabler-x" />
+          <VIcon
+            size="20"
+            start
+            icon="tabler-x"
+          />
           Annuler la demande
         </VBtn>
         <!-- ACCEPT/DECLINE FRIEND REQUEST -->
         <VBtnGroup v-else-if="status === FriendshipStatus.NeedApproval">
-          <VBtn color="success" size="small" variant="outlined" @click="acceptFriendRequest">
-            <VIcon size="20" start icon="tabler-check" />
+          <VBtn
+            color="success"
+            size="small"
+            variant="outlined"
+            @click="acceptFriendRequest"
+          >
+            <VIcon
+              size="20"
+              start
+              icon="tabler-check"
+            />
             Accepter
           </VBtn>
-          <VBtn color="error" size="small" variant="outlined" @click="declineFriendRequest">
-            <VIcon size="20" start icon="tabler-x" />
+          <VBtn
+            color="error"
+            size="small"
+            variant="outlined"
+            @click="declineFriendRequest"
+          >
+            <VIcon
+              size="20"
+              start
+              icon="tabler-x"
+            />
             Refuser
           </VBtn>
         </VBtnGroup>
@@ -46,7 +76,11 @@
           size="small"
           @click="beFriendRequest"
         >
-          <VIcon size="20" start icon="tabler-user-plus" />
+          <VIcon
+            size="20"
+            start
+            icon="tabler-user-plus"
+          />
           Ajouter en ami
         </VBtn>
       </div>
@@ -59,7 +93,11 @@
           size="small"
           @click="unblockUser"
         >
-          <VIcon size="20" start icon="tabler-lock" />
+          <VIcon
+            size="20"
+            start
+            icon="tabler-lock"
+          />
           Débloquer
         </VBtn>
         <VBtn
@@ -69,7 +107,11 @@
           variant="tonal"
           @click="blockUser"
         >
-          <VIcon size="20" start icon="mingcute-unlock-fill" />
+          <VIcon
+            size="20"
+            start
+            icon="mingcute-unlock-fill"
+          />
           Bloquer
         </VBtn>
       </div>
@@ -86,7 +128,12 @@ import useUserStore, {
 } from '@/stores/UserStore'
 import useAuthStore from '@/stores/AuthStore'
 import useNotificationStore from '@/stores/NotificationStore'
-import { Notification, NotificationType } from '@/utils/notificationSocket'
+import {
+  Notification,
+  NotificationType,
+  RealTimeNotification,
+  RealTimeNotificationTitle
+} from '@/utils/notificationSocket'
 import useMessageStore from '@/stores/MessageStore'
 
 export default defineComponent({
@@ -144,6 +191,13 @@ export default defineComponent({
           this.fetchFriendShipState()
         }
       }
+    },
+    'notificationStore.allRealTimeNotifications': {
+      handler(value: RealTimeNotification[]) {
+        if (value.length === 0) return
+        this.checkAndRefreshFriendShip(value[0])
+      },
+      deep: true
     }
   },
   methods: {
@@ -153,6 +207,20 @@ export default defineComponent({
       this.state = await this.userStore.checkFriendShip(this.friendId)
       this.blockStatus = await this.userStore.checkBlocked(this.friendId)
       this.loading = false
+    },
+    async checkAndRefreshFriendShip(notification: RealTimeNotification) {
+      if (!this.messageStore.conversationWith) return
+      if (
+        notification.title === RealTimeNotificationTitle.BlockedContactMessage ||
+        notification.title === RealTimeNotificationTitle.BrokenFriendship
+      ) {
+        if (
+          notification.sourceUserId === this.messageStore.conversationWith.id ||
+          notification.userId === this.messageStore.conversationWith.id
+        ) {
+          await this.fetchFriendShipState()
+        }
+      }
     },
     async beFriendRequest() {
       await this.userStore.askFriendRequest(this.friendId)
