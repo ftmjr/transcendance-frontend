@@ -108,7 +108,7 @@ export default defineComponent({
   },
   beforeUnmount() {
     if (this.gameId) {
-      this.gameStore.quitGameSession(this.gameId);
+      this.gameStore.quitGameSession(this.gameId)
     }
   },
   methods: {

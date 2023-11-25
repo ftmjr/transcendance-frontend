@@ -78,7 +78,7 @@ const useAuthStore = defineStore({
         const decoded = decodeJWT(this.token)
         if (decoded) {
           const now = this.now
-          return decoded.exp * 1000 <= (now - 60 * 1000) // 1 minute before expiration
+          return decoded.exp * 1000 <= now - 60 * 1000 // 1 minute before expiration
         }
       }
       return false

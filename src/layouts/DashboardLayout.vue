@@ -114,17 +114,12 @@ const needToRefreshToken = computed(() => {
 })
 watch(needToRefreshToken, async (value) => {
   const token = authStore.getTokenData
-  if (value && token){
-    await authStore.refreshToken();
+  if (value && token) {
+    await authStore.refreshToken()
   }
 })
 
-const refreshableRoutes = [
-  'game',
-  'waiting-room',
-  'dashboard',
-  'watch-game'
-]
+const refreshableRoutes = ['game', 'waiting-room', 'dashboard', 'watch-game']
 watch(router.currentRoute, async (to, from) => {
   // if route is not refreshable, return
   if (!refreshableRoutes.includes(to.name as string)) return
@@ -140,7 +135,7 @@ onBeforeMount(() => {
       notificationStore.init(authStore.getUser.id)
     }
     if (!gameStore.socketOperational) {
-      gameStore.initSocket();
+      gameStore.initSocket()
     }
     if (!roomsStore.socketOperational) {
       roomsStore.init(authStore.getUser.id)

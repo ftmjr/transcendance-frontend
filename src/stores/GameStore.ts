@@ -107,8 +107,8 @@ const useGameStore = defineStore({
       return this.currentGameSession?.type === GameSessionType.QueListGame
     },
     socketOperational(): boolean {
-      if (!this.gameNetwork) return false;
-      return this.gameNetwork.socket?.connected ?? false;
+      if (!this.gameNetwork) return false
+      return this.gameNetwork.socket?.connected ?? false
     }
   },
   actions: {
@@ -131,7 +131,7 @@ const useGameStore = defineStore({
         const { data } = await axios.get<GameSession[] | string>('/game/sessions', {
           headers: { Accept: 'application/json' }
         })
-        if (Array.isArray(data)){
+        if (Array.isArray(data)) {
           this.myGameSessions = data
         } else {
           this.myGameSessions = []

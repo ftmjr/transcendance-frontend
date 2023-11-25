@@ -148,7 +148,7 @@ export class GameNetwork {
 
   sendBallServe(data: BallData) {
     const roomId = this.roomId
-    console.log('trying to ball serve');
+    console.log('trying to ball serve')
     if (this.isOperational) {
       console.log('emit ball served to room:', roomId, 'with data:', data)
       this.socket?.emit(GAME_EVENTS.BallServed, { roomId, data })
