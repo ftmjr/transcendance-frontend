@@ -12,10 +12,7 @@
         :avatar-variant="isActive ? 'outlined' : 'tonal'"
         :size="32"
       />
-      <span
-        class="font-weight-medium line-clamp-1"
-        :class="{ 'font-weight-bold': isActive }"
-      >
+      <span class="font-weight-medium line-clamp-1" :class="{ 'font-weight-bold': isActive }">
         {{ contact.profile.name.split(' ').shift() }} {{ contact.profile.lastname }}
       </span>
     </div>
@@ -26,17 +23,10 @@
       >
         {{ lastMessage.text }}
       </span>
-      <p
-        v-else-if="isTyping"
-        class="w-full ml-16 -mt-2 text-xs font-light shrink-0"
-      >
+      <p v-else-if="isTyping" class="w-full ml-16 -mt-2 text-xs font-light shrink-0">
         {{ contact.profile.name.split(' ').shift() }}
         <span class="pr-1">est en train d'écrire</span>
-        <v-icon
-          :size="12"
-          color="primary"
-          icon="svg-spinners:3-dots-bounce"
-        />
+        <v-icon :size="12" color="primary" icon="svg-spinners:3-dots-bounce" />
       </p>
     </div>
   </li>
@@ -73,7 +63,8 @@ export default defineComponent({
   },
   data() {
     return {
-      isTyping: false
+      isTyping: false,
+      lastMessage: null as PrivateMessage | null
     }
   },
   computed: {
@@ -82,9 +73,6 @@ export default defineComponent({
     },
     canShowLastMessage() {
       return this.showLastMessage && !this.isTyping
-    },
-    lastMessage(): PrivateMessage | null {
-      return this.messageStore.getLastMessageBetween(this.contact.id)
     }
   },
   watch: {
@@ -95,6 +83,13 @@ export default defineComponent({
         if (!lastTime) return false
         const now = new Date().getTime()
         this.isTyping = now - lastTime < 3000
+      },
+      deep: true,
+      immediate: true
+    },
+    'messageStore.messages': {
+      handler() {
+        this.lastMessage = this.messageStore.getLastMessageBetween(this.contact.id)
       },
       deep: true,
       immediate: true

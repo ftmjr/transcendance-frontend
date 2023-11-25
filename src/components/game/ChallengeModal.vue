@@ -1,46 +1,23 @@
 <template>
-  <VDialog
-    v-model="isDialogVisible"
-    max-width="600"
-  >
+  <VDialog v-model="isDialogVisible" max-width="600">
     <template #activator="{ props }">
-      <VBtn
-        v-bind="props"
-        variant="outlined"
-        size="small"
-      >
-        Challenge <v-icon left>
-          mdi-sword-cross
-        </v-icon>
+      <VBtn v-bind="props" variant="outlined" size="small">
+        Challenge <v-icon left> mdi-sword-cross </v-icon>
       </VBtn>
     </template>
-    <VBtn
-      icon
-      class="v-dialog-close-btn"
-      @click="isDialogVisible = !isDialogVisible"
-    >
+    <VBtn icon class="v-dialog-close-btn" @click="isDialogVisible = !isDialogVisible">
       <VIcon icon="tabler-x" />
     </VBtn>
     <VCard title="Règles du jeu">
-      <VAlert
-        v-if="isDialogError"
-        type="error"
-        dismissible
-      >
+      <VAlert v-if="isDialogError" type="error" dismissible>
         {{ errorMsg }}
       </VAlert>
       <VCardText>
         <VRow>
           <VCol>
-            <v-row
-              class="mb-4"
-              justify="space-between"
-            >
+            <v-row class="mb-4" justify="space-between">
               <VCol class="text-left">
-                <span
-                  class="text-h2 font-weight-light"
-                  v-text="gameRulesFields.maxScore"
-                />
+                <span class="text-h2 font-weight-light" v-text="gameRulesFields.maxScore" />
                 <span class="subheading font-weight-light me-1">Buts</span>
               </VCol>
               <VCol class="text-right">
@@ -97,28 +74,12 @@
         </VRow>
       </VCardText>
       <VCardText class="flex justify-end flex-wrap gap-3 items-center">
-        <VAlert
-          v-if="status !== 'Online'"
-          type="warning"
-          variant="outlined"
-          dismissible
-        >
+        <VAlert v-if="status !== 'Online'" type="warning" variant="outlined" dismissible>
           Le challengeur est hors ligne, il a été notifié de votre demande. Il a 5 minutes pour
           accepter ou refuser.
         </VAlert>
-        <VBtn
-          variant="tonal"
-          color="secondary"
-          @click="isDialogVisible = false"
-        >
-          Fermer
-        </VBtn>
-        <VBtn
-          :disabled="!canBeChallenged"
-          @click="startChallenge"
-        >
-          Challenger
-        </VBtn>
+        <VBtn variant="tonal" color="secondary" @click="isDialogVisible = false"> Fermer </VBtn>
+        <VBtn :disabled="!canBeChallenged" @click="startChallenge"> Challenger </VBtn>
       </VCardText>
     </VCard>
   </VDialog>

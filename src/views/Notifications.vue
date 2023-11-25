@@ -1,12 +1,10 @@
 <template>
   <div class="px-8 py-8">
     <div class="">
-      <h1 class="text-4xl">
-        Notifications
-      </h1>
+      <h1 class="text-4xl">Notifications</h1>
       <p class="mt-2 mb-0 text-sm">
         Voici une liste de ce qu'il se passe dans votre compte
-        <br>
+        <br />
         Vous avez
         <span class="font-weight-semibold text-md">
           {{ notificationStore.unreadNotificationsCount }} notifications non lues
@@ -20,10 +18,7 @@
           :key="notification.id"
           class=""
         >
-          <Notification
-            :notification="notification"
-            @mark-as-read="markAsRead"
-          />
+          <Notification :notification="notification" @mark-as-read="markAsRead" />
         </div>
       </div>
     </div>

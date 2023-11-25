@@ -4,15 +4,8 @@
     v-bind="$attrs"
     @click="isAppSearchBarVisible = !isAppSearchBarVisible"
   >
-    <VBtn
-      icon
-      variant="text"
-      size="small"
-    >
-      <VIcon
-        icon="tabler-search"
-        size="24"
-      />
+    <VBtn icon variant="text" size="small">
+      <VIcon icon="tabler-search" size="24" />
     </VBtn>
     <span class="d-none d-md-flex align-center text-disabled">
       <span class="m-2">Recherche</span>

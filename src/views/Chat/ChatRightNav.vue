@@ -22,7 +22,7 @@
       </div>
       <div
         class="flex-1 h-full"
-        :class="[!isMember && 'blur-sm pointer-events-none']"
+        :class="[!roomStore.isMemberOfRoom && roomStore.isPublic && 'blur-sm pointer-events-none']"
       >
         <div class="relative h-1/2 hide-scrollbar">
           <span
@@ -37,12 +37,8 @@
               }"
               class="h-full pb-16 grow-0 srink-0 hide-scrollbar"
             >
-              <li
-                v-for="m in roomStore.getCurrentRoomMembers"
-                :key="m.id"
-                class="block px-2 py-2"
-              >
-                <chat-members-list-button :member="m" />
+              <li v-for="member in roomStore.roomMembers" :key="member.id" class="block px-2 py-2">
+                <chat-members-list-button :member="member" />
               </li>
             </perfect-scrollbar>
           </div>
@@ -56,11 +52,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import ChatMembersListButton from './ChatMembersListButton.vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import useRoomsStore from '@/stores/RoomsStore'
-import { RoomType } from '@/utils/chatSocket'
 import InviteUsers from './InviteUser.vue'
 
 defineProps({
@@ -70,12 +65,8 @@ defineProps({
     default: true
   }
 })
-
 const roomStore = useRoomsStore()
-const isMember = computed(() => roomStore.getCurrentRoomStatus.state)
-const room = computed(() => roomStore.getCurrentRoomStatus.room)
-
 const canBeDisplayed = computed(() => {
-  return (isMember.value && room.value) || (!isMember.value && room.value?.type === RoomType.PUBLIC)
+  return roomStore.isMemberOfRoom || roomStore.isPublic
 })
 </script>

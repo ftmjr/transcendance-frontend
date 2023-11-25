@@ -1,9 +1,6 @@
 <template>
-  <div :class="weAreBlocked ? 'blur-xl pointer-events-none' : ''">
-    <div
-      class="flex flex-col"
-      :class="[isSender ? 'justify-end items-end' : 'order-2 text-left']"
-    >
+  <div :class="blocked ? 'blur-xl pointer-events-none' : ''">
+    <div class="flex flex-col" :class="[isSender ? 'justify-end items-end' : 'order-2 text-left']">
       <div
         :class="[
           'relative inline-block max-w-xs px-4 py-4 text-sm rounded-md shadow-lg drop-shadow-lg mb-2',
@@ -11,11 +8,7 @@
         ]"
         style="background-color: #272b47"
       >
-        <p
-          v-for="(msg, index) in msgGroup.messages"
-          :key="index"
-          class="my-2 text-sm"
-        >
+        <p v-for="msg in msgGroup.messages" :key="msg.id" class="my-2 text-sm">
           {{ msg.message }}
         </p>
       </div>
@@ -31,39 +24,12 @@
             })
           }}
         </span>
-        <div
-          class="flex items-center gap-2"
-          :class="[isSender ? 'justify-end' : 'justify-start']"
-        >
-          <span class="line-clamp-1">{{ sender.member.username.split(' ').shift() }}</span>
-          <VIcon
-            v-if="sender.role === ChatMemberRole.OWNER"
-            :size="16"
-            color="primary"
-          >
-            tabler-crown
-          </VIcon>
-          <VIcon
-            v-else-if="sender.role === ChatMemberRole.ADMIN"
-            :size="16"
-            color="secondary"
-          >
-            tabler-shield-check
-          </VIcon>
-          <VIcon
-            v-else-if="sender.role === ChatMemberRole.BAN"
-            :size="16"
-            color="gray"
-          >
-            tabler-user-x
-          </VIcon>
-          <VIcon
-            v-else-if="sender.role === ChatMemberRole.MUTED"
-            :size="16"
-            color="gray"
-          >
-            tabler-user-minus
-          </VIcon>
+        <div class="flex items-center gap-2" :class="[isSender ? 'justify-end' : 'justify-start']">
+          <span class="line-clamp-1">{{ sender?.member.username.split(' ').shift() }}</span>
+          <VIcon v-if="isOwner" :size="16" color="primary"> tabler-crown </VIcon>
+          <VIcon v-else-if="isAdmin" :size="16" color="secondary"> tabler-shield-check </VIcon>
+          <VIcon v-else-if="isBan" :size="16" color="gray"> tabler-user-x </VIcon>
+          <VIcon v-else-if="isMuted" :size="16" color="gray"> tabler-user-minus </VIcon>
         </div>
       </div>
     </div>
@@ -85,7 +51,8 @@ export default defineComponent({
   props: {
     msgGroup: {
       type: Object as PropType<ChatMessageGroup>,
-      required: true
+      required: true,
+      default: () => ({ senderId: 0, messages: [], time: new Date().toTimeString() })
     },
     isSender: {
       type: Boolean,
@@ -99,32 +66,29 @@ export default defineComponent({
     }
   },
   computed: {
-    ChatMemberRole() {
-      return ChatMemberRole
-    },
     sender(): MemberRoomWithUserProfiles | undefined {
-      return this.roomStore.getCurrentRoomMembers.find(
+      return this.roomStore.roomMembers.find(
         (member) => member.member.id === this.msgGroup.senderId
       )
     },
     isBan(): boolean {
-      if (!this.sender) return true
-      return this.sender.member.role === 'BAN'
+      return this.sender?.role === ChatMemberRole.BAN
     },
     isAdmin(): boolean {
-      if (!this.sender) return false
-      return this.sender.member.role === 'ADMIN'
+      return this.sender?.role === ChatMemberRole.ADMIN
     },
     isOwner(): boolean {
-      if (!this.sender) return false
-      return this.sender.member.role === 'OWNER'
+      return this.sender?.role === ChatMemberRole.OWNER
     },
-    weAreBlocked(): boolean {
+    isMuted(): boolean {
+      return this.sender?.role === ChatMemberRole.MUTED
+    },
+    blocked(): boolean {
       if (!this.sender) return true
-      const blockStatus = this.roomStore.getCurrentRoomBlockedStatus.find(
-        (block) => block.userId === this.sender?.member.id
-      )
-      return blockStatus?.status !== BlockedStatus.None
+      const blockStatus = this.roomStore.allBlockedStatus.get(this.sender.member.id)
+      if (!blockStatus) return false
+      // one of the two block the other
+      return blockStatus !== BlockedStatus.None
     }
   },
   methods: {

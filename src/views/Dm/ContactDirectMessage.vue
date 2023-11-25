@@ -41,10 +41,7 @@
                       : 'text-left bg-[#343851] after:bg-[#343851]'
                   "
                 >
-                  <span
-                    v-for="msgData in msgGrp.messages"
-                    :key="msgData.time"
-                  >
+                  <span v-for="msgData in msgGrp.messages" :key="msgData.time">
                     {{ msgData.message }}
                   </span>
                 </p>
@@ -57,21 +54,11 @@
                   }}
                 </span>
               </li>
-              <li
-                class="p-2"
-                :class="'self-start text-left text-sm px-6 h-8'"
-              >
-                <p
-                  v-if="isTyping"
-                  class="font-light"
-                >
+              <li class="p-2" :class="'self-start text-left text-sm px-6 h-8'">
+                <p v-if="isTyping" class="font-light">
                   {{ messageStore.conversationWith.profile.name.split(' ').shift() }}
                   <span class="pr-1">est en train d'écrire</span>
-                  <v-icon
-                    :size="12"
-                    color="primary"
-                    icon="svg-spinners:3-dots-bounce"
-                  />
+                  <v-icon :size="12" color="primary" icon="svg-spinners:3-dots-bounce" />
                 </p>
               </li>
             </ul>
@@ -81,7 +68,7 @@
         </div>
       </div>
       <div class="border rounded-md shadow-lg flex-0 drop-shadow-lg">
-        <VForm @submit.prevent="sendMessage">
+        <VForm @submit.prevent.stop="sendMessage">
           <VTextField
             v-model="mpContent"
             :disabled="!canWrite"
@@ -92,10 +79,7 @@
             @keyup="handleUserTyping"
           >
             <template #append-inner>
-              <VBtn
-                rounded
-                @click.stop.prevent="sendMessage"
-              >
+              <VBtn rounded @click.prevent.stop="sendMessage">
                 <svg
                   class="w-4 h-4 text-current fill-current"
                   xmlns="http://www.w3.org/2000/svg"
@@ -111,16 +95,8 @@
         </VForm>
       </div>
     </template>
-    <div
-      v-else-if="loading"
-      class="flex items-center justify-center h-full"
-    >
-      <v-progress-circular
-        :size="70"
-        :width="7"
-        color="sky"
-        indeterminate
-      />
+    <div v-else-if="loading" class="flex items-center justify-center h-full">
+      <v-progress-circular :size="70" :width="7" color="sky" indeterminate />
     </div>
   </div>
 </template>
@@ -310,7 +286,8 @@ export default defineComponent({
       })
     },
     async sendMessage() {
-      if (this.loading || !this.messageStore.conversationWith) return
+      if (this.loading) return
+      if (!this.messageStore.conversationWith) return
       if (!this.mpContent.trim()) return
       this.loading = true
       const id = this.messageStore.conversationWith.id
@@ -339,7 +316,7 @@ export default defineComponent({
     scrollToTopInChatLog() {
       const el = this.$refs.MessagesLogScroller?.$el as HTMLElement
       if (el) {
-        el.scrollTop = el.scrollHeight
+        el.scrollTop = 0
       }
     },
     formatDate

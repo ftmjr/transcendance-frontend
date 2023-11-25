@@ -3,10 +3,10 @@
     <v-btn
       :disabled="isLoading"
       color="primary"
-      text
       size="large"
       class="text-xs"
-      @click="handleUpdateKick"
+      variant="text"
+      @click.prevent="handleUpdateKick"
     >
       Sortir de force
     </v-btn>
@@ -31,8 +31,7 @@ const props = defineProps({
 
 const isLoading = ref(false)
 
-const handleUpdateKick = async (e: Event) => {
-  e.preventDefault()
+const handleUpdateKick = async () => {
   try {
     isLoading.value = true
     await roomsStore.kickMember(props.roomId, props.userId)

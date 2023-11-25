@@ -1,42 +1,32 @@
 <template>
-  <div
-    v-if="room"
-    class="relative h-full mt-4"
-  >
-    <div
-      v-if="canViewMessagesList"
-      class="absolute left-0 z-10 w-full h-full -top-[40px]"
-      :class="[]"
-    >
+  <div v-if="roomsStore.currentRoom" class="relative h-full mt-4">
+    <div v-if="canViewMessagesList" class="absolute left-0 z-10 w-full h-full -top-[40px]">
       <chat-room-message-list />
     </div>
     <div class="relative z-20 flex flex-col items-start justify-center h-full px-4">
       <div class="flex flex-col items-center justify-center w-full gap-4 md:flex-row">
         <div class="">
           <span class="text-4xl font-semibold text-gray-300">
-            {{ room.name }}
+            {{ roomsStore.currentRoom.name }}
           </span>
           <div class="my-4">
-            <VChip
-              label
-              class="me-2"
-            >
-              {{ room.type }}
+            <VChip label class="me-2">
+              {{ roomsStore.currentRoom.type }}
             </VChip>
           </div>
         </div>
         <div class="py-4 w-72 h-72">
           <img
-            v-if="room.avatar"
-            :src="room.avatar"
+            v-if="roomsStore.currentRoom.avatar"
+            :src="roomsStore.currentRoom.avatar"
             class="object-cover w-full h-full rounded"
-          >
+          />
         </div>
       </div>
       <v-divider class="mx-auto w-72" />
       <div class="flex flex-col gap-4 mx-auto my-8">
         <VTextField
-          v-if="room.password"
+          v-if="roomsStore.isPasswordProtected"
           v-model="password"
           :rules="[rules.required]"
           :disabled="isJoining"
@@ -60,11 +50,7 @@
         </VBtn>
       </div>
     </div>
-    <NotificationPopUp
-      v-model:visible="popUpVisible"
-      color="error"
-      :snackbar-msg="errorMessage"
-    />
+    <NotificationPopUp v-model:visible="popUpVisible" color="error" :snackbar-msg="errorMessage" />
   </div>
 </template>
 
@@ -72,7 +58,6 @@
 import { defineComponent } from 'vue'
 import useRoomsStore from '@/stores/RoomsStore'
 import ChatRoomMessageList from './ChatRoomMessageList.vue'
-import { RoomType } from '@/utils/chatSocket'
 
 export default defineComponent({
   components: {
@@ -97,19 +82,16 @@ export default defineComponent({
     }
   },
   computed: {
-    room() {
-      return this.roomsStore.getCurrentRoomStatus.room
-    },
-    canViewMessagesList() {
-      return this.room?.type === RoomType.PUBLIC
+    canViewMessagesList(): boolean {
+      return this.roomsStore.isPublic
     }
   },
   methods: {
     async joinRoom() {
-      if (!this.roomsStore.currentRoomId) return
+      if (!this.roomsStore.currentRoom) return
       this.isJoining = true
       this.password = this.password.trim()
-      const result = await this.roomsStore.joinRoom(this.roomsStore.currentRoomId, {
+      const result = await this.roomsStore.joinRoom(this.roomsStore.currentRoom.id, {
         userId: this.roomsStore.userId,
         password: this.password ? this.password : undefined
       })
