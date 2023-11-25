@@ -1,47 +1,75 @@
 <template>
-  <v-card color="transparent" class="shadow-lg drop-shadow-md">
+  <v-card
+    color="transparent"
+    class="shadow-lg drop-shadow-md"
+  >
     <div :class="[colorClass, 'p-6']">
-      <h2 class="text-4xl uppercase font-bold">Statistiques</h2>
+      <h2 class="text-4xl uppercase font-bold">
+        Statistiques
+      </h2>
       <v-card-text>
         <div class="flex flex-col md:flex-row items-center gap-4 justify-between">
           <div
             class="text-center flex items-center justify-start gap-1 basis-full md:basis-1/2 lg:basis-1/4"
           >
-            <v-avatar icon="icon-park-twotone:game-three" color="primary" variant="tonal" />
+            <v-avatar
+              icon="icon-park-twotone:game-three"
+              color="primary"
+              variant="tonal"
+            />
             <!-- <v-avatar color="primary" variant="tonal" :size="64">
               <v-icon icon="" :size="32" class="h-full w-full"> icon-park-twotone:game-three </v-icon>
             </v-avatar> -->
             <p class="font-weight-bold text-xl">
               {{ numberOfGames }}
             </p>
-            <h3 class="font-medium uppercase text-xl">Parties Jouée(s)</h3>
+            <h3 class="font-medium uppercase text-xl">
+              Parties Jouée(s)
+            </h3>
           </div>
           <div
             class="text-center flex items-center justify-start gap-1 basis-full md:basis-1/2 lg:basis-1/4"
           >
-            <v-avatar icon="tabler-trophy" color="yellow" />
+            <v-avatar
+              icon="tabler-trophy"
+              color="yellow"
+            />
             <p class="font-weight-bold text-xl">
               {{ numberOfWins }}
             </p>
-            <h3 class="font-medium uppercase text-xl">Victoire(s)</h3>
+            <h3 class="font-medium uppercase text-xl">
+              Victoire(s)
+            </h3>
           </div>
           <div
             class="text-center flex items-center justify-start gap-1 basis-full md:basis-1/2 lg:basis-1/4"
           >
-            <v-avatar icon="ph:soccer-ball-fill" color="blue" variant="tonal" />
+            <v-avatar
+              icon="ph:soccer-ball-fill"
+              color="blue"
+              variant="tonal"
+            />
             <p class="font-weight-bold text-xl">
               {{ numberOfGoals }}
             </p>
-            <h3 class="font-medium uppercase text-xl">But(s)</h3>
+            <h3 class="font-medium uppercase text-xl">
+              But(s)
+            </h3>
           </div>
           <div
             class="text-center flex items-center justify-start gap-1 basis-full md:basis-1/2 lg:basis-1/4"
           >
-            <VAvatar icon="tabler-shield-x" color="red" variant="tonal" />
+            <VAvatar
+              icon="tabler-shield-x"
+              color="red"
+              variant="tonal"
+            />
             <p class="font-weight-bold text-xl">
               {{ numberOfLostGames }}
             </p>
-            <h3 class="font-medium uppercase text-xl">Défaite(s)</h3>
+            <h3 class="font-medium uppercase text-xl">
+              Défaite(s)
+            </h3>
           </div>
         </div>
       </v-card-text>

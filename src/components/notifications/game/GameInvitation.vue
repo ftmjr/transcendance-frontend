@@ -9,10 +9,17 @@
   >
     <div class="relative flex w-full gap-4">
       <div :class="[isAlreadyPlayed || !isValid ? 'opacity-75' : 'opacity-100']">
-        <v-icon class="text-2xl" color="orange"> tabler:device-gamepad-2 </v-icon>
+        <v-icon
+          class="text-2xl"
+          color="orange"
+        >
+          tabler:device-gamepad-2
+        </v-icon>
       </div>
       <div class="flex-col flex-1 pr-4">
-        <p :class="['text-left text-sm fomt-semiBold']">Invitation Challenge</p>
+        <p :class="['text-left text-sm fomt-semiBold']">
+          Invitation Challenge
+        </p>
         <p :class="['text-left text-xs text-gray-500/75']">
           {{ notification.message }}
         </p>

@@ -1,6 +1,9 @@
 <template>
   <div class="h-full">
-    <div class="w-full h-full overflow-sroll" :class="canRead ? '' : 'blur-sm'">
+    <div
+      class="w-full h-full overflow-sroll"
+      :class="canRead ? '' : 'blur-sm'"
+    >
       <perfect-scrollbar
         id="messages-log"
         ref="MessagesLogScroller"
@@ -13,9 +16,15 @@
           :key="`message-group-${index}-${msgGrp.senderId}`"
           :class="msgGrp.senderId === roomStore.userId ? 'self-end' : 'self-start'"
         >
-          <chat-message :is-sender="msgGrp.senderId === roomStore.userId" :msg-group="msgGrp" />
+          <chat-message
+            :is-sender="msgGrp.senderId === roomStore.userId"
+            :msg-group="msgGrp"
+          />
         </li>
-        <li v-if="isTypingUserName" class="pb-4 font-weight-medium">
+        <li
+          v-if="isTypingUserName"
+          class="pb-4 font-weight-medium"
+        >
           <p>
             <span class="text-primary">{{ isTypingUserName }}</span> est en train d'écrire...
           </p>
@@ -26,7 +35,10 @@
     <div
       class="absolute w-full px-8 py-2 h-[65px] bottom-0 bg-gradient-to-b from-[#262A46]/0 to-[80%] to-[#262A46]"
     >
-      <form action="" class="flex items-center justify-center w-full h-full">
+      <form
+        action=""
+        class="flex items-center justify-center w-full h-full"
+      >
         <div class="w-full h-[40px] relative">
           <div
             v-if="me && roomStore.isMuted"
@@ -43,7 +55,9 @@
             v-if="me && roomStore.isBanned"
             class="absolute left-0 z-50 flex items-center justify-center w-full h-full -top-5"
           >
-            <p class="text-xs text-primary">Vous avez été banni de ce salon</p>
+            <p class="text-xs text-primary">
+              Vous avez été banni de ce salon
+            </p>
           </div>
           <VForm @submit.prevent="sendMessage">
             <VTextField
@@ -64,7 +78,11 @@
                   icon
                   @click="sendMessage"
                 >
-                  <v-icon color="primary" size="16" icon="mingcute:send-fill" />
+                  <v-icon
+                    color="primary"
+                    size="16"
+                    icon="mingcute:send-fill"
+                  />
                 </v-btn>
               </template>
             </VTextField>

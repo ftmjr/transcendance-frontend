@@ -1,5 +1,8 @@
 <template>
-  <div v-if="userProfile" class="flex items-center gap-2">
+  <div
+    v-if="userProfile"
+    class="flex items-center gap-2"
+  >
     <v-badge
       dot
       location="bottom right"
@@ -8,7 +11,11 @@
       :color="color"
       :bordered="bordered"
     >
-      <v-avatar :variant="avatarVariant" :size="size" @click="$emit('showUserProfile')">
+      <v-avatar
+        :variant="avatarVariant"
+        :size="size"
+        @click="$emit('showUserProfile')"
+      >
         <v-img
           v-if="userProfile.profile.avatar"
           :src="userProfile.profile.avatar"
@@ -18,12 +25,18 @@
       </v-avatar>
       <slot />
     </v-badge>
-    <div v-if="showName" class="text-center">
+    <div
+      v-if="showName"
+      class="text-center"
+    >
       <span class="ext-sm line-clamp-1">
         {{ userProfile.profile.name }} {{ userProfile.profile.lastname }}
       </span>
     </div>
-    <div v-else-if="showUsername" class="text-center">
+    <div
+      v-else-if="showUsername"
+      class="text-center"
+    >
       <span class="text-sm line-clamp-1">
         {{ userProfile.username }}
       </span>
@@ -40,7 +53,11 @@
       :bordered="true"
       class="animate-pulse"
     >
-      <VAvatar :size="size" icon="tabler-loader" @click="$emit('showUserProfile')" />
+      <VAvatar
+        :size="size"
+        icon="tabler-loader"
+        @click="$emit('showUserProfile')"
+      />
     </VBadge>
   </div>
 </template>

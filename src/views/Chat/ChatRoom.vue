@@ -22,8 +22,16 @@
       </div>
     </div>
     <div class="relative flex-1 w-full pb-0 overflow-hidden">
-      <div v-if="isLoading" class="flex items-center justify-center h-full">
-        <v-progress-circular :size="70" :width="7" color="sky" indeterminate />
+      <div
+        v-if="isLoading"
+        class="flex items-center justify-center h-full"
+      >
+        <v-progress-circular
+          :size="70"
+          :width="7"
+          color="sky"
+          indeterminate
+        />
       </div>
       <template v-else>
         <chat-room-message-list v-if="roomStore.isMemberOfRoom" />
@@ -33,8 +41,15 @@
             v-if="!roomStore.isLeftNavOpen"
             class="flex items-center justify-center h-full flex-column"
           >
-            <VAvatar size="109" class="mb-6 elevation-3 bg-surface">
-              <VIcon size="50" class="rounded-0 text-high-emphasis" icon="tabler-message" />
+            <VAvatar
+              size="109"
+              class="mb-6 elevation-3 bg-surface"
+            >
+              <VIcon
+                size="50"
+                class="rounded-0 text-high-emphasis"
+                icon="tabler-message"
+              />
             </VAvatar>
             <p
               class="px-6 py-1 mb-0 text-lg font-weight-medium elevation-3 rounded-xl text-high-emphasis bg-surface"

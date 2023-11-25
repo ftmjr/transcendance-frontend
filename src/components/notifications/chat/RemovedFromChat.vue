@@ -9,10 +9,17 @@
   >
     <div class="relative flex w-full gap-4">
       <div>
-        <v-icon class="text-2xl" color="error"> mdi-forum </v-icon>
+        <v-icon
+          class="text-2xl"
+          color="error"
+        >
+          mdi-forum
+        </v-icon>
       </div>
       <div class="flex-col flex-1 pr-4">
-        <p :class="['text-left text-sm fomt-semiBold']">Vous n'etes plus membre</p>
+        <p :class="['text-left text-sm fomt-semiBold']">
+          Vous n'etes plus membre
+        </p>
         <p :class="['text-left text-xs text-gray-500/75']">
           {{ notification.message }}
         </p>

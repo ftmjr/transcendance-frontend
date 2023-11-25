@@ -68,9 +68,7 @@ const tryToMute = async (e: Event) => {
 
     isLoading.value = true
 
-    const member = roomsStore.roomMembers.find(
-      (member) => member.memberId === props.userId
-    )
+    const member = roomsStore.roomMembers.find((member) => member.memberId === props.userId)
     if (!member) return
     await roomsStore.changeMemberRole(props.roomId, member, role.value)
     isLoading.value = false
