@@ -73,6 +73,16 @@ const useAuthStore = defineStore({
       }
       return false
     },
+    closeToExpire(): boolean {
+      if (this.token) {
+        const decoded = decodeJWT(this.token)
+        if (decoded) {
+          const now = this.now
+          return decoded.exp * 1000 <= (now - 60 * 1000) // 1 minute before expiration
+        }
+      }
+      return false
+    },
     status(): LoginStatus {
       if (this.user) {
         if (this.token) {
