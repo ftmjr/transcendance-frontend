@@ -101,7 +101,7 @@ const handleAcceptChallenge = async () => {
       errorDuringAccept.value = true
       errorMessage.value = r
     } else {
-      await router.push({ name: 'game', params: { id: r.gameId } })
+      await router.push({ name: 'game', params: { gameId: r.gameId } })
     }
   }
 }

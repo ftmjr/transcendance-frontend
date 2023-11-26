@@ -41,12 +41,12 @@
                       : 'text-left bg-[#343851] after:bg-[#343851]'
                   "
                 >
-                  <span
-                    v-for="(msgData, i) in msgGrp.messages"
-                    :key="i"
+                  <private-message
+                    v-for="msgData in msgGrp.messages"
+                    :key="msgData.id"
+                    :message="msgData"
                   >
-                    {{ msgData.message }}
-                  </span>
+                  </private-message>
                 </p>
                 <span class="text-[.5rem] text-gray-50/90 font-thin block mt-4 px-4">
                   {{
@@ -136,6 +136,7 @@ import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore, { BlockedStatus, FriendshipStatus } from '@/stores/UserStore'
 import useNotificationStore from '@/stores/NotificationStore'
 import { RealTimeNotification, RealTimeNotificationTitle } from '@/utils/notificationSocket'
+import PrivateMessage from "@/components/messages/PrivateMessage.vue";
 
 interface MessageGroup {
   senderId: number
@@ -144,6 +145,7 @@ interface MessageGroup {
 
 export default defineComponent({
   components: {
+    PrivateMessage,
     MessageTopBar,
     PerfectScrollbar
   },
