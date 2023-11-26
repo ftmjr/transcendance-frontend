@@ -196,9 +196,13 @@ const useMessageStore = defineStore({
           this.conversationsUsers.unshift(shortProfile)
         }
       }
-      const userMessages = this.messages.get(contactId) || []
-      userMessages.unshift(message)
-      this.messages.set(contactId, userMessages)
+      const userMessages = this.messages.get(contactId)
+      if (userMessages){
+        userMessages.unshift(message)
+        return
+      } else {
+        this.messages.set(contactId, [message])
+      }
     },
     getLastMessageBetween(userId: number): PrivateMessage | null {
       const userMessages = this.messages.get(userId) || []

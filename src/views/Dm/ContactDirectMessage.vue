@@ -126,7 +126,7 @@
 </template>
 
 <script lang="ts">
-import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
+import useMessageStore, { PrivateMessage as PrivateMessageT } from '@/stores/MessageStore'
 import { defineComponent } from 'vue'
 import { Profile, User } from '@/interfaces/User'
 import MessageTopBar from '@/components/messages/MessageTopBar.vue'
@@ -175,11 +175,8 @@ export default defineComponent({
     }
   },
   computed: {
-    messages(): PrivateMessage[] {
-      return this.messageStore.currentContactMessages
-    },
-    messagesByTime(): PrivateMessage[] {
-      return this.messages.slice().sort((a, b) => {
+    messagesByTime(): PrivateMessageT[] {
+      return this.messageStore.currentContactMessages.slice().sort((a, b) => {
         return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
       })
     },
@@ -192,7 +189,7 @@ export default defineComponent({
         senderId: msgSenderId,
         messages: []
       }
-      messages.forEach((msg: PrivateMessage, index) => {
+      messages.forEach((msg: PrivateMessageT, index) => {
         if (msgSenderId === msg.senderId) {
           msgGroup.messages.push({ id: msg.id, message: msg.text, time: msg.timestamp })
         } else {
@@ -228,7 +225,7 @@ export default defineComponent({
       deep: true,
       immediate: true
     },
-    messages: {
+    messagesByTime: {
       handler() {
         this.$nextTick(() => {
           this.scrollToBottomInChatLog()
