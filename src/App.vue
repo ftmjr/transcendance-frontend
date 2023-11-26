@@ -7,6 +7,7 @@ import useAuthStore from '@/stores/AuthStore'
 import useRoomsStore from '@/stores/RoomsStore'
 import useGameStore from "@/stores/GameStore";
 import useUserStore from "@/stores/UserStore";
+import useMessageStore from "@/stores/MessageStore";
 export default defineComponent({
   setup() {
     const {
@@ -23,6 +24,7 @@ export default defineComponent({
     const roomsStore = useRoomsStore()
     const gameStore = useGameStore()
     const usersStore = useUserStore()
+    const messageStore = useMessageStore();
     return {
       isAppRtl,
       color,
@@ -30,7 +32,8 @@ export default defineComponent({
       roomsStore,
       gameStore,
       usersStore,
-      notificationStore
+      notificationStore,
+      messageStore,
     }
   },
   computed: {
@@ -110,6 +113,12 @@ export default defineComponent({
         this.notificationStore.disconnect()
         this.roomsStore.disconnect()
         this.gameStore.disconnectSocket()
+        // reset Stores data
+        this.usersStore.$reset()
+        this.notificationStore.$reset()
+        this.roomsStore.$reset()
+        this.gameStore.$reset()
+        this.messageStore.$reset()
       }
     },
   }

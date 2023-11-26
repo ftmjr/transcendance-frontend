@@ -78,7 +78,7 @@ export default defineComponent({
   beforeUnmount() {
     this.gameMonitor.cleanAllPhaserRoutines()
     this.gameMonitor?.quitGame()
-    if (this.game) this.game.destroy(true)
+    if (this.game) this.game.destroy(false)
   },
   methods: {
     moveToHistory() {
