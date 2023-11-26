@@ -232,6 +232,22 @@ const useRoomsStore = defineStore({
       }
       messageStore.setSocketManager(this.socketManager as ChatSocket)
     },
+    resetStore(){
+      // reset store
+      this.userId = 0;
+      this.disconnect();
+      this.currentRoomStatus = { state : false, role : null };
+      this.isLeftNavOpen = false;
+      this.isRightNavOpen = false;
+      this.roomsMembersTyping.clear()
+      this.currentRoomMembers = [];
+      this.rooms.splice(0, this.rooms.length)
+      this.publicRooms.splice(0, this.publicRooms.length)
+      this.searchTerm = '';
+      this.messages.clear();
+      this.roomsBlockedStatus.clear();
+      this.contactTyping.clear();
+    },
     setSearchTerm(term: string) {
       this.searchTerm = term
     },
@@ -513,7 +529,7 @@ const useRoomsStore = defineStore({
       this.socketManager.reloadRoomMembers(roomId)
     },
     disconnect() {
-      this.socketManager?.disconnect()
+      ChatSocket.destroyInstance();
       this.socketManager = null
     },
     toggleLeftNav() {

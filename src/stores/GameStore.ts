@@ -111,6 +111,12 @@ const useGameStore = defineStore({
     }
   },
   actions: {
+    clearStore() {
+      this.currentGameSession = undefined
+      this.myGameSessions.splice(0, this.myGameSessions.length)
+      this.endedGames.splice(0, this.endedGames.length)
+      this.disconnectSocket()
+    },
     async initSocket() {
       const authStore = useAuthStore()
       const user = authStore.getUser
@@ -122,8 +128,8 @@ const useGameStore = defineStore({
       })
     },
     disconnectSocket() {
-      this.gameNetwork?.disconnect()
-      this.gameNetwork = undefined
+        GameNetwork.destroyInstance();
+        this.gameNetwork = undefined
     },
     async getAllGameSessions() {
       try {
@@ -305,6 +311,8 @@ const useGameStore = defineStore({
     // allow you to know witch user is currently playing or in a waiting queue
     async getUserGameStatus(userId: number): Promise<GameStatus> {
       try {
+        const authStore = useAuthStore();
+        if (!authStore.isLoggedIn) return { status: 'free', gameSession: undefined };
         const { data } = await axios.get<{
           status: 'playing' | 'inQueue' | 'free'
           gameSession?: GameSession
@@ -316,6 +324,8 @@ const useGameStore = defineStore({
     },
     async getUsersGameStatus(userIds: number[]): Promise<GameStatus[]> {
       try {
+        const authStore = useAuthStore();
+        if (!authStore.isLoggedIn) return userIds.map((id) => ({ status: 'free', gameSession: undefined }));
         const { data } = await axios.post<
           {
             status: 'playing' | 'inQueue' | 'free'
