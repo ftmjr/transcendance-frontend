@@ -1,124 +1,92 @@
 <template>
-  <div>
-    <v-hover v-slot="{ isHovering, props }">
-      <v-card
-        v-bind="props"
-        :color="color"
+  <v-card :color="color">
+    <user-profile-header
+      :id="profileData.id"
+      class="mb-5"
+      :info="profileData.header"
+    />
+    <VTabs
+      v-model="activeTab"
+      class="v-tabs-pill"
+    >
+      <VTabs
+        v-model="activeTab"
+        class="v-tabs-pill"
       >
-        <user-profile-header
-          :id="profileData.id"
-          class="mb-5"
-          :info="profileData.header"
-        />
-        <VTabs
-          v-model="activeTab"
-          class="v-tabs-pill"
+        <VTab
+          v-for="item in tabs"
+          :key="item.icon"
+          :value="item.tab"
+          :to="getRoute(item.tab)"
+          :loading="loading"
         >
-          <VTabs
-            v-model="activeTab"
-            class="v-tabs-pill"
-          >
-            <VTab
-              v-for="item in tabs"
-              :key="item.icon"
-              :value="item.tab"
-              :to="getRoute(item.tab)"
-              :loading="loading"
-            >
-              <VIcon
-                size="20"
-                start
-                :icon="item.icon"
-              />
-              {{ item.title }}
-            </VTab>
-          </VTabs>
-        </VTabs>
-        <VWindow
-          v-model="activeTab"
-          class="mt-6 disable-tab-transition"
-          :touch="false"
+          <VIcon
+            size="20"
+            start
+            :icon="item.icon"
+          />
+          {{ item.title }}
+        </VTab>
+      </VTabs>
+    </VTabs>
+    <VWindow
+      v-model="activeTab"
+      class="mt-6 disable-tab-transition"
+      :touch="false"
+    >
+      <VWindowItem value="profile">
+        <VCard
+          :loading="loading"
+          color="transparent"
         >
-          <VWindowItem value="profile">
-            <VCard
-              :loading="loading"
-              color="transparent"
-            >
-              <VCard v-if="profileData.profile">
-                <div class="bg-[#1a1f3c] p-2 md:p-6">
-                  <h2 class="text-4xl uppercase font-bold">
-                    Description
-                  </h2>
+          <VCard v-if="profileData.profile">
+            <div class="bg-[#1a1f3c] p-2 md:p-6">
+              <h2 class="text-4xl uppercase font-bold">
+                Description
+              </h2>
 
-                  <p
-                    v-if="profileData.profile.bio"
-                    class="text-left md:w-1/2 py-2 font-mono"
-                  >
-                    <i>{{ profileData.profile.bio }}</i>
-                  </p>
-                  <p
-                    v-else
-                    class="text-left pb-2 font-mono text-sm md:w-1/2 py-2"
-                  >
-                    <i>Aucune bio, pour l'instant</i>
-                  </p>
-                </div>
-              </VCard>
-              <div class="my-2" />
-              <PlayerSimpleStats
-                v-if="gameHistories && userId"
-                :histories="gameHistories"
-                :user-id="userId"
-              />
-            </VCard>
-          </VWindowItem>
-          <VWindowItem value="awards">
-            <h2 class="text-4xl uppercase font-bold">
-              Les récompenses
-            </h2>
-            <Awards
-              v-if="userId"
-              :user-id="userId"
-            />
-          </VWindowItem>
-          <VWindowItem value="friends">
-            <friends v-if="userId === authStore.getUser?.id" />
-          </VWindowItem>
-          <VWindowItem value="history">
-            <Histories
-              v-if="userId"
-              :user-id="userId"
-            />
-          </VWindowItem>
-        </VWindow>
-        <v-overlay
-          v-if="heBlockedMe || mutualBlock"
-          :model-value="isHovering"
-          :contained="true"
-          scrim="#036358"
-          class="items-center justify-center"
-        >
-          <v-card-text class="text-center">
-            <v-icon
-              :size="100"
-              color="white"
-              icon="tabler-block"
-            />
-            <h5 class="text-xl font-bold text-white">
-              Cet utilisateur vous a bloqué, il cache des informations secretes 📜 !
-            </h5>
-            <v-btn
-              v-show="mutualBlock"
-              color="secondary"
-              @click.prevent.stop="unblock"
-            >
-              Oh ! vous l'avez aussi bloqué, vous pouvez le débloquer ici
-            </v-btn>
-          </v-card-text>
-        </v-overlay>
-      </v-card>
-    </v-hover>
-  </div>
+              <p
+                v-if="profileData.profile.bio"
+                class="text-left md:w-1/2 py-2 font-mono"
+              >
+                <i>{{ profileData.profile.bio }}</i>
+              </p>
+              <p
+                v-else
+                class="text-left pb-2 font-mono text-sm md:w-1/2 py-2"
+              >
+                <i>Aucune bio, pour l'instant</i>
+              </p>
+            </div>
+          </VCard>
+          <div class="my-2" />
+          <PlayerSimpleStats
+            v-if="gameHistories && userId"
+            :histories="gameHistories"
+            :user-id="userId"
+          />
+        </VCard>
+      </VWindowItem>
+      <VWindowItem value="awards">
+        <h2 class="text-4xl uppercase font-bold">
+          Les récompenses
+        </h2>
+        <Awards
+          v-if="userId"
+          :user-id="userId"
+        />
+      </VWindowItem>
+      <VWindowItem value="friends">
+        <friends v-if="userId === authStore.getUser?.id" />
+      </VWindowItem>
+      <VWindowItem value="history">
+        <Histories
+          v-if="userId"
+          :user-id="userId"
+        />
+      </VWindowItem>
+    </VWindow>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -295,12 +263,6 @@ export default defineComponent({
       this.blockStatus = await this.userStore.checkBlocked(id)
       this.loading = false
     },
-    async unblock() {
-      if (this.isMe) return
-      this.loading = true
-      await this.userStore.unblockUser(this.userId)
-      this.loading = false
-    },
     async checkAndRefreshFriendShip(notification: RealTimeNotification) {
       if (!this.userId) return
       if (
@@ -308,9 +270,7 @@ export default defineComponent({
         notification.title === RealTimeNotificationTitle.BrokenFriendship
       ) {
         if (notification.sourceUserId === this.userId || notification.userId === this.userId) {
-          await this.fetchBlockedState(this.userId)
-          if (this.blockStatus === BlockedStatus.BlockedBy) return
-          await this.fetchProfileData(this.userId)
+          await this.fetchBlockedState(this.userId);
         }
       }
     }
