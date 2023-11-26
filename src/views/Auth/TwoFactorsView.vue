@@ -65,6 +65,7 @@ export default defineComponent({
       this.isLoading = true
       const worked = await this.authStore.validate2FACode(this.verificationCode)
       if (worked) {
+        this.authStore.refreshToken()
         this.$router.push({ name: 'dashboard' })
       } else {
         this.errorMessage = 'Le code est invalide'
