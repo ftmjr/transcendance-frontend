@@ -136,6 +136,14 @@ export class NotificationSocket {
     this.operational = false
   }
 
+  static destroyInstance() {
+    if (NotificationSocket.instance) {
+      NotificationSocket.instance.disconnect();
+      // @ts-expect-error - private property
+      NotificationSocket.instance = undefined
+    }
+  }
+
   connect() {
     if (this.socket) {
       if (this.socket.disconnected) {

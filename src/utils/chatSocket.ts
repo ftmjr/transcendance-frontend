@@ -178,6 +178,14 @@ export class ChatSocket {
     this.operational = false
   }
 
+  static destroyInstance() {
+    if (ChatSocket.instance) {
+      ChatSocket.instance.disconnect();
+      // @ts-expect-error - private property
+      ChatSocket.instance = undefined
+    }
+  }
+
   connect() {
     if (this.socket) {
       this.socket.connect()

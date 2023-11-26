@@ -265,6 +265,14 @@ export class GameNetwork {
     this.joinedGame = false
   }
 
+  static destroyInstance() {
+    if (GameNetwork.instance) {
+      GameNetwork.instance.disconnect();
+      // @ts-expect-error - private property
+      GameNetwork.instance = undefined
+    }
+  }
+
   reconnect() {
     if (!this.socket) this.connect()
     if (this.socket?.disconnected) {

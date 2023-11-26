@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client'
 import { Status } from '@/interfaces/User'
+import { expect } from "vitest";
 
 export interface ReceivedStatusUpdate {
   userId: number
@@ -62,9 +63,16 @@ export class StatusSocket {
 
   disconnect() {
     if (this.socket) {
-      this.socket.disconnect()
+      this.socket.disconnect();
     }
     this.operational = false
+  }
+  static destroyInstance() {
+    if (StatusSocket.instance) {
+      StatusSocket.instance.disconnect();
+      // @ts-expect-error - private property
+      StatusSocket.instance = undefined
+    }
   }
 
   reconnect() {
