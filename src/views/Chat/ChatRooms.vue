@@ -119,7 +119,9 @@ export default defineComponent({
     },
     async checkAndRefreshMembers(notification: RealTimeNotification) {
       if (!this.roomsStore.currentRoom) return
-      if (notification.title === RealTimeNotificationTitle.NewRolesInChatRoom) {
+      if (notification.title === RealTimeNotificationTitle.NewRolesInChatRoom ||
+        notification.title === RealTimeNotificationTitle.NewMemberInChatRoom
+      ) {
         if (notification.roomId === this.roomsStore.currentRoom.id) {
           await this.roomsStore.reloadCurrentRoomMembers()
         }
