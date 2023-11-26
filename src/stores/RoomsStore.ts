@@ -37,9 +37,9 @@ export type MemberRoomWithUserProfiles = ChatRoomMember & {
 
 export interface UpdateRoomData {
   roomId: number
-  type: RoomType
+  roomType: RoomType
   oldPassword?: string
-  password?: string
+  password?: string // 6char min
 }
 
 export const rolePrint: Array<{
@@ -366,8 +366,7 @@ const useRoomsStore = defineStore({
         if (!this.currentRoom) return 'error'
         const formData = new FormData()
         formData.append('file', avatar)
-        formData.append('roomId', roomId.toString())
-        await axios.post('/files/chatRoomAvatar', formData, {
+        await axios.post(`/files/chatRoomAvatar/${roomId}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -404,7 +403,11 @@ const useRoomsStore = defineStore({
         return 'success'
       } catch (e) {
         if (isAxiosError(e)) {
-          return e.response?.data.message ?? 'failed'
+          const axiosE =  e.response?.data.message ?? 'failed'
+          if (Array.isArray(axiosE)){
+            return axiosE[0]
+          }
+          return axiosE
         }
       }
       return 'failed'

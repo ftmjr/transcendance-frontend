@@ -216,13 +216,13 @@ export default defineComponent({
         (v: string) => !!v || 'Le mot de passe est requis',
         (v: string) =>
           (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-        (v: string) => (v && v.length >= 3) || 'Le mot de passe doit être supérieur à 3 caractères'
+        (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 3 caractères'
       ],
       password: [
         (v: string) => !!v || 'Le mot de passe est requis',
         (v: string) =>
           (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-        (v: string) => (v && v.length >= 3) || 'Le mot de passe doit être supérieur à 3 caractères'
+        (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
       ],
       passwordConfirmation: [
         (v: string) => !!v || 'La confirmation du mot de passe est requise',
@@ -290,11 +290,11 @@ export default defineComponent({
       const room = this.roomsStore.currentRoom
       if (!room) return
       const data: UpdateRoomData = {
-        name: this.name,
-        type: this.type,
-        oldPassword: this.oldPassword,
-        password: this.password,
-        passwordConfirmation: this.passwordConfirmation
+        // name: this.name,
+        roomId: room.id,
+        roomType: this.type,
+        oldPassword: this.oldPassword.length > 0 ? this.oldPassword : undefined,
+        password: this.password.length > 0 ? this.password : undefined,
       }
       // to update the avatar we need to do it before the rest of the update
       const newAvatar = this.filesToUpload?.[0]

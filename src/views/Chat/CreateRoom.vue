@@ -39,6 +39,7 @@
                       v-model="name"
                       :rules="rules.name"
                       label="nom"
+                      placeholder="nom du salon"
                     />
                     <v-select
                       v-model="type"
@@ -90,7 +91,7 @@ const authStore = useAuthStore()
 const menu = ref(false)
 const emit = defineEmits(['close'])
 const showErrorPopUp = ref(false)
-const name = ref('room name')
+const name = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 
@@ -108,7 +109,7 @@ const rules = reactive({
   password: [
     (v: string) => !!v || 'Le mot de passe est requis',
     (v: string) => (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-    (v: string) => (v && v.length >= 3) || 'Le mot de passe doit être supérieur à 3 caractères'
+    (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
   ],
   passwordConfirmation: [
     (v: string) => !!v || 'La confirmation du mot de passe est requise',
@@ -116,7 +117,7 @@ const rules = reactive({
       (v && v.length <= 20) ||
       'La confirmation du mot de passe doit être inférieur à 20 caractères',
     (v: string) =>
-      (v && v.length >= 3) || 'La confirmation du mot de passe doit être supérieur à 3 caractères',
+      (v && v.length >= 6) || 'La confirmation du mot de passe doit être supérieur à 6 caractères',
     (v: string) => v === password.value || 'Les mots de passe ne correspondent pas'
   ]
 })

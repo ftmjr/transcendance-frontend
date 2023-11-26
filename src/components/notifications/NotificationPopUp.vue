@@ -6,7 +6,7 @@
     :color="color"
     :timeout="2000"
   >
-    {{ snackbarMsg }}
+    <span class="text-slate-100">{{ snackbarMsg }}</span>
     <template #actions>
       <VBtn
         color="error"
