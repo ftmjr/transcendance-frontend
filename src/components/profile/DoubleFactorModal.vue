@@ -76,6 +76,7 @@ export default defineComponent({
       required: true
     }
   },
+  emits: ['update:isDialogVisible'],
   setup() {
     const authStore = useAuthStore()
     return { authStore }

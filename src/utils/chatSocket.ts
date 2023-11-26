@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client'
 import { PrivateMessage } from '@/stores/MessageStore'
 
+
 export enum RoomType {
   PUBLIC = 'PUBLIC',
   PRIVATE = 'PRIVATE',
@@ -59,7 +60,10 @@ interface ListenEvents {
 // Événements émis par le client
 interface EmitEvents {
   sendMessage: (data: { senderId: number; roomId: number; content: string }) => void
-  sendPrivateMessage: (data: { senderId: number; receiverId: number; content: string }) => void
+  sendPrivateMessage: (
+    data: { senderId: number; receiverId: number; content: string },
+    callback: (res: PrivateMessage) => void
+  ) => void
   userIsTypingInRoom: (data: { senderId: number; roomId: number; username: string }) => void
   reloadRoomMembers: (data: { roomId: number }) => void
   mpUserIsTyping: (data: { senderId: number; receiverId: number }) => void
@@ -72,12 +76,13 @@ export class ChatSocket {
   socket: Socket<ListenEvents, EmitEvents> | undefined
   public operational: boolean = false
   public managedRoomIds: number[] = []
+  private sendingMp = false;
 
   private constructor(
     public userId: number,
     onConnectionError: (error: string) => void,
     onFailedToSendMessage: (error: string) => void,
-    onNewMessage: (message: ChatMessage) => void,
+    public onNewMessage: (message: ChatMessage) => void,
     onRoomMembersReload: (roomId: number) => void,
     onRoomMemberTyping: (typingInfo: {
       senderId: number
@@ -86,7 +91,7 @@ export class ChatSocket {
       timestamp: number
     }) => void,
     // Mp events
-    onNewMp: (message: PrivateMessage) => void,
+    public onNewMp: (message: PrivateMessage) => void,
     onConversationReload: (senderId: number) => void,
     onUserIsTyping: (senderId: number, timestamp: number) => void
   ) {
@@ -103,8 +108,12 @@ export class ChatSocket {
       this.socket.on('disconnect', () => {
         this.operational = false
       })
-      this.socket.on('newMessage', onNewMessage)
-      this.socket.on('newMP', onNewMp)
+      this.socket.on('newMessage', (message) =>{
+        this.onNewMessage(message)
+      })
+      this.socket.on('newMP', (data)=>{
+        this.onNewMp(data)
+      })
       this.socket.on('receivedUserIsTypingInRoom', (data) => {
         const timestamp = Date.now()
         onRoomMemberTyping({
@@ -119,7 +128,10 @@ export class ChatSocket {
       })
       this.socket.on('reloadMp', onConversationReload)
       this.socket.on('failedToSendMessage', onFailedToSendMessage)
-      this.socket.on('connectionError', onConnectionError)
+      this.socket.on('connectionError', (data) => {
+        this.sendingMp = false;
+        onConnectionError(data)
+      })
     } catch (e) {
       console.error(e)
     }
@@ -154,6 +166,8 @@ export class ChatSocket {
         onMpContactTyping
       )
     }
+    ChatSocket.instance.onNewMp = onNewMp;
+    ChatSocket.instance.onNewMessage = onNewMessage;
     return ChatSocket.instance
   }
 
@@ -183,10 +197,16 @@ export class ChatSocket {
 
   sendPrivateMessage(receiverId: number, content: string) {
     if (this.socket && this.operational) {
-      this.socket.emit('sendPrivateMessage', {
+      const data = {
         senderId: this.userId,
         receiverId,
         content
+      }
+      if (this.sendingMp) return;
+      this.sendingMp = true;
+      this.socket.emit('sendPrivateMessage', data, (res) => {
+        this.sendingMp = false;
+        this.onNewMp(res)
       })
     }
   }

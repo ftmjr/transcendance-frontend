@@ -81,7 +81,7 @@ export default class Monitor {
     this.gameNetwork = GameNetwork.getInstance(currentUser)
     this.gameNetwork.reconnect()
     this.gameNetwork.connectToGame(this.roomId, this.currentUser.userType)
-    this.listenToGameEvents()
+    this.listenToGameEvents();
   }
 
   private listenToGameEvents() {
@@ -205,11 +205,10 @@ export default class Monitor {
   reconnect() {
     this.gameNetwork.reconnect()
     this.gameNetwork.connectToGame(this.roomId, this.currentUser.userType)
-    this.listenToGameEvents()
   }
 
   disconnectNetwork() {
-    this.gameNetwork.disconnect()
+    // this.gameNetwork.disconnect()
   }
 
   public getPlayer1(): GameUser | undefined {

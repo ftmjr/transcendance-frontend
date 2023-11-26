@@ -77,13 +77,9 @@ const { width: windowWidth } = useWindowSize()
 const { layoutAttrs, injectSkinClasses } = useSkins()
 injectSkinClasses()
 const authStore = useAuthStore()
-const roomsStore = useRoomsStore()
 const notificationStore = useNotificationStore()
-const gameStore = useGameStore()
-const usersStore = useUserStore()
 const router = useRouter()
 
-gameStore.initSocket()
 const showChallengePopUp = ref(false)
 const challengeNotification = ref<RealTimeNotification>(null as unknown as RealTimeNotification)
 const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotification) => {
@@ -103,16 +99,6 @@ const checkIfNewNotificationIsANewGameChallenge = (notification: RealTimeNotific
   }
 }
 
-const lock = computed(() => {
-  return authStore.isLocked
-})
-// watch if is locked and move him to locked page
-watch(lock, (isLocked) => {
-  if (isLocked) {
-    router.push({ name: 'locked-screen' })
-  }
-})
-
 // watch if new notification is a new game challenge
 watch(notificationStore.allRealTimeNotifications, (notifications) => {
   if (notifications.length > 0) {
@@ -120,46 +106,26 @@ watch(notificationStore.allRealTimeNotifications, (notifications) => {
   }
 })
 
-// watch for route changes and refresh the token
-const notRefreshableRoutes = [
-  'auth',
-  'reset-password',
-  'two-factors',
-  'two-factors-verify',
-  'locked-screen',
-  'oauth-auth',
-  'waiting-room'
-]
+const needToRefreshToken = computed(() => {
+  return authStore.isLoggedIn && authStore.closeToExpire
+})
+watch(needToRefreshToken, async (value) => {
+  const token = authStore.getTokenData
+  if (value && token) {
+    await authStore.refreshToken()
+  }
+})
+
+const refreshableRoutes = ['game', 'waiting-room', 'dashboard', 'watch-game']
 watch(router.currentRoute, async (to, from) => {
   // if route is not refreshable, return
-  if (notRefreshableRoutes.includes(to.name as string)) return
+  if (!refreshableRoutes.includes(to.name as string)) return
   // if user is not logged in, return
   if (!authStore.isLoggedIn) return
   // now refresh
   await authStore.refreshToken()
 })
 
-onBeforeMount(() => {
-  if (authStore.isLoggedIn && authStore.getUser?.id) {
-    if (!notificationStore.socketOperational) {
-      notificationStore.init(authStore.getUser.id)
-    }
-    if (!roomsStore.socketOperational) {
-      roomsStore.init(authStore.getUser.id)
-    }
-    if (!usersStore.socketOperational) {
-      usersStore.initStatusSocket(authStore.getUser.id)
-    }
-  }
-})
-
-onBeforeUnmount(() => {
-  if (!authStore.isLoggedIn) {
-    usersStore.disconnectStatusSocket()
-    notificationStore.disconnect()
-    roomsStore.disconnect()
-  }
-})
 </script>
 
 <style lang="scss">

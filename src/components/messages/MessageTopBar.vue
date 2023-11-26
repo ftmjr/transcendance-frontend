@@ -73,7 +73,7 @@
               <VListItemTitle>Bloquer</VListItemTitle>
             </VListItem>
             <VListItem
-              v-else-if="blockedStatus === 'blocked' || blockedStatus === 'blockedBy'"
+              v-else-if="blockedStatus === 'blocked' || blockedStatus === 'mutual'"
               prepend-icon="tabler-ban"
               @click.stop="unblockContact"
             >

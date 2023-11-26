@@ -128,29 +128,25 @@ export class GameNetwork {
   // all send events functions here
   sendGameState(gameState: GAME_STATE) {
     const roomId = this.roomId
-    if (this.isOperational) {
-      this.socket?.emit(GAME_EVENTS.GameStateChanged, { roomId, user: this.user, gameState })
-    }
+    if (roomId === 0) return;
+    this.socket?.emit(GAME_EVENTS.GameStateChanged, { roomId, user: this.user, gameState })
   }
   sendPadMove(data: PadMovedData) {
     const roomId = this.roomId
-    if (this.isOperational) {
-      this.socket?.emit(GAME_EVENTS.PadMoved, { roomId, data })
-    }
+    if (roomId === 0) return;
+    this.socket?.emit(GAME_EVENTS.PadMoved, { roomId, data })
   }
 
   sendIaPadSpeed(data: number) {
     const roomId = this.roomId
-    if (this.isOperational) {
-      this.socket?.emit(GAME_EVENTS.IaPadSpeed, { roomId, data })
-    }
+    if (roomId === 0) return;
+    this.socket?.emit(GAME_EVENTS.IaPadSpeed, { roomId, data })
   }
 
   sendBallServe(data: BallData) {
     const roomId = this.roomId
-    if (this.isOperational) {
-      this.socket?.emit(GAME_EVENTS.BallServed, { roomId, data })
-    }
+    if (roomId === 0) return;
+    this.socket?.emit(GAME_EVENTS.BallServed, { roomId, data })
   }
 
   reloadPlayersList() {
@@ -168,14 +164,17 @@ export class GameNetwork {
 
   // All receive events functions here
   onHostChanged(callback: (hostId: number) => void) {
-    this.socket?.on(GAME_EVENTS.HostChanged, (data) => {
-      callback(data.data)
+    this.socket?.on(GAME_EVENTS.HostChanged, (received) => {
+      if(received.roomId === this.roomId){
+        callback(received.data)
+      }
     })
   }
   onGameMonitorStateChanged(callback: (state: GAME_STATE) => void) {
     this.socket?.on(GAME_EVENTS.GameMonitorStateChanged, (data) => {
-      console.log('state recieved')
-      callback(data.data)
+      if(data.roomId === this.roomId){
+        callback(data.data)
+      }
     })
   }
   onPlayersRetrieved(callback: (players: GameUser[]) => void) {
@@ -191,7 +190,9 @@ export class GameNetwork {
 
   onPlayerLeft(callback: (player: GameUser) => void) {
     this.socket?.on(GAME_EVENTS.PlayerLeft, (received) => {
-      callback(received.data)
+      if(received.roomId === this.roomId){
+        callback(received.data)
+      }
     })
   }
   onViewersRetrieved(callback: (viewers: GameUser[]) => void) {
@@ -206,39 +207,53 @@ export class GameNetwork {
   }
   onScoreChanged(callback: (score: Array<{ userId: number; score: number }>) => void) {
     this.socket?.on(GAME_EVENTS.ScoreChanged, (received) => {
-      callback(received.data)
+      if(received.roomId === this.roomId){
+        callback(received.data)
+      }
     })
   }
   onViewerLoadScore(callback: (score: Array<{ userId: number; score: number }>) => void) {
     this.socket?.on(GAME_EVENTS.ViewerLoadScore, (received) => {
-      callback(received.data)
+      if(received.roomId === this.roomId){
+        callback(received.data)
+      }
     })
   }
   onPadMoved(callback: (data: PaddleEngineData) => void) {
     this.socket?.on(GAME_EVENTS.PadMoved, (received) => {
-      callback(received.data)
+      if(received.roomId === this.roomId){
+        callback(received.data)
+      }
     })
   }
   onBallServed(callback: (data: BallData) => void) {
     this.socket?.on(GAME_EVENTS.BallServed, (received) => {
-      callback(received.data)
+      if(received.roomId === this.roomId){
+        callback(received.data)
+      }
     })
   }
   onBallPaddleCollision(callback: (paddleUserId: number) => void) {
     this.socket?.on(GAME_EVENTS.BallPaddleCollision, (received) => {
-      callback(received.data)
+      if(received.roomId === this.roomId){
+        callback(received.data)
+      }
     })
   }
 
   onBallMoved(callback: (data: BallData) => void) {
     this.socket?.on(GAME_EVENTS.BallMoved, (received) => {
-      callback(received.data)
+      if(received.roomId === this.roomId){
+        callback(received.data)
+      }
     })
   }
 
   onObjectsStatePacket(callback: (data: GameStateDataPacket) => void) {
     this.socket?.on(GAME_EVENTS.GameObjectState, (received) => {
-      callback(received.data)
+      if(received.roomId === this.roomId){
+        callback(received.data)
+      }
     })
   }
 

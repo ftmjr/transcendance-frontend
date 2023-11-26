@@ -3,6 +3,7 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VList, VListItem, VListSubheader } from 'vuetify/components'
 import { ref, toRaw, watch, watchEffect } from 'vue'
 import { useMagicKeys } from '@vueuse/core'
+import { RouteLocationRaw } from 'vue-router'
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
@@ -13,7 +14,7 @@ interface Emit {
 interface Suggestion {
   icon: string
   title: string
-  url: object
+  url: RouteLocationRaw
 }
 
 interface Suggestions {

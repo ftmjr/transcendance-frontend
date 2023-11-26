@@ -7,7 +7,7 @@
       <div class="flex items-center gap-2">
         <button
           class="w-40 overflow-scroll line-clamp-1 hide-scrollbar"
-          @click.prevent="(_) => pushToUserProfile(member.memberId, $router)"
+          @click.prevent.stop="pushToUserProfile(member.memberId, $router)"
         >
           <avatar-badge
             :user-id="member.memberId"
@@ -50,7 +50,7 @@
           :size="16"
           color="transparent"
           class="text-gray-400"
-          @click.prevent="(_) => pushToDmWithUser(member.id, $router)"
+          @click.prevent.stop="pushToDmWithUser(member.memberId, $router)"
         >
           <v-icon
             :size="16"
@@ -128,15 +128,14 @@
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import MutePlayer from './MutePlayer.vue'
+import MutePlayer from '@/views/Chat/MutePlayer.vue'
 import AvatarBadge from '@/components/profile/AvatarBadge.vue'
-import BanPlayer from './BanPlayer.vue'
-import KickPlayer from './KickPlayer.vue'
-import PromotePlayer from './PromotePlayer.vue'
+import BanPlayer from '@/views/Chat/BanPlayer.vue'
+import KickPlayer from '@/views/Chat/KickPlayer.vue'
+import PromotePlayer from '@/views/Chat/PromotePlayer.vue'
 import useRoomsStore, { MemberRoomWithUserProfiles } from '@/stores/RoomsStore'
-import { pushToUserProfile, pushToDmWithUser } from '@/utils/router'
+import { pushToDmWithUser, pushToUserProfile } from '@/utils/router'
 import { ChatMemberRole } from '@/utils/chatSocket'
-
 import GameStatusBadge from '@/components/game/GameStatusBadge.vue'
 import FriendRequestBox from '@/components/profile/FriendRequestBox.vue'
 
@@ -158,7 +157,6 @@ export default defineComponent({
   },
   setup() {
     const roomStore = useRoomsStore()
-
     return {
       roomStore
     }
@@ -174,11 +172,9 @@ export default defineComponent({
       return this.member.role === ChatMemberRole.OWNER
     },
     me(): MemberRoomWithUserProfiles | undefined {
-      const roomMembers = this.roomStore.getCurrentRoomMembers
+      const roomMembers = this.roomStore.roomMembers
       if (!roomMembers) return undefined
-
-      const me = roomMembers.find((member) => member.memberId === this.roomStore.userId)
-      return me
+      return roomMembers.find((member) => member.memberId === this.roomStore.userId)
     },
     amAnAdmin(): boolean {
       if (!this.me) return false
@@ -207,9 +203,6 @@ export default defineComponent({
     }
   },
   methods: {
-    toggleMenu() {
-      this.menu = !this.menu
-    },
     pushToDmWithUser,
     pushToUserProfile
   }

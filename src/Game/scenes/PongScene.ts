@@ -15,13 +15,11 @@ export default class PongScene extends Scene {
   public cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys | undefined
   public escKey: Phaser.Input.Keyboard.Key | undefined
   public QKey: Phaser.Input.Keyboard.Key | undefined
-  private leftLine!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
-  private rightLine!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
   private scoreImages!: { player1: ScoreBoard; player2: ScoreBoard }
   private playerOneScoreText!: Phaser.GameObjects.BitmapText
   private playerTwoScoreText!: Phaser.GameObjects.BitmapText
   private scoreRoutineOn = false
-  private soundConfig: Phaser.Types.Sound.SoundConfig = { mute: false, volume: 0.3 }
+  private soundConfig: Phaser.Types.Sound.SoundConfig = { mute: false, volume: 0.2 }
   constructor() {
     super('PongGame')
   }
@@ -67,6 +65,7 @@ export default class PongScene extends Scene {
       }
     }
     this.monitor._phaserNewScoreRoutine = (scores, withEffect) => {
+      if (this.monitor.state !== GAME_STATE.Play) return
       this.updatedScoreBoard(scores)
       if (withEffect) this.scoredRoutine()
     }

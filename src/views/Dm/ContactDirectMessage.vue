@@ -41,12 +41,12 @@
                       : 'text-left bg-[#343851] after:bg-[#343851]'
                   "
                 >
-                  <span
+                  <private-message
                     v-for="msgData in msgGrp.messages"
-                    :key="msgData.time"
+                    :key="msgData.id"
+                    :message="msgData"
                   >
-                    {{ msgData.message }}
-                  </span>
+                  </private-message>
                 </p>
                 <span class="text-[.5rem] text-gray-50/90 font-thin block mt-4 px-4">
                   {{
@@ -81,9 +81,9 @@
         </div>
       </div>
       <div class="border rounded-md shadow-lg flex-0 drop-shadow-lg">
-        <VForm @submit.prevent="sendMessage">
+        <VForm @submit.prevent.stop="sendMessage">
           <VTextField
-            v-model="mpContent"
+            v-model.lazy.trim="mpContent"
             :disabled="!canWrite"
             variant="solo"
             placeholder="Ecrivez votre message..."
@@ -94,7 +94,7 @@
             <template #append-inner>
               <VBtn
                 rounded
-                @click.stop.prevent="sendMessage"
+                @click.prevent.stop="sendMessage"
               >
                 <svg
                   class="w-4 h-4 text-current fill-current"
@@ -126,7 +126,7 @@
 </template>
 
 <script lang="ts">
-import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
+import useMessageStore, { PrivateMessage as PrivateMessageT } from '@/stores/MessageStore'
 import { defineComponent } from 'vue'
 import { Profile, User } from '@/interfaces/User'
 import MessageTopBar from '@/components/messages/MessageTopBar.vue'
@@ -136,6 +136,7 @@ import useRoomsStore from '@/stores/RoomsStore'
 import useUserStore, { BlockedStatus, FriendshipStatus } from '@/stores/UserStore'
 import useNotificationStore from '@/stores/NotificationStore'
 import { RealTimeNotification, RealTimeNotificationTitle } from '@/utils/notificationSocket'
+import PrivateMessage from "@/components/messages/PrivateMessage.vue";
 
 interface MessageGroup {
   senderId: number
@@ -144,6 +145,7 @@ interface MessageGroup {
 
 export default defineComponent({
   components: {
+    PrivateMessage,
     MessageTopBar,
     PerfectScrollbar
   },
@@ -173,11 +175,8 @@ export default defineComponent({
     }
   },
   computed: {
-    messages(): PrivateMessage[] {
-      return this.messageStore.currentContactMessages
-    },
-    messagesByTime(): PrivateMessage[] {
-      return this.messages.slice().sort((a, b) => {
+    messagesByTime(): PrivateMessageT[] {
+      return this.messageStore.currentContactMessages.slice().sort((a, b) => {
         return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
       })
     },
@@ -190,7 +189,7 @@ export default defineComponent({
         senderId: msgSenderId,
         messages: []
       }
-      messages.forEach((msg: PrivateMessage, index) => {
+      messages.forEach((msg: PrivateMessageT, index) => {
         if (msgSenderId === msg.senderId) {
           msgGroup.messages.push({ id: msg.id, message: msg.text, time: msg.timestamp })
         } else {
@@ -226,7 +225,7 @@ export default defineComponent({
       deep: true,
       immediate: true
     },
-    messages: {
+    messagesByTime: {
       handler() {
         this.$nextTick(() => {
           this.scrollToBottomInChatLog()
@@ -310,7 +309,8 @@ export default defineComponent({
       })
     },
     async sendMessage() {
-      if (this.loading || !this.messageStore.conversationWith) return
+      if (this.loading) return
+      if (!this.messageStore.conversationWith) return
       if (!this.mpContent.trim()) return
       this.loading = true
       const id = this.messageStore.conversationWith.id
@@ -339,7 +339,7 @@ export default defineComponent({
     scrollToTopInChatLog() {
       const el = this.$refs.MessagesLogScroller?.$el as HTMLElement
       if (el) {
-        el.scrollTop = el.scrollHeight
+        el.scrollTop = 0
       }
     },
     formatDate

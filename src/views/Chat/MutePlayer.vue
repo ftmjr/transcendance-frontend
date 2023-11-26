@@ -11,7 +11,7 @@
     <v-btn
       :disabled="isMuted || isLoading"
       color="primary"
-      text
+      variant="text"
       size="large"
       class="text-xs"
       @click="tryToMute"
@@ -85,16 +85,13 @@ const makeMuteDelayTimestamp = (value: string) => {
   }
 }
 
-const tryToMute = async (e: Event) => {
-  e.preventDefault()
+const tryToMute = async () => {
   try {
     if (isMuted.value) return
     isLoading.value = true
     const now = new Date().getTime()
     const expiresAt = now + makeMuteDelayTimestamp(delay.value)
-    const member = roomsStore.getCurrentRoomMembers.find(
-      (member) => member.memberId === props.userId
-    )
+    const member = roomsStore.roomMembers.find((member) => member.memberId === props.userId)
     if (!member) return
     await roomsStore.changeMemberRole(props.roomId, member, ChatMemberRole.MUTED, expiresAt)
     isLoading.value = false

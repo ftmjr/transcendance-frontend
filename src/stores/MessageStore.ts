@@ -195,9 +195,13 @@ const useMessageStore = defineStore({
         if (shortProfile) {
           this.conversationsUsers.unshift(shortProfile)
         }
-        const userMessages = this.messages.get(contactId) || []
-        userMessages.push(message)
-        this.messages.set(contactId, userMessages)
+      }
+      const userMessages = this.messages.get(contactId)
+      if (userMessages){
+        userMessages.unshift(message)
+        return
+      } else {
+        this.messages.set(contactId, [message])
       }
     },
     getLastMessageBetween(userId: number): PrivateMessage | null {
@@ -205,7 +209,16 @@ const useMessageStore = defineStore({
       if (userMessages.length === 0) {
         return null
       }
-      return userMessages[userMessages.length - 1]
+      // search for message with max timestamp
+      let maxTimestamp = userMessages[0].timestamp
+      let maxIndex = 0
+      for (let i = 1; i < userMessages.length; i++) {
+        if (userMessages[i].timestamp > maxTimestamp) {
+          maxTimestamp = userMessages[i].timestamp
+          maxIndex = i
+        }
+      }
+      return userMessages[maxIndex]
     }
   }
 })

@@ -166,7 +166,7 @@ export default defineComponent({
       try {
         this.gameHistories = await this.gameStore.getSimpleGameHistory(this.userId)
       } catch (e) {
-        console.error(e)
+        console.info('can not fetch history')
       } finally {
         this.loading = false
       }

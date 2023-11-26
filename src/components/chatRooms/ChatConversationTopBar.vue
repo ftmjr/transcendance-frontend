@@ -178,12 +178,12 @@ export default defineComponent({
     }
   },
   methods: {
-    quitTheRoom() {
-      console.log('quit the room')
-    },
-    deleteTheRoom() {
-      console.log('delete the room')
-    }
+    // quitTheRoom() {
+    //   console.log('quit the room')
+    // },
+    // deleteTheRoom() {
+    //   console.log('delete the room')
+    // }
   }
 })
 </script>

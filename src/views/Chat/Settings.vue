@@ -1,24 +1,24 @@
 <template>
   <div class="flex-1 h-full">
     <div
-      v-if="roomsStore.getCurrentRoomStatus.room && isLoading"
+      v-if="roomsStore.currentRoom && isLoading"
       class="flex items-center justify-between h-full pl-8"
     >
       <div class="flex flex-row items-center gap-2">
         <VAvatar
-          v-if="roomsStore.getCurrentRoomStatus.room.avatar"
+          v-if="roomsStore.currentRoom.avatar"
           :size="42"
-          :image="roomsStore.getCurrentRoomStatus.room.avatar"
+          :image="roomsStore.currentRoom.avatar"
         />
-        <h2 v-if="alreadyMember">
-          {{ roomsStore.getCurrentRoomStatus.room.name }}
+        <h2 v-if="roomsStore.isMemberOfRoom">
+          {{ roomsStore.currentRoom.name }}
         </h2>
         <h2 v-else>
-          Rejoindre {{ roomsStore.getCurrentRoomStatus.room.name }}
+          Rejoindre {{ roomsStore.currentRoom.name }}
         </h2>
       </div>
       <v-menu
-        v-if="alreadyMember && !isMuted && !isBanned"
+        v-if="roomsStore.isMemberOfRoom && !roomsStore.isMuted && !roomsStore.isBanned"
         v-model="menu"
         transition="scale-transition"
         :close-on-content-click="false"
@@ -52,27 +52,49 @@
                     Paramètres
                   </h2>
                   <v-form
-                    v-if="isOwner"
+                    v-if="roomsStore.isOwner"
                     validate-on="submit lazy"
-                    @submit.prevent="upateRoomInfos"
+                    @submit.prevent="updateRoomInfos"
                   >
-                    <div class="flex gap-4">
+                    <VCardText class="flex flex-col items-center gap-1">
                       <VAvatar
-                        v-if="roomsStore.getCurrentRoomStatus.room.avatar"
-                        :size="42"
-                        :image="roomsStore.getCurrentRoomStatus.room.avatar"
+                        v-if="roomsStore.currentRoom.avatar"
+                        rounded
+                        :size="100"
+                        :image="roomsStore.currentRoom.avatar"
                       />
                       <v-file-input
-                        :disabled="loading || !isOwner"
-                        v-model="file"
-                        label="Choisir une image"
-                        prepend-icon="mdi-camera"
-                        variant="solo-filled"
-                      />
-                    </div>
+                        v-model="filesToUpload"
+                        placeholder="Charger votre image"
+                        accept="image/png, image/jpeg, image/bmp"
+                        :single-line="true"
+                        :disabled="loading"
+                        density="compact"
+                        color="secondary"
+                        variant="solo"
+                        label="avatar"
+                        :prepend-icon="loading ? 'mdi-loading mdi-spin' : 'mdi-upload'"
+                      >
+                        <template #selection="{ fileNames }">
+                          <template
+                            v-for="fileName in fileNames"
+                            :key="fileName"
+                          >
+                            <v-chip
+                              size="small"
+                              label
+                              color="primary"
+                            >
+                              {{ fileName }}
+                            </v-chip>
+                          </template>
+                        </template>
+                      </v-file-input>
+                    </VCardText>
+                    <VDivider />
                     <VSelect
                       v-model="type"
-                      :disabled="loading || !isOwner"
+                      :disabled="loading || !roomsStore.isOwner"
                       :items="typeList"
                       item-title="text"
                       item-value="value"
@@ -119,21 +141,20 @@
                       />
                     </div>
                     <v-btn
-                      :disabled="loading || !isOwner"
+                      :disabled="loading || !roomsStore.isOwner"
                       :loading="loading"
                       type="submit"
-                      block
+                      :block="true"
                       class="mt-2"
                       text="Mettre à jour"
                     />
                   </v-form>
-
                   <v-divider class="my-4" />
                   <v-btn
-                    v-show="!isMuted"
+                    v-show="!roomsStore.isBanned"
                     :disabled="loading"
                     type="button"
-                    block
+                    :block="true"
                     class="mt-2"
                     text="Quittez la salle"
                     @click="quitRoom"
@@ -148,13 +169,19 @@
     <NotificationPopUp
       v-model:visible="showErrorPopUp"
       message="Impossible de modifier la salle de discussion"
+      color="warning"
+    />
+    <NotificationPopUp
+      v-model:visible="showLeaveErrorPopUp"
+      :message="leaveErrorMessage"
+      color="error"
     />
   </div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { RoomType } from '@/utils/chatSocket'
-import useRoomsStore from '@/stores/RoomsStore'
+import useRoomsStore, { UpdateRoomData } from '@/stores/RoomsStore'
 export default defineComponent({
   props: {
     isLoading: {
@@ -173,7 +200,6 @@ export default defineComponent({
     name: '',
     roomDescription: '',
     type: RoomType.PUBLIC as RoomType,
-    file: null,
     oldPassword: '',
     password: '',
     passwordConfirmation: '',
@@ -190,13 +216,13 @@ export default defineComponent({
         (v: string) => !!v || 'Le mot de passe est requis',
         (v: string) =>
           (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-        (v: string) => (v && v.length >= 3) || 'Le mot de passe doit être supérieur à 3 caractères'
+        (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 3 caractères'
       ],
       password: [
         (v: string) => !!v || 'Le mot de passe est requis',
         (v: string) =>
           (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-        (v: string) => (v && v.length >= 3) || 'Le mot de passe doit être supérieur à 3 caractères'
+        (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
       ],
       passwordConfirmation: [
         (v: string) => !!v || 'La confirmation du mot de passe est requise',
@@ -222,30 +248,14 @@ export default defineComponent({
       'sacrament',
       'ostie'
     ],
-    showErrorPopUp: false
+    showErrorPopUp: false,
+    showLeaveErrorPopUp: false,
+    leaveErrorMessage: '',
+    filesToUpload: undefined as File[] | undefined
   }),
   computed: {
-    isOwner(): boolean {
-      return this.roomsStore.getCurrentRoomStatus.role === 'OWNER'
-    },
-    isMuted(): boolean {
-      return this.roomsStore.getCurrentRoomStatus.role === 'MUTED'
-    },
-    isBanned(): boolean {
-      return this.roomsStore.getCurrentRoomStatus.role === 'BAN'
-    },
-    alreadyMember(): boolean {
-      return this.roomsStore.getCurrentRoomStatus.state
-    },
-    askPassword(): boolean {
-      return this.type === type.PRIVATE || this.type === type.PROTECTED
-    },
     hasPassword(): boolean {
-      if (!this.roomsStore.getCurrentRoomStatus.state) return false
-      if (!this.roomsStore.getCurrentRoomStatus.room) return false
-      const hashedPass = this.roomsStore.getCurrentRoomStatus.room.password
-      if (!hashedPass) return false
-      return hashedPass.length > 0
+      return this.roomsStore.isPasswordProtected
     },
     typeList(): { text: string; value: RoomType }[] {
       return [
@@ -275,42 +285,45 @@ export default defineComponent({
     }
   },
   methods: {
-    upateRoomInfos() {
+    async updateRoomInfos() {
       this.loading = true
-      setTimeout(() => {
-        this.loading = false
-        this.menu = false
-      }, 2000)
-    },
-    fillForm() {
-      if (!this.roomsStore.getCurrentRoomStatus.room) return
-      this.name = this.roomsStore.getCurrentRoomStatus.room.name
-      this.type = this.roomsStore.getCurrentRoomStatus.room.type
-      this.oldPassword = this.roomsStore.getCurrentRoomStatus.room.password ? '********' : ''
-    },
-    async quitRoom() {
-      this.loading = true
-      const room = this.roomsStore.getCurrentRoomStatus.room
-      if (!room) {
-        this.loading = false
-        return
+      const room = this.roomsStore.currentRoom
+      if (!room) return
+      const data: UpdateRoomData = {
+        // name: this.name,
+        roomId: room.id,
+        roomType: this.type,
+        oldPassword: this.oldPassword.length > 0 ? this.oldPassword : undefined,
+        password: this.password.length > 0 ? this.password : undefined,
       }
-      const res = await this.roomsStore.quitRoom(room.id)
-      if (res === 'success') {
-        this.$router.push({ name: 'chat' })
-      } else {
+      // to update the avatar we need to do it before the rest of the update
+      const newAvatar = this.filesToUpload?.[0]
+      if (newAvatar) {
+        await this.roomsStore.updateAvatar(room.id, newAvatar)
+      }
+      const res = await this.roomsStore.updateRoom(room.id, data)
+      if (res !== 'success') {
         this.showErrorPopUp = true
       }
       this.loading = false
     },
-    async handleSubmit() {
-      if (this.file) {
-        const data = await this.roomsStore.updateAvatar(this.file)
-        if (data) {
-          //
-        }
+    fillForm() {
+      if (!this.roomsStore.currentRoom) return
+      this.name = this.roomsStore.currentRoom.name
+      this.type = this.roomsStore.currentRoom.type
+      this.oldPassword = this.roomsStore.isPasswordProtected ? '********' : ''
+      this.filesToUpload = undefined
+    },
+    async quitRoom() {
+      const room = this.roomsStore.currentRoom
+      if (!room) return
+      this.loading = true
+      const res = await this.roomsStore.quitRoom(room.id)
+      if (res !== 'success') {
+        this.leaveErrorMessage = res
+        this.showLeaveErrorPopUp = true
       }
-      //
+      this.loading = false
     }
   }
 })

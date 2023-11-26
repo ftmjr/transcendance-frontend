@@ -46,6 +46,7 @@ export default defineComponent({
       gameMonitor,
       theme: this.theme
     }
+    gameMonitor.cleanAllPhaserRoutines()
     this.gameMonitor = gameMonitor
     const game = new Game({
       type: WEBGL,
@@ -75,6 +76,7 @@ export default defineComponent({
     game.scene.add('Boot', Boot, true, dataInit)
   },
   beforeUnmount() {
+    this.gameMonitor.cleanAllPhaserRoutines()
     this.gameMonitor?.quitGame()
     if (this.game) this.game.destroy(true)
   },

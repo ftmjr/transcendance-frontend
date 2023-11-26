@@ -13,7 +13,19 @@ const notRefreshableRoutes = [
   'auth/refresh',
   'auth/signup',
   'auth/updatePassword',
-  'auth/2fa/authenticate'
+  'auth/2fa/authenticate',
+  'auth/2fa/enable',
+  'auth/2fa/generate',
+  'auth/updatePassword',
+  '/api/auth/login',
+  '/api/auth/signup',
+  '/api/auth/refresh',
+  '/api/auth/signup',
+  '/api/auth/updatePassword',
+  '/api/auth/2fa/authenticate',
+  '/api/auth/2fa/enable',
+  '/api/auth/2fa/generate',
+  '/api/auth/updatePassword'
 ]
 // Request interceptor
 axiosInstance.interceptors.request.use(
@@ -37,7 +49,8 @@ axiosInstance.interceptors.response.use(
     if (
       error.response.status === 401 &&
       !notRefreshableRoutes.includes(originalRequest.url) &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      authStore.token
     ) {
       originalRequest._retry = true
       const access_token = await authStore.refreshToken()

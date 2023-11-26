@@ -114,7 +114,6 @@ export default defineComponent({
   },
   async beforeMount() {
     this.loading = true
-    this.startTokenRefresher()
     await this.gameStore.getAllGameSessions()
     if (!this.gameId) {
       await this.startAgainstBot()
@@ -127,7 +126,6 @@ export default defineComponent({
     if (this.gameId) {
       this.gameStore.quitGameSession(this.gameId)
     }
-    clearInterval(this.timer)
   },
   methods: {
     moveToCurrentGame() {
@@ -152,14 +150,6 @@ export default defineComponent({
           params: { gameId: session.gameId }
         })
       }
-    },
-    startTokenRefresher() {
-      this.timer = setInterval(
-        async () => {
-          await this.authStore.refreshToken()
-        },
-        1000 * 60 * 6
-      ) // 6 minutes in ms during game
     }
   }
 })

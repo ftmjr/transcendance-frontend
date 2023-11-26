@@ -41,10 +41,10 @@ export class Player {
     this.paddle.setBounce(0, 1.2)
     this.paddle.setImmovable(true)
     this.paddle.setPushable(false)
-    const space = isHost ? 100 : 1234
+    const space = isHost ? 100 : 1150
     this.usernameText = this.scene.add.text(space, 30, info.username, {
       fontFamily: 'Arial',
-      fontSize: 14,
+      fontSize: 20,
       color: info.userId === scene.currentUser.userId ? '#f26a4b' : '#ffffff'
     })
     this.usernameText.setOrigin(0, 0)

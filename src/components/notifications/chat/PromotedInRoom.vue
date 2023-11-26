@@ -27,7 +27,7 @@
           class="px-8 py-2 text-xs border rounded-md cursor-pointer border-gray-50/10 bg-green-700/50 hover:bg-green-700/60 text-gary-500 disabled:bg-gray-800/50 disabled:opacity-50"
           @click.prevent.stop="handleShowRoom"
         >
-          voir la room
+          voir le salon
         </button>
       </div>
       <div
@@ -63,7 +63,7 @@ const handleRead = async () => {
 }
 const handleShowRoom = async () => {
   await handleRead()
-  await router.push({ name: 'chat', params: { id: props.notification?.referenceId } })
+  await router.push({ name: 'chat', params: { roomId: props.notification?.referenceId } })
 }
 </script>
 

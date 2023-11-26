@@ -179,7 +179,7 @@ export default defineComponent({
       try {
         this.histories = await this.gameStore.getUserCompleteGameHistory(this.userId)
       } catch (e) {
-        console.error(e)
+        console.log('Complete histories not fetched')
       } finally {
         this.loading = false
       }

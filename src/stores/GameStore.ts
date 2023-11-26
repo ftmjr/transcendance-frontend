@@ -1,4 +1,3 @@
-// src/stores/GameStore.ts
 import { defineStore } from 'pinia'
 import axios from '@/utils/axios'
 import useAuthStore from '@/stores/AuthStore'
@@ -105,6 +104,10 @@ const useGameStore = defineStore({
     },
     isPlayingWithQueList(): boolean {
       return this.currentGameSession?.type === GameSessionType.QueListGame
+    },
+    socketOperational(): boolean {
+      if (!this.gameNetwork) return false
+      return this.gameNetwork.socket?.connected ?? false
     }
   },
   actions: {
@@ -124,12 +127,20 @@ const useGameStore = defineStore({
     },
     async getAllGameSessions() {
       try {
-        const { data } = await axios.get<GameSession[]>('/game/sessions', {
+        const { data } = await axios.get<GameSession[] | string>('/game/sessions', {
           headers: { Accept: 'application/json' }
         })
-        this.myGameSessions = data
+        if (Array.isArray(data)) {
+          this.myGameSessions = data
+        } else {
+          this.myGameSessions = []
+        }
       } catch (e) {
-        this.myGameSessions = []
+        if (isAxiosError(e)) {
+          if (e.response && e.response.status === 404) {
+            this.myGameSessions = []
+          }
+        }
       }
     },
     setCurrentGameSession(gameId: number) {
@@ -151,13 +162,17 @@ const useGameStore = defineStore({
       }
     },
     async quitGameSession(gameId: number): Promise<void> {
-      await axios.delete(`/game/sessions`, {
-        headers: { Accept: 'application/json' },
-        data: { gameId }
-      })
-      this.currentGameSession = undefined
-      const userStore = useUserStore()
-      userStore.statusSocketManager?.updateMyStatus(Status.Online)
+      try {
+        const userStore = useUserStore()
+        userStore.statusSocketManager?.updateMyStatus(Status.Online)
+        this.currentGameSession = undefined
+        await axios.delete(`/game/sessions`, {
+          headers: { Accept: 'application/json' },
+          data: { gameId }
+        })
+      } catch (e) {
+        // nothing
+      }
     },
     async startGameAgainstBot(): Promise<GameSession | string> {
       try {
@@ -204,7 +219,9 @@ const useGameStore = defineStore({
     },
     async quitQueList(): Promise<'success' | string> {
       try {
-        await axios.get('/game/quit-waiting-queue')
+        await axios.get<string>('/game/quit-waiting-queue', {
+          headers: { Accept: 'application/json' }
+        })
         return 'success'
       } catch (error) {
         if (isAxiosError(error)) {
@@ -235,8 +252,9 @@ const useGameStore = defineStore({
         )
         return data
       } catch (e) {
-        return []
+        // nothing
       }
+      return []
     },
 
     // accept or reject game challenge
@@ -278,7 +296,7 @@ const useGameStore = defineStore({
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response && (error.response.status === 400 || error.response.status === 404)) {
-            console.log(error.response.data.message ?? 'Impossible de rejeter la partie')
+            console.info(error.response.data.message ?? 'Impossible de rejeter la partie')
           }
         }
       }
@@ -327,7 +345,7 @@ const useGameStore = defineStore({
         })
         return data
       } catch (e) {
-        console.log('failed to get user game history')
+        console.info('failed to get user game history')
       }
       return []
     }

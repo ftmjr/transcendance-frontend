@@ -32,7 +32,7 @@
             class="h-full grow-0 srink-0 hidescroolbar"
           >
             <li class="sticky top-0 z-50 p-2 text-lg font-bold bg-primary">
-              <span> Salles Rejoint</span>
+              <span>Salles Rejoint</span>
             </li>
             <li class="self-center p-2">
               <span
@@ -45,11 +45,11 @@
             <li
               v-for="room in roomsStore.filteredRooms"
               :key="room.id"
-              @click="showRoom(room.id)"
+              @click.prevent.stop="showRoom(room.id)"
             >
               <room-card :room="room" />
             </li>
-            <li class="h-16"></li>
+            <li class="h-16" />
           </perfect-scrollbar>
         </div>
         <div class="relative w-full h-1/2 shrink-0 grow-0">
@@ -76,11 +76,11 @@
             <li
               v-for="room in roomsStore.filteredPublic"
               :key="room.id"
-              @click="showRoom(room.id)"
+              @click.prevent.stop="showRoom(room.id)"
             >
               <room-card :room="room" />
             </li>
-            <li class="h-16"></li>
+            <li class="h-16" />
           </perfect-scrollbar>
         </div>
       </div>
@@ -90,8 +90,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import AvatarBadge from '@/components/profile/AvatarBadge.vue'
-//@ts-ignore
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import useAuthStore from '@/stores/AuthStore'
 import useUserStore from '@/stores/UserStore'
@@ -103,7 +101,6 @@ export default defineComponent({
   name: 'ChatLeftSideBar',
   components: {
     RoomCard,
-    AvatarBadge,
     PerfectScrollbar,
     CreateRoom
   },
