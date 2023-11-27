@@ -110,10 +110,10 @@
                         :disabled="loading"
                         label="Ancien mot de passe"
                         placeholder=""
+                        type="password"
                         class="mt-4"
                         dense
                         :rules="rules.oldPassword"
-                        type="password"
                       />
                       <v-text-field
                         v-if="type !== 'PUBLIC'"
@@ -134,10 +134,10 @@
                         label="Cofirmer le mot de passe"
                         placeholder=""
                         outlined
+                        type="password"
                         class="mt-4"
                         dense
                         :rules="rules.passwordConfirmation"
-                        type="password"
                       />
                     </div>
                     <v-btn
@@ -195,64 +195,66 @@ export default defineComponent({
       roomsStore
     }
   },
-  data: () => ({
-    menu: false,
-    name: '',
-    roomDescription: '',
-    type: RoomType.PUBLIC as RoomType,
-    oldPassword: '',
-    password: '',
-    passwordConfirmation: '',
-    rules: {
-      name: [
-        (v: string) => !!v || 'Le nom de la salle est requis',
-        (v: string) =>
-          (v && v.length <= 20) || 'Le nom de la salle doit être inférieur à 20 caractères',
-        (v: string) =>
-          (v && v.length >= 3) || 'Le nom de la salle doit être supérieur à 3 caractères',
-        (v: string) => !this.checkBadWord(v) || 'Le nom de la salle contient un mot interdit'
+  data() {
+    return {
+      menu: false,
+      name: '',
+      roomDescription: '',
+      type: RoomType.PUBLIC as RoomType,
+      oldPassword: '',
+      password: '',
+      passwordConfirmation: '',
+      rules: {
+        name: [
+          (v: string) => !!v || 'Le nom de la salle est requis',
+          (v: string) =>
+            (v && v.length <= 20) || 'Le nom de la salle doit être inférieur à 20 caractères',
+          (v: string) =>
+            (v && v.length >= 3) || 'Le nom de la salle doit être supérieur à 3 caractères',
+          (v: string) => !this.checkBadWord(v) || 'Le nom de la salle contient un mot interdit'
+        ],
+        oldPassword: [
+          (v: string) => !!v || 'Le mot de passe est requis',
+          (v: string) =>
+            (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
+          (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
+        ],
+        password: [
+          (v: string) => !!v || 'Le mot de passe est requis',
+          (v: string) =>
+            (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
+          (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
+        ],
+        passwordConfirmation: [
+          (v: string) => !!v || 'La confirmation du mot de passe est requise',
+          (v: string) =>
+            (v && v.length <= 20) ||
+            'La confirmation du mot de passe doit être inférieur à 20 caractères',
+          (v: string) =>
+            (v && v.length >= 6) ||
+            'La confirmation du mot de passe doit être supérieur à 6 caractères',
+          (v: string) => v === this.password || 'Les mots de passe ne correspondent pas'
+        ],
+      },
+      loading: false,
+      forbiddenWords: [
+        'con',
+        'connard',
+        'salope',
+        'pute',
+        'merde',
+        'enculé',
+        'calis',
+        'tabarnak',
+        'sacrament',
+        'ostie'
       ],
-      oldPassword: [
-        (v: string) => !!v || 'Le mot de passe est requis',
-        (v: string) =>
-          (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-        (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
-      ],
-      password: [
-        (v: string) => !!v || 'Le mot de passe est requis',
-        (v: string) =>
-          (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-        (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
-      ],
-      passwordConfirmation: [
-        (v: string) => !!v || 'La confirmation du mot de passe est requise',
-        (v: string) =>
-          (v && v.length <= 20) ||
-          'La confirmation du mot de passe doit être inférieur à 20 caractères',
-        (v: string) =>
-          (v && v.length >= 6) ||
-          'La confirmation du mot de passe doit être supérieur à 6 caractères',
-        (v: string) => v === this.password || 'Les mots de passe ne correspondent pas'
-      ],
-    },
-    loading: false,
-    forbiddenWords: [
-      'con',
-      'connard',
-      'salope',
-      'pute',
-      'merde',
-      'enculé',
-      'calis',
-      'tabarnak',
-      'sacrament',
-      'ostie'
-    ],
-    showErrorPopUp: false,
-    showLeaveErrorPopUp: false,
-    leaveErrorMessage: '',
-    filesToUpload: undefined as File[] | undefined
-  }),
+      showErrorPopUp: false,
+      showLeaveErrorPopUp: false,
+      leaveErrorMessage: '',
+      filesToUpload: undefined as File[] | undefined
+    }
+  },
   computed: {
     hasPassword(): boolean {
       return this.roomsStore.isPasswordProtected
