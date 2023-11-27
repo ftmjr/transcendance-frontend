@@ -16,6 +16,7 @@
       </v-alert>
       <GamePlayer
         v-if="player && gameStore.currentGameId"
+        :key="gameStore.currentGameId"
         :room-id="gameStore.currentGameId"
         :player="player"
         :theme="theme"
@@ -48,15 +49,16 @@
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent } from 'vue'
+import { defineComponent } from 'vue'
 import useAuthStore from '@/stores/AuthStore'
 import useGameStore, { GameSession } from '@/stores/GameStore'
 import { GameUser, GameUserType } from '@/Game/network/GameNetwork'
 import { Theme } from '@/Game/scenes/Boot'
+import GamePlayer from '@/Game/GamePlayer.vue'
 
 export default defineComponent({
   components: {
-    GamePlayer: defineAsyncComponent(() => import('@/Game/GamePlayer.vue'))
+    GamePlayer
   },
   props: {
     gameId: {
