@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import useAuthStore, { LoginStatus } from '@/stores/AuthStore'
 import dashboardRoutes from '@/router/dashboard'
 import authRoutes from '@/router/auth'
+import NotFound from '@/views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,7 +13,7 @@ const router = createRouter({
     {
       path: '/:catchALL(.*)', //regex to catch non existing routes
       name: 'NotFound',
-      component: () => import('@/views/NotFoundView.vue'),
+      component: NotFound,
       meta: {
         requiresAuth: false,
         title: 'Not Found'
