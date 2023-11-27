@@ -6,7 +6,7 @@
     :color="color"
     :timeout="2000"
   >
-    <span class="text-slate-100">{{ snackbarMsg }}</span>
+    {{ snackbarMsg }}
     <template #actions>
       <VBtn
         color="error"
@@ -35,15 +35,15 @@ export default defineComponent({
     color: {
       type: String,
       default: () => 'default'
-    }
+    },
   },
   emits: ['update:visible'],
   computed: {
     isSnackbarVisible: {
-      get() {
+      get(): boolean {
         return this.visible
       },
-      set(val) {
+      set(val: boolean) {
         this.$emit('update:visible', val)
       }
     }

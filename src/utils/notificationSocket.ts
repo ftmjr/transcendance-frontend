@@ -40,6 +40,7 @@ export enum RealTimeNotificationTitle {
   PlayerLeftQue = 'Player Left Que', // player left the que
   NewMemberInChatRoom = 'New Member In Chat Room', // new member joined the chat room
   NewRolesInChatRoom = 'New Roles In Chat Room', // new roles assigned to chat room
+  RemovedFromChatRoom = 'Removed From Chat Room',
   ChatRoomDeleted = 'Chat Room Deleted', // chat room deleted
   ChatRoomSettingsUpdated = 'Chat Room Settings Updated', // chat room settings updated
   NewMpMessage = 'New Mp-Message', // first message between two contacts

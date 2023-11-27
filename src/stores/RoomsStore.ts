@@ -321,11 +321,8 @@ const useRoomsStore = defineStore({
     },
     async quitRoom(roomId: number): Promise<'success' | 'failed' | string> {
       try {
-        if (this.currentRoomMembers.length === 1) {
-          return await this.deleteRoom(roomId)
-        }
-        await axios.get(`/chat/leave-room/${roomId}`)
-        await this.cleanAfterLeaving(roomId)
+        await axios.get(`/chat/leave-room/${roomId}`);
+        await this.cleanAfterLeaving(roomId);
         return 'success'
       } catch (error) {
         if (isAxiosError(error)) {

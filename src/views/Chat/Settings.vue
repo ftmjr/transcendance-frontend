@@ -53,7 +53,6 @@
                   </h2>
                   <v-form
                     v-if="roomsStore.isOwner"
-                    validate-on="submit lazy"
                     @submit.prevent="updateRoomInfos"
                   >
                     <VCardText class="flex flex-col items-center gap-1">
@@ -69,9 +68,7 @@
                         accept="image/png, image/jpeg, image/bmp"
                         :single-line="true"
                         :disabled="loading"
-                        density="compact"
                         color="secondary"
-                        variant="solo"
                         label="avatar"
                         :prepend-icon="loading ? 'mdi-loading mdi-spin' : 'mdi-upload'"
                       >
@@ -105,39 +102,40 @@
                     />
                     <div>
                       <v-text-field
-                        v-if="roomsStore.currentRoom.type !== 'PUBLIC'"
-                        v-model="oldPassword"
-                        :disabled="loading"
-                        label="Ancien mot de passe"
-                        placeholder=""
-                        type="password"
-                        class="mt-4"
-                        dense
-                        :rules="rules.oldPassword"
-                      />
-                      <v-text-field
                         v-if="type !== 'PUBLIC'"
                         v-model="password"
+                        class="mt-4"
                         :disabled="loading"
                         label="Nouveau Mot de passe"
                         placeholder=""
                         :rules="rules.password"
                         outlined
-                        type="password"
-                        class="mt-4"
+                        :type="passwordFieldsVisibility.password ? 'text' : 'password'"
+                        :append-inner-icon="
+                          passwordFieldsVisibility.password? 'tabler-eye-off' : 'tabler-eye'
+                        "
                         dense
+                        @click:append-inner="
+                          passwordFieldsVisibility.password = !passwordFieldsVisibility.password
+                        "
                       />
                       <v-text-field
                         v-if="type !== 'PUBLIC'"
                         v-model="passwordConfirmation"
+                        class="mt-4"
                         :disabled="loading"
                         label="Cofirmer le mot de passe"
                         placeholder=""
                         outlined
-                        type="password"
-                        class="mt-4"
+                        :type="passwordFieldsVisibility.password ? 'text' : 'password'"
+                        :append-inner-icon="
+                          passwordFieldsVisibility.password? 'tabler-eye-off' : 'tabler-eye'
+                        "
                         dense
                         :rules="rules.passwordConfirmation"
+                        @click:append-inner="
+                          passwordFieldsVisibility.password = !passwordFieldsVisibility.password
+                        "
                       />
                     </div>
                     <v-btn
@@ -201,7 +199,7 @@ export default defineComponent({
       name: '',
       roomDescription: '',
       type: RoomType.PUBLIC as RoomType,
-      oldPassword: '',
+      // oldPassword: '',
       password: '',
       passwordConfirmation: '',
       rules: {
@@ -252,7 +250,12 @@ export default defineComponent({
       showErrorPopUp: false,
       showLeaveErrorPopUp: false,
       leaveErrorMessage: '',
-      filesToUpload: undefined as File[] | undefined
+      filesToUpload: undefined as File[] | undefined,
+      passwordFieldsVisibility: {
+        oldPassword: false,
+        password: false,
+        confirmPassword: false
+      },
     }
   },
   computed: {
@@ -295,13 +298,14 @@ export default defineComponent({
         // name: this.name,
         roomId: room.id,
         roomType: this.type,
-        oldPassword: this.oldPassword.length > 0 ? this.oldPassword : undefined,
+        oldPassword: undefined,
         password: this.password.length > 0 ? this.password : undefined,
       }
-      // to update the avatar we need to do it before the rest of the update
-      const newAvatar = this.filesToUpload?.[0]
-      if (newAvatar) {
-        await this.roomsStore.updateAvatar(room.id, newAvatar)
+      if (this.filesToUpload) {
+        if (this.filesToUpload.length > 0){
+          const newAvatar = this.filesToUpload[0]
+          await this.roomsStore.updateAvatar(room.id, newAvatar)
+        }
       }
       const res = await this.roomsStore.updateRoom(room.id, data)
       if (res !== 'success') {
@@ -313,7 +317,7 @@ export default defineComponent({
       if (!this.roomsStore.currentRoom) return
       this.name = this.roomsStore.currentRoom.name
       this.type = this.roomsStore.currentRoom.type
-      this.oldPassword = ''
+      // this.oldPassword = ''
       this.filesToUpload = undefined
     },
     async quitRoom() {

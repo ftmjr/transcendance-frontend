@@ -109,21 +109,30 @@ export default defineComponent({
         await this.roomsStore.getAllMyRooms()
         await this.roomsStore.fetchPublicRooms()
         if (!this.roomsStore.currentRoom) return
-        if (notification.roomId === this.roomsStore.currentRoom.id) {
-          this.loading = true
-          // will re select the room, loading all datas again, and settings
-          await this.roomsStore.selectRoom(this.roomsStore.currentRoom.id)
-          this.loading = false
+        this.loading = true
+        // will re select the room, loading all datas again, and settings
+        await this.roomsStore.selectRoom(this.roomsStore.currentRoom.id)
+        this.loading = false
+      }
+      if (notification.title === RealTimeNotificationTitle.RemovedFromChatRoom) {
+        if (this.roomsStore.userId === notification.userId || this.roomsStore.userId === notification.sourceUserId) {
+          await this.roomsStore.getAllMyRooms()
+          await this.roomsStore.fetchPublicRooms()
+          if (!this.roomsStore.currentRoom) return
+          if (this.roomsStore.currentRoom.id === notification.roomId) {
+            await this.roomsStore.selectRoom(this.roomsStore.currentRoom.id);
+          }
         }
       }
     },
     async checkAndRefreshMembers(notification: RealTimeNotification) {
-      if (!this.roomsStore.currentRoom) return
       if (notification.title === RealTimeNotificationTitle.NewRolesInChatRoom ||
         notification.title === RealTimeNotificationTitle.NewMemberInChatRoom
       ) {
-        if (notification.roomId === this.roomsStore.currentRoom.id) {
-          await this.roomsStore.reloadCurrentRoomMembers()
+        await this.roomsStore.getAllMyRooms();
+        await this.roomsStore.fetchPublicRooms();
+        if (this.roomsStore.currentRoom?.id === notification.roomId){
+          await this.roomsStore.reloadCurrentRoomMembers();
         }
       }
     },
