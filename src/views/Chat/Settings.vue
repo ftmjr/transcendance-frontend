@@ -105,7 +105,7 @@
                     />
                     <div>
                       <v-text-field
-                        v-if="type !== 'PUBLIC'"
+                        v-if="roomsStore.currentRoom.type !== 'PUBLIC'"
                         v-model="oldPassword"
                         :disabled="loading"
                         label="Ancien mot de passe"
@@ -216,7 +216,7 @@ export default defineComponent({
         (v: string) => !!v || 'Le mot de passe est requis',
         (v: string) =>
           (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-        (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 3 caractères'
+        (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
       ],
       password: [
         (v: string) => !!v || 'Le mot de passe est requis',
@@ -230,10 +230,10 @@ export default defineComponent({
           (v && v.length <= 20) ||
           'La confirmation du mot de passe doit être inférieur à 20 caractères',
         (v: string) =>
-          (v && v.length >= 3) ||
-          'La confirmation du mot de passe doit être supérieur à 3 caractères',
+          (v && v.length >= 6) ||
+          'La confirmation du mot de passe doit être supérieur à 6 caractères',
         (v: string) => v === this.password || 'Les mots de passe ne correspondent pas'
-      ]
+      ],
     },
     loading: false,
     forbiddenWords: [
@@ -311,7 +311,7 @@ export default defineComponent({
       if (!this.roomsStore.currentRoom) return
       this.name = this.roomsStore.currentRoom.name
       this.type = this.roomsStore.currentRoom.type
-      this.oldPassword = this.roomsStore.isPasswordProtected ? '********' : ''
+      this.oldPassword = ''
       this.filesToUpload = undefined
     },
     async quitRoom() {
