@@ -125,7 +125,9 @@ export default defineComponent({
   },
   beforeUnmount() {
     if (this.gameId) {
-      this.gameStore.quitGameSession(this.gameId)
+      this.gameStore.quitGameSession(this.gameId);
+      // force reload of the page after quit to avoid bug
+      window.location.reload();
     }
   },
   methods: {
