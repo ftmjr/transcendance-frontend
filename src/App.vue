@@ -8,6 +8,7 @@ import useRoomsStore from '@/stores/RoomsStore'
 import useGameStore from "@/stores/GameStore";
 import useUserStore from "@/stores/UserStore";
 import useMessageStore from "@/stores/MessageStore";
+import { computed } from "vue/dist/vue";
 export default defineComponent({
   setup() {
     const {
@@ -25,6 +26,7 @@ export default defineComponent({
     const gameStore = useGameStore()
     const usersStore = useUserStore()
     const messageStore = useMessageStore();
+    const refreshableRoutes = ['game', 'waiting-room', 'watch-game']
     return {
       isAppRtl,
       color,
@@ -34,6 +36,7 @@ export default defineComponent({
       usersStore,
       notificationStore,
       messageStore,
+      refreshableRoutes
     }
   },
   computed: {
@@ -49,6 +52,9 @@ export default defineComponent({
       return result
         ? `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}`
         : null
+    },
+    needToRefreshToken(): boolean{
+      return this.authStore.isLoggedIn && this.authStore.closeToExpire
     }
   },
   watch:{
@@ -70,14 +76,21 @@ export default defineComponent({
       },
       immediate:true
     },
-    'authStore.closeToExpire':{
+    needToRefreshToken:{
       handler(value){
-        if (value && this.authStore.isLoggedIn) {
-          this.authStore.refreshToken()
+        const token = this.authStore.getTokenData
+        if (value && token) {
+          this.authStore.refreshToken();
         }
-      },
-      immediate:true
+      }
     },
+    $route(to, from){
+      if (this.refreshableRoutes.includes(to.name as string)) {
+        if (this.authStore.isLoggedIn){
+          this.authStore.refreshToken();
+        }
+      }
+    }
   },
   created() {
     window.addEventListener('storage', () => {
