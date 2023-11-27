@@ -35,11 +35,11 @@ export default class PongScene extends Scene {
     // this.physics.world.createDebugGraphic()
     this.physics.world.setBounds(0, 0, 1334, 750)
     // create inputs for keyboard and mouse
+    this.QKey = this.input.keyboard?.addKey('Q')
     this.cursorKeys = this.input.keyboard?.createCursorKeys();
     this.input?.keyboard?.on('keydown', function (event) {
       // console.log('check key down event recieved')
     });
-    this.QKey = this.input.keyboard?.addKey('Q')
     this.createPlayers()
     this.ball = new Ball(this, this.theme, { x: 667, y: 375 })
     this.createScores()

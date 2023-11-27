@@ -79,7 +79,6 @@ export default defineComponent({
       loading: false,
       error: null as unknown as string,
       alertGameAlreadyJoined: false,
-      timer: null as unknown as NodeJS.Timeout
     }
   },
   computed: {
@@ -112,7 +111,7 @@ export default defineComponent({
         this.moveToCurrentGame()
       },
       immediate: true
-    }
+    },
   },
   async beforeMount() {
     this.loading = true
