@@ -69,6 +69,7 @@ interface EmitEvents {
   mpUserIsTyping: (data: { senderId: number; receiverId: number }) => void
   reloadMpConversation: (data: { senderId: number; receiverId: number }) => void
   joinRoom: (data: { roomId: number; userId: number }) => void
+  joinMyRoom: () => void
 }
 
 export class ChatSocket {
@@ -102,6 +103,7 @@ export class ChatSocket {
         query: { userId },
         auth: { token: 'testToken' }
       })
+      this.socket.emit('joinMyRoom');
       this.socket.on('connect', () => {
         this.operational = true
       })
