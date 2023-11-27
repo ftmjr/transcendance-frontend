@@ -271,6 +271,7 @@ export default defineComponent({
       ) {
         if (notification.sourceUserId === this.userId || notification.userId === this.userId) {
           await this.fetchBlockedState(this.userId);
+          await this.fetchProfileData(this.userId);
         }
       }
     }
