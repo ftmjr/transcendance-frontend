@@ -35,8 +35,10 @@ export default class PongScene extends Scene {
     // this.physics.world.createDebugGraphic()
     this.physics.world.setBounds(0, 0, 1334, 750)
     // create inputs for keyboard and mouse
-    this.cursorKeys = this.input.keyboard?.createCursorKeys()
-    this.escKey = this.input.keyboard?.addKey('ESC')
+    this.cursorKeys = this.input.keyboard?.createCursorKeys();
+    this.input?.keyboard?.on('keydown', function (event) {
+      // console.log('check key down event recieved')
+    });
     this.QKey = this.input.keyboard?.addKey('Q')
     this.createPlayers()
     this.ball = new Ball(this, this.theme, { x: 667, y: 375 })
@@ -55,7 +57,7 @@ export default class PongScene extends Scene {
     }
     this.monitor._phaserGameMonitorStateChangedRoutine = (state) => {
       if (state === GAME_STATE.Ended) {
-        this.time.delayedCall(200, () => {
+        this.time.delayedCall(275, () => {
           this.scene.start('Menu', {
             currentUser: this.currentUser,
             theme: this.theme,
@@ -78,12 +80,12 @@ export default class PongScene extends Scene {
       message.setDepth(2)
       this.time.delayedCall(250, () => {
         message?.setVisible(false);
-        this.monitor.quitAndMoveToHistory();
       })
     }
     this.monitor._phaserBallPaddleCollisionRoutine = (paddleUserId) => {
       this.paddleBallCollisionRoutine(paddleUserId)
     }
+    this.scoreRoutineOn = false;
   }
 
   createPlayers() {
