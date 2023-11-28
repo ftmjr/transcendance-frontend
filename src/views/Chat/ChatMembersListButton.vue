@@ -17,7 +17,7 @@
         <span class="flex items-center gap-2">
           <v-icon v-if="isOwner" :size="16" color="primary"> tabler-crown </v-icon>
           <v-icon v-else-if="isAdmin" :size="16" color="secondary"> tabler-shield-check </v-icon>
-          <v-icon v-else-if="isMuted" :size="16" color="gray"> tabler-user-minus </v-icon>
+          <v-icon v-else-if="isMuted" :size="16" color="red" icon="mdi:volume-mute"/>
           <v-icon v-else-if="isBan" :size="16" color="gray"> tabler-user-x </v-icon>
         </span>
       </div>

@@ -21,6 +21,7 @@ export interface ChatRoomMember {
   role: ChatMemberRole
   createdAt: string
   updatedAt: string
+  unMuteAt: string;
 }
 
 export interface ChatRoom {

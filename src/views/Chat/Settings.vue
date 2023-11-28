@@ -35,7 +35,7 @@
               <div class="p-4">
                 <v-sheet width="300" class="mx-auto">
                   <h2 class="mb-4 text-sm font-bold">Paramètres</h2>
-                  <v-form v-if="roomsStore.isOwner" @submit.prevent="updateRoomInfos">
+                  <v-form v-model="form" v-if="roomsStore.isOwner" @submit.prevent="updateRoomInfos">
                     <VCardText class="flex flex-col items-center gap-1">
                       <VAvatar
                         v-if="roomsStore.currentRoom.avatar"
@@ -113,7 +113,7 @@
                       />
                     </div>
                     <v-btn
-                      :disabled="loading || !roomsStore.isOwner"
+                      :disabled="loading || !roomsStore.isOwner || (!form && type !== 'PUBLIC')"
                       :loading="loading"
                       type="submit"
                       :block="true"
@@ -172,6 +172,7 @@ export default defineComponent({
       menu: false,
       name: '',
       roomDescription: '',
+      form:false,
       type: RoomType.PUBLIC as RoomType,
       // oldPassword: '',
       password: '',

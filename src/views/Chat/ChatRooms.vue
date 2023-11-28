@@ -129,8 +129,12 @@ export default defineComponent({
         notification.title === RealTimeNotificationTitle.NewMemberInChatRoom
       ) {
         await this.roomsStore.getAllMyRooms()
-        await this.roomsStore.fetchPublicRooms()
+        await this.roomsStore.fetchPublicRooms();
         await this.roomsStore.reloadCurrentRoomMembers()
+        if (!this.roomsStore.currentRoom) return;
+        if (this.roomsStore.currentRoom.id === notification.roomId) {
+          await this.roomsStore.selectRoom(this.roomsStore.currentRoom.id)
+        }
       }
     },
     async checkAndRefreshStatus(notification: RealTimeNotification) {
