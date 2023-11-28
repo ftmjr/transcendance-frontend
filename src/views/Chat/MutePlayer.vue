@@ -95,9 +95,7 @@ const tryToMute = async () => {
     if (!member) return
     await roomsStore.changeMemberRole(props.roomId, member, ChatMemberRole.MUTED, expiresAt)
     isLoading.value = false
-    console.log(`trying to mute user ${props.userId} in room ${props.roomId}`)
   } catch (error) {
-    console.log(error)
     isLoading.value = false
   }
 }

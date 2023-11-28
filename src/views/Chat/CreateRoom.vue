@@ -33,7 +33,10 @@
                 <h2 class="mb-4 text-sm font-bold">
                   Création de room
                 </h2>
-                <v-form @submit.prevent="createRoom">
+                <v-form
+                  v-model="form"
+                  @submit.prevent="createRoom"
+                >
                   <div class="flex flex-col gap-4">
                     <v-text-field
                       v-model="name"
@@ -48,14 +51,29 @@
                     <v-text-field
                       v-model="password"
                       :disabled="type === RoomType.PUBLIC"
-                      :rules="rules.password"
+                      :rules="type === RoomType.PUBLIC ? [] : rules.password"
                       label="mot de passe"
+                      :type="passwordFieldsVisibility.password ? 'text' : 'password'"
+                      :append-inner-icon="
+                        passwordFieldsVisibility.password ? 'tabler-eye-off' : 'tabler-eye'
+                      "
+                      @click:append-inner="
+                        passwordFieldsVisibility.password = !passwordFieldsVisibility.password
+                      "
                     />
                     <v-text-field
                       v-model="confirmPassword"
                       :disabled="type === RoomType.PUBLIC"
-                      :rules="rules.passwordConfirmation"
+                      :rules="type === RoomType.PUBLIC ? [] : rules.passwordConfirmation"
                       label="Verifiez le mot de passe"
+                      :type="passwordFieldsVisibility.confirmPassword ? 'text' : 'password'"
+                      :append-inner-icon="
+                        passwordFieldsVisibility.confirmPassword ? 'tabler-eye-off' : 'tabler-eye'
+                      "
+                      @click:append-inner="
+                        passwordFieldsVisibility.confirmPassword =
+                          !passwordFieldsVisibility.confirmPassword
+                      "
                     />
                     <v-btn
                       :loading="loading"
@@ -63,6 +81,7 @@
                       :block="true"
                       class="mt-2"
                       text="Créer"
+                      :disabled="!form"
                     />
                   </div>
                 </v-form>
@@ -94,6 +113,7 @@ const showErrorPopUp = ref(false)
 const name = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const form = ref(false)
 
 const typeList: RoomType[] = [RoomType.PUBLIC, RoomType.PROTECTED, RoomType.PRIVATE]
 const type = ref(typeList[0])
@@ -133,6 +153,11 @@ const forbiddenWords = [
   'sacrament',
   'ostie'
 ]
+
+const passwordFieldsVisibility = reactive({
+  password: false,
+  confirmPassword: false
+})
 
 const checkBadWord = (str: string) => {
   const lowerCaseStr = str.toLowerCase()

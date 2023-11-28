@@ -41,7 +41,7 @@
       >
         <div class="w-full h-[40px] relative">
           <div
-            v-if="me && roomStore.isMuted"
+            v-if="roomStore.isMuted"
             class="absolute left-0 z-50 flex items-center justify-center w-full h-full -top-5"
           >
             <p class="text-xs text-primary">
@@ -124,12 +124,15 @@ export default defineComponent({
       isTypingUserName: '',
       timer: null as NodeJS.Timeout | null,
       canWriteAt: '',
-      expiresAt: new Date().getTime() + 1000 * 30
     }
   },
   computed: {
     me(): ChatRoomMember | undefined {
       return this.roomStore.roomMembers.find((member) => member.member.id === this.roomStore.userId)
+    },
+    expiresAt(): number {
+      if (!this.me) return new Date().getTime()
+      return new Date(this.me?.unMuteAt).getTime()
     },
     canRead(): boolean {
       if (!this.me) return false
@@ -183,7 +186,10 @@ export default defineComponent({
       handler(value: number) {
         if (!value) return
         if (!this.roomStore.isMemberOfRoom && !this.roomStore.isPublic) return
-        this.fetchMessages()
+        this.fetchMessages();
+        if (this.roomStore.isMuted){
+          this.startMuteCountDown();
+        }
       },
       immediate: true
     },
@@ -219,7 +225,6 @@ export default defineComponent({
   },
   mounted() {
     this.scrollToBottomInChatLog()
-    this.timer = setInterval(this.getTimeRemaining, 1000)
   },
   beforeUnmount() {
     if (this.timer) clearInterval(this.timer)
@@ -253,11 +258,19 @@ export default defineComponent({
       if (!this.authStore.getUser) return
       this.roomStore.sendUserIsTypingInRoom(this.me.chatroomId, this.authStore.getUser.username)
     },
+    startMuteCountDown(){
+      this.timer = setInterval(this.getTimeRemaining, 1000);
+    },
     getTimeRemaining() {
       const now = Date.now()
       const timeDifference = this.expiresAt - now
       if (timeDifference <= 0) {
         this.canWriteAt = ''
+        if (this.timer){
+          clearInterval(this.timer);
+          this.roomStore.reloadCurrentRoomMembers();
+          this.timer = null;
+        }
         return
       } else {
         const seconds = Math.floor((timeDifference / 1000) % 60)

@@ -66,6 +66,13 @@ export class StatusSocket {
     }
     this.operational = false
   }
+  static destroyInstance() {
+    if (StatusSocket.instance) {
+      StatusSocket.instance.disconnect()
+      // @ts-expect-error - private property
+      StatusSocket.instance = undefined
+    }
+  }
 
   reconnect() {
     if (this.socket) {

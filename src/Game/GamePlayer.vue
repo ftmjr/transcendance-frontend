@@ -1,7 +1,7 @@
 <template>
   <div
-    id="Game-player"
-    ref="player"
+    id="Game-container"
+    ref="game-player"
   />
 </template>
 
@@ -35,12 +35,11 @@ export default defineComponent({
   data() {
     return {
       gameMonitor: null as unknown as Monitor,
-      game: null as unknown as Game
+      game: undefined as Game | undefined
     }
   },
   mounted() {
     const gameMonitor = new Monitor(this.roomId, this.player, this.moveToHistory)
-    const gameContainer = this.$refs.player as HTMLElement
     const dataInit = {
       currentUser: this.player,
       gameMonitor,
@@ -52,7 +51,7 @@ export default defineComponent({
       type: WEBGL,
       scale: {
         mode: Scale.FIT,
-        parent: gameContainer,
+        parent: 'Game-container',
         autoCenter: Scale.CENTER_BOTH,
         width: 1334,
         height: 750,
@@ -78,7 +77,10 @@ export default defineComponent({
   beforeUnmount() {
     this.gameMonitor.cleanAllPhaserRoutines()
     this.gameMonitor?.quitGame()
-    if (this.game) this.game.destroy(true)
+    if (this.game) {
+      this.game?.destroy(true)
+      delete this.game
+    }
   },
   methods: {
     moveToHistory() {

@@ -152,7 +152,6 @@ export default defineComponent({
     },
     async showProfile() {
       if (!this.messageStore.conversationWith) return
-      await this.usersStore.blockUser(this.messageStore.conversationWith.id)
       this.$router.push({
         name: 'user-profile',
         params: { userId: this.messageStore.conversationWith.id }

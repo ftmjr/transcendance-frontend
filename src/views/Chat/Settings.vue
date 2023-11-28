@@ -53,7 +53,7 @@
                   </h2>
                   <v-form
                     v-if="roomsStore.isOwner"
-                    validate-on="submit lazy"
+                    v-model="form"
                     @submit.prevent="updateRoomInfos"
                   >
                     <VCardText class="flex flex-col items-center gap-1">
@@ -69,9 +69,7 @@
                         accept="image/png, image/jpeg, image/bmp"
                         :single-line="true"
                         :disabled="loading"
-                        density="compact"
                         color="secondary"
-                        variant="solo"
                         label="avatar"
                         :prepend-icon="loading ? 'mdi-loading mdi-spin' : 'mdi-upload'"
                       >
@@ -106,42 +104,43 @@
                     <div>
                       <v-text-field
                         v-if="type !== 'PUBLIC'"
-                        v-model="oldPassword"
-                        :disabled="loading"
-                        label="Ancien mot de passe"
-                        placeholder=""
-                        class="mt-4"
-                        dense
-                        :rules="rules.oldPassword"
-                        type="password"
-                      />
-                      <v-text-field
-                        v-if="type !== 'PUBLIC'"
                         v-model="password"
+                        class="mt-4"
                         :disabled="loading"
                         label="Nouveau Mot de passe"
                         placeholder=""
                         :rules="rules.password"
                         outlined
-                        type="password"
-                        class="mt-4"
+                        :type="passwordFieldsVisibility.password ? 'text' : 'password'"
+                        :append-inner-icon="
+                          passwordFieldsVisibility.password ? 'tabler-eye-off' : 'tabler-eye'
+                        "
                         dense
+                        @click:append-inner="
+                          passwordFieldsVisibility.password = !passwordFieldsVisibility.password
+                        "
                       />
                       <v-text-field
                         v-if="type !== 'PUBLIC'"
                         v-model="passwordConfirmation"
+                        class="mt-4"
                         :disabled="loading"
                         label="Cofirmer le mot de passe"
                         placeholder=""
                         outlined
-                        class="mt-4"
+                        :type="passwordFieldsVisibility.password ? 'text' : 'password'"
+                        :append-inner-icon="
+                          passwordFieldsVisibility.password ? 'tabler-eye-off' : 'tabler-eye'
+                        "
                         dense
                         :rules="rules.passwordConfirmation"
-                        type="password"
+                        @click:append-inner="
+                          passwordFieldsVisibility.password = !passwordFieldsVisibility.password
+                        "
                       />
                     </div>
                     <v-btn
-                      :disabled="loading || !roomsStore.isOwner"
+                      :disabled="loading || !roomsStore.isOwner || (!form && type !== 'PUBLIC')"
                       :loading="loading"
                       type="submit"
                       :block="true"
@@ -195,64 +194,74 @@ export default defineComponent({
       roomsStore
     }
   },
-  data: () => ({
-    menu: false,
-    name: '',
-    roomDescription: '',
-    type: RoomType.PUBLIC as RoomType,
-    oldPassword: '',
-    password: '',
-    passwordConfirmation: '',
-    rules: {
-      name: [
-        (v: string) => !!v || 'Le nom de la salle est requis',
-        (v: string) =>
-          (v && v.length <= 20) || 'Le nom de la salle doit être inférieur à 20 caractères',
-        (v: string) =>
-          (v && v.length >= 3) || 'Le nom de la salle doit être supérieur à 3 caractères',
-        (v: string) => !this.checkBadWord(v) || 'Le nom de la salle contient un mot interdit'
+  data() {
+    return {
+      menu: false,
+      name: '',
+      roomDescription: '',
+      form:false,
+      type: RoomType.PUBLIC as RoomType,
+      // oldPassword: '',
+      password: '',
+      passwordConfirmation: '',
+      rules: {
+        name: [
+          (v: string) => !!v || 'Le nom de la salle est requis',
+          (v: string) =>
+            (v && v.length <= 20) || 'Le nom de la salle doit être inférieur à 20 caractères',
+          (v: string) =>
+            (v && v.length >= 3) || 'Le nom de la salle doit être supérieur à 3 caractères',
+          (v: string) => !this.checkBadWord(v) || 'Le nom de la salle contient un mot interdit'
+        ],
+        oldPassword: [
+          (v: string) => !!v || 'Le mot de passe est requis',
+          (v: string) =>
+            (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
+          (v: string) =>
+            (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
+        ],
+        password: [
+          (v: string) => !!v || 'Le mot de passe est requis',
+          (v: string) =>
+            (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
+          (v: string) =>
+            (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
+        ],
+        passwordConfirmation: [
+          (v: string) => !!v || 'La confirmation du mot de passe est requise',
+          (v: string) =>
+            (v && v.length <= 20) ||
+            'La confirmation du mot de passe doit être inférieur à 20 caractères',
+          (v: string) =>
+            (v && v.length >= 6) ||
+            'La confirmation du mot de passe doit être supérieur à 6 caractères',
+          (v: string) => v === this.password || 'Les mots de passe ne correspondent pas'
+        ]
+      },
+      loading: false,
+      forbiddenWords: [
+        'con',
+        'connard',
+        'salope',
+        'pute',
+        'merde',
+        'enculé',
+        'calis',
+        'tabarnak',
+        'sacrament',
+        'ostie'
       ],
-      oldPassword: [
-        (v: string) => !!v || 'Le mot de passe est requis',
-        (v: string) =>
-          (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-        (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 3 caractères'
-      ],
-      password: [
-        (v: string) => !!v || 'Le mot de passe est requis',
-        (v: string) =>
-          (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-        (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
-      ],
-      passwordConfirmation: [
-        (v: string) => !!v || 'La confirmation du mot de passe est requise',
-        (v: string) =>
-          (v && v.length <= 20) ||
-          'La confirmation du mot de passe doit être inférieur à 20 caractères',
-        (v: string) =>
-          (v && v.length >= 3) ||
-          'La confirmation du mot de passe doit être supérieur à 3 caractères',
-        (v: string) => v === this.password || 'Les mots de passe ne correspondent pas'
-      ]
-    },
-    loading: false,
-    forbiddenWords: [
-      'con',
-      'connard',
-      'salope',
-      'pute',
-      'merde',
-      'enculé',
-      'calis',
-      'tabarnak',
-      'sacrament',
-      'ostie'
-    ],
-    showErrorPopUp: false,
-    showLeaveErrorPopUp: false,
-    leaveErrorMessage: '',
-    filesToUpload: undefined as File[] | undefined
-  }),
+      showErrorPopUp: false,
+      showLeaveErrorPopUp: false,
+      leaveErrorMessage: '',
+      filesToUpload: undefined as File[] | undefined,
+      passwordFieldsVisibility: {
+        oldPassword: false,
+        password: false,
+        confirmPassword: false
+      }
+    }
+  },
   computed: {
     hasPassword(): boolean {
       return this.roomsStore.isPasswordProtected
@@ -293,13 +302,14 @@ export default defineComponent({
         // name: this.name,
         roomId: room.id,
         roomType: this.type,
-        oldPassword: this.oldPassword.length > 0 ? this.oldPassword : undefined,
-        password: this.password.length > 0 ? this.password : undefined,
+        oldPassword: undefined,
+        password: this.password.length > 0 ? this.password : undefined
       }
-      // to update the avatar we need to do it before the rest of the update
-      const newAvatar = this.filesToUpload?.[0]
-      if (newAvatar) {
-        await this.roomsStore.updateAvatar(room.id, newAvatar)
+      if (this.filesToUpload) {
+        if (this.filesToUpload.length > 0) {
+          const newAvatar = this.filesToUpload[0]
+          await this.roomsStore.updateAvatar(room.id, newAvatar)
+        }
       }
       const res = await this.roomsStore.updateRoom(room.id, data)
       if (res !== 'success') {
@@ -311,7 +321,7 @@ export default defineComponent({
       if (!this.roomsStore.currentRoom) return
       this.name = this.roomsStore.currentRoom.name
       this.type = this.roomsStore.currentRoom.type
-      this.oldPassword = this.roomsStore.isPasswordProtected ? '********' : ''
+      // this.oldPassword = ''
       this.filesToUpload = undefined
     },
     async quitRoom() {

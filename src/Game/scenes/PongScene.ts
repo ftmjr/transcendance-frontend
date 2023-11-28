@@ -35,9 +35,12 @@ export default class PongScene extends Scene {
     // this.physics.world.createDebugGraphic()
     this.physics.world.setBounds(0, 0, 1334, 750)
     // create inputs for keyboard and mouse
-    this.cursorKeys = this.input.keyboard?.createCursorKeys()
-    this.escKey = this.input.keyboard?.addKey('ESC')
     this.QKey = this.input.keyboard?.addKey('Q')
+    this.cursorKeys = this.input.keyboard?.createCursorKeys()
+    // @ts-expect-error no usage, just for testing
+    this.input?.keyboard?.on('keydown', function (_event) {
+      // console.log('check key down event recieved')
+    })
     this.createPlayers()
     this.ball = new Ball(this, this.theme, { x: 667, y: 375 })
     this.createScores()
@@ -55,7 +58,7 @@ export default class PongScene extends Scene {
     }
     this.monitor._phaserGameMonitorStateChangedRoutine = (state) => {
       if (state === GAME_STATE.Ended) {
-        this.time.delayedCall(200, () => {
+        this.time.delayedCall(275, () => {
           this.scene.start('Menu', {
             currentUser: this.currentUser,
             theme: this.theme,
@@ -76,15 +79,14 @@ export default class PongScene extends Scene {
       const message = this.add.bitmapText(667, 375, 'atari', 'Player Left')
       message.setOrigin(0.5, 0.5)
       message.setDepth(2)
-      this.time.delayedCall(500, () => {
-        message?.destroy()
-        // quit the game
-        this.monitor.quitAndMoveToHistory()
+      this.time.delayedCall(250, () => {
+        message?.setVisible(false)
       })
     }
     this.monitor._phaserBallPaddleCollisionRoutine = (paddleUserId) => {
       this.paddleBallCollisionRoutine(paddleUserId)
     }
+    this.scoreRoutineOn = false
   }
 
   createPlayers() {

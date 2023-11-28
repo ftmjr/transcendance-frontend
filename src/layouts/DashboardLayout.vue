@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import navItems from '@/layouts/navigation'
@@ -60,7 +60,6 @@ import FooterSection from '@/layouts/FooterSection.vue'
 import NavSearchBar from '@/components/navbar/NavSearchBar.vue'
 import UserProfileButton from '@/components/navbar/UserProfileButton.vue'
 import NotificationButton from '@/components/navbar/NotificationButton.vue'
-import useGameStore from '@/stores/GameStore'
 import useAuthStore from '@/stores/AuthStore'
 import useNotificationStore from '@/stores/NotificationStore'
 import {
@@ -68,8 +67,6 @@ import {
   RealTimeNotificationTitle,
   RealTimeNotificationType
 } from '@/utils/notificationSocket'
-import useRoomsStore from '@/stores/RoomsStore'
-import useUserStore from '@/stores/UserStore'
 import NotificationPopUp from '@/components/notifications/NotificationPopUp.vue'
 
 const { appRouteTransition, isLessThanOverlayNavBreakpoint } = useThemeConfig()
@@ -105,27 +102,6 @@ watch(notificationStore.allRealTimeNotifications, (notifications) => {
     checkIfNewNotificationIsANewGameChallenge(notifications[0])
   }
 })
-
-const needToRefreshToken = computed(() => {
-  return authStore.isLoggedIn && authStore.closeToExpire
-})
-watch(needToRefreshToken, async (value) => {
-  const token = authStore.getTokenData
-  if (value && token) {
-    await authStore.refreshToken()
-  }
-})
-
-const refreshableRoutes = ['game', 'waiting-room', 'dashboard', 'watch-game']
-watch(router.currentRoute, async (to, from) => {
-  // if route is not refreshable, return
-  if (!refreshableRoutes.includes(to.name as string)) return
-  // if user is not logged in, return
-  if (!authStore.isLoggedIn) return
-  // now refresh
-  await authStore.refreshToken()
-})
-
 </script>
 
 <style lang="scss">

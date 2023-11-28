@@ -75,6 +75,15 @@ const useMessageStore = defineStore({
     }
   },
   actions: {
+    clearStore() {
+      this.currentContactId = 0
+      this.currentContact = undefined
+      this.conversationsUsers.splice(0, this.conversationsUsers.length)
+      this.searchTerm = ''
+      this.socketManager = null
+      this.messages.clear()
+      this.isLeftSidebarOpen = false
+    },
     setSidebarOpen(isOpen: boolean) {
       this.isLeftSidebarOpen = isOpen
     },
@@ -197,7 +206,7 @@ const useMessageStore = defineStore({
         }
       }
       const userMessages = this.messages.get(contactId)
-      if (userMessages){
+      if (userMessages) {
         userMessages.unshift(message)
         return
       } else {

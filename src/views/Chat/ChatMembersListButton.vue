@@ -31,8 +31,9 @@
           <v-icon
             v-else-if="isMuted"
             :size="16"
-            color="gray"
-          > tabler-user-minus </v-icon>
+            color="red"
+            icon="mdi:volume-mute"
+          />
           <v-icon
             v-else-if="isBan"
             :size="16"

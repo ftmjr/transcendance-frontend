@@ -128,24 +128,24 @@ export class GameNetwork {
   // all send events functions here
   sendGameState(gameState: GAME_STATE) {
     const roomId = this.roomId
-    if (roomId === 0) return;
+    if (roomId === 0) return
     this.socket?.emit(GAME_EVENTS.GameStateChanged, { roomId, user: this.user, gameState })
   }
   sendPadMove(data: PadMovedData) {
     const roomId = this.roomId
-    if (roomId === 0) return;
+    if (roomId === 0) return
     this.socket?.emit(GAME_EVENTS.PadMoved, { roomId, data })
   }
 
   sendIaPadSpeed(data: number) {
     const roomId = this.roomId
-    if (roomId === 0) return;
+    if (roomId === 0) return
     this.socket?.emit(GAME_EVENTS.IaPadSpeed, { roomId, data })
   }
 
   sendBallServe(data: BallData) {
     const roomId = this.roomId
-    if (roomId === 0) return;
+    if (roomId === 0) return
     this.socket?.emit(GAME_EVENTS.BallServed, { roomId, data })
   }
 
@@ -165,14 +165,14 @@ export class GameNetwork {
   // All receive events functions here
   onHostChanged(callback: (hostId: number) => void) {
     this.socket?.on(GAME_EVENTS.HostChanged, (received) => {
-      if(received.roomId === this.roomId){
+      if (received.roomId === this.roomId) {
         callback(received.data)
       }
     })
   }
   onGameMonitorStateChanged(callback: (state: GAME_STATE) => void) {
     this.socket?.on(GAME_EVENTS.GameMonitorStateChanged, (data) => {
-      if(data.roomId === this.roomId){
+      if (data.roomId === this.roomId) {
         callback(data.data)
       }
     })
@@ -190,7 +190,7 @@ export class GameNetwork {
 
   onPlayerLeft(callback: (player: GameUser) => void) {
     this.socket?.on(GAME_EVENTS.PlayerLeft, (received) => {
-      if(received.roomId === this.roomId){
+      if (received.roomId === this.roomId) {
         callback(received.data)
       }
     })
@@ -207,35 +207,35 @@ export class GameNetwork {
   }
   onScoreChanged(callback: (score: Array<{ userId: number; score: number }>) => void) {
     this.socket?.on(GAME_EVENTS.ScoreChanged, (received) => {
-      if(received.roomId === this.roomId){
+      if (received.roomId === this.roomId) {
         callback(received.data)
       }
     })
   }
   onViewerLoadScore(callback: (score: Array<{ userId: number; score: number }>) => void) {
     this.socket?.on(GAME_EVENTS.ViewerLoadScore, (received) => {
-      if(received.roomId === this.roomId){
+      if (received.roomId === this.roomId) {
         callback(received.data)
       }
     })
   }
   onPadMoved(callback: (data: PaddleEngineData) => void) {
     this.socket?.on(GAME_EVENTS.PadMoved, (received) => {
-      if(received.roomId === this.roomId){
+      if (received.roomId === this.roomId) {
         callback(received.data)
       }
     })
   }
   onBallServed(callback: (data: BallData) => void) {
     this.socket?.on(GAME_EVENTS.BallServed, (received) => {
-      if(received.roomId === this.roomId){
+      if (received.roomId === this.roomId) {
         callback(received.data)
       }
     })
   }
   onBallPaddleCollision(callback: (paddleUserId: number) => void) {
     this.socket?.on(GAME_EVENTS.BallPaddleCollision, (received) => {
-      if(received.roomId === this.roomId){
+      if (received.roomId === this.roomId) {
         callback(received.data)
       }
     })
@@ -243,7 +243,7 @@ export class GameNetwork {
 
   onBallMoved(callback: (data: BallData) => void) {
     this.socket?.on(GAME_EVENTS.BallMoved, (received) => {
-      if(received.roomId === this.roomId){
+      if (received.roomId === this.roomId) {
         callback(received.data)
       }
     })
@@ -251,7 +251,7 @@ export class GameNetwork {
 
   onObjectsStatePacket(callback: (data: GameStateDataPacket) => void) {
     this.socket?.on(GAME_EVENTS.GameObjectState, (received) => {
-      if(received.roomId === this.roomId){
+      if (received.roomId === this.roomId) {
         callback(received.data)
       }
     })
@@ -263,6 +263,14 @@ export class GameNetwork {
     }
     this.roomId = 0
     this.joinedGame = false
+  }
+
+  static destroyInstance() {
+    if (GameNetwork.instance) {
+      GameNetwork.instance.disconnect()
+      // @ts-expect-error - private property
+      GameNetwork.instance = undefined
+    }
   }
 
   reconnect() {

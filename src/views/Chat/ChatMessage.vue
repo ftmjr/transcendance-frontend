@@ -118,6 +118,7 @@ export default defineComponent({
       return this.sender?.role === ChatMemberRole.MUTED
     },
     blocked(): boolean {
+      if (!this.sender && this.roomStore.isMemberOfRoom) return false
       if (!this.sender) return true
       const blockStatus = this.roomStore.allBlockedStatus.get(this.sender.member.id)
       if (!blockStatus) return false
