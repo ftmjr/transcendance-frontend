@@ -7,7 +7,13 @@
     @click.prevent="handleUpdateIsBanned"
   >
     {{ banned ? 'Débannir' : 'Bannir' }}
-    <VIcon v-if="failed" color="red" :size="12"> tabler-alert-triangle </VIcon>
+    <VIcon
+      v-if="failed"
+      color="red"
+      :size="12"
+    >
+      tabler-alert-triangle
+    </VIcon>
   </v-btn>
 </template>
 <script setup lang="ts">

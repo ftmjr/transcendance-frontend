@@ -8,7 +8,7 @@ import useRoomsStore from '@/stores/RoomsStore'
 import useGameStore from '@/stores/GameStore'
 import useUserStore from '@/stores/UserStore'
 import useMessageStore from '@/stores/MessageStore'
-import { computed } from 'vue/dist/vue'
+
 export default defineComponent({
   setup() {
     const {

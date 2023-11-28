@@ -6,7 +6,10 @@
         class="px-4 py-2 text-sm border bg-none inline-block rounded-md hover:bg-white/10"
       >
         <span class="flex gap-1 items-center">
-          <v-avatar icon="tabler-trophy" color="yellow" />
+          <v-avatar
+            icon="tabler-trophy"
+            color="yellow"
+          />
           <span>WINNER CIRCLE achievement! (gagner 1 match)</span>
         </span>
       </div>
@@ -15,7 +18,10 @@
         v-if="numberOfGoals > 9"
         class="px-4 py-2 text-sm border bg-none inline-block rounded-md hover:bg-cyan-400/10"
       >
-        <v-avatar icon="tabler-trophy" color="yellow" />
+        <v-avatar
+          icon="tabler-trophy"
+          color="yellow"
+        />
         <span> BIG SCORER achievement! (marquer 10 buts) </span>
       </div>
     </div>

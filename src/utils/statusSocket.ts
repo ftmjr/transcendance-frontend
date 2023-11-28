@@ -1,6 +1,5 @@
 import { io, Socket } from 'socket.io-client'
 import { Status } from '@/interfaces/User'
-import { expect } from 'vitest'
 
 export interface ReceivedStatusUpdate {
   userId: number

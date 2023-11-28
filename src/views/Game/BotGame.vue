@@ -42,7 +42,11 @@ onBeforeMount(async () => {
       :message="'Impossible de preparer une partie avec le bot...'"
       :color="'pink'"
     />
-    <NotificationPopUp v-else :message="'Preparing game'" :color="'pink'" />
+    <NotificationPopUp
+      v-else
+      :message="'Preparing game'"
+      :color="'pink'"
+    />
   </div>
 </template>
 

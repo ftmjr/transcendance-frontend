@@ -37,7 +37,8 @@ export default class PongScene extends Scene {
     // create inputs for keyboard and mouse
     this.QKey = this.input.keyboard?.addKey('Q')
     this.cursorKeys = this.input.keyboard?.createCursorKeys()
-    this.input?.keyboard?.on('keydown', function (event) {
+    // @ts-expect-error no usage, just for testing
+    this.input?.keyboard?.on('keydown', function (_event) {
       // console.log('check key down event recieved')
     })
     this.createPlayers()

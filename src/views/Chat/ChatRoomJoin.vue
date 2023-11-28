@@ -1,6 +1,12 @@
 <template>
-  <div v-if="roomsStore.currentRoom" class="relative h-full mt-4">
-    <div v-if="canViewMessagesList" class="absolute left-0 z-10 w-full h-full -top-[40px]">
+  <div
+    v-if="roomsStore.currentRoom"
+    class="relative h-full mt-4"
+  >
+    <div
+      v-if="canViewMessagesList"
+      class="absolute left-0 z-10 w-full h-full -top-[40px]"
+    >
       <chat-room-message-list />
     </div>
     <div class="relative z-20 flex flex-col items-start justify-center h-full px-4">
@@ -10,7 +16,10 @@
             {{ roomsStore.currentRoom.name }}
           </span>
           <div class="my-4">
-            <VChip label class="me-2">
+            <VChip
+              label
+              class="me-2"
+            >
               {{ roomsStore.currentRoom.type }}
             </VChip>
           </div>
@@ -20,7 +29,7 @@
             v-if="roomsStore.currentRoom.avatar"
             :src="roomsStore.currentRoom.avatar"
             class="object-cover w-full h-full rounded"
-          />
+          >
         </div>
       </div>
       <v-divider class="mx-auto w-72" />
@@ -50,7 +59,11 @@
         </VBtn>
       </div>
     </div>
-    <NotificationPopUp v-model:visible="popUpVisible" color="error" :snackbar-msg="errorMessage" />
+    <NotificationPopUp
+      v-model:visible="popUpVisible"
+      color="error"
+      :snackbar-msg="errorMessage"
+    />
   </div>
 </template>
 

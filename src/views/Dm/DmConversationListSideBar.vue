@@ -8,7 +8,12 @@
       size="small"
       @click="$emit('close')"
     >
-      <v-icon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
+      <v-icon
+        size="18"
+        icon="tabler-x"
+        color="error"
+        class="text-medium-emphasis"
+      />
     </v-btn>
   </div>
   <div class="flex px-1 mb-2">
@@ -26,12 +31,19 @@
       class="ms-4 me-1 transparent-input-box"
     >
       <template #prepend-inner>
-        <v-icon size="22" icon="tabler-search" />
+        <v-icon
+          size="22"
+          icon="tabler-search"
+        />
       </template>
     </v-text-field>
   </div>
   <VDivider />
-  <PerfectScrollbar tag="ul" class="px-3 chat-contacts-list" :options="{ wheelPropagation: false }">
+  <PerfectScrollbar
+    tag="ul"
+    class="px-3 chat-contacts-list"
+    :options="{ wheelPropagation: false }"
+  >
     <li class="py-4">
       <span class="text-xl chat-contact-header text-primary font-weight-medium">
         Conversations

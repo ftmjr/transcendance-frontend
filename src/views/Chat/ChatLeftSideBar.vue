@@ -9,7 +9,12 @@
         size="small"
         @click="$emit('close')"
       >
-        <VIcon size="18" icon="tabler-x" color="error" class="text-medium-emphasis" />
+        <VIcon
+          size="18"
+          icon="tabler-x"
+          color="error"
+          class="text-medium-emphasis"
+        />
       </VBtn>
     </div>
     <div class="flex px-2 mb-2">
@@ -28,12 +33,17 @@
         class="ms-4 me-1 transparent-input-box"
       >
         <template #prepend-inner>
-          <VIcon size="22" icon="tabler-search" />
+          <VIcon
+            size="22"
+            icon="tabler-search"
+          />
         </template>
       </VTextField>
     </div>
     <v-toolbar color="#952175">
-      <v-toolbar-title class="text-gray-300"> Salles de discussion </v-toolbar-title>
+      <v-toolbar-title class="text-gray-300">
+        Salles de discussion
+      </v-toolbar-title>
       <VBtn
         variant="elevated"
         class="text-gray-300 bg-transparent"
@@ -45,7 +55,11 @@
         rounded
         @click="$emit('createRoom')"
       >
-        <VIcon size="18" icon="tabler-edit" color="white" />
+        <VIcon
+          size="18"
+          icon="tabler-edit"
+          color="white"
+        />
       </VBtn>
     </v-toolbar>
     <VDivider />
@@ -68,7 +82,11 @@
           <template v-if="search.length"> pour `{{ search }}`</template>
         </span>
       </li>
-      <li v-for="room in roomsStore.filteredRooms" :key="room.id" @click="showRoom(room.id)">
+      <li
+        v-for="room in roomsStore.filteredRooms"
+        :key="room.id"
+        @click="showRoom(room.id)"
+      >
         <RoomCard :room="room" />
       </li>
       <li class="py-4">
@@ -85,7 +103,11 @@
           <template v-if="search.length"> pour `{{ search }}`</template>
         </span>
       </li>
-      <li v-for="room in roomsStore.filteredPublic" :key="room.id" @click="showRoom(room.id)">
+      <li
+        v-for="room in roomsStore.filteredPublic"
+        :key="room.id"
+        @click="showRoom(room.id)"
+      >
         <RoomCard :room="room" />
       </li>
     </PerfectScrollbar>
