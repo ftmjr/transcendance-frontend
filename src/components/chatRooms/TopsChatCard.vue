@@ -1,15 +1,7 @@
 <template>
-  <VCard
-    color="#952175"
-    :loading="loading"
-  >
+  <VCard color="#952175" :loading="loading">
     <template #loader="{ isActive }">
-      <v-progress-linear
-        :active="isActive"
-        color="blue"
-        height="20"
-        :indeterminate="true"
-      />
+      <v-progress-linear :active="isActive" color="blue" height="20" :indeterminate="true" />
     </template>
     <VCarousel
       v-if="!loading && topRooms.length > 0"
@@ -20,42 +12,27 @@
       :delimiter-icon="() => h(VIcon, { icon: 'fa-circle', size: '10' })"
       height="320"
     >
-      <VCarouselItem
-        v-for="(room, index) in topRooms"
-        :key="room.id"
-        class="p-0"
-      >
+      <VCarouselItem v-for="(room, index) in topRooms" :key="room.id" class="p-0">
         <div class="p-8 h-[320px]">
           <div class="">
-            <h2 class="text-4xl uppercase font-bold">
-              Les Top Chat - {{ index + 1 }}
-            </h2>
+            <h2 class="text-4xl uppercase font-bold">Les Top Chat - {{ index + 1 }}</h2>
           </div>
           <div class="flex h-full">
             <div class="basis-full md:basis-1/2 flex flex-col gap-4">
               <p class="text-base font-medium text-gray-300">
                 Nom de la room:
-                <a
-                  class="text-gray-300 hover:text-gray-50"
-                  href="#"
-                >{{ room.name }}</a>
+                <a class="text-gray-300 hover:text-gray-50" href="#">{{ room.name }}</a>
               </p>
               <div class="flex gap-4">
                 <div>
-                  <VChip
-                    label
-                    class="me-2"
-                  >
+                  <VChip label class="me-2">
                     {{ room.members.length }}
                   </VChip>
                   <span>Membres(s)</span>
                 </div>
                 <div>
                   <span> Type: </span>
-                  <VChip
-                    label
-                    class="me-2"
-                  >
+                  <VChip label class="me-2">
                     {{ room.type }}
                   </VChip>
                 </div>
@@ -78,17 +55,14 @@
                 v-if="room.avatar"
                 :src="room.avatar"
                 class="rounded object-cover h-full w-full"
-              >
+              />
             </div>
           </div>
         </div>
       </VCarouselItem>
     </VCarousel>
   </VCard>
-  <NotificationPopUp
-    v-model:visible="popUpVisible"
-    :snackbar-msg="popUpMessage"
-  />
+  <NotificationPopUp v-model:visible="popUpVisible" :snackbar-msg="popUpMessage" />
 </template>
 
 <script lang="ts">

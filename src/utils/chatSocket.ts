@@ -1,7 +1,6 @@
 import { io, Socket } from 'socket.io-client'
 import { PrivateMessage } from '@/stores/MessageStore'
 
-
 export enum RoomType {
   PUBLIC = 'PUBLIC',
   PRIVATE = 'PRIVATE',
@@ -77,7 +76,7 @@ export class ChatSocket {
   socket: Socket<ListenEvents, EmitEvents> | undefined
   public operational: boolean = false
   public managedRoomIds: number[] = []
-  private sendingMp = false;
+  private sendingMp = false
 
   private constructor(
     public userId: number,
@@ -103,17 +102,17 @@ export class ChatSocket {
         query: { userId },
         auth: { token: 'testToken' }
       })
-      this.socket.emit('joinMyRoom');
+      this.socket.emit('joinMyRoom')
       this.socket.on('connect', () => {
         this.operational = true
       })
       this.socket.on('disconnect', () => {
         this.operational = false
       })
-      this.socket.on('newMessage', (message) =>{
+      this.socket.on('newMessage', (message) => {
         this.onNewMessage(message)
       })
-      this.socket.on('newMP', (data)=>{
+      this.socket.on('newMP', (data) => {
         this.onNewMp(data)
       })
       this.socket.on('receivedUserIsTypingInRoom', (data) => {
@@ -131,7 +130,7 @@ export class ChatSocket {
       this.socket.on('reloadMp', onConversationReload)
       this.socket.on('failedToSendMessage', onFailedToSendMessage)
       this.socket.on('connectionError', (data) => {
-        this.sendingMp = false;
+        this.sendingMp = false
         onConnectionError(data)
       })
     } catch (e) {
@@ -168,8 +167,8 @@ export class ChatSocket {
         onMpContactTyping
       )
     }
-    ChatSocket.instance.onNewMp = onNewMp;
-    ChatSocket.instance.onNewMessage = onNewMessage;
+    ChatSocket.instance.onNewMp = onNewMp
+    ChatSocket.instance.onNewMessage = onNewMessage
     return ChatSocket.instance
   }
 
@@ -182,7 +181,7 @@ export class ChatSocket {
 
   static destroyInstance() {
     if (ChatSocket.instance) {
-      ChatSocket.instance.disconnect();
+      ChatSocket.instance.disconnect()
       // @ts-expect-error - private property
       ChatSocket.instance = undefined
     }
@@ -212,10 +211,10 @@ export class ChatSocket {
         receiverId,
         content
       }
-      if (this.sendingMp) return;
-      this.sendingMp = true;
+      if (this.sendingMp) return
+      this.sendingMp = true
       this.socket.emit('sendPrivateMessage', data, (res) => {
-        this.sendingMp = false;
+        this.sendingMp = false
         this.onNewMp(res)
       })
     }

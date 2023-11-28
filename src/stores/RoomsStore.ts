@@ -12,6 +12,7 @@ import { Profile, User } from '@/interfaces/User'
 import useMessageStore, { PrivateMessage } from '@/stores/MessageStore'
 import { isAxiosError } from 'axios'
 import useUserStore, { BlockedStatus } from '@/stores/UserStore'
+import useNotificationStore from '@/stores/NotificationStore'
 
 export interface JoinRoom {
   userId: number
@@ -232,21 +233,21 @@ const useRoomsStore = defineStore({
       }
       messageStore.setSocketManager(this.socketManager as ChatSocket)
     },
-    resetStore(){
+    resetStore() {
       // reset store
-      this.userId = 0;
-      this.disconnect();
-      this.currentRoomStatus = { state : false, role : null };
-      this.isLeftNavOpen = false;
-      this.isRightNavOpen = false;
+      this.userId = 0
+      this.disconnect()
+      this.currentRoomStatus = { state: false, role: null }
+      this.isLeftNavOpen = false
+      this.isRightNavOpen = false
       this.roomsMembersTyping.clear()
-      this.currentRoomMembers = [];
+      this.currentRoomMembers = []
       this.rooms.splice(0, this.rooms.length)
       this.publicRooms.splice(0, this.publicRooms.length)
-      this.searchTerm = '';
-      this.messages.clear();
-      this.roomsBlockedStatus.clear();
-      this.contactTyping.clear();
+      this.searchTerm = ''
+      this.messages.clear()
+      this.roomsBlockedStatus.clear()
+      this.contactTyping.clear()
     },
     setSearchTerm(term: string) {
       this.searchTerm = term
@@ -296,6 +297,7 @@ const useRoomsStore = defineStore({
         const { data } = await axios.post<ChatRoomMember>(`/chat/join-room/${roomId}`, info)
         await this.getAllMyRooms()
         await this.selectRoom(data.chatroomId)
+        await this.loadCurrentRoomMessages({ skip: 0, take: 100 })
         return data
       } catch (error) {
         if (isAxiosError(error)) {
@@ -321,8 +323,8 @@ const useRoomsStore = defineStore({
     },
     async quitRoom(roomId: number): Promise<'success' | 'failed' | string> {
       try {
-        await axios.get(`/chat/leave-room/${roomId}`);
-        await this.cleanAfterLeaving(roomId);
+        await axios.get(`/chat/leave-room/${roomId}`)
+        await this.cleanAfterLeaving(roomId)
         return 'success'
       } catch (error) {
         if (isAxiosError(error)) {
@@ -416,8 +418,8 @@ const useRoomsStore = defineStore({
         return 'success'
       } catch (e) {
         if (isAxiosError(e)) {
-          const axiosE =  e.response?.data.message ?? 'failed'
-          if (Array.isArray(axiosE)){
+          const axiosE = e.response?.data.message ?? 'failed'
+          if (Array.isArray(axiosE)) {
             return axiosE[0]
           }
           return axiosE
@@ -471,6 +473,7 @@ const useRoomsStore = defineStore({
     async loadCurrentRoomMessages(info: { skip: number; take: number }): Promise<void> {
       const { skip, take } = info
       if (!this.currentRoom) return
+      if (!this.currentRoomStatus.state) return
       try {
         const { data } = await axios.get<ChatMessage[]>(`/chat/messages/${this.currentRoom.id}`, {
           params: {
@@ -515,6 +518,8 @@ const useRoomsStore = defineStore({
     },
     // start listening to a room via socket
     listenToRoom(roomId: number) {
+      const notificationStore = useNotificationStore()
+      notificationStore.listenToRoomNotifications(roomId)
       if (!this.socketManager) return
       if (!this.socketManager.operational) return
       this.socketManager.listenRoom(roomId)
@@ -526,7 +531,7 @@ const useRoomsStore = defineStore({
       this.socketManager.reloadRoomMembers(roomId)
     },
     disconnect() {
-      ChatSocket.destroyInstance();
+      ChatSocket.destroyInstance()
       this.socketManager = null
     },
     toggleLeftNav() {

@@ -5,10 +5,10 @@ import { useThemeConfig } from '@core/composable/useThemeConfig'
 import useNotificationStore from '@/stores/NotificationStore'
 import useAuthStore from '@/stores/AuthStore'
 import useRoomsStore from '@/stores/RoomsStore'
-import useGameStore from "@/stores/GameStore";
-import useUserStore from "@/stores/UserStore";
-import useMessageStore from "@/stores/MessageStore";
-import { computed } from "vue/dist/vue";
+import useGameStore from '@/stores/GameStore'
+import useUserStore from '@/stores/UserStore'
+import useMessageStore from '@/stores/MessageStore'
+import { computed } from 'vue/dist/vue'
 export default defineComponent({
   setup() {
     const {
@@ -25,7 +25,7 @@ export default defineComponent({
     const roomsStore = useRoomsStore()
     const gameStore = useGameStore()
     const usersStore = useUserStore()
-    const messageStore = useMessageStore();
+    const messageStore = useMessageStore()
     const refreshableRoutes = ['game', 'waiting-room', 'watch-game']
     return {
       isAppRtl,
@@ -53,41 +53,41 @@ export default defineComponent({
         ? `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}`
         : null
     },
-    needToRefreshToken(): boolean{
+    needToRefreshToken(): boolean {
       return this.authStore.isLoggedIn && this.authStore.closeToExpire
     }
   },
-  watch:{
-    'authStore.isLoggedIn':{
-      handler(value){
+  watch: {
+    'authStore.isLoggedIn': {
+      handler(value) {
         if (value) {
           this.connectAllSockets()
-        }else{
+        } else {
           this.disconnectAllSocket()
         }
       },
-      immediate:true
+      immediate: true
     },
-    'authStore.isLocked':{
-      handler(value){
+    'authStore.isLocked': {
+      handler(value) {
         if (value) {
-          this.$router.push({ name: 'locked-screen' });
+          this.$router.push({ name: 'locked-screen' })
         }
       },
-      immediate:true
+      immediate: true
     },
-    needToRefreshToken:{
-      handler(value){
+    needToRefreshToken: {
+      handler(value) {
         const token = this.authStore.getTokenData
         if (value && token) {
-          this.authStore.refreshToken();
+          this.authStore.refreshToken()
         }
       }
     },
-    $route(to, from){
+    $route(to, from) {
       if (this.refreshableRoutes.includes(to.name as string)) {
-        if (this.authStore.isLoggedIn){
-          this.authStore.refreshToken();
+        if (this.authStore.isLoggedIn) {
+          this.authStore.refreshToken()
         }
       }
     }
@@ -98,13 +98,13 @@ export default defineComponent({
     })
   },
   beforeMount() {
-    this.connectAllSockets();
+    this.connectAllSockets()
   },
   beforeUnmount() {
-    this.disconnectAllSocket();
+    this.disconnectAllSocket()
   },
-  methods:{
-    connectAllSockets(){
+  methods: {
+    connectAllSockets() {
       if (this.authStore.isLoggedIn && this.authStore.getUser?.id) {
         if (!this.usersStore.socketOperational) {
           this.usersStore.initStatusSocket(this.authStore.getUser.id)
@@ -120,7 +120,7 @@ export default defineComponent({
         }
       }
     },
-    disconnectAllSocket(){
+    disconnectAllSocket() {
       if (!this.authStore.isLoggedIn) {
         this.usersStore.disconnectStatusSocket()
         this.notificationStore.disconnect()
@@ -133,7 +133,7 @@ export default defineComponent({
         this.gameStore.$reset()
         this.messageStore.$reset()
       }
-    },
+    }
   }
 })
 </script>

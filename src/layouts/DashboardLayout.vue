@@ -1,9 +1,5 @@
 <template>
-  <VerticalNavLayout
-    :nav-items="navItems"
-    v-bind="layoutAttrs"
-    class=""
-  >
+  <VerticalNavLayout :nav-items="navItems" v-bind="layoutAttrs" class="">
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="flex items-center justify-between h-100">
         <VBtn
@@ -15,10 +11,7 @@
           size="small"
           @click="toggleVerticalOverlayNavActive(true)"
         >
-          <VIcon
-            icon="tabler-menu-2"
-            size="24"
-          />
+          <VIcon icon="tabler-menu-2" size="24" />
         </VBtn>
         <NavSearchBar class="ms-lg-n3" />
         <VSpacer />
@@ -28,10 +21,7 @@
     </template>
 
     <RouterView v-slot="{ Component }">
-      <Transition
-        :name="appRouteTransition"
-        mode="out-in"
-      >
+      <Transition :name="appRouteTransition" mode="out-in">
         <Component :is="Component" />
       </Transition>
     </RouterView>
@@ -102,8 +92,6 @@ watch(notificationStore.allRealTimeNotifications, (notifications) => {
     checkIfNewNotificationIsANewGameChallenge(notifications[0])
   }
 })
-
-
 </script>
 
 <style lang="scss">

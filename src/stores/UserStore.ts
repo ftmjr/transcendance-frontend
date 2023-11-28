@@ -177,14 +177,14 @@ const useUserStore = defineStore({
   },
   actions: {
     /* Friendship section */
-    resetStore(){
-      this.contacts.splice(0, this.contacts.length);
-      this.blockedUsers.splice(0, this.blockedUsers.length);
-      this.disconnectStatusSocket();
-      this.usersStatus.clear();
+    resetStore() {
+      this.contacts.splice(0, this.contacts.length)
+      this.blockedUsers.splice(0, this.blockedUsers.length)
+      this.disconnectStatusSocket()
+      this.usersStatus.clear()
       this.usersStatus.set(-1, Status.Busy)
       this.usersStatus.set(0, Status.Online)
-      this.shortProfiles.clear();
+      this.shortProfiles.clear()
     },
     async askFriendRequest(targetId: number): Promise<'success' | 'already' | 'error'> {
       let message: 'success' | 'already' | 'error' = 'success'
@@ -450,8 +450,8 @@ const useUserStore = defineStore({
       }
     },
     disconnectStatusSocket() {
-      StatusSocket.destroyInstance();
-      this.statusSocketManager = null;
+      StatusSocket.destroyInstance()
+      this.statusSocketManager = null
     },
     async getStatus(userId: number): Promise<Status> {
       // check if the user is in the map

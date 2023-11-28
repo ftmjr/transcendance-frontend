@@ -1,12 +1,11 @@
 <script setup lang="ts">
-
-import {PropType} from "vue";
+import { PropType } from 'vue'
 
 defineProps({
   message: {
     type: Object as PropType<{ id: number; message: string; time: string }>,
     required: true,
-    default: () => ({id: 0, message: '', time: ''})
+    default: () => ({ id: 0, message: '', time: '' })
   }
 })
 </script>
@@ -17,6 +16,4 @@ defineProps({
   </span>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -139,7 +139,7 @@ export class NotificationSocket {
 
   static destroyInstance() {
     if (NotificationSocket.instance) {
-      NotificationSocket.instance.disconnect();
+      NotificationSocket.instance.disconnect()
       // @ts-expect-error - private property
       NotificationSocket.instance = undefined
     }

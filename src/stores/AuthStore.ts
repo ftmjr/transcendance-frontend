@@ -78,7 +78,7 @@ const useAuthStore = defineStore({
         const decoded = decodeJWT(this.token)
         if (decoded) {
           const now = this.now
-          return decoded.exp * 1000 <= now + (60 * 1000)// 1 minute before expiration
+          return decoded.exp * 1000 <= now + 60 * 1000 // 1 minute before expiration
         }
       }
       return false
@@ -169,7 +169,7 @@ const useAuthStore = defineStore({
       const token = localStorage.getItem('__token__')
       if (!token && this.isLoggedIn) {
         // token is not present, logout
-        await this.logout();
+        await this.logout()
       }
     },
     async login(credentials: { username: string; password: string }): Promise<boolean> {
@@ -196,8 +196,8 @@ const useAuthStore = defineStore({
     async logout() {
       this.error = { state: false, message: '' }
       try {
-        this.removeUser();
-        this.removeToken();
+        this.removeUser()
+        this.removeToken()
         await axios.get('auth/logout')
       } catch (error) {
         if (isAxiosError(error)) {

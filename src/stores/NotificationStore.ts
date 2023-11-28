@@ -37,10 +37,10 @@ const useNotificationStore = defineStore({
     }
   },
   actions: {
-    clearStore(){
+    clearStore() {
       this.notifications.splice(0, this.notifications.length)
       this.realTimeNotifications.splice(0, this.realTimeNotifications.length)
-      this.disconnect();
+      this.disconnect()
     },
     async init(userId: number) {
       await this.getNotifications()
@@ -58,8 +58,8 @@ const useNotificationStore = defineStore({
       }
     },
     disconnect() {
-      NotificationSocket.destroyInstance();
-      this.socketManager = null;
+      NotificationSocket.destroyInstance()
+      this.socketManager = null
     },
     listenToRoomNotifications(roomId: number) {
       this.socketManager?.listenToRoomNotifications(roomId)

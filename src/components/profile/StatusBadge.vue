@@ -1,8 +1,5 @@
 <template>
-  <VChip
-    label
-    :color="color"
-  >
+  <VChip label :color="color">
     {{ status }}
   </VChip>
 </template>

@@ -20,28 +20,14 @@
       }"
       class="h-full pt-4 pb-16 grow-0 srink-0 hide-scrollbar"
     >
-      <li
-        v-for="m in users"
-        :key="m.id"
-        class="block px-2 py-2"
-      >
+      <li v-for="m in users" :key="m.id" class="block px-2 py-2">
         <div class="flex items-center gap-2">
-          <AvatarBadgeVue
-            :user-id="m.id"
-            :user="m"
-          />
+          <AvatarBadgeVue :user-id="m.id" :user="m" />
           <span class="flex-1 inline-block w-16 max-w-full text-sm line-clamp-1">
             {{ m.username }}
           </span>
-          <v-btn
-            :size="24"
-            icon
-            color="transparent"
-            @click.prevent="inviteUser(m.id)"
-          >
-            <v-icon :size="16">
-              mingcute:add-fill
-            </v-icon>
+          <v-btn :size="24" icon color="transparent" @click.prevent="inviteUser(m.id)">
+            <v-icon :size="16"> mingcute:add-fill </v-icon>
           </v-btn>
         </div>
       </li>

@@ -115,25 +115,22 @@ export default defineComponent({
         this.loading = false
       }
       if (notification.title === RealTimeNotificationTitle.RemovedFromChatRoom) {
-        if (this.roomsStore.userId === notification.userId || this.roomsStore.userId === notification.sourceUserId) {
-          await this.roomsStore.getAllMyRooms()
-          await this.roomsStore.fetchPublicRooms()
-          if (!this.roomsStore.currentRoom) return
-          if (this.roomsStore.currentRoom.id === notification.roomId) {
-            await this.roomsStore.selectRoom(this.roomsStore.currentRoom.id);
-          }
+        await this.roomsStore.getAllMyRooms()
+        await this.roomsStore.fetchPublicRooms()
+        if (!this.roomsStore.currentRoom) return
+        if (this.roomsStore.currentRoom.id === notification.roomId) {
+          await this.roomsStore.selectRoom(this.roomsStore.currentRoom.id)
         }
       }
     },
     async checkAndRefreshMembers(notification: RealTimeNotification) {
-      if (notification.title === RealTimeNotificationTitle.NewRolesInChatRoom ||
+      if (
+        notification.title === RealTimeNotificationTitle.NewRolesInChatRoom ||
         notification.title === RealTimeNotificationTitle.NewMemberInChatRoom
       ) {
-        await this.roomsStore.getAllMyRooms();
-        await this.roomsStore.fetchPublicRooms();
-        if (this.roomsStore.currentRoom?.id === notification.roomId){
-          await this.roomsStore.reloadCurrentRoomMembers();
-        }
+        await this.roomsStore.getAllMyRooms()
+        await this.roomsStore.fetchPublicRooms()
+        await this.roomsStore.reloadCurrentRoomMembers()
       }
     },
     async checkAndRefreshStatus(notification: RealTimeNotification) {
@@ -146,9 +143,7 @@ export default defineComponent({
           notification.userId === this.roomsStore.userId
         ) {
           // we fetch all blocked status for all members
-          if (this.roomsStore.roomMembers.length > 0) {
-            await this.roomsStore.setBlockedStatusForMembers(this.roomsStore.roomMembers)
-          }
+          await this.roomsStore.setBlockedStatusForMembers(this.roomsStore.roomMembers)
         }
       }
     }

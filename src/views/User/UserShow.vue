@@ -1,18 +1,8 @@
 <template>
   <v-card :color="color">
-    <user-profile-header
-      :id="profileData.id"
-      class="mb-5"
-      :info="profileData.header"
-    />
-    <VTabs
-      v-model="activeTab"
-      class="v-tabs-pill"
-    >
-      <VTabs
-        v-model="activeTab"
-        class="v-tabs-pill"
-      >
+    <user-profile-header :id="profileData.id" class="mb-5" :info="profileData.header" />
+    <VTabs v-model="activeTab" class="v-tabs-pill">
+      <VTabs v-model="activeTab" class="v-tabs-pill">
         <VTab
           v-for="item in tabs"
           :key="item.icon"
@@ -20,41 +10,22 @@
           :to="getRoute(item.tab)"
           :loading="loading"
         >
-          <VIcon
-            size="20"
-            start
-            :icon="item.icon"
-          />
+          <VIcon size="20" start :icon="item.icon" />
           {{ item.title }}
         </VTab>
       </VTabs>
     </VTabs>
-    <VWindow
-      v-model="activeTab"
-      class="mt-6 disable-tab-transition"
-      :touch="false"
-    >
+    <VWindow v-model="activeTab" class="mt-6 disable-tab-transition" :touch="false">
       <VWindowItem value="profile">
-        <VCard
-          :loading="loading"
-          color="transparent"
-        >
+        <VCard :loading="loading" color="transparent">
           <VCard v-if="profileData.profile">
             <div class="bg-[#1a1f3c] p-2 md:p-6">
-              <h2 class="text-4xl uppercase font-bold">
-                Description
-              </h2>
+              <h2 class="text-4xl uppercase font-bold">Description</h2>
 
-              <p
-                v-if="profileData.profile.bio"
-                class="text-left md:w-1/2 py-2 font-mono"
-              >
+              <p v-if="profileData.profile.bio" class="text-left md:w-1/2 py-2 font-mono">
                 <i>{{ profileData.profile.bio }}</i>
               </p>
-              <p
-                v-else
-                class="text-left pb-2 font-mono text-sm md:w-1/2 py-2"
-              >
+              <p v-else class="text-left pb-2 font-mono text-sm md:w-1/2 py-2">
                 <i>Aucune bio, pour l'instant</i>
               </p>
             </div>
@@ -68,22 +39,14 @@
         </VCard>
       </VWindowItem>
       <VWindowItem value="awards">
-        <h2 class="text-4xl uppercase font-bold">
-          Les récompenses
-        </h2>
-        <Awards
-          v-if="userId"
-          :user-id="userId"
-        />
+        <h2 class="text-4xl uppercase font-bold">Les récompenses</h2>
+        <Awards v-if="userId" :user-id="userId" />
       </VWindowItem>
       <VWindowItem value="friends">
         <friends v-if="userId === authStore.getUser?.id" />
       </VWindowItem>
       <VWindowItem value="history">
-        <Histories
-          v-if="userId"
-          :user-id="userId"
-        />
+        <Histories v-if="userId" :user-id="userId" />
       </VWindowItem>
     </VWindow>
   </v-card>
@@ -270,8 +233,8 @@ export default defineComponent({
         notification.title === RealTimeNotificationTitle.BrokenFriendship
       ) {
         if (notification.sourceUserId === this.userId || notification.userId === this.userId) {
-          await this.fetchBlockedState(this.userId);
-          await this.fetchProfileData(this.userId);
+          await this.fetchBlockedState(this.userId)
+          await this.fetchProfileData(this.userId)
         }
       }
     }

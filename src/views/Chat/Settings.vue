@@ -13,9 +13,7 @@
         <h2 v-if="roomsStore.isMemberOfRoom">
           {{ roomsStore.currentRoom.name }}
         </h2>
-        <h2 v-else>
-          Rejoindre {{ roomsStore.currentRoom.name }}
-        </h2>
+        <h2 v-else>Rejoindre {{ roomsStore.currentRoom.name }}</h2>
       </div>
       <v-menu
         v-if="roomsStore.isMemberOfRoom && !roomsStore.isMuted && !roomsStore.isBanned"
@@ -26,17 +24,8 @@
         offset="10px -20px"
       >
         <template #activator="{ props }">
-          <v-btn
-            icon
-            color="transparent"
-            class="w-full p-2 text-left"
-            v-bind="props"
-          >
-            <v-icon
-              color="primary"
-              icon="tabler:settings"
-              size="24"
-            />
+          <v-btn icon color="transparent" class="w-full p-2 text-left" v-bind="props">
+            <v-icon color="primary" icon="tabler:settings" size="24" />
           </v-btn>
         </template>
 
@@ -44,17 +33,9 @@
           <v-list>
             <v-list-item>
               <div class="p-4">
-                <v-sheet
-                  width="300"
-                  class="mx-auto"
-                >
-                  <h2 class="mb-4 text-sm font-bold">
-                    Paramètres
-                  </h2>
-                  <v-form
-                    v-if="roomsStore.isOwner"
-                    @submit.prevent="updateRoomInfos"
-                  >
+                <v-sheet width="300" class="mx-auto">
+                  <h2 class="mb-4 text-sm font-bold">Paramètres</h2>
+                  <v-form v-if="roomsStore.isOwner" @submit.prevent="updateRoomInfos">
                     <VCardText class="flex flex-col items-center gap-1">
                       <VAvatar
                         v-if="roomsStore.currentRoom.avatar"
@@ -73,15 +54,8 @@
                         :prepend-icon="loading ? 'mdi-loading mdi-spin' : 'mdi-upload'"
                       >
                         <template #selection="{ fileNames }">
-                          <template
-                            v-for="fileName in fileNames"
-                            :key="fileName"
-                          >
-                            <v-chip
-                              size="small"
-                              label
-                              color="primary"
-                            >
+                          <template v-for="fileName in fileNames" :key="fileName">
+                            <v-chip size="small" label color="primary">
                               {{ fileName }}
                             </v-chip>
                           </template>
@@ -112,7 +86,7 @@
                         outlined
                         :type="passwordFieldsVisibility.password ? 'text' : 'password'"
                         :append-inner-icon="
-                          passwordFieldsVisibility.password? 'tabler-eye-off' : 'tabler-eye'
+                          passwordFieldsVisibility.password ? 'tabler-eye-off' : 'tabler-eye'
                         "
                         dense
                         @click:append-inner="
@@ -129,7 +103,7 @@
                         outlined
                         :type="passwordFieldsVisibility.password ? 'text' : 'password'"
                         :append-inner-icon="
-                          passwordFieldsVisibility.password? 'tabler-eye-off' : 'tabler-eye'
+                          passwordFieldsVisibility.password ? 'tabler-eye-off' : 'tabler-eye'
                         "
                         dense
                         :rules="rules.passwordConfirmation"
@@ -215,13 +189,15 @@ export default defineComponent({
           (v: string) => !!v || 'Le mot de passe est requis',
           (v: string) =>
             (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-          (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
+          (v: string) =>
+            (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
         ],
         password: [
           (v: string) => !!v || 'Le mot de passe est requis',
           (v: string) =>
             (v && v.length <= 20) || 'Le mot de passe doit être inférieur à 20 caractères',
-          (v: string) => (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
+          (v: string) =>
+            (v && v.length >= 6) || 'Le mot de passe doit être supérieur à 6 caractères'
         ],
         passwordConfirmation: [
           (v: string) => !!v || 'La confirmation du mot de passe est requise',
@@ -232,7 +208,7 @@ export default defineComponent({
             (v && v.length >= 6) ||
             'La confirmation du mot de passe doit être supérieur à 6 caractères',
           (v: string) => v === this.password || 'Les mots de passe ne correspondent pas'
-        ],
+        ]
       },
       loading: false,
       forbiddenWords: [
@@ -255,7 +231,7 @@ export default defineComponent({
         oldPassword: false,
         password: false,
         confirmPassword: false
-      },
+      }
     }
   },
   computed: {
@@ -299,10 +275,10 @@ export default defineComponent({
         roomId: room.id,
         roomType: this.type,
         oldPassword: undefined,
-        password: this.password.length > 0 ? this.password : undefined,
+        password: this.password.length > 0 ? this.password : undefined
       }
       if (this.filesToUpload) {
-        if (this.filesToUpload.length > 0){
+        if (this.filesToUpload.length > 0) {
           const newAvatar = this.filesToUpload[0]
           await this.roomsStore.updateAvatar(room.id, newAvatar)
         }

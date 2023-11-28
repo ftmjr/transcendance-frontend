@@ -1,9 +1,6 @@
 <template>
   <div :class="blocked ? 'blur-xl pointer-events-none' : ''">
-    <div
-      class="flex flex-col"
-      :class="[isSender ? 'justify-end items-end' : 'order-2 text-left']"
-    >
+    <div class="flex flex-col" :class="[isSender ? 'justify-end items-end' : 'order-2 text-left']">
       <div
         :class="[
           'relative inline-block max-w-xs px-4 py-4 text-sm rounded-md shadow-lg drop-shadow-lg mb-2',
@@ -11,11 +8,7 @@
         ]"
         style="background-color: #272b47"
       >
-        <p
-          v-for="msg in msgGroup.messages"
-          :key="msg.id"
-          class="my-2 text-sm"
-        >
+        <p v-for="msg in msgGroup.messages" :key="msg.id" class="my-2 text-sm">
           {{ msg.message }}
         </p>
       </div>
@@ -31,39 +24,12 @@
             })
           }}
         </span>
-        <div
-          class="flex items-center gap-2"
-          :class="[isSender ? 'justify-end' : 'justify-start']"
-        >
+        <div class="flex items-center gap-2" :class="[isSender ? 'justify-end' : 'justify-start']">
           <span class="line-clamp-1">{{ sender?.member.username.split(' ').shift() }}</span>
-          <VIcon
-            v-if="isOwner"
-            :size="16"
-            color="primary"
-          >
-            tabler-crown
-          </VIcon>
-          <VIcon
-            v-else-if="isAdmin"
-            :size="16"
-            color="secondary"
-          >
-            tabler-shield-check
-          </VIcon>
-          <VIcon
-            v-else-if="isBan"
-            :size="16"
-            color="gray"
-          >
-            tabler-user-x
-          </VIcon>
-          <VIcon
-            v-else-if="isMuted"
-            :size="16"
-            color="gray"
-          >
-            tabler-user-minus
-          </VIcon>
+          <VIcon v-if="isOwner" :size="16" color="primary"> tabler-crown </VIcon>
+          <VIcon v-else-if="isAdmin" :size="16" color="secondary"> tabler-shield-check </VIcon>
+          <VIcon v-else-if="isBan" :size="16" color="gray"> tabler-user-x </VIcon>
+          <VIcon v-else-if="isMuted" :size="16" color="gray"> tabler-user-minus </VIcon>
         </div>
       </div>
     </div>
@@ -118,6 +84,7 @@ export default defineComponent({
       return this.sender?.role === ChatMemberRole.MUTED
     },
     blocked(): boolean {
+      if (!this.sender && this.roomStore.isMemberOfRoom) return false
       if (!this.sender) return true
       const blockStatus = this.roomStore.allBlockedStatus.get(this.sender.member.id)
       if (!blockStatus) return false

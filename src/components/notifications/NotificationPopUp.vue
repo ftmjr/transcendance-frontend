@@ -8,12 +8,7 @@
   >
     {{ snackbarMsg }}
     <template #actions>
-      <VBtn
-        color="error"
-        @click="isSnackbarVisible = false"
-      >
-        Fermer
-      </VBtn>
+      <VBtn color="error" @click="isSnackbarVisible = false"> Fermer </VBtn>
     </template>
   </VSnackbar>
 </template>
@@ -35,7 +30,7 @@ export default defineComponent({
     color: {
       type: String,
       default: () => 'default'
-    },
+    }
   },
   emits: ['update:visible'],
   computed: {
