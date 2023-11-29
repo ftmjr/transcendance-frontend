@@ -94,14 +94,15 @@ export class ChatSocket {
     // Mp events
     public onNewMp: (message: PrivateMessage) => void,
     onConversationReload: (senderId: number) => void,
-    onUserIsTyping: (senderId: number, timestamp: number) => void
+    onUserIsTyping: (senderId: number, timestamp: number) => void,
+    token: string
   ) {
     this.userId = userId
     try {
       this.socket = io('/chat', {
         path: '/socket.io/',
         query: { userId },
-        auth: { token: 'testToken' }
+        auth: { token: token }
       })
       this.socket.emit('joinMyRoom')
       this.socket.on('connect', () => {
@@ -153,7 +154,8 @@ export class ChatSocket {
       timestamp: number
     }) => void,
     onConversationReload: (senderId: number) => void,
-    onMpContactTyping: (senderId: number, timestamp: number) => void
+    onMpContactTyping: (senderId: number, timestamp: number) => void,
+    token: string
   ): ChatSocket {
     if (!ChatSocket.instance) {
       ChatSocket.instance = new ChatSocket(
@@ -165,7 +167,8 @@ export class ChatSocket {
         onRoomMemberTyping,
         onNewMp,
         onConversationReload,
-        onMpContactTyping
+        onMpContactTyping,
+        token
       )
     }
     ChatSocket.instance.onNewMp = onNewMp
