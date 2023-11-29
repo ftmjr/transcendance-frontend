@@ -39,7 +39,8 @@ export default defineComponent({
     }
   },
   mounted() {
-    const gameMonitor = new Monitor(this.roomId, this.player, this.moveToHistory)
+    const token = localStorage.getItem('__token__') as string;
+    const gameMonitor = new Monitor(this.roomId, this.player, this.moveToHistory, token)
     const dataInit = {
       currentUser: this.player,
       gameMonitor,

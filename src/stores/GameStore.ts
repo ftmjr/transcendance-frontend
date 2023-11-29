@@ -121,11 +121,12 @@ const useGameStore = defineStore({
       const authStore = useAuthStore()
       const user = authStore.getUser
       if (!user) return
+      const token = authStore.token as string
       this.gameNetwork = GameNetwork.getInstance({
         userId: user.id ?? 0,
         username: user.username ?? '',
         avatar: user.profile.avatar ?? ''
-      })
+      }, token)
     },
     disconnectSocket() {
       GameNetwork.destroyInstance()
