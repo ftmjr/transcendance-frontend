@@ -21,26 +21,28 @@ export class StatusSocket {
 
   private constructor(
     private userId: number,
-    private _onStatusUpdate: (data: ReceivedStatusUpdate) => void
+    private _onStatusUpdate: (data: ReceivedStatusUpdate) => void,
+    token: string
   ) {
-    this.connect()
+    this.connect(token)
   }
 
   public static getInstance(
     userId: number,
-    onStatusUpdate: (data: ReceivedStatusUpdate) => void
+    onStatusUpdate: (data: ReceivedStatusUpdate) => void,
+    token: string
   ): StatusSocket {
     if (!StatusSocket.instance) {
-      StatusSocket.instance = new StatusSocket(userId, onStatusUpdate)
+      StatusSocket.instance = new StatusSocket(userId, onStatusUpdate, token)
     }
     return StatusSocket.instance
   }
 
-  private connect() {
+  private connect(token: string) {
     this.socket = io('/auth', {
       path: '/socket.io/',
       query: { userId: this.userId },
-      // auth: { token: 'testToken' },
+      auth: { token: token},
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 3000
