@@ -88,9 +88,13 @@ export class GameNetwork {
   public roomId: number = 0
   private joinedGame = false
 
-  private constructor(public user: GameUser) {
+  private constructor(public user: GameUser, token:string) {
     try {
-      this.socket = io('/game', { path: '/socket.io' })
+      this.socket = io('/game', {
+        path: '/socket.io',
+        query: { userId: user.userId },
+        auth: { token }
+      })
     } catch (e) {
       this.joinedGame = false
       this.roomId = 0
@@ -110,9 +114,9 @@ export class GameNetwork {
     return this.socket?.connected && this.joinedGame
   }
 
-  public static getInstance(user: GameUser) {
+  public static getInstance(user: GameUser, token: string) {
     if (!GameNetwork.instance) {
-      GameNetwork.instance = new GameNetwork(user)
+      GameNetwork.instance = new GameNetwork(user, token)
     }
     return GameNetwork.instance
   }
