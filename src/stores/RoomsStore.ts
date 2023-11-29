@@ -188,6 +188,7 @@ const useRoomsStore = defineStore({
       this.userId = userId
       await this.getAllMyRooms()
       const messageStore = useMessageStore()
+      const token = localStorage.getItem('__token__') as string
       this.socketManager = ChatSocket.getInstance(
         userId,
         (message: ChatMessage) => {
@@ -225,7 +226,8 @@ const useRoomsStore = defineStore({
         },
         (senderId: number, timestamp: number) => {
           this.contactTyping.set(senderId, timestamp)
-        }
+        },
+        token
       )
       if (!this.socketManager) return
       if (!this.socketManager.operational) {

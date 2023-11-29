@@ -442,9 +442,10 @@ const useUserStore = defineStore({
 
     /* Status*/
     initStatusSocket(userId: number) {
+      const token = localStorage.getItem('__token__') as string
       this.statusSocketManager = StatusSocket.getInstance(userId, (data: ReceivedStatusUpdate) => {
         this.usersStatus.set(data.userId, data.status)
-      })
+      }, token)
       if (!this.statusSocketManager.operational) {
         this.statusSocketManager.reconnect()
       }

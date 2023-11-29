@@ -76,9 +76,10 @@ export default class Monitor {
   constructor(
     private readonly roomId: number,
     private readonly currentUser: GameUser & { userType: GameUserType },
-    private moveToHistory: () => void
+    private moveToHistory: () => void,
+    token: string
   ) {
-    this.gameNetwork = GameNetwork.getInstance(currentUser)
+    this.gameNetwork = GameNetwork.getInstance(currentUser, token)
     this.gameNetwork.reconnect()
     this.gameNetwork.connectToGame(this.roomId, this.currentUser.userType)
     this.listenToGameEvents()

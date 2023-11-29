@@ -44,6 +44,7 @@ const useNotificationStore = defineStore({
     },
     async init(userId: number) {
       await this.getNotifications()
+      const token = localStorage.getItem('__token__') as string
       this.socketManager = NotificationSocket.getInstance(
         userId,
         (notification) => {
@@ -51,7 +52,8 @@ const useNotificationStore = defineStore({
         },
         (realTimeNotification) => {
           this.realTimeNotifications.unshift(realTimeNotification)
-        }
+        },
+        token
       )
       if (!this.socketManager.operational) {
         this.socketManager.connect()
